@@ -43,14 +43,94 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cognitive-reliability-predictive-failover-agent-for-critical-infrastructure">Cognitive Reliability &amp; Predictive Failover Agent for Critical Infrastructure</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#level-35-industrial-middleware-ai-driven-asset-orchestration">Level 3.5 Industrial Middleware | AI-Driven Asset Orchestration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#project-status-in-development">Project Status: In Development</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#executive-summary">Executive Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#field-engineer-quick-start">Field Engineer Quick-Start</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#software-engineering-tech-stack">Software Engineering &amp; Tech Stack</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-local-development">Installation &amp; Local Development</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#physical-hardware-requirements">Physical Hardware Requirements</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#quick-start-guide">Quick Start Guide</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#introduction-scope">Introduction &amp; Scope</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#in-scope">In-Scope</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#out-of-scope">Out-of-Scope</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#target-environment">Target Environment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#overview-core-principles">Overview &amp; Core Principles</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#oversight-ics-is-built-on-four-non-negotiable-principles">Oversight ICS is built on four non-negotiable principles:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1-safety-first">1. Safety-First</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-human-authority">2. Human Authority</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-deterministic-execution">3. Deterministic Execution</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-full-auditability">4. Full Auditability</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#core-architecture">Core Architecture</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#northbound-ingest-protocol-isolation">Northbound Ingest (Protocol Isolation)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-15-arbitrator-the-gatekeeper-of-authority">Level 1.5 Arbitrator (The Gatekeeper of Authority)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#semantic-gatekeeper-safety-dominance">Semantic Gatekeeper (Safety Dominance)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#tpm-20-notary-buffers-hardware-root-of-trust">TPM 2.0 &amp; Notary Buffers (Hardware Root-of-Trust)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#southbound-driver-deterministic-execution">Southbound Driver (Deterministic Execution)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#agent-architecture">Agent Architecture</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#authority-mode-overview">Authority Mode Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#degraded-mode-behavior">Degraded Mode Behavior</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#industrial-safety-protocol">Industrial Safety Protocol</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#safety-regulatory-governance">Safety &amp; Regulatory Governance</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#governance-standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#documentation-index">Documentation Index</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sop-documentation-index">SOP Documentation Index</a>
+    </li>
     </ul>
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="glossary/">Glossary</a>
-                  </li>
-                  <li class="toctree-l1"><a class="" href="readme.md">Readme</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
                   </li>
@@ -86,6 +166,352 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="welcome-to-oversight-ics-documentation">Welcome to Oversight ICS documentation!</h1>
+<h2 id="cognitive-reliability-predictive-failover-agent-for-critical-infrastructure">Cognitive Reliability &amp; Predictive Failover Agent for Critical Infrastructure</h2>
+<h3 id="level-35-industrial-middleware-ai-driven-asset-orchestration">Level 3.5 Industrial Middleware | AI-Driven Asset Orchestration</h3>
+<h3 id="project-status-in-development">Project Status: <em>In Development</em></h3>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#executive-summary">Executive Summary</a></li>
+<li><a href="#field-engineer-quick-start">Field Engineer Quick-Start</a></li>
+<li><a href="#software-engineering--tech-stack">Software Engineering &amp; Tech Stack</a></li>
+<li><a href="#installation--local-development">Installation &amp; Local Development</a></li>
+<li><a href="#introduction--scope">Introduction &amp; Scope</a></li>
+<li><a href="#target-environment">Target Environment</a></li>
+<li><a href="#overview--core-principles">Overview &amp; Core Principles</a></li>
+<li><a href="#core-architecture-">Core Architecture</a></li>
+<li><a href="#agent-architecture">Agent Architecture</a></li>
+<li><a href="#authority-mode-overview">Authority Mode Overview</a></li>
+<li><a href="#degraded-mode-behavior">Degraded Mode Behavior</a></li>
+<li><a href="#industrial-safety-protocol">Industrial Safety Protocol</a></li>
+<li><a href="#safety--regulatory-governance">Safety &amp; Regulatory Governance</a></li>
+<li><a href="#governance--standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</a></li>
+<li><a href="#fmea-failure-mode-and-effects-analysis--deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix</a></li>
+<li><a href="#documentation-index">Documentation Index</a></li>
+<li><a href="#sop-documentation-index">SOP Documentation Index</a></li>
+</ul>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
+human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
+Reliability Layer for <strong>Distributed Control Systems (DCS), Programmable Logic Controllers (PLCs), Remote Terminal Units 
+(RTUs), and Rotating Equipment.</strong> The system doesn't replace the primary control hardware, it just supervises it. It 
+maintains a <strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through 
+<strong>NATS JetStream</strong> and <strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor,
+Oversight has continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger 
+automated failovers before physical hardware fails.</p>
+<p>Oversight implements strict decoupling from <strong>Safety Instrumented Systems (SIS)</strong> to guarantee that AI-driven 
+reliability interventions never compromise hard-coded safety interlocks. The system relies on a <strong>Command Query 
+Responsibility Segregation</strong> streaming architecture that uses a single instance of NATS JetStream with Bytewax for 
+stream processing. Oversight guarantees that every AI decision is auditable, traceable, and reproducible, with 
+sub-second latency while meeting the highest standards of industrial governance and safety. This architecture provides 
+operators with a <strong>Pessimistic Confirmation of Success</strong> only after the standby hardware has acknowledged the state 
+change from the physical feedback loop.</p>
+<h2 id="field-engineer-quick-start">Field Engineer Quick-Start</h2>
+<p>For immediate field deployment, testing, and validation, please refer to the core protocols below:</p>
+<ul>
+<li><strong><a href="/docs/fat/FAT-01-hardware_and_communication_protocol.md">FAT-01: Hardware &amp; Communication Protocol</a></strong></li>
+<li><strong><a href="/docs/fat/FAT-02-functional_and_logic_protocol.md">FAT-02: Functional &amp; Logic Protocol</a></strong></li>
+<li><strong><a href="/docs/fat/FAT-03-safety_and_security_protocol.md">FAT-03: Safety &amp; Security Protocol</a></strong></li>
+<li><strong><a href="/docs/commissioning.md">Site Commissioning Guide</a></strong></li>
+</ul>
+<h2 id="software-engineering-tech-stack">Software Engineering &amp; Tech Stack</h2>
+<p>Oversight ICS is built using a modern, event-driven microservices architecture optimized for edge deployments in 
+physical industrial environments.
+- <strong>Stream Processing:</strong> Bytewax
+- <strong>UNS &amp; Command Spine:</strong> NATS JetStream
+- <strong>Orchestration:</strong> LangGraph, local Phi-4 / Gemini 3.5 Flash
+- <strong>Database:</strong> TimescaleDB
+- <strong>Vector Database:</strong> pgVector
+- <strong>In-Memory Cache:</strong> Redis
+- <strong>Backend/API:</strong> FastAPI (Python)
+- <strong>Security &amp; Hardware:</strong> TPM 2.0 Hardware Notary, RS256 JWTs, Dual-NIC Edge IPC, Level 1.5 Arbitrator, Nginx Perimeter
+  Gateway, Cgroup Resource Isolation, Cryptographic Notary Buffers
+- <strong>Containerization &amp; Orchestration:</strong> Docker Compose, GitHub Actions CI/CD, Linux Cgroups, Systemd Watchdogs
+- <strong>Monitoring &amp; Observability:</strong> Prometheus, Grafana, Loki (for air-gapped safety fallback engine), WORM-based Audit 
+  Logs, Immutable Historian</p>
+<h2 id="installation-local-development">Installation &amp; Local Development</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Operating System</strong>: Linux-based OS is required for compatibility with hardware interfaces and systemd watchdogs. 
+    Windows users must use a fully configured WSL2 environment.</li>
+<li><strong>Container Engine</strong>: Docker Engine 24.0+ &amp; Docker Compose to spin up the core local gateway services (FastAPI 
+    endpoints, TimescaleDB, Redis Hot Cache, NATS JetStream Command Spine, Bytewax Stream Workers).</li>
+<li><strong>NATS Server (w/ JetStream enabled)</strong>: Required locally for stream processing and command orchestration.</li>
+<li><strong>Bytewax Streaming Runtime</strong>: Required to execute the stateful stream processing jobs locally for windowed Z-score 
+    analysis and logic drift detection.</li>
+<li><strong>Python 3.12+</strong>: Managed via uv </li>
+<li><strong>Node.js 20+</strong>: Required for local building and testing of the frontend dashboard.</li>
+<li><strong>C++ Build Tools</strong>: Requires full toolchain suite including <code>build-essential</code>, <code>cmake</code>, and a standard compiler to 
+    anchor the native C++ Southbound Driver.</li>
+<li><strong>LLM Inference Credentials</strong>: API access keys or tokens to an authorized low-latency LLM (e.g., Phi-4, Gemini 3.5
+    Flash) for local reasoning and RAG capabilities.</li>
+<li><strong>(Optional) TPM 2.0 Emulator</strong>: For local hardware testing</li>
+<li><strong>Storage Permissions</strong>: Hard directory controls must be configured for the WORM audit spools so that local WORM 
+    storage directories have strict write-only permissions configured before launching the stack.</li>
+</ul>
+<h3 id="physical-hardware-requirements">Physical Hardware Requirements</h3>
+<p>The Edge Gateway is designed for deployment in harsh OT environments (Class I, Div 2). To guarantee high availability, 
+strict zero-trust network segregation, and deterministic safety interlocks, production deployments must meet or exceed
+the following specifications:</p>
+<ul>
+<li><strong>Form Factor</strong>: <strong>Industrial PC (IPC)</strong> with <strong>Fanless Passive Cooling</strong> to prevent ingress of dust/particulates.</li>
+<li><strong>Mounting</strong>: Heavy-duty integrated chassis tailored for standard 35mm DIN-Rail mounting inside field control
+    cabinets.</li>
+<li><strong>Memory &amp; Storage</strong>: Minimum 16GB Error-Correcting Code (ECC) RAM to prevent memory corruption during high-frequency
+    telemetry tracking. Storage must be a minimum of 256GB industrial-grade SSD (SLC/pSLC enclaves) supporting
+    unalterable log writes.</li>
+<li><strong>Hardware Secure Root (TPM 2.0)</strong>: An active, provisioned physical TPM 2.0 module is <strong>strictly required</strong>. The
+    private signing keys for the outbox intents are pinned inside this chip and cannot leave the hardware boundary.
+    This satisfies the secure boot validation and prevents command spooling.</li>
+<li><strong>Dual NIC Requirement</strong>: The IPC must have two independent physical 1GbE network interface cards (Intel i210/i211 
+    preferred for native hardware-level PTP timestamping support):</li>
+<li><strong>Southbound OT NIC</strong>: Connected to the isolated process network (Levels 1–2) to interface with process assets.</li>
+<li><strong>Northbound IT NIC</strong>: Connected strictly to the <strong>Level 3.5 Industrial DMZ (IDMZ)</strong> infrastructure. <ul>
+<li><strong>CRITICAL</strong>: IP 
+    Forwarding must be disabled at the host OS level to maintain a logical air-gap and prevent lateral traffic 
+    routing between zones.</li>
+</ul>
+</li>
+<li><strong>Hardware Watchdog (PVP-02)</strong>:An onboard physical watchdog timer (PVP-02) must be mapped to the system. The C++ 
+    Southbound Driver process must check this watchdog loop continuously; if the loop misses a heartbeat for &gt;500ms, 
+    the physical DO-0 relay drops open, forcing the system to shed AI control and instantly fall back to local safety 
+    logic solvers.</li>
+<li><strong>Environmental &amp; Enclosure</strong>: Operating Temperature: Ruggedized tolerance across a -20°C to 60°C without thermal 
+    throttling or clock jitter degradation. </li>
+<li><strong>Ingress Protection</strong>: Minimum IP40 if mounted inside a certified plant control cabinet; IP67 weatherproofing if 
+      deployed externally.</li>
+<li><strong>EMC Compliance</strong>: Enforced shielding on all active RJ45 ports paired with industrial surge protection arrays. 
+    Electrical resistance between the gateway chassis and plant common ground must check out at &lt; 1 Ohm to mitigate 
+    electromagnetic interference generated by adjacent heavy machinery (VFDs, high-horsepower motors).</li>
+<li><strong>Power Framework</strong>: Integrated dual 24V DC terminal blocks supporting fully redundant power input lines backed up 
+    by an external industrial UPS deployment.
+[!NOTE] For local development and testing, you can use a standard PC or laptop. The hardware requirements are 
+    specific to production deployments in industrial environments.</li>
+</ul>
+<h3 id="quick-start-guide">Quick Start Guide</h3>
+<ol>
+<li><strong>Clone the repository:</strong>
+   <code>bash
+   git clone [https://github.com/org/oversight-ics.git](https://github.com/ARMummert/oversight-ics.git)
+   cd oversight-ics</code></li>
+<li><strong>Environment Configuration:</strong>
+   Copy the example env file and configure your local networking, LLM API keys, the Unified Namespace paths, and 
+   database credentials:
+    <code>bash
+    cp .env.example .env</code></li>
+<li><strong>Run Preflight Compliance Verification</strong>:
+   Before attaching active interfaces, validate the local Cgroups, chrony configurations, and PTP interfaces meet 
+   security constraints.
+    <code>bash
+    python scripts/monitoring/compliance_watcher.py</code></li>
+<li><strong>Launch the Core Infrastructure using Docker Compose</strong>:
+   Start the core services including NATS JetStream, Redis Hot Cache, TimescaleDB, and the FastAPI backend:
+   <code>bash
+   docker compose up -d nats redis timescale backend</code></li>
+<li><strong>Compile and Provision the Southbound Driver</strong>:
+  Build the native, high-priority C++ binary directly on the host to bridge NATS JetStream events to physical control 
+  registers:
+   <code>bash
+   mkdir build &amp;&amp; cd build
+   cmake ..
+   make
+   sudo ./oversight_sb_driver</code></li>
+<li><strong>Initialize Bytewax Stream Workers</strong>:
+   Spin up the stateful Python dataflows to handle windowed $Z$-score analysis and logic drift detection.
+   <code>bash
+   docker compose up -d bytewax-workers</code></li>
+<li>Start the Frontend Secure Dashboard:
+   <code>bash
+   cd ui
+   npm ci
+   npm run dev</code></li>
+<li>Verify System Heartbeat</li>
+<li>Navigate to http://localhost:3000/system/health to confirm the watchdog handshake is active and the tracking 
+     process variables.</li>
+</ol>
+<h2 id="introduction-scope">Introduction &amp; Scope</h2>
+<p>The project scope strictly follows the <strong>ISA/IEC 62443 Purdue Model</strong> for network segmentation, spanning from the 
+Physical &amp; Deterministic Control Layers (Levels 0-2) up through the Operations and the Business Logistics Layers (Levels
+3-4), and finally reaches up to the Enterprise Cloud Layer (Level 5). </p>
+<p>The Industrial Demilitarized Zone (Level 3.5 IDMZ) acts as the boundary and security checkpoint, where the Northbound 
+Ingest Service and Streaming Engine sanitizes and normalize OT data before it reaches the reasoning core. This is also
+where the Nginx Perimeter Gateway intercepts enterprise data (e.g., cryptographically signed OEM manuals pushed from
+the Level 5 for RAG ingestion) and sanitizes it before it reaches the AI Agent.</p>
+<h3 id="in-scope">In-Scope</h3>
+<ul>
+<li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
+<li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into a Sparkplug B-enabled Unified 
+    Namespace (UNS)</li>
+<li><strong>Autonomous Reliability</strong>: Executes <strong>warm standby</strong> transitions when the primary hardware health degrades</li>
+<li><strong>Root Cause Analysis</strong>: Using <strong>RAG (Retrieval-Augmented Generation)</strong> to compare real-time anomalies against 
+    technical manuals and historical incident logs.</li>
+<li><strong>Air Gapped Reasoning</strong>: Maintaining a <strong>local-first</strong> architecture that ensures Level 3 operational autonomy even 
+    during loss of internet connectivity.</li>
+</ul>
+<h3 id="out-of-scope">Out-of-Scope</h3>
+<ul>
+<li><strong>Primary Safety (SIS)</strong>: Oversight operates under strict safety boundaries to prevent unauthorized interventions.
+    Oversight does <strong><em>NOT</em></strong> manage Emergency Stops or high-pressure relief interlocks. These
+    remain hard-wired at Level 1.</li>
+<li><strong>Hard Real-Time Control (&lt;10 ms)</strong>: The system is a supervisory reliability layer. While the <strong>NATS Command 
+    Queue</strong> and <strong>Bytewax Streaming Engine</strong> execution path is sub-100 ms, it is designed to operate within a 
+    500 ms supervisory safety watchdog window and does not replace Level 1 deterministic control loops.</li>
+<li><strong>Direct Cloud Control</strong>: No control or write command path exists from the Cloud (Level 5) to the Field (Level 0-2). 
+    All commands must be validated, authenticated and executed locally at the IDMZ/Edge (Level 3.5).</li>
+<li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
+    autonomous system modifications</li>
+</ul>
+<h2 id="target-environment">Target Environment</h2>
+<p><strong>Hardware</strong>: Industrial PCs (IPCs) with Dual-NIC network isolation Hardware-Rooted TPM 2.0 modules</p>
+<p><strong>Connectivity</strong>: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets</p>
+<p><strong>Use Case</strong>: Critical Infrastructure (Wastewater, Energy, Manufacturing) where unplanned downtime exceeds the cost of
+  redundant hardware.</p>
+<h2 id="overview-core-principles">Overview &amp; Core Principles</h2>
+<p>As a <strong>Safety-First, Human Governed AI Agent</strong>, Oversight ICS is designed to improve reliability, resilience, and 
+observability of industrial control systems.</p>
+<h4 id="oversight-ics-is-built-on-four-non-negotiable-principles">Oversight ICS is built on four <strong>non-negotiable</strong> principles:</h4>
+<h3 id="1-safety-first">1. Safety-First</h3>
+<p>Oversights safety first system never bypasses <strong>Safety Interlocks</strong> or <strong>E-Stops</strong> and the <strong>Safety Instrumented 
+System (SIS)</strong> is strictly decoupled and never modified. The system is designed so that all actions are validated 
+against physical-layer constraints.</p>
+<h3 id="2-human-authority">2. Human Authority</h3>
+<p>All control actions and system modifications require explicit human approval. The system <strong>DOES NOT</strong> autonomously 
+execute changes that affect control behavior. Operators retain full <strong>Kill Switch</strong> authority over the system.</p>
+<h3 id="3-deterministic-execution">3. Deterministic Execution</h3>
+<p>All control actions follow predefined Standard Operating Procedures (SOPs). No dynamic or unverified control sequences 
+are allowed while execution remains predictable, repeatable, and auditable.</p>
+<h3 id="4-full-auditability">4. Full Auditability</h3>
+<p>Every AI decision, proposal, and action is logged in an immutable historian. The decisions are auditable, traceable, 
+and reproducible. The system is designed to meet industrial audit and compliance expectations.</p>
+<h2 id="core-architecture">Core Architecture</h2>
+<p>Oversight strictly separates decision-making, validation, and physical execution so that the AI-driven orchestration
+never compromises plant safety.</p>
+<h3 id="northbound-ingest-protocol-isolation">Northbound Ingest (Protocol Isolation)</h3>
+<p>Absorbs all protocol complexity (Modbus TCP, OPC-UA, EtherNet/IP CIP) at the Level 3.5 IDMZ boundary, normalizing it 
+into a unified data stream.</p>
+<h3 id="level-15-arbitrator-the-gatekeeper-of-authority">Level 1.5 Arbitrator (The Gatekeeper of Authority)</h3>
+<p>A stateless routing checkpoint that physically halts any proposed command until it verifies cryptographically signed 
+authorization (the Two-Key Protocol).</p>
+<h3 id="semantic-gatekeeper-safety-dominance">Semantic Gatekeeper (Safety Dominance)</h3>
+<p>A strict validation ruleset that cross-references all AI intents against physical constraints, digitized SOPs, and the 
+hardcoded Forbidden Register List.</p>
+<h3 id="tpm-20-notary-buffers-hardware-root-of-trust">TPM 2.0 &amp; Notary Buffers (Hardware Root-of-Trust)</h3>
+<p>Attaches an immutable, cryptographic hardware signature proving the command passed all safety audits before dropping to 
+the plant floor.</p>
+<h3 id="southbound-driver-deterministic-execution">Southbound Driver (Deterministic Execution)</h3>
+<p>The only layer with write-access to the field assets. It executes vetted intents and monitors the physical hardware 
+loop for a Pessimistic Confirmation of Success.</p>
+<p>See <a href="/docs/system-architecture-overview-and-tradeoffs.md">System Architecture Overview</a>,
+<a href="/docs/assets/oversight-c4-context-view.svg">Oversight C4 Context View Diagram</a>,
+<a href="/docs/assets/oversight-c4-container-view.svg">Oversight C4 Container View Diagram</a> and 
+<a href="/docs/oversight_ics_technical_deep_dive.md">Oversight ICS Technical Deep Dive</a> for detailed information.</p>
+<h2 id="agent-architecture">Agent Architecture</h2>
+<p>Oversight is a Type 2/3 Hybrid Agent that combines procedural control with governed intelligence using strict SOP-based 
+sequences. This architecture solves the <strong>Black Box</strong> problem in industrial AI by wrapping high-level reasoning inside 
+a low-level procedural safety shell.</p>
+<p>For more detailed information on Oversight's Agent architecture, see 
+<a href="/docs/oversight_ics_technical_deep_dive.md#agent-architecture">Agent Architecture</a>.</p>
+<h2 id="authority-mode-overview">Authority Mode Overview</h2>
+<p>The platform operates under the following defined authority modes, strictly enforced at Level 1.5 (The Arbitration 
+Layer):</p>
+<ol>
+<li><code>CONTROL_ENABLED</code>: Full autonomous control with active write token held by the AI Agent.</li>
+<li><code>ADVISORY_MODE</code>: Write token is parked. AI can generate intents but requires human approval for execution.</li>
+<li><code>MONITOR_ONLY</code>: AI is strictly read-only. All control intents are dropped at the Arbitrator.</li>
+<li><code>AI_LOCKOUT</code>: AI is completely locked out. No intents can pass the Arbitrator. Control is manual via SCADA/HMI.</li>
+<li><code>MAINTENANCE</code>: All remote commands are blocked. Control is local-only via physical interfaces.</li>
+<li><code>ORPHAN_MODE</code>: Triggered by comm-loss. Software components are detached; local PLC reverts to hardcoded logic.</li>
+<li><code>SAFETY_LOCKOUT</code>: Triggered by safety violation. All software control is destroyed. Physical reset required.</li>
+<li><code>COMMISSIONING_MODE</code>: Shared control for testing. Intents must pass through the full validation loop with a testing key.</li>
+</ol>
+<h2 id="degraded-mode-behavior">Degraded Mode Behavior</h2>
+<blockquote>
+<p>The system strictly defaults to non-actuating modes (<code>ORPHAN_MODE</code> or <code>MONITOR_ONLY</code>) in degraded infrastructure 
+conditions, ensuring that system safety and operational determinism are never compromised.</p>
+</blockquote>
+<p>See <a href="/docs/control_authority_model.md">Control Authority Model</a> for more information.</p>
+<h2 id="industrial-safety-protocol">Industrial Safety Protocol</h2>
+<blockquote>
+<p>[!IMPORTANT] OverSight ICS is a Cognitive Reliability Agent, <strong><em>NOT</em></strong> a Safety Agent.</p>
+</blockquote>
+<p>The system is strictly decoupled from the <strong>Safety Instrumented System (SIS)</strong>. Hard-coded safety interlocks and 
+physical E-Stops always maintain primary authority. OverSight operates as a <strong>Read-Verify-Suggest</strong> layer to prevent 
+those safety limits from ever being reached.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">![IMPORTANT]: INDUSTRIAL SAFETY PROTOCOL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>OverSight ICS is a Reliability agent, NOT a Safety agent. Safety Decoupling is a critical design principle in OverSight ICS.</strong> ![CAUTION]: <strong>Logic Integrity Guardrail</strong>: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined <strong>Command Global Data</strong> block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="safety-regulatory-governance">Safety &amp; Regulatory Governance</h2>
+<p>OverSight ICS is a <strong>Cognitive Reliability Layer</strong> (Level 3.5), not a primary safety system. See <a href="docs/standards.md">STANDARDS.md</a> 
+for detailed descriptions of each standard and how Oversight ICS implements them.</p>
+<h2 id="governance-standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</h2>
+<p>An SOP suite governs all operational behavior. The agent is designed to follow these SOPs without deviation, 
+ensuring that all interventions are predictable, auditable, and compliant with industrial best practices.   </p>
+<p>See <a href="/docs/sop">SOP index</a> for a full list of SOPs.</p>
+<h2 id="fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix</h2>
+<p>Oversight ICS is designed with a comprehensive FMEA matrix that identifies potential failure modes across all components,
+assesses their local and end effects, and implements specific mitigation strategies. The FMEA Matrix is a document that 
+is regularly updated based on new insights from the system's operation, incident reports, and continuous learning from 
+the Consciousness Loop.</p>
+<p>For a detailed breakdown of the FMEA Matrix and the Deterministic Fail-Safe Matrix, 
+see <a href="/docs/fmea_matrix.md">FMEA Matrix</a>.</p>
+<p>For the full Technical Deep Dive see <a href="/docs/oversight_ics_technical_deep_dive.md">Oversight ICS Technical Deep Dive</a> 
+and for the specific safety protocols see <a href="/docs/fat/FAT-03-safety_and_security_protocol.md">FAT-03: Safety &amp; Security Protocol</a>.</p>
+<h2 id="documentation-index">Documentation Index</h2>
+<ul>
+<li><a href="/docs/alarm_philosophy.md">Alarm Philosophy</a></li>
+<li><a href="/docs/api_spec.md">API Spec</a></li>
+<li><a href="/docs/audit_logging.md">Audit Logging</a></li>
+<li><a href="/docs/change_management_log.md">Change Management Log</a></li>
+<li><a href="/docs/change_regression_test_protocol.md">Change Regression Test Protocol</a></li>
+<li><a href="/docs/cicd_pipeline.md">CI / CD Pipeline</a></li>
+<li><a href="/docs/commissioning.md">Commissioning</a></li>
+<li><a href="/docs/control_authority_model.md">Control Authority Model</a></li>
+<li><a href="/docs/control_logic.md">Control Logic</a></li>
+<li><a href="/docs/cybersecurity_management.md">Cybersecurity Management</a></li>
+<li><a href="/docs/deep_dive.md">Deep Dive</a></li>
+<li><a href="/docs/document_control_index.md">Document Control Index</a></li>
+<li><a href="/docs/evaluation_framework.md">Evaluation Framework</a></li>
+<li><a href="/docs/fat/FAT-01-hardware_and_communication_protocol.md">FAT-01: Hardware &amp; Communication Protocol</a></li>
+<li><a href="/docs/fat/FAT-02-functional_and_logic_protocol.md">FAT-02: Functional &amp; Logic Protocol</a></li>
+<li><a href="/docs/fat/FAT-03-safety_and_security_protocol.md">FAT-03: Safety &amp; Security Protocols</a></li>
+<li><a href="/docs/FAQ.md">FAQs</a></li>
+<li><a href="/docs/fmea_matrix.md">FMEA Matrix</a></li>
+<li><a href="/docs/functional_safety_policy.md">Functional Safety Policy</a></li>
+<li><a href="/docs/glossary.md">Glossary</a></li>
+<li><a href="/docs/incident_response_plan.md">Incident Response Plan</a></li>
+<li><a href="/docs/infrastructure.md">Infrastructure</a></li>
+<li><a href="/docs/install.md">Install</a></li>
+<li><a href="/docs/media_sanitization_decommissioning_guide.md">Media Sanitization Decommissioning Guide</a></li>
+<li><a href="/docs/network_topology.md">Network Topology</a></li>
+<li><a href="/docs/operation.md">Operation</a></li>
+<li><a href="/docs/operational_procedures.md">Operational Procedures</a></li>
+<li><a href="/docs/operator_training_guide.md">Operator Training Guide</a></li>
+<li><a href="/docs/quality_management_system.md">Quality Management System</a></li>
+<li><a href="/docs/RAG_knowledge_versioning.md">RAG Knowledge Versioning</a></li>
+<li><a href="/docs/references.md">References</a></li>
+<li><a href="/docs/requirements_traceability_matrix.md">Requirements Traceability Matrix</a></li>
+<li><a href="/docs/roadmap.md">Roadmap</a></li>
+<li><a href="/docs/sbom_compliance_report.md">SBOM Compliance Report</a></li>
+<li><a href="/docs/sat/site_acceptance_testing.md">Site Acceptance Testing</a></li>
+<li><a href="/docs/standards.md">Standards</a></li>
+<li><a href="/docs/tag_mapping_master.md">Tag Mapping Master</a></li>
+<li><a href="/docs/technical_contracts.md">Technical Contracts</a></li>
+<li><a href="/docs/telemetry_database_schema.md">Telemetry Database Schema</a></li>
+<li><a href="/docs/time_sync_policy.md">Time Sync Policy</a></li>
+<li><a href="/docs/troubleshooting.md">Troubleshooting</a></li>
+<li><a href="/docs/uns_schema.md">UNS Schema</a></li>
+<li><a href="/docs/validation_protocols.md">Validation Protocols</a></li>
+<li><a href="/docs/versioning_policy.md">Versioning Policy</a></li>
+</ul>
+<h2 id="sop-documentation-index">SOP Documentation Index</h2>
               
             </div>
           </div><footer>
@@ -131,5 +557,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-06-18 17:11:40.197396+00:00
+Build Date UTC : 2026-06-18 17:21:45.207647+00:00
 -->

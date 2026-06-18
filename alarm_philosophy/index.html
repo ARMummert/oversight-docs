@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Alarm Management - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Alarm Management";
+        var mkdocs_page_input_path = "alarm_philosophy.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Alarm Management</a>
+    <ul class="current">
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation Suite</li>
+      <li class="breadcrumb-item active">Alarm Management</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+    <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Breadcrumb Navigation">
+        <a href="../system-architecture-overview-and-tradeoffs/" class="btn btn-neutral float-left" title="System Architecture"><span class="icon icon-circle-arrow-left" aria-hidden="true"></span> Previous</a>
+        <a href="../oversight-c4-context-view.svg" class="btn btn-neutral float-right" title="Oversight Context View">Next <span class="icon icon-circle-arrow-right" aria-hidden="true"></span></a>
+    </div>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="oversight-ics-alarm-philosophy">Oversight ICS: Alarm Philosophy</h2>
+<h2 id="purpose-scope">Purpose &amp; Scope</h2>
+<p>The purpose of this document is to provide a consistent framework for the identification, prioritization, and 
+management of alarms within the Oversight system. The alarms are presented to the operator in an actionable, 
+relevant, and timely manner. The goal is to prevent <strong>Alarm Fatigue</strong> while also maximizing operator situational 
+awareness. This document aligns with ISA-18.2 standards for alarm management.</p>
+<h2 id="roles-responsibilities">Roles &amp; Responsibilities</h2>
+<p>In accordance with ISA-18.2, the alarm management lifecycle is governed by strict Role-Based Access Control (RBAC):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Role</th>
+<th style="text-align: left;">Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Field Operator</strong></td>
+<td style="text-align: left;">Acts as the primary responder. Authorized to acknowledge alarms, execute primary intent authorization (First Key Auth), and shelve specific nuisance alarms according to standard operating procedures.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Plant Manager</strong></td>
+<td style="text-align: left;">Oversees compliance metrics and provides Secondary Auth (Second Key Auth) for high-level strategic alarm overrides.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Lead Safety Engineer</strong></td>
+<td style="text-align: left;">Responsible for the overall alarm management lifecycle and provides Secondary Auth if Plant Manager is unable to provide. Handles statistical alarm rationalization, manages $Z$-Score tuning, and is the <strong>ONLY</strong> role authorized to approve alarm threshold changes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="definition-of-an-alarm">Definition of an Alarm</h2>
+<p>In accordance with ISA-18.2, a notification is only classified as an alarm if it is:</p>
+<ol>
+<li><strong>Abnormal</strong>: Represents a process deviation or equipment malfunction.</li>
+<li><strong>Actionable</strong>: Operators are required to perform an action to resolve the alarm within the defined time limit.</li>
+<li><strong>Urgent</strong>: Requires immediate attention to prevent safety incidents, equipment damage, or process disruption.</li>
+<li><strong>Consequential</strong>: A defined consequence if the operator ignores the alarm, within the defined time limit.</li>
+<li><strong>Unique</strong>: The alarm is not a duplicate of another alarm.</li>
+</ol>
+<blockquote>
+<p>[!Note]
+Notifications that do not require an immediate response are classified as <strong>Advisories</strong> or <strong>Events</strong> and do not
+trigger audio/visual urgency.</p>
+</blockquote>
+<h2 id="alarm-priority-response-sla-matrix">Alarm Priority &amp; Response SLA Matrix</h2>
+<p>To ensure functional safety and clear lines of control authority, the following operator response thresholds are 
+strictly enforced. If a human operator does not acknowledge and initiate corrective action within the defined time 
+limit, the Agent will automatically revoke manual control authority and execute the fail-safe protocol. The following 
+Service Level Agreement (SLA) defines the boundaries between human operation and machine intervention:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Priority Level</th>
+<th style="text-align: left;">$Z$-Score Trigger</th>
+<th style="text-align: left;">Operator Response Time Allowance</th>
+<th style="text-align: left;">Autonomous Fallback Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Advisory/Event</strong></td>
+<td style="text-align: left;">$&lt; 1.5\sigma$</td>
+<td style="text-align: left;">No immediate action required</td>
+<td style="text-align: left;">None. Background monitoring.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Warning (Amber)</strong></td>
+<td style="text-align: left;">$1.5\sigma - 2.5\sigma$</td>
+<td style="text-align: left;">15 Minutes</td>
+<td style="text-align: left;">Auto-log to Maintenance Management System.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>High</strong></td>
+<td style="text-align: left;">$2.5\sigma - 3.0\sigma$</td>
+<td style="text-align: left;">5 Minutes</td>
+<td style="text-align: left;">Propose mitigation intent; wait for Operator Commit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Critical (Red)</strong></td>
+<td style="text-align: left;">$&gt; 3.0\sigma$</td>
+<td style="text-align: left;">60 Seconds</td>
+<td style="text-align: left;">Execute predictive failover. If unauthorized, shed authority to local PLC (<code>ORPHAN_MODE</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="master-alarm-database-details">Master Alarm Database Details</h2>
+<p>The Master Alarm Database is maintained in the Level 3.5 IDMZ using TimescaleDB and pgVector. It serves as the 
+single source of truth for all system alarm configurations. Every registered tag includes its baseline deviation limit 
+($\sigma$), active $Z$-Score thresholds, response time SLAs, and its cryptographically linked RAG justification hash 
+referencing the vendor manuals.</p>
+<h2 id="alarm-design-techniques">Alarm Design Techniques</h2>
+<p>Oversight replaces <code>if-then</code> logic with statistical rationalization and signal conditioning to minimize nuisance alarms
+and prevent <strong>Chattering</strong>. </p>
+<ul>
+<li><strong>Statistical Rationalization</strong>: Evaluates signal drift against a rolling 30-day baseline using the $Z$-Score 
+  anomaly engine.</li>
+<li><strong>Signal Conditioning</strong>: Applies Deadband, Hysteresis Filtering, and On/Off Delays at the Bytewax stream processor 
+  level to filter out process noise before it reaches the reasoning layer. It applies these to raw Sparkplug B 
+  telemetry before it ever reaches the Reasoning Agent, which sheds the process noise.</li>
+</ul>
+<p><em>By applying Deadband and Hysteresis filtering at the Bytewax stream processor level, nominal process noise is shed
+before it reaches the reasoning layer, which drastically reduces false-positives.</em></p>
+<h2 id="management-of-change">Management of Change</h2>
+<p>Changing an alarm threshold or deadband directly impacts functional process safety and the anomaly engine.</p>
+<ul>
+<li>Any modification to the Master Alarm Database requires formal MOC approval.</li>
+<li>Any adjustment to the $Z$-Score baselines or sensitivity parameters requires Two-Key Authorization  (Operator + Lead
+  Safety Engineer or Plant Manager) and must be accompanied by a documented rationale citing the specific manufacturer 
+  manual section justifying the change.</li>
+<li>All changes must be explicitly recorded, justified, and signed off in the <code>change_management_log.md</code> document before 
+  being pushed to production.</li>
+</ul>
+<p><em>An annual Alarm System Audit will be conducted to compare the Master Alarm Database against the physical P&amp;ID 
+baselines and review the effectiveness of the $Z$-Score anomaly engine.</em></p>
+<h2 id="hmi-design-guide">HMI Design Guide</h2>
+<p>The Oversight ICS dashboard strictly adheres to the ISA-101 High-Performance HMI standard:</p>
+<ul>
+<li><strong>Grayscale</strong>: The interface utilizes a high-contrast grayscale layout to minimize cognitive load.</li>
+<li><strong>State-Based Color</strong>: Color is strictly reserved for abnormal process states. Amber indicates Drift/Advisory mode, 
+  while Red indicates Critical Anomaly/Predictive Failover.</li>
+<li><strong>Safety Delays</strong>: Includes visual countdown timers (Yellow Banners) during high-impact rate-limiting to prevent 
+  operator <strong>blind clicking</strong> during crises.</li>
+</ul>
+<h2 id="performance-metrics-kpis">Performance Metrics (KPIs)</h2>
+<p>System performance is measured using automated KPIs tracking the rolling 24-hour distribution.</p>
+<ul>
+<li><strong>Critical Distribution Cap</strong>: Critical alarms must not exceed 10% of the total alarm distribution in any 4-hour 
+  period. If breached, the system issues a <code>KPI_DISTRIBUTION_DEVIATION</code>.</li>
+<li><strong>Alarm Flood Threshold</strong>: Triggers an automatic review if $&gt; 10$ alarms occur within 10 minutes.</li>
+<li><strong>Stale Alarm Threshold</strong>: Any alarm active beyond 24 hours is flagged for mandatory engineering intervention.</li>
+</ul>
+<h2 id="alarm-storage">Alarm Storage</h2>
+<p>All alarm triggers, operator acknowledgments, and AI reasoning traces are permanently logged to a WORM storage volume. 
+These logs include high-precision IEEE 1588v2 (PTP) hardware timestamps and a SHA-256 payload hash to ensure absolute 
+forensic integrity for incident post-mortem and compliance auditing.</p>
+<h2 id="training-requirements">Training Requirements</h2>
+<p>Operators must complete the certification checklist outlined in the <code>operator_training_guide.md</code>. This includes 
+- Understanding the "Human-In-The-Loop" (HITL) model
+- Interpreting $Z$-Scores correctly (Nominal vs. Drift vs. Critical),
+- Locating trace IDs, and successfully executing a manual AI Lockout (Global Kill Switch).</p>
+<h2 id="alarm-rationalization-and-nuisance-suppression">Alarm Rationalization and Nuisance Suppression</h2>
+<h3 id="signal-conditioning-matrix">Signal Conditioning Matrix</h3>
+<p>To maintain the integrity of the anomaly detection engine, all incoming telemetry is subjected to pre-processing 
+filters before being evaluated by the $Z$-Score engine. This prevents <strong>Chattering</strong> alarms caused by process noise or
+signal oscillation.</p>
+<ol>
+<li><strong>Deadband Tolerance</strong>: This is a precision buffer zone around the deadband limit. A signal must exceed the deadband
+     plus the tolerance before a state change is registered in the UNS.</li>
+<li><strong>On-Delay</strong>: The duration that a signal must remain outside the deadband before the system acknowledges it is a 
+   valid state change.</li>
+<li><strong>Off-Delay</strong>: The duration that the system maintains a tripped or active status after the signal returns within
+   the deadband. </li>
+</ol>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Signal Type</th>
+<th style="text-align: left;">Deadband (% of Range)</th>
+<th style="text-align: left;">Deadband Tolerance</th>
+<th style="text-align: left;">On-Delay (Confirm)</th>
+<th style="text-align: left;">Off-Delay (Retain)</th>
+<th style="text-align: left;">Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Temperature</td>
+<td style="text-align: left;">1%</td>
+<td style="text-align: left;">$\pm$0.2%</td>
+<td style="text-align: left;">60s</td>
+<td style="text-align: left;">0s</td>
+<td style="text-align: left;">Reflects the high thermal inertia of industrial processes.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pressure</td>
+<td style="text-align: left;">2%</td>
+<td style="text-align: left;">$\pm$0.5%</td>
+<td style="text-align: left;">15s</td>
+<td style="text-align: left;">5s</td>
+<td style="text-align: left;">Allows for momentary "hammer" or valve-stroke spikes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Flow Rate</td>
+<td style="text-align: left;">5%</td>
+<td style="text-align: left;">$\pm$1.0%</td>
+<td style="text-align: left;">15s</td>
+<td style="text-align: left;">15s</td>
+<td style="text-align: left;">Filters out pump turbulence and transient surges.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Level</td>
+<td style="text-align: left;">5%</td>
+<td style="text-align: left;">$\pm$1.0%</td>
+<td style="text-align: left;">60s</td>
+<td style="text-align: left;">60s</td>
+<td style="text-align: left;">Suppresses "slosh" effects in tanks and vessels.</td>
+</tr>
+<tr>
+<td style="text-align: left;">VFD Current</td>
+<td style="text-align: left;">3%</td>
+<td style="text-align: left;">$\pm$0.5%</td>
+<td style="text-align: left;">10s</td>
+<td style="text-align: left;">2s</td>
+<td style="text-align: left;">Filters startup inrush noise while reacting quickly to mechanical binding.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="detection-logic-z-score">Detection Logic ($Z$-Score)</h3>
+<ol>
+<li><strong>Deviation Threshold</strong>: An alarm is only triggered if a process tag maintains a $Z$-Score drift of &gt; 3.0 for a 
+   sustained period (default: 10 cycles).</li>
+<li><strong>State-Based Suppression</strong>: Alarms that are related to a specific asset are automatically suppressed if that asset
+   is currently in "Maintenance Mode" or "Out of Service Mode" in the Digital Twin.</li>
+<li><strong>Hysteresis</strong>: Once an alarm is active, the value must return to a $Z$-Score of &lt; 2.0 before the alarm can be
+   cleared. This prevents rapid toggling on a noisy signal.</li>
+</ol>
+<h2 id="alarm-prioritization-response-target-matrix">Alarm Prioritization &amp; Response Target Matrix</h2>
+<p>Oversight uses a targeted priority distribution to prevent <strong>High-Priority Saturation</strong> and <strong>Alarm Fatigue</strong>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Priority</th>
+<th style="text-align: left;">HMI Color (ISA-101)</th>
+<th style="text-align: left;">Icon</th>
+<th style="text-align: left;">Audio Pattern</th>
+<th style="text-align: left;">SLA / Action Allowance</th>
+<th style="text-align: left;">Target Distribution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Critical</strong></td>
+<td style="text-align: left;">Red</td>
+<td style="text-align: left;">◇</td>
+<td style="text-align: left;">Rapid Pulse</td>
+<td style="text-align: left;"><strong>60 Seconds.</strong> Immediate safety threat. Autonomous failover triggers if SLA is breached.</td>
+<td style="text-align: left;">~5%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>High</strong></td>
+<td style="text-align: left;">Orange</td>
+<td style="text-align: left;">▽</td>
+<td style="text-align: left;">Fast Tone</td>
+<td style="text-align: left;"><strong>5 Minutes.</strong> Process drift. AI proposes intent; awaits Two-Key Auth.</td>
+<td style="text-align: left;">~10%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Warning</strong></td>
+<td style="text-align: left;">Amber</td>
+<td style="text-align: left;">△</td>
+<td style="text-align: left;">Steady Tone</td>
+<td style="text-align: left;"><strong>15 Minutes.</strong> Sustained drift. Auto-logs to Maintenance Management System.</td>
+<td style="text-align: left;">~15%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Advisory</strong></td>
+<td style="text-align: left;">Blue/Gray</td>
+<td style="text-align: left;">□</td>
+<td style="text-align: left;">Visual Only</td>
+<td style="text-align: left;"><strong>No immediate action.</strong> AI detected subtle drift; background tracking.</td>
+<td style="text-align: left;">~70%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="operator-response">Operator Response</h2>
+<h3 id="response-protocols">Response Protocols</h3>
+<p>Every alarm in the Oversight Dashboard must be accompanied by a Reasoning Trace and a RAG-proposed action.</p>
+<ol>
+<li><strong>Initial Response</strong>: The AI must state, "I am alerting because [DATA POINT] has drifted by [Z-SCORE], which exceeds 
+  the threshold of [THRESHOLD]."</li>
+<li><strong>Recommended Action</strong>: The AI must provide a recommended action, such as "I recommend checking the [SENSOR] for 
+  potential fouling or recalibration."</li>
+<li><strong>AI Confidence Level</strong>: Every alarm is assigned a <strong>Statistical Correlation Score</strong> (SCC) calculated as 
+  $1 - (p\text{-value of current } Z\text{-drift})$.</li>
+<li><strong>Display</strong>: Confidence is shown as a <strong>Reliability Gauge</strong> on the HMI.</li>
+<li><strong>Low Confidence Protocol</strong>: If confidence is &lt; 85%, the gauge turns <strong>Yellow</strong>, and the alarm is flagged as a
+     potential sensor fault. </li>
+<li><strong>Operator Requirement</strong>: For alarms &lt; 85%, the operator must verify the sensor health using 
+     <a href="/docs/sop/SOP-OPS-001_Sensor-Validation.md">SOP: Sensor Validation</a> before proceeding.</li>
+<li><strong>Confirmation</strong>: The operator must <strong>ACK</strong> the alarm to silence the audio and validate the AI's failover proposal to
+  execute the recommended action.</li>
+<li><strong>Resolution</strong>: The AI must provide a resolution statement, such as "I have resolved the alarm and will no longer 
+  be alerted for this sensor." </li>
+<li><strong>Auditability</strong>: Operators must provide a comment when acknowledging "Critical" alarms.</li>
+<li><strong>Explainability</strong>: The system cites the specific manufacturer manual section justifying the recommended response.</li>
+</ol>
+<h2 id="advanced-alarm-management-nuisance-suppression">Advanced Alarm Management &amp; Nuisance Suppression</h2>
+<h3 id="alarm-suppression-shelving">Alarm Suppression &amp; Shelving</h3>
+<p>Operators are permitted to "Shelve" an alarm for a maximum of <strong>4 hours</strong> during maintenance. Shelving an alarm will 
+suppress it from the dashboard for the remainder of the shelving period. However, the AI will continue to monitor the 
+underlying data and will automatically "Unshelve" the alarm if the $Z$-Score increases by a factor of 1.5, indicating 
+a critical escalation. The system will then force a re-trigger of the alarm and alert the operator of the worsening 
+condition. <strong>The system limits the number of concurrent shelved alarms to 5</strong>. </p>
+<p>[!Advisory Response] If the limit of five concurrent shelved alarms is reached, the system issues a 
+<code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> advisory. Operators must immediately execute SOP-SHELVED-01 to audit and clear shelf 
+slots to maintain system situational awareness.
+- <strong>Schema Enforcement</strong>: Configuration files <strong>MUST</strong> include <code>max_shelf_duration_minutes:240</code>.
+- <strong>Capacity Limits</strong>: The system limits the number of concurrent shelved alarms to <strong>5</strong>.
+- <strong>Capacity Advisory</strong>: If the limit of five is reached, the system issues a <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> 
+  advisory. Operators must execute <code>SOP-SHELVED-01</code> to audit and clear shelf slots to maintain plant situational 
+  awareness.
+- <strong>Re-Trigger Logic</strong>: If the shelved alarm's $Z$-Score increases by an additional factor of <strong>1.5</strong> (e.g., drifting
+  from $3.0\sigma$ to $4.5\sigma$), the system overrides the shelf, forces an immediate re-trigger on the dashboard, 
+  and alerts the operator to the worsening condition.</p>
+<blockquote>
+<p>[!NOTE]
+<strong>Deadband Logic</strong>: Once an alarm is triggered, the process variable must return past the setpoint by the deadband 
+percentage before the alarm state can be cleared. This creates a buffer zone around the setpoint to stabilize the 
+alarm status.</p>
+</blockquote>
+<h3 id="advanced-nuisance-suppression-fmea-alignment">Advanced Nuisance Suppression (FMEA Alignment)</h3>
+<ul>
+<li><strong>Oscillation Dampening (Alarm Suppression)</strong>: Post-Action Oscillation Dampening
+  To prevent chattering immediately following an autonomous action (e.g., the AI updates a setpoint by 4%), the system 
+  enforces a <strong>15-minute Stability Lock</strong> on new alarms for that specific tag, allowing the fluid dynamics or thermal 
+  inertia to settle into the new baseline. <em>(Note: This lock NEVER suppresses Level 1 SIS interlocks).</em></li>
+<li><strong>Command Timeout Distinction</strong>: This is separate from the 5-second pessimistic confirmation timeout, which applies 
+  only to the network handshake between the API and the Southbound Driver.</li>
+<li><strong>Sensor Integrity</strong>: Alarms are suppressed if the telemetry <code>Quality</code> bit is $&lt; 192$. The system will instead issue 
+  a <code>SENSOR_FAULT_ADVISORY</code>.</li>
+<li><strong>Safety Override</strong>: The 15-minute alarm stability lock <strong>Never</strong> suppresses Emergency Stops or manual Level 1 safety 
+  interlocks.</li>
+</ul>
+<h2 id="revision-history">Revision History</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-18</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial baseline creation and Z-Score definitions.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-06-17</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Added strict ISA-18.2 KPI targets, Response Windows, Shelving rules, and MOC alignment.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../system-architecture-overview-and-tradeoffs/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../oversight-c4-context-view.svg" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

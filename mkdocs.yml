@@ -1,0 +1,16 @@
+site_name: Oversight ICS
+site_description: A comprehensive documentation suite for Oversight ICS - A Cognitive Reliability & Predictive Failover Agent for Industrial Control Systems
+site_author: Amy Mummert
+
+nav:
+    - Home: index.md
+    - Documentation Suite:
+      - Glossary: glossary.md
+
+theme:
+    name: readthedocs
+    navigation_depth: 4
+    prev_next_buttons_location: top
+    sticky_navigation: true
+extra_css:
+  - style.css

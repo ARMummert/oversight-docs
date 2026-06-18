@@ -6,6 +6,9 @@ nav:
     - Home: index.md
     - Documentation Suite:
       - Glossary: glossary.md
+      - Technical Deep Dive: oversight_ics_technical_deep_dive.md
+      - System Architecture: system-architecture-overview-and-tradeoffs.md
+      - Oversight Context View: oversight-c4-context-view.svg
 
 theme:
     name: readthedocs

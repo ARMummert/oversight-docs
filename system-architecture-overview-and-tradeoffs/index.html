@@ -188,10 +188,6 @@
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
-    <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Breadcrumb Navigation">
-        <a href="../oversight_ics_technical_deep_dive/" class="btn btn-neutral float-left" title="Technical Deep Dive"><span class="icon icon-circle-arrow-left" aria-hidden="true"></span> Previous</a>
-        <a href="../alarm_philosophy/" class="btn btn-neutral float-right" title="Alarm Management">Next <span class="icon icon-circle-arrow-right" aria-hidden="true"></span></a>
-    </div>
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -522,28 +518,9 @@ Hubs, Chemical Facility Server Racks.</p>
   - <strong>Security</strong>: Level 3 serves as the facilities baseline truth, which must be protected from unauthorized access.
     Oversight interacts with Level 3 via standardized, read-only telemetry or secure audited conduits. In this case, the
     integrity of the site's primary operational monitoring is never compromised by Oversight's cognitive interventions.</p>
-<p><strong>Software Engineering Context</strong>: Level 3 is the <strong>Operational Truth</strong> for the site's baseline operations. To maintain 
-strict isolation, Oversight is built with a <strong>Command Query Responsibility Segregation (CQRS) pipeline</strong>. </p>
-<ul>
-<li><strong>Read Path</strong>: The high-velocity telemetry streams from Level 3 and is ingested into Level 3.5 by the Northbound 
-    Ingest Service. The telemetry is processed and normalized into the Sparkplug B Unified Namespace (UNS) format, then 
-    published to the NATS JetStream backbone. The Bytewax stream processor consumes this data for real-time state 
-    modeling and anomaly detection. Bytewax updates the Redis Hot Cache registers and appends historical data 
-    to the TimescaleDB historian. The LangGraph Agent queries the Redis Hot Cache for real-time state snapshots, 
-    the TimescaleDB <strong>Out-of-Band</strong> for historical data patterns, and the local pgVector database for validating context
-    and grounding its reasoning. By strictly treating the read path as a unidirectional, out-of-band flow, Oversight 
-    prevents the AI from creating latency spikes that could interfere with the real-time operational core.</li>
-<li><strong>Write Path</strong>: The Oversight system strictly forbids CRUD operations against Level 3 databases or SCADA servers. 
-    There is no direct write access to control registers from the AI Agent through the SCADA layer. All downward control 
-    intents bypass Level 3 and are routed to the Control Authority Model (Level 1.5). The Control Authority Model 
-    requires cryptographic verification, dual-authorization, and hardware TPM signing before executing any write 
-    commands to the Level 1 physical assets.</li>
-<li><strong>Segregation</strong>: By separating the reads from writes Oversight prevents the <strong>Command Storm</strong> anti-pattern. If a 
-    background process in the cognitive layer triggers a heavy database query or vector search, it remains entirely 
-    contained within Level 3.5, which leaves the Level 3 operational core and the level 1-2 control loops unaffected.</li>
-</ul>
-<p>[!Note] <strong>Out-of-Band</strong> means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
-Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. </p>
+<p><strong>Software Engineering Context</strong>: Level 3 is the <strong>Operational Truth</strong> for the site's baseline operations. Oversight 
+treats level 3 as a unidirectional read-only telemetry source. The Agent is prohibited from performing any CRUD 
+operations on any level 3 databases or network devices.</p>
 <h3 id="level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone</h3>
 <p><strong>Real-World Application</strong>: Security Isolation, Multi-Agent Cognitive Decision Nodes, Vendor Knowledge Grounding Hubs, 
 Cross-Domain Boundary Protection.</p>
@@ -643,6 +620,8 @@ advisory. The intent then must go through schema validation by the gateway, cryp
 the Level 1.5 Arbitrator, and be audited against hardcoded physical constraints by the Semantic Gatekeeper. Even if a 
 catastrophic exploit or runtime failure within the heavy cognitive compute zone occurs, the zone remains fully isolated 
 from the physical kinetics of the plant, which remain fully protected by deterministic barriers.</p>
+<p>[!Note] <strong>Out-of-Band</strong> means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
+Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. </p>
 <h3 id="level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network</h3>
 <p><strong>Real-World Application</strong>: Corporate Operation Centers, Multi-Site Performance 
 Analytics, Long-Term Data Lakes, Engineering Review Desktops, etc.</p>
@@ -1213,6 +1192,10 @@ Bytewax. </p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../oversight_ics_technical_deep_dive/" class="btn btn-neutral float-left" title="Technical Deep Dive"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../alarm_philosophy/" class="btn btn-neutral float-right" title="Alarm Management">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -1232,6 +1215,10 @@ Bytewax. </p>
 
   <div class="rst-versions" role="note" aria-label="Versions">
   <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
     
     
       <span><a href="../oversight_ics_technical_deep_dive/" style="color: #fcfcfc">&laquo; Previous</a></span>

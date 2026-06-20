@@ -289,28 +289,9 @@ Hubs, Chemical Facility Server Racks.
     Oversight interacts with Level 3 via standardized, read-only telemetry or secure audited conduits. In this case, the
     integrity of the site's primary operational monitoring is never compromised by Oversight's cognitive interventions.
 
-**Software Engineering Context**: Level 3 is the **Operational Truth** for the site's baseline operations. To maintain 
-strict isolation, Oversight is built with a **Command Query Responsibility Segregation (CQRS) pipeline**. 
-
-  - **Read Path**: The high-velocity telemetry streams from Level 3 and is ingested into Level 3.5 by the Northbound 
-    Ingest Service. The telemetry is processed and normalized into the Sparkplug B Unified Namespace (UNS) format, then 
-    published to the NATS JetStream backbone. The Bytewax stream processor consumes this data for real-time state 
-    modeling and anomaly detection. Bytewax updates the Redis Hot Cache registers and appends historical data 
-    to the TimescaleDB historian. The LangGraph Agent queries the Redis Hot Cache for real-time state snapshots, 
-    the TimescaleDB **Out-of-Band** for historical data patterns, and the local pgVector database for validating context
-    and grounding its reasoning. By strictly treating the read path as a unidirectional, out-of-band flow, Oversight 
-    prevents the AI from creating latency spikes that could interfere with the real-time operational core.
-  - **Write Path**: The Oversight system strictly forbids CRUD operations against Level 3 databases or SCADA servers. 
-    There is no direct write access to control registers from the AI Agent through the SCADA layer. All downward control 
-    intents bypass Level 3 and are routed to the Control Authority Model (Level 1.5). The Control Authority Model 
-    requires cryptographic verification, dual-authorization, and hardware TPM signing before executing any write 
-    commands to the Level 1 physical assets.
-  - **Segregation**: By separating the reads from writes Oversight prevents the **Command Storm** anti-pattern. If a 
-    background process in the cognitive layer triggers a heavy database query or vector search, it remains entirely 
-    contained within Level 3.5, which leaves the Level 3 operational core and the level 1-2 control loops unaffected.
-
-[!Note] **Out-of-Band** means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
-Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. 
+**Software Engineering Context**: Level 3 is the **Operational Truth** for the site's baseline operations. Oversight 
+treats level 3 as a unidirectional read-only telemetry source. The Agent is prohibited from performing any CRUD 
+operations on any level 3 databases or network devices.
 
 ### Level 3.5 AI & IDMZ Zone
 
@@ -409,6 +390,9 @@ advisory. The intent then must go through schema validation by the gateway, cryp
 the Level 1.5 Arbitrator, and be audited against hardcoded physical constraints by the Semantic Gatekeeper. Even if a 
 catastrophic exploit or runtime failure within the heavy cognitive compute zone occurs, the zone remains fully isolated 
 from the physical kinetics of the plant, which remain fully protected by deterministic barriers.
+
+[!Note] **Out-of-Band** means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
+Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. 
 
 ### Level 4: Secure Dashboard & Business Logistics Network
 

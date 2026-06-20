@@ -193,12 +193,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="oversight-ics-technical-systems-design-architecture-report">Oversight ICS: Technical Systems &amp; Design Architecture Report</h1>
-<h2 id="executive-summary">Executive Summary</h2>
+                <h1 id="oversight-ics-technical-systems-design-architecture-report">Oversight ICS: Technical Systems &amp; Design Architecture Report<a class="headerlink" href="#oversight-ics-technical-systems-design-architecture-report" title="Permanent link"></a></h1>
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link"></a></h2>
 <p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
 Reliability Layer for <strong>Distributed Control Systems (DCS), Programmable Logic Controllers (PLCs), Remote Terminal Units 
-(RTUs), and Rotating Equipment.</strong> The system doesn't replace the primary control hardware, it just supervises it. It 
+(RTUs), and Rotating Equipment.</strong> The system doesn&rsquo;t replace the primary control hardware, it just supervises it. It 
 maintains a <strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through 
 <strong>NATS JetStream</strong> and <strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor,
 Oversight has continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger 
@@ -210,43 +210,43 @@ stream processing. Oversight guarantees that every AI decision is auditable, tra
 sub-second latency while meeting the highest standards of industrial governance and safety. This architecture provides 
 operators with a <strong>Pessimistic Confirmation of Success</strong> only after the standby hardware has acknowledged the state 
 change from the physical feedback loop.</p>
-<h2 id="key-architectural-features">Key Architectural Features</h2>
-<h3 id="safety-first-predictive-failover-engine">Safety First Predictive Failover Engine</h3>
+<h2 id="key-architectural-features">Key Architectural Features<a class="headerlink" href="#key-architectural-features" title="Permanent link"></a></h2>
+<h3 id="safety-first-predictive-failover-engine">Safety First Predictive Failover Engine<a class="headerlink" href="#safety-first-predictive-failover-engine" title="Permanent link"></a></h3>
 <p>Unlike legacy <strong>Heartbeat</strong> monitors that only trigger after a hardware crash, OverSight operates as a supervisory
   reliability layer. It monitors internal telemetry such as scan-time jitter, memory leaks, and CPU thermal-spikes, to 
   orchestrate a graceful transition while the primary hardware is still operational, without ever replacing the primary
   control loop.</p>
-<h3 id="cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)</h3>
+<h3 id="cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)<a class="headerlink" href="#cognitive-digital-twin-nats-jetstream-bytewax" title="Permanent link"></a></h3>
 <p>The system maintains a real-time cognitive digital twin of the field instrumentation, control assets, 
   (PLC/RTU/DCS), and rotating equipment. Oversight executes continuous windowed $Z$-Score drift analysis by streaming
   telemetry through a single instance of NATS JetStream and Bytewax. This allows the system to detect logic drift 
   before it causes a physical hardware failure.</p>
 <blockquote>
-<p><strong>Strategic Orchestration</strong>: Oversight doesn't just predict values; it plans a sequence of actions, validates them 
+<p><strong>Strategic Orchestration</strong>: Oversight doesn&rsquo;t just predict values; it plans a sequence of actions, validates them 
 against a safety schema, and executes a managed failover plan.</p>
 </blockquote>
-<h3 id="command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture</h3>
+<h3 id="command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture<a class="headerlink" href="#command-query-responsibility-segregation-cqrs-architecture" title="Permanent link"></a></h3>
 <p>Oversight implements a strict <strong>CQRS</strong> architecture to separate the <strong>Read Path</strong> from the <strong>Write Path</strong>. The 
   <strong>Read Path</strong> is a high-velocity telemetry stream that is ingested into the system, processed, and stored in a 
   Redis Hot Cache and TimescaleDB historian. The <strong>Write Path</strong> is strictly controlled by the Level 1.5 Control 
   Authority Model, which requires cryptographic verification, dual-authorization, and hardware TPM signing before 
   executing any write commands to the Level 1 physical assets.</p>
-<h3 id="event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)</h3>
+<h3 id="event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)<a class="headerlink" href="#event-driven-architecture-nats-jetstream" title="Permanent link"></a></h3>
 <p>The system is built on an event-driven architecture that allows for real-time processing of telemetry data. It uses 
   NATS JetStream as the command spine for event streaming, allowing for high-throughput, low-latency communication. 
   This architecture enables the system to react to events as they occur.</p>
-<h3 id="remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics</h3>
+<h3 id="remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics<a class="headerlink" href="#remaining-useful-life-rul-prognostics" title="Permanent link"></a></h3>
 <p>By correlating thermal stress and vibration cycles, the agent provides a <strong>Days To Failure</strong> estimate. This switches 
   maintenance from scheduled maintenance to condition-based maintenance. This allows field assets to be replaced during 
   planned downtime rather than emergency shutdowns.</p>
-<h3 id="multi-worker-scalability">Multi-Worker Scalability</h3>
+<h3 id="multi-worker-scalability">Multi-Worker Scalability<a class="headerlink" href="#multi-worker-scalability" title="Permanent link"></a></h3>
 <p>Oversight uses <strong>NATS JetStream Consumer Groups</strong> and <strong>Bytewax data parallelism</strong>, which allows the system to scale
   reasoning and stream processing across many workers (n-workers) in a lightweight cluster architecture.
   - <strong>Hot Swapping</strong>: Additional reasoning nodes can be added to the cluster without downtime as plant complexity 
     increases.
   - <strong>Subject-Based Routing &amp; Partitioning</strong>: Telemetry streams are partitioned so that all messages for a specific
     asset are routed to the same worker. This prevents race conditions and maintains strict sequential state.</p>
-<h3 id="split-brain-arbitration-strategy">Split Brain &amp; Arbitration Strategy</h3>
+<h3 id="split-brain-arbitration-strategy">Split Brain &amp; Arbitration Strategy<a class="headerlink" href="#split-brain-arbitration-strategy" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Distributed Locking (NATS KV)</strong>: Oversight uses the <strong>NATS Key-Value(KV) store</strong> to manage state recovery and 
     distributed locking. This means that only one worker can be the primary decision-maker for a specific asset at any
@@ -254,41 +254,41 @@ against a safety schema, and executes a managed failover plan.</p>
 <li><strong>Physical Priority Arbitration</strong>: The system <strong>shed loads</strong> (stops all AI commands) the instant a physical human 
     override is detected, ensuring the human operator always has a final authority.</li>
 </ul>
-<h3 id="closed-loop-intent-verification">Closed-Loop Intent Verification</h3>
+<h3 id="closed-loop-intent-verification">Closed-Loop Intent Verification<a class="headerlink" href="#closed-loop-intent-verification" title="Permanent link"></a></h3>
 <p>The Southbound Driver does not assume success upon sending a command. It waits for <strong>Process Feedback Validation</strong>
   (e.g., a limit switch closure or a current-draw increase observed via the NATS stream) and writes the confirmation 
   back to the database to close the <strong>Intent-to-Verification</strong> pessimistic loop.</p>
-<h3 id="hardware-root-of-trust">Hardware Root of Trust</h3>
+<h3 id="hardware-root-of-trust">Hardware Root of Trust<a class="headerlink" href="#hardware-root-of-trust" title="Permanent link"></a></h3>
 <p>Oversight uses a <strong>TPM 2.0 hardware module</strong> to cryptographically sign every command before it can be executed. This 
   proves to the <strong>Southbound Driver</strong> that the payload met all safety audits and was not tampered with in transit.</p>
-<h3 id="zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper</h3>
+<h3 id="zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper<a class="headerlink" href="#zero-trust-safety-boundary-semantic-gatekeeper" title="Permanent link"></a></h3>
 <p>Before any intents are sent to the physical process assets, they must pass through a strict semantic firewall. The
   gatekeeper audits every command against physical bounds limits and hard-coded <strong>Forbidden Register Lists</strong>. This is
   critical so that the AI can never override safety critical <strong>SIS</strong> logic.</p>
-<h3 id="level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol</h3>
+<h3 id="level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol<a class="headerlink" href="#level-15-control-authority-model-two-key-protocol" title="Permanent link"></a></h3>
 <p>For high-impact interventions, the system pauses at the arbitrator (Level 1.5), and stays paused in isolated memory
   buffers until Multi-Factor Authentication (MFA) is provided by both the primary operator and either the lead safety
   engineer or the plant manager. Multi-Factor Authentication is provided by two independent RS256-signed JWT tokens.</p>
-<h3 id="idmz-purdue-model-alignment">IDMZ Purdue Model Alignment</h3>
+<h3 id="idmz-purdue-model-alignment">IDMZ Purdue Model Alignment<a class="headerlink" href="#idmz-purdue-model-alignment" title="Permanent link"></a></h3>
 <p>To prevent the AI from compromising the deterministic control loops, vector databases, all reasoning, and stream
   processing, Oversight is architected to be strictly air-gapped inside the Level 3.5 IDMZ zone of the Purdue Model.</p>
-<h3 id="worm-forensic-logging">WORM Forensic Logging</h3>
+<h3 id="worm-forensic-logging">WORM Forensic Logging<a class="headerlink" href="#worm-forensic-logging" title="Permanent link"></a></h3>
 <p>To comply with strict industrial compliance (e.g., IEC 62443, EPA), every $Z$-Score anomaly, reasoning trace, and 
   operator acknowledgement are permanently logged to a WORM (Write Once Read Many) storage system. If the WORM drive
   reaches 95% capacity, the system auto-triggers a safety lockout, enforcing the rule: <strong>If an AI cannot securely log
   its reasoning, it cannot be trusted and cannot act</strong>.</p>
-<h3 id="local-rag-grounded-reasoning">Local RAG-Grounded Reasoning</h3>
+<h3 id="local-rag-grounded-reasoning">Local RAG-Grounded Reasoning<a class="headerlink" href="#local-rag-grounded-reasoning" title="Permanent link"></a></h3>
 <p>The Agent is grounded to a local, air-gapped pgVector database containing the OEM manuals and digitized Standard
-  Operating Procedures (SOPs). Every failover proposal <strong>MUST</strong> cite the manufacturer's technical documentation.</p>
-<h3 id="pessimistic-ui-state-machine">Pessimistic UI State Machine</h3>
+  Operating Procedures (SOPs). Every failover proposal <strong>MUST</strong> cite the manufacturer&rsquo;s technical documentation.</p>
+<h3 id="pessimistic-ui-state-machine">Pessimistic UI State Machine<a class="headerlink" href="#pessimistic-ui-state-machine" title="Permanent link"></a></h3>
 <p><strong>The dashboard provides a pessimistic confirmation to ensure it never confuses the operator 
   about the state of the system.</strong></p>
 <ul>
-<li>When a failover is initiated, the system will switch to a "Pending" state until the Southbound Driver confirms the 
+<li>When a failover is initiated, the system will switch to a &ldquo;Pending&rdquo; state until the Southbound Driver confirms the 
   hardware has taken control. </li>
-<li>The operator will only receive a "Success" confirmation after the Southbound Driver observes the new physical reality
+<li>The operator will only receive a &ldquo;Success&rdquo; confirmation after the Southbound Driver observes the new physical reality
   on the NATS telemetry stream.</li>
-<li>The dashboard's state machine is designed to provide a visual representation of the system's current physical state. 
+<li>The dashboard&rsquo;s state machine is designed to provide a visual representation of the system&rsquo;s current physical state. 
   This allows the field assets to be in only one state at a time. This prevents sending commands to the 
   hardware while they are already running one. </li>
 </ul>
@@ -333,14 +333,14 @@ while it is still starting and the motor is still ramping up.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="purdue-model-reference-architecture">Purdue Model Reference Architecture</h2>
+<h2 id="purdue-model-reference-architecture">Purdue Model Reference Architecture<a class="headerlink" href="#purdue-model-reference-architecture" title="Permanent link"></a></h2>
 <p>To understand the system architecture of Oversight ICS from a Software Engineering perspective, it is important to 
 reference the Purdue Model for industrial network segmentation: <strong>The Purdue Model for Cybersecurity (ISA/IEC 62443)</strong>. </p>
 <p>The Purdue Model defines the hierarchy of control systems in industrial environments, separated into different levels.
 Modern enterprise tech stacks (e.g., cloud services, databases) operate at Level 4 and above, Oversight ICS is
 designed with strict layer separation and sits on Level 3.5 IDMZ. This is important for security and reliability, as 
 the system must never cross-contaminate or block deterministic scan loops of the field assets. </p>
-<h3 id="purdue-model-overview">Purdue Model Overview</h3>
+<h3 id="purdue-model-overview">Purdue Model Overview<a class="headerlink" href="#purdue-model-overview" title="Permanent link"></a></h3>
 <p>The Purdue Model is used in industrial environments on six strict levels of control hierarchy (<strong>Levels 0-5</strong>). </p>
 <p><strong>Core Engineering Principles</strong>: Data flows dynamically <strong>upward</strong> (<strong>Read Path</strong>), but command authority is strictly 
 <strong>downward</strong> (<strong>Write Path</strong>). The write path must only drop down under strict, auditable boundaries.</p>
@@ -404,21 +404,23 @@ the system must never cross-contaminate or block deterministic scan loops of the
 </tr>
 </tbody>
 </table>
-<h3 id="level-0-physical-kinetics">Level 0: Physical Kinetics</h3>
+<h3 id="level-0-physical-kinetics">Level 0: Physical Kinetics<a class="headerlink" href="#level-0-physical-kinetics" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Waste Water Reclamation &amp; Treatment Plants, Chemical Processing, Food &amp; Beverage, 
 Power Generation, etc.</p>
-<p><strong>Components</strong>: Pumps, Actuators, Valves, Motors, Sensors, Safety Instrumented System (SIS),etc
-  - <strong>Safety Instrumented Systems (SIS)</strong>: The physical safety layer of the plant. These are hardwired, deterministic 
-    systems that monitor critical process parameters (e.g., pressure, temperature, flow rate) and trigger physical 
-    safety mechanisms (e.g., emergency shutdown, pressure release valves) when unsafe conditions are detected. The SIS 
-    sits adjacent to the primary process assets and operates independently of any software control layer.</p>
+<p><strong>Components</strong>: Pumps, Actuators, Valves, Motors, Sensors, Safety Instrumented System (SIS),etc</p>
+<ul>
+<li><strong>Safety Instrumented Systems (SIS)</strong>: The physical safety layer of the plant. These are hardwired, deterministic 
+  systems that monitor critical process parameters (e.g., pressure, temperature, flow rate) and trigger physical 
+  safety mechanisms (e.g., emergency shutdown, pressure release valves) when unsafe conditions are detected. The SIS 
+  sits adjacent to the primary process assets and operates independently of any software control layer.</li>
+</ul>
 <p><strong>Software Engineering Context</strong>: The real-world physical process equipment is the ultimate <strong>Source of Truth</strong>. Runtime
 logic deviations, motor winding destruction, hardware cavitation failure, or pipeline over-pressurization are all
 examples of how software state can impact mechanical failure modes. In traditional web or distributed cloud development,
 an unhandled exception might cause a crash or a degraded user experience. In industrial environments, an unhandled
 exception or logic deviation can cause physical destruction, structural degradation, or catastrophic safety events.
 There is no <code>try/catch</code> block.</p>
-<h3 id="level-1-local-control-automation">Level 1: Local Control &amp; Automation</h3>
+<h3 id="level-1-local-control-automation">Level 1: Local Control &amp; Automation<a class="headerlink" href="#level-1-local-control-automation" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Wastewater Ingestion Stations, Chemical Mixing Vats, Food &amp; Beverage Pasteurization Lines, 
 Power Generation Turbine Control, etc.</p>
 <p><strong>Components</strong>: Primary PLC, Standby PLC, RTUs, DCS, I/O Modules, Safety Logic Solvers, and Local Control Panels</p>
@@ -448,32 +450,34 @@ interlocks and safety limits.</p>
 <p><strong>Example:</strong> A PLC is the last barrier before physical hardware, and it must never be 
 compromised by software logic deviations. The PLC is the ultimate authority for command execution, and it must be 
 protected from any external interference. </p>
-<h3 id="level-15-control-authority-model-the-arbitration-layer">Level 1.5: Control Authority Model (The Arbitration Layer)</h3>
+<h3 id="level-15-control-authority-model-the-arbitration-layer">Level 1.5: Control Authority Model (The Arbitration Layer)<a class="headerlink" href="#level-15-control-authority-model-the-arbitration-layer" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Safety Intercept Checkpoints, Cryptographic Signature Enforcement Gates, Multi-Factor
 Command Validation points, AI-to-PLC Write-Access Token Arbitration, etc.</p>
 <p><strong>Components</strong>: Oversight Arbitrator, Hardware TPM 2.0 Notary Chip, Multi-Factor Authentication (MFA) Token 
-Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.
-  - <strong>Level 1.5 Arbitrator</strong>: Responsible for managing the <strong>Write-Access Token</strong>, enforcing the <strong>Bumpless Transfer 
+Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.</p>
+<ul>
+<li><strong>Level 1.5 Arbitrator</strong>: Responsible for managing the <strong>Write-Access Token</strong>, enforcing the <strong>Bumpless Transfer 
     Protocol</strong>, and arbitrating command authority between the AI Agent and Human Operators. It contains zero
     dependencies on neural networks, large language models, or dynamic cloud runtimes. The Arbitrator sits directly on
     the boundary between the asynchronous message streaming layer (Level 3.5 IDMZ) and the deterministic control layer 
     (Level 1). Its only responsibility is to act as a stateless gatekeeper that inspects every single downward payload
-    before it can reach the physical memory maps.
-  - <strong>Cryptographic Notary Buffers</strong>: This component manages the processing and state-checking of cryptographic keys.
-    It interacts with the local endpoint's TPM 2.0 (Trusted Platform Module) to decode asymmetric cryptographic 
+    before it can reach the physical memory maps.</li>
+<li><strong>Cryptographic Notary Buffers</strong>: This component manages the processing and state-checking of cryptographic keys.
+    It interacts with the local endpoint&rsquo;s TPM 2.0 (Trusted Platform Module) to decode asymmetric cryptographic 
     payloads. This buffer drops any transaction frame whose public-key signature does not explicitly match a trusted
-    identity profile or that has been modified or corrupted in transit.
-  - <strong>TPM 2.0 Hardware Notary Module</strong>: Before any control directive can be executed, it must be signed by the TPM 2.0 
+    identity profile or that has been modified or corrupted in transit.</li>
+<li><strong>TPM 2.0 Hardware Notary Module</strong>: Before any control directive can be executed, it must be signed by the TPM 2.0 
     hardware module. This provides a hardware root of trust showing that the command has not been tampered with in 
     transit and that it originates from a verified source. The Notary Buffer requests a signature from the TPM and 
     appends it to the payload. This signature is a critical part of the safety architecture because it guarantees the 
     integrity of the command before it can affect physical hardware. The TPM 2.0 then passes the hardware-notarized 
-    block down to the Southbound Driver for execution.
-  - <strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
+    block down to the Southbound Driver for execution.</li>
+<li><strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
     orchestration boundaries. When an intervention or predictive failover request is flagged by the Level 3.5 AI Agent, 
     this component blocks immediate execution and triggers an immutable lock state. It requires <strong>Dual-Cryptographic</strong>
     signatures from two-independent RS256-signed JWT tokens. One token is from the primary field operator and the other
-    is from the safety supervisor or plant manager.</p>
+    is from the safety supervisor or plant manager.</li>
+</ul>
 <p><strong>Software Engineering Context</strong>: Level 1.5 is a <strong>Zero-Trust Policy Enforcement Layer</strong>. At Level 1.5, Oversight 
 applies an absolute zero-trust model that says, <strong>Never trust an AI model with direct, unmediated write access to 
 physical infrastructure</strong>. If a software engineer connects a cognitive agent directly to industrial registers, a person
@@ -483,116 +487,128 @@ Authority Model</strong> at Level 1.5 solves this entirely. It treats the cognit
 an executive override. When the LangGraph Agent generates a predictive safety patch or register correction, the payload
 is caught by the Arbitrator. By placing the Arbitrator at the boundary, it guarantees that even if the AI Agent is
 compromised, the physical assets remain safely insulated from malicious or unpredicted software state changes.</p>
-<h3 id="level-2-supervisory">Level 2: Supervisory</h3>
+<h3 id="level-2-supervisory">Level 2: Supervisory<a class="headerlink" href="#level-2-supervisory" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Plant floor operator control room, central water district monitoring station, electrical
 grid dispatch controls, etc.</p>
-<p><strong>Components</strong>: HMIs, Local Control Room Panels
-  - <strong>HMI (Human-Machine Interface)</strong>: HMIs are local touchscreens or operator terminals running graphics applications. 
+<p><strong>Components</strong>: HMIs, Local Control Room Panels</p>
+<ul>
+<li><strong>HMI (Human-Machine Interface)</strong>: HMIs are local touchscreens or operator terminals running graphics applications. 
     They are a real-time window into Level 1 PLC states, and continuously read and map controller tag values to 
-    graphical dashboards. HMIs also have the authority to issue commands to field assets.
-  - <strong>Local Control Panels</strong>: Graphical interfaces with hardwired push buttons used by operators on the physical plant
-    floor to monitor localized process health, acknowledge alarms, and execute manual state changes.</p>
+    graphical dashboards. HMIs also have the authority to issue commands to field assets.</li>
+<li><strong>Local Control Panels</strong>: Graphical interfaces with hardwired push buttons used by operators on the physical plant
+    floor to monitor localized process health, acknowledge alarms, and execute manual state changes.</li>
+</ul>
 <p><strong>Software Engineering Context</strong>: Level 2 is the <strong>Supervisory and State Visualization Layer</strong>. At Level 2, state
 changes do not happen in an isolated memory database, they alter active physical kinetics. Because of this, Level 2
 requires strict security controls and strict <strong>Read-Write Path Bifurcation (Separation)</strong>. The <strong>Read Path</strong> performs 
 the continuous high-frequency polling, but the <strong>Write Path</strong> is treated as a dangerous operation.  </p>
-<p><strong>Example:</strong>
-If an operator repetitively clicks a button on the HMI, it can cause a <strong>Command Storm</strong> that overwhelms a PLC and 
+<p><strong>Example:</strong></p>
+<p>If an operator repetitively clicks a button on the HMI, it can cause a <strong>Command Storm</strong> that overwhelms a PLC and 
 the physical communication bus can experience severe thread starvation. The network saturation can block a microsecond 
 controller heartbeat, causing the system watchdog to time out that will completely halt factory operations. </p>
 <p>Oversight addresses this by sitting adjacent to Level 2. It enforces write rate-limiting and captures incoming commands. 
 In this case, the AI reasoning loops never saturate the real-time communication lanes tracking the physical hardware.</p>
-<h3 id="level-3-operational-site-core">Level 3: Operational Site Core</h3>
+<h3 id="level-3-operational-site-core">Level 3: Operational Site Core<a class="headerlink" href="#level-3-operational-site-core" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Plant-Floor Server Rooms, Localized OT Computing Clusters, Water/Wastewater Operations Data 
 Hubs, Chemical Facility Server Racks.</p>
-<p><strong>Components</strong>: Plant-wide SCADA Systems, Manufacturing Execution Systems (MES), and Operational Historians.
-  - <strong>Operational Truth (SCADA / MES / Historian)</strong>: The core source of truth for the plant's current state. These 
+<p><strong>Components</strong>: Plant-wide SCADA Systems, Manufacturing Execution Systems (MES), and Operational Historians.</p>
+<ul>
+<li><strong>Operational Truth (SCADA / MES / Historian)</strong>: The core source of truth for the plant&rsquo;s current state. These 
     exist independently of Oversight so that traditional plant control and monitoring remain deterministic and available
     even if Oversight is offline. SCADA on Level 3 functions as a site-wide data aggregator, polling the Level 2/1 
     assets and and feeding the telemetry to the local historian. This allows a view of the entire plant and enables 
-    MES (Manufacturing Execution Systems) integration and site-wide reporting.
-  - <strong>Role in Architecture</strong>: Level 3 provides the validated telemetry data required for the AI Agent to perform 
+    MES (Manufacturing Execution Systems) integration and site-wide reporting.</li>
+<li><strong>Role in Architecture</strong>: Level 3 provides the validated telemetry data required for the AI Agent to perform 
     statistical analysis.  It is explicitly separated from the AI reasoning layer (Level 3.5) by a strict firewall 
     boundary.  This is to maintain a <strong>Safety First, Zero-Trust</strong> architecture. Oversight is supervisory and influences
-    this level but does not replace control, monitoring, and safety logic by these site core systems.
-  - <strong>Security</strong>: Level 3 serves as the facilities baseline truth, which must be protected from unauthorized access.
+    this level but does not replace control, monitoring, and safety logic by these site core systems.</li>
+<li><strong>Security</strong>: Level 3 serves as the facilities baseline truth, which must be protected from unauthorized access.
     Oversight interacts with Level 3 via standardized, read-only telemetry or secure audited conduits. In this case, the
-    integrity of the site's primary operational monitoring is never compromised by Oversight's cognitive interventions.</p>
-<p><strong>Software Engineering Context</strong>: Level 3 is the <strong>Operational Truth</strong> for the site's baseline operations. Oversight 
+    integrity of the site&rsquo;s primary operational monitoring is never compromised by Oversight&rsquo;s cognitive interventions.</li>
+</ul>
+<p><strong>Software Engineering Context</strong>: Level 3 is the <strong>Operational Truth</strong> for the site&rsquo;s baseline operations. Oversight 
 treats level 3 as a unidirectional read-only telemetry source. The Agent is prohibited from performing any CRUD 
 operations on any level 3 databases or network devices.</p>
-<h3 id="level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone</h3>
+<h3 id="level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone<a class="headerlink" href="#level-35-ai-idmz-zone" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Security Isolation, Multi-Agent Cognitive Decision Nodes, Vendor Knowledge Grounding Hubs, 
 Cross-Domain Boundary Protection.</p>
 <p><strong>Components</strong>: Northbound Ingest Service, NATS Telemetry Stream, Bytewax Streaming Engine, TimescaleDB Historian, 
 Redis Hot Cache, LangGraph Agent, Local Vector Database (<code>pgvector</code>), NATS Command Queue, Nginx Reverse Proxy (Automated 
-Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Observability Stack.
-  - <strong>Northbound Ingest Service</strong>: Telemetry is streamed to the Northbound Ingest Service where protocol translation 
+Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Observability Stack.</p>
+<ul>
+<li><strong>Northbound Ingest Service</strong>: Telemetry is streamed to the Northbound Ingest Service where protocol translation 
      (Modbus TCP, EtherNet/IP, OPC-UA) is performed and published. Normalized telemetry (Sparkplug B/MQTT) is published 
-     directly into the NATS Telemetry Stream (the UNS backbone).
-  - <strong>NATS JetStream (UNS Backbone)</strong>: NATS JetStream serves as the event-driven backbone for the entire system. It
+     directly into the NATS Telemetry Stream (the UNS backbone).</li>
+<li><strong>NATS JetStream (UNS Backbone)</strong>: NATS JetStream serves as the event-driven backbone for the entire system. It
     implements the systems Unified Namespace (UNS) using strict, text-indexed topic structures
     (e.g., <code>Enterprise/Site/Area/Line/Asset/Tag</code>). All telemetry from the Northbound Ingest is published to JetStream,
     and all downstream consumers (Bytewax, LangGraph Agent, etc.) subscribe to the relevant topics. Every normalized
     tag transformation is statefully committed to JetStream, creating an immutable, replayable, append-only log of all
     telemetry. This allows for message persistence, handles high-throughput with millisecond distribution windows, and 
     also allows independent consumer microservices to safely replay historical data states without affecting live 
-    equipment queues.
-  - <strong>Bytewax Stream Processing Framework</strong>: Bytewax operates as a real-time data streaming processor. It subscribes to
+    equipment queues.</li>
+<li><strong>Bytewax Stream Processing Framework</strong>: Bytewax operates as a real-time data streaming processor. It subscribes to
     the NATS JetStream topics and performs continuous windowed $Z$-Score analysis on the telemetry data. Bytewax uses
     microsecond rolling time windows to map statistical algorithms over live inputs, computing real-time metrics to 
-    instantly catch industrial process drift or unaligned control behavior.
-  - <strong>Redis In-Memory Hot State Cache &amp; TimescaleDB</strong>: This represents the systems strict <strong>CQRS (Command Query 
+    instantly catch industrial process drift or unaligned control behavior.</li>
+<li><strong>Redis In-Memory Hot State Cache &amp; TimescaleDB</strong>: This represents the systems strict <strong>CQRS (Command Query 
     Responsibility Segregation)</strong> read engine. Bytewax splits its output into two branches. Calculated $Z$-Scores, 
     anomalies and the operational profile are pushed directly to the <strong>Redis Hot Cache</strong>, providing sub-millisecond
     key-value snapshots of the plant floor. The raw time-series measurements are sent to <strong>TimescaleDB</strong>, a time-series
     database acting as the localized plant historian to preserve an immutable record of all telemetry for long-term 
-    tracking and analysis.
-  - <strong>Local pgvector Database (Knowledge Grounding)</strong>: Stores high-dimensional vector embeddings of plant manuals, 
+    tracking and analysis.</li>
+<li><strong>Local pgvector Database (Knowledge Grounding)</strong>: Stores high-dimensional vector embeddings of plant manuals, 
     historical <strong>Root Cause Analysis (RCA)</strong>, piping and instrumentation diagrams (P&amp;IDs), and factory acceptance 
     testing rules. When the LangGraph Agent detects an anomaly or a logic deviation, it can query this local vector
-    database to retrieve relevant contextual information to ground its reasoning and generate a more informed response.
-  - <strong>LangGraph Agent</strong>: The LangGraph Agent represents the active thinking loop of the system. It is implemented as 
+    database to retrieve relevant contextual information to ground its reasoning and generate a more informed response.</li>
+<li><strong>LangGraph Agent</strong>: The LangGraph Agent represents the active thinking loop of the system. It is implemented as 
     a stateful, graph-based execution environment where nodes represent discrete reasoning steps and edges define 
     state-machine logic transitions. The LangGraph Agent continuously evaluates the live state of the plant by querying
     the Redis Hot Cache and TimescaleDB. If it detects an anomaly or a logic deviation, it can generate a predictive
     control directive or a safety patch. However, the agent does not have direct write access to the operational core.
-    Instead, it routes all control intents through the <strong>NATS Command Queue</strong>.
-  - <strong>NATS Command Queue</strong>: This critical message queue serves as the single source of truth for all control 
+    Instead, it routes all control intents through the <strong>NATS Command Queue</strong>.</li>
+<li><strong>NATS Command Queue</strong>: This critical message queue serves as the single source of truth for all control 
     intents generated by the LangGraph Agent or human operators. It is a strictly audited, append-only log that feeds
     into the <a href="#level-15-control-authority-model-the-arbitration-layer">Level 1.5 Arbitrator</a>. By routing all commands through this queue, every control intent is traceable,
     auditable, and subject to the same validation process. This prevents any command from bypassing the established
-    safety protocols.
-  - <strong>Semantic Gatekeeper</strong>: After the Level 1.5 Arbitrator validates the Multi-Factor Authentication signatures, the 
+    safety protocols.</li>
+<li>
+<p><strong>Semantic Gatekeeper</strong>: After the Level 1.5 Arbitrator validates the Multi-Factor Authentication signatures, the 
     payload is pushed to the Semantic Gatekeeper, which is a critical safety component that audits all AI-proposed 
     intents, performs an SOP compliance audit, RBAC enforcement, and forensic checkpointing. It validates the 
-    AI-proposed intents against hardcoded <strong>Forbidden Register List</strong> and physical constraints derived from the plant's 
+    AI-proposed intents against hardcoded <strong>Forbidden Register List</strong> and physical constraints derived from the plant&rsquo;s 
     P&amp;ID diagrams. If any control directive violates these safety constraints it is blocked from proceeding back to 
     the Level 1.5 Arbitrator, preventing unsafe commands from reaching the physical assets. The payload is then destroyed
-    by the gatekeeper before it can be signed by the hardware TPM module. It enforces the following constraints:
-    - <strong>Safety Constraints</strong>: Cross-references $Z$-Scores from <strong>Bytewax</strong> to ensure commands don't violate physical
-      thresholds.
-    - <strong>SOP Compliance</strong>: Validates the proposed actions align with digitized SOPs.
-    - <strong>Role-Based Access Control (RBAC)</strong>: Only authorized users can execute approved actions and checks if the AI Agent
-      is authorized to interact with the specific process asset.
-    - <strong>Least Privilege Principles</strong>: To prevent <strong>Scope Creep</strong>, the AI Agent makes sure the Southbound Driver possesses 
-      the minimum required permissions to execute the intended action, and no more. An exploit in one area cannot compromise 
-      the entire system.</p>
-<pre><code>[!NOTE]: The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.
-</code></pre>
+    by the gatekeeper before it can be signed by the hardware TPM module. It enforces the following constraints:</p>
 <ul>
-<li><strong>Southbound Driver</strong>: The final egress for write access. The Southbound Driver consumes the hardware-notarized
+<li><strong>Safety Constraints</strong>: Cross-references $Z$-Scores from <strong>Bytewax</strong> to ensure commands don&rsquo;t violate physical
+  thresholds.</li>
+<li><strong>SOP Compliance</strong>: Validates the proposed actions align with digitized SOPs.</li>
+<li><strong>Role-Based Access Control (RBAC)</strong>: Only authorized users can execute approved actions and checks if the AI Agent
+  is authorized to interact with the specific process asset.</li>
+<li><strong>Least Privilege Principles</strong>: To prevent <strong>Scope Creep</strong>, the AI Agent makes sure the Southbound Driver possesses 
+  the minimum required permissions to execute the intended action, and no more. An exploit in one area cannot compromise 
+  the entire system.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.</p>
+</div>
+</li>
+<li>
+<p><strong>Southbound Driver</strong>: The final egress for write access. The Southbound Driver consumes the hardware-notarized
     block from the TPM module and the pushes the block through the Southbound Firewall, via Deep Packet Inspection for 
     safe writes. If the command exceeds safe operating limits, the firewall blocks it and triggers an alert. Once the 
     command is sent to the field asset, the Southbound Driver enters a <strong>Pessimistic Confirmation Loop</strong>. It then 
     subscribes to the NATS JetStream backbone and waits for the Northbound Ingest to publish a state change. The state 
     change confirms that the field asset has acknowledged the command. Only after the Northbound Ingest reports 
-    the state change from the PLC does the system update the <strong>Redis Hot Cache</strong>. It handles the following tasks:<ul>
+    the state change from the PLC does the system update the <strong>Redis Hot Cache</strong>. It handles the following tasks:</p>
+<ul>
 <li><strong>Protocol Translation</strong>: Converts AI-generated intents into hardware-specific register writes (e.g., PLC coil sets 
   or VFD speed references).</li>
 <li><strong>Reliable Delivery</strong>: Manages retries, acknowledgments, and state-verification loops to ensure the process asset 
   reached the intended state.</li>
-<li><strong>Audit Logging</strong>: Records the "Success/Failure" of every execution back to the Historian for full forensic 
+<li><strong>Audit Logging</strong>: Records the &ldquo;Success/Failure&rdquo; of every execution back to the Historian for full forensic 
   transparency.</li>
 </ul>
 </li>
@@ -620,19 +636,24 @@ advisory. The intent then must go through schema validation by the gateway, cryp
 the Level 1.5 Arbitrator, and be audited against hardcoded physical constraints by the Semantic Gatekeeper. Even if a 
 catastrophic exploit or runtime failure within the heavy cognitive compute zone occurs, the zone remains fully isolated 
 from the physical kinetics of the plant, which remain fully protected by deterministic barriers.</p>
-<p>[!Note] <strong>Out-of-Band</strong> means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Out-of-Band</strong> means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
 Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. </p>
-<h3 id="level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network</h3>
+</div>
+<h3 id="level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network<a class="headerlink" href="#level-4-secure-dashboard-business-logistics-network" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Corporate Operation Centers, Multi-Site Performance 
 Analytics, Long-Term Data Lakes, Engineering Review Desktops, etc.</p>
 <p><strong>Components</strong>: Enterprise Operational Dashboards, Corporate LAN, Performance Tools (Distributed Fleet Health 
-Aggregators).
-- <strong>Enterprise Operational Dashboard</strong>: Deployed as a secure, air-gapped interface inside the Level 3.5 IDMZ
+Aggregators).</p>
+<ul>
+<li><strong>Enterprise Operational Dashboard</strong>: Deployed as a secure, air-gapped interface inside the Level 3.5 IDMZ
   for operators, plant managers, and safety engineers. This dashboard provides real-time read-only telemetry and acts
-  as a secure, restricted portal for issuing intents which are then processed by the lower-level safety layers.
-- <strong>Corporate LAN</strong>: The primary network for business operations.
-- <strong>Performance Tools</strong>: These are cloud-based or on-premises tools used for long-term performance tracking, 
-  fleet health monitoring, and cross-site analytics.</p>
+  as a secure, restricted portal for issuing intents which are then processed by the lower-level safety layers.</li>
+<li><strong>Corporate LAN</strong>: The primary network for business operations.</li>
+<li><strong>Performance Tools</strong>: These are cloud-based or on-premises tools used for long-term performance tracking, 
+  fleet health monitoring, and cross-site analytics.</li>
+</ul>
 <p><strong>Software Engineering Context</strong>: Level 4 is the <strong>Secure Interface &amp; Business Logistics Layer</strong>. The dashboard cannot
 directly control or interact with Level 3 and below.  All data must be treated as read-only, and all commands must be 
 treated as unverified intents until they are processed by the Control Authority Model (Level 1.5 Arbitrator). Data flows
@@ -643,10 +664,10 @@ from extending into the operational core. Data that is sent from the IDMZ to Lev
 register information (Modbus TCP register addresses, EtherNet/IP CIP tag names, or OPC-UA node IDs) and instead be 
 presented as high-level parameters with attached metadata. This prevents the UI from exposing the industrial network 
 topology to unauthorized users.</p>
-<h3 id="level-4-human-in-the-loop-secure-dashboard-workflow">Level 4: Human-in-the-Loop Secure Dashboard Workflow</h3>
+<h3 id="level-4-human-in-the-loop-secure-dashboard-workflow">Level 4: Human-in-the-Loop Secure Dashboard Workflow<a class="headerlink" href="#level-4-human-in-the-loop-secure-dashboard-workflow" title="Permanent link"></a></h3>
 <p>Because the Level 4 Secure Dashboard is an <strong>Untrusted Client</strong>, it has zero direct access to the OT layer. Instead, it
 acts as a secure interface for operators to issue intents, receive read-only telemetry and review reasoning traces.</p>
-<h3 id="step-by-step-operational-workflow">Step-By-Step Operational Workflow</h3>
+<h3 id="step-by-step-operational-workflow">Step-By-Step Operational Workflow<a class="headerlink" href="#step-by-step-operational-workflow" title="Permanent link"></a></h3>
 <p><strong>The Intent Proposal Lifecycle</strong></p>
 <p>When the Bytewax stream processor detects a process drift or an anomaly, it triggers the LangGraph Agent. The LangGraph 
 Agent then performs root cause analysis (consults: pgVector for historical RCA, TimescaleDB for historical trends, and 
@@ -659,19 +680,19 @@ Redis Hot Cache for real-time state) and drafts a proposed intent.</p>
   $Z$-Score analysis. The dashboard also shows the operator the RAG citation from the vector database and the Agents
   reasoning trace.</li>
 <li><strong>Example</strong>: 
-    &gt; <strong>SCC</strong>: "92% confidence"
+    &gt; <strong>SCC</strong>: &ldquo;92% confidence&rdquo;
     &gt; 
-    &gt; <strong>RAG Citation</strong>: "Manual Pg. 45: Current spike combined with low flow indicates impeller blockage."
+    &gt; <strong>RAG Citation</strong>: &ldquo;Manual Pg. 45: Current spike combined with low flow indicates impeller blockage.&rdquo;
     &gt; 
-    &gt; <strong>Reasoning Trace</strong>: Sanitized Summary of the historical context (e.g., "$Z$-Score deviated by 2.8σ over the 
-      last 10 minutes, matching the failure signature from last month.").</li>
+    &gt; <strong>Reasoning Trace</strong>: Sanitized Summary of the historical context (e.g., &ldquo;$Z$-Score deviated by 2.8σ over the 
+      last 10 minutes, matching the failure signature from last month.&rdquo;).</li>
 <li><strong>Step 3 - Primary Authorization (First Key)</strong>: If the operator agrees with the proposed intent, the field operator
   clicks the <code>APPROVE</code> button. The dashboard UI then enters a <code>SAFETY_DELAY_ACTIVE</code> state (Yellow Banner + Countdown 
   Timer) indicating that the intent is being processed by the safety layers. This locks out the operator from making 
   any more requests to prevent blind clicking (If an operator gets frustrated and clicks multiple times, it can cause 
   a command storm that overwhelms the field asset and the physical communication bus can experience severe thread 
   starvation). The safety delay and operator lockout prevent this anti-pattern. The dashboard then extracts the active 
-  RS256 JWT token from the operator's session (The operator's RS256 JWT token is issued by the Level 5 Corporate 
+  RS256 JWT token from the operator&rsquo;s session (The operator&rsquo;s RS256 JWT token is issued by the Level 5 Corporate 
   Identity Provider via SSO) and attaches it to the intent payload as a <strong>Bearer Token</strong> to prove the identity of the 
   requestor. </li>
 <li><strong>Step 4 - Secondary Authorization (Second Key - if High Impact)</strong>: If the proposed intent involves a high-impact 
@@ -681,9 +702,9 @@ Redis Hot Cache for real-time state) and drafts a proposed intent.</p>
 <li><strong>Step 5 - Nginx Perimeter Validation &amp; Submission to Control Authority Model (Arbitrator)</strong>: The intent payload with 
   the attached JWT token(s) is then pushed through the Northbound Firewall. The Northbound Firewall then sends the 
   request to the Nginx Reverse Proxy where the JWT token signatures get validated and the token is checked against the 
-  system's access control policies. Nginx also enforces rate-limiting to prevent potential DDoS attack patterns and 
+  system&rsquo;s access control policies. Nginx also enforces rate-limiting to prevent potential DDoS attack patterns and 
   rapid-fire clicking. The Nginx Reverse Proxy then forwards the request to the Level 1.5 Arbitrator. When the 
-  Arbitrator verifies the human's identity is valid and authorized, the command is passed to the Semantic Gatekeeper.  </li>
+  Arbitrator verifies the human&rsquo;s identity is valid and authorized, the command is passed to the Semantic Gatekeeper.  </li>
 <li><strong>Step 6 - Physical Validation &amp; Final Execution</strong>: The operator monitors the dashboard telemetry. The UI remains in 
   a <code>PENDING</code> state until the Southbound Driver receives physical hardware confirmation from the field asset, routes
   the state change through the Northbound Ingest, and updates the Redis Hot Cache. Once the operator sees the UI update
@@ -700,7 +721,7 @@ still maintaining <strong>Zero-Trust</strong> compliance.</p>
   validation, rate-limiting, arbitrator authorization, and semantic gatekeeper physical bounds checking as an 
   AI-generated intent. </li>
 <li><strong>Changing Agent Authority</strong>: If the Agent is generating false positives or behaving erratically, the 
-  operator toggles the Agent's authority to <strong><code>MONITOR_ONLY</code></strong>. It then sends a command to kill the CDC Relay service, 
+  operator toggles the Agent&rsquo;s authority to <strong><code>MONITOR_ONLY</code></strong>. It then sends a command to kill the CDC Relay service, 
   immediately switching the AI to a read-only <code>MONITOR_ONLY</code> mode. Cutting the CDC Relay stops the Agent from sending
   commands to the Southbound Firewall. This keeps the Southbound Driver alive so the operator can have manual control 
   and still visually see what is happening. </li>
@@ -710,10 +731,10 @@ still maintaining <strong>Zero-Trust</strong> compliance.</p>
 </ul>
 <p><strong>Dashboard Capability Matrix (RBAC)</strong></p>
 <p>The Corporate Identity Provider (IdP) issues the RS256 JWT tokens that govern the access control policies. The dashboard 
-enforces Role-Based Access Control (RBAC) based strictly on the token's embedded claims. The Corporate Identity Provider 
+enforces Role-Based Access Control (RBAC) based strictly on the token&rsquo;s embedded claims. The Corporate Identity Provider 
 assigns these claims based on the users federated roles. This allows for seamless deletion of a user once, which cuts 
 their access across the entire system. This includes access to the secure dashboard, which is instantly revoked.</p>
-<h3 id="dashboard-capability-matrix-rbac"><strong>Dashboard Capability Matrix (RBAC)</strong></h3>
+<h3 id="dashboard-capability-matrix-rbac"><strong>Dashboard Capability Matrix (RBAC)</strong><a class="headerlink" href="#dashboard-capability-matrix-rbac" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
@@ -748,24 +769,26 @@ their access across the entire system. This includes access to the secure dashbo
 <td style="text-align: left;">All Field Operator &amp; Plant Manager Actions + Provides secondary authorization (Second Key) for high-impact failovers and physical asset transitions.</td>
 <td style="text-align: left;">All Field Operator &amp; Plant Manager Overrides + ability to toggle the system into <code>COMMISSIONING_MODE</code> (Sandbox Testing) and authorize high-impact <code>ADVISORY_MODE</code> overrides.</td>
 <td style="text-align: left;">Propose updates to the Semantic Gatekeeper boundaries, modify the <strong>Forbidden Register List</strong>, or ingest new RAG vendor manuals (subject to CI/CD staging validation).</td>
-<td style="text-align: left;">Conducts mandatory <strong>Alarm Rationalization Reviews</strong> (ISA-18.2), performs FMEA Revision Reviews, acts as the witness for FAT-03 testing, and provides Dual-Auth approval for 'High Risk' System Change Requests.</td>
+<td style="text-align: left;">Conducts mandatory <strong>Alarm Rationalization Reviews</strong> (ISA-18.2), performs FMEA Revision Reviews, acts as the witness for FAT-03 testing, and provides Dual-Auth approval for &lsquo;High Risk&rsquo; System Change Requests.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="level-5-enterprise-cloud-hub">Level 5: Enterprise Cloud Hub</h3>
+<h3 id="level-5-enterprise-cloud-hub">Level 5: Enterprise Cloud Hub<a class="headerlink" href="#level-5-enterprise-cloud-hub" title="Permanent link"></a></h3>
 <p><strong>Real-World Application</strong>: Corporate-wide Data Warehousing, Enterprise-scale Security Monitoring, Compliance Auditing, 
 and Central Observability for System Performance, Vendor Knowledge Distribution.</p>
 <p><strong>Components</strong>: Enterprise SIEM(Security Information and Event Management),Observability Stack, Cloud Data Lakes, Vendor
-Knowledge Bases
-- <strong>Enterprise SIEM</strong>: Aggregated security event logging
-- <strong>Observability Stack (Prometheus, Grafana)</strong>:
-  - <strong>Prometheus</strong>: Time-series database for monitoring system performance, latency, and error rates across the 
-    distributed architecture.
-  - <strong>Grafana</strong>: Acts as the visualization engine that queries both TimescaleDB (for <strong>Operational Truth</strong>) and 
-    Prometheus (for <strong>System Health</strong>) to create a unified dashboard for both system health and process performance.
-- <strong>Cloud Data Lakes</strong>: Long-term data storage regulatory compliance.
-- <strong>Vendor Knowledge Base (RAG Source)</strong>: The central repository for downloading and hosting OEM PDF technical manuals, 
-  maintenance schedules, and SOPs before they are distributed to the plant level.</p>
+Knowledge Bases</p>
+<ul>
+<li><strong>Enterprise SIEM</strong>: Aggregated security event logging</li>
+<li><strong>Observability Stack (Prometheus, Grafana)</strong>:</li>
+<li><strong>Prometheus</strong>: Time-series database for monitoring system performance, latency, and error rates across the 
+    distributed architecture.</li>
+<li><strong>Grafana</strong>: Acts as the visualization engine that queries both TimescaleDB (for <strong>Operational Truth</strong>) and 
+    Prometheus (for <strong>System Health</strong>) to create a unified dashboard for both system health and process performance.</li>
+<li><strong>Cloud Data Lakes</strong>: Long-term data storage regulatory compliance.</li>
+<li><strong>Vendor Knowledge Base (RAG Source)</strong>: The central repository for downloading and hosting OEM PDF technical manuals, 
+  maintenance schedules, and SOPs before they are distributed to the plant level.</li>
+</ul>
 <p><strong>Software Engineering Context</strong>: Level 5 is for monitoring both cognitive performance and infrastructure stability. 
 Oversight strictly enforces this barrier. There is zero pathing, raw-socket access, or directly open conduits down to 
 the control layer. It is entirely air-gapped from the lower automation networks by the Northbound and Southbound 
@@ -782,7 +805,7 @@ accessible from users in Level 4, the Prometheus and Grafana engines themselves 
 IDMZ. The Grafana dashboard has read-only access to the internal service metrics and the operational telemetry. If the 
 enterprise layer is ever compromised, the attacker would not be able to use these tools to alter field assets or 
 bypass safety controls.</p>
-<h2 id="firewall-security-boundary-summary">Firewall &amp; Security Boundary Summary</h2>
+<h2 id="firewall-security-boundary-summary">Firewall &amp; Security Boundary Summary<a class="headerlink" href="#firewall-security-boundary-summary" title="Permanent link"></a></h2>
 <table>
 <thead>
 <tr>
@@ -813,78 +836,82 @@ bypass safety controls.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="step-by-step-data-flow-execution">Step-By-Step Data Flow Execution</h2>
-<h3 id="the-inbound-ingestion-stream-read-path">The Inbound Ingestion Stream (Read Path)</h3>
+<h2 id="step-by-step-data-flow-execution">Step-By-Step Data Flow Execution<a class="headerlink" href="#step-by-step-data-flow-execution" title="Permanent link"></a></h2>
+<h3 id="the-inbound-ingestion-stream-read-path">The Inbound Ingestion Stream (Read Path)<a class="headerlink" href="#the-inbound-ingestion-stream-read-path" title="Permanent link"></a></h3>
 <p><em>Oversight is completely hardware-agnostic because the Northbound Ingest microservice isolates protocol complexity 
 right at the Level 3.5 IDMZ boundary. It can process raw Modbus TCP byte streams for legacy hardware, manage 
 asynchronous Ethernet/IP CIP (Common Industrial Protocol) tag sessions for Rockwell environments, and maintains secure, 
 certificate-authenticated OPC-UA node subscriptions for modern edge controllers.</em></p>
-<p><strong>The Telemetry Lifecycle and Read Path Execution</strong>:
-1. Level 0 → Level 1: The physical kinetics of the plant are continuously sampled by field sensors and digitized into 
+<p><strong>The Telemetry Lifecycle and Read Path Execution</strong>:</p>
+<ol>
+<li>Level 0 → Level 1: The physical kinetics of the plant are continuously sampled by field sensors and digitized into 
    unsigned integers by the I/O modules. The primary PLC (<code>PLC_P</code>) executes a cyclic scan loop, pulling the digitized 
-   inputs into its memory tables and executing hardcoded logic to update the state of the physical assets.
-2. Level 1 → Level 2: The raw tag registers are exposed to the local network via industrial protocols. The SCADA 
+   inputs into its memory tables and executing hardcoded logic to update the state of the physical assets.</li>
+<li>Level 1 → Level 2: The raw tag registers are exposed to the local network via industrial protocols. The SCADA 
    system and HMIs continuously poll or subscribe to these registers to visualize the plant state and allow operators 
-   to issue commands.
-3. The Northbound Ingest receives raw tags (e.g., Modbus TCP, OPC_UA, &amp; EtherNet/IP CIP). It processes and normalizes 
-   all the protocols into a standardized Sparkplug B MQTT message schema.
-   - This schema attaches critical metadata, unified data types, and mandatory real-time quality bits, before mapping
+   to issue commands.</li>
+<li>The Northbound Ingest receives raw tags (e.g., Modbus TCP, OPC_UA, &amp; EtherNet/IP CIP). It processes and normalizes 
+   all the protocols into a standardized Sparkplug B MQTT message schema.</li>
+<li>This schema attaches critical metadata, unified data types, and mandatory real-time quality bits, before mapping
      the variable data into the Unified Namespace (UNS) topic structure. The payload is then standardized into JSON
-     format (Enterprise/Site/Area/Line/Asset/Tag) annd coupled with its Integer Quality Bit. 
-4. The normalized packet is published to NATS JetStream. NATS JetStream guarantees that all telemetry is stored in an 
-   immutable, append-only log.
-5. Because the normalized packet is published to NATS JetStream, the Bytewax stream processor and the LangGraph Agent 
-   will only see the sanitized, text-indexed event stream. 
-6. Bytewax stream workers consume the telemetry from the UNS stream, to calculate windowed rolling means $\mu$) and 
-   $Z$-Scores in real-time to detect process drift.
-7. Bytewax outputs the continuous, windowed $Z$-Score analysis on two branches to update the systems read models.
-   - <strong>Redis Hot State Cache:</strong> High-frequency, windowed $Z$-scores and current asset states are pushed directly into 
-     the cache. This provides a sub-millisecond, low-latency look-up layer for active variables.
-   - <strong>TimescaleDB:</strong> The raw normalized Sparkplug B parameters are appended at the same time to update the time-series 
-     historian database. The processed telemetry is stored in the TimescaleDB Hypertable in the Level 3.5 IDMZ. 
-8. In the Level 3.5 IDMZ, the <strong>LangGraph Agent</strong> executes a continuous, asynchronous state evaluation loop. It 
+     format (Enterprise/Site/Area/Line/Asset/Tag) annd coupled with its Integer Quality Bit. </li>
+<li>The normalized packet is published to NATS JetStream. NATS JetStream guarantees that all telemetry is stored in an 
+   immutable, append-only log.</li>
+<li>Because the normalized packet is published to NATS JetStream, the Bytewax stream processor and the LangGraph Agent 
+   will only see the sanitized, text-indexed event stream. </li>
+<li>Bytewax stream workers consume the telemetry from the UNS stream, to calculate windowed rolling means $\mu$) and 
+   $Z$-Scores in real-time to detect process drift.</li>
+<li>Bytewax outputs the continuous, windowed $Z$-Score analysis on two branches to update the systems read models.</li>
+<li><strong>Redis Hot State Cache:</strong> High-frequency, windowed $Z$-scores and current asset states are pushed directly into 
+     the cache. This provides a sub-millisecond, low-latency look-up layer for active variables.</li>
+<li><strong>TimescaleDB:</strong> The raw normalized Sparkplug B parameters are appended at the same time to update the time-series 
+     historian database. The processed telemetry is stored in the TimescaleDB Hypertable in the Level 3.5 IDMZ. </li>
+<li>In the Level 3.5 IDMZ, the <strong>LangGraph Agent</strong> executes a continuous, asynchronous state evaluation loop. It 
    statefully queries the Redis Hot State Cache and references historical patters in TimescaleDB to match live 
-   operational profiles against historical process rules.
-9. If a calculation is outside statistical anomaly thresholds, the LangGraph Agent pulls localized repair boundaries 
+   operational profiles against historical process rules.</li>
+<li>If a calculation is outside statistical anomaly thresholds, the LangGraph Agent pulls localized repair boundaries 
    and asset contexts out of the embedded <strong>pgvector local RAG database</strong>. It does this to plan a predictive control 
-   directive. This brings the read path to a close and gets the write path ready for intervention.</p>
-<h3 id="the-outbound-command-intercept-write-path">The Outbound Command Intercept (Write Path)</h3>
+   directive. This brings the read path to a close and gets the write path ready for intervention.</li>
+</ol>
+<h3 id="the-outbound-command-intercept-write-path">The Outbound Command Intercept (Write Path)<a class="headerlink" href="#the-outbound-command-intercept-write-path" title="Permanent link"></a></h3>
 <p>The system enforces a <strong>Zero-Trust Execution</strong> model. The AI Agent and UI never possess direct write access to field
-assets. All modifications must go through a multi-stage validation and arbitration process.
-1. When the intent is finalized by the LangGraph Agent, it issues a <code>Control Directive Proposal</code>. Instead of executing 
+assets. All modifications must go through a multi-stage validation and arbitration process.</p>
+<ol>
+<li>When the intent is finalized by the LangGraph Agent, it issues a <code>Control Directive Proposal</code>. Instead of executing 
    it directly, the Agent routes the proposal down to the <strong>NATS JetStream Logical Command Queue</strong> inside Level 3.5 
-   (IDMZ).
-2. At the same time, if a human operator issues a manual override request from the Secure Dashboard
+   (IDMZ).</li>
+<li>At the same time, if a human operator issues a manual override request from the Secure Dashboard
    (Level 4), the request hits the <strong>Nginx Proxy Gate</strong> (Level 3.5), passes through schema validation, and is dropped 
-   onto the exact same <strong>NATS Command Queue</strong> as a prioritized proposal.
-3. The Level 1.5 Arbitrator consumes the proposal from the <strong>NATS Command Queue</strong>. The Arbitrator then immediately 
+   onto the exact same <strong>NATS Command Queue</strong> as a prioritized proposal.</li>
+<li>The Level 1.5 Arbitrator consumes the proposal from the <strong>NATS Command Queue</strong>. The Arbitrator then immediately 
    places the command into a stateful isolation buffer and demands a <strong>Dual-Key Multi-Factor Authentication (Two-Key
-   Protocol)</strong> handshake.
-4. The Level 1.5 Arbitrator sends an authenticated challenge back to the Secure Dashboard. Execution will 
+   Protocol)</strong> handshake.</li>
+<li>The Level 1.5 Arbitrator sends an authenticated challenge back to the Secure Dashboard. Execution will 
    remain frozen until two independent, cryptographically signed RS256 JWTs are provided. One token must be signed by 
    the active plant field operator, and the other one must be signed by Lead Safety Enginner or Plant Manager. The 
-   Arbitrator then passes the authenticated payload to the <strong>Semantic Gatekeeper</strong> inside Level 3.5. 
-5. The Semantic Gatekeeper performs a final safety audit. It checks the proposed command against the <strong>Forbidden 
-   Register List</strong> and the <strong>Physical Bounds Constraints</strong> derived from the plant's P&amp;ID diagrams. If the command 
+   Arbitrator then passes the authenticated payload to the <strong>Semantic Gatekeeper</strong> inside Level 3.5. </li>
+<li>The Semantic Gatekeeper performs a final safety audit. It checks the proposed command against the <strong>Forbidden 
+   Register List</strong> and the <strong>Physical Bounds Constraints</strong> derived from the plant&rsquo;s P&amp;ID diagrams. If the command 
    violates any of these hard safety constraints, it is immediately blocked from proceeding to the TPM hardware signer, 
-   preventing unsafe commands from reaching the physical assets.
-6. If the command passes the safety audit, it is then forwarded to the <strong>Cryptographic Notary Buffers</strong>. 
-7. The Notary Buffers work with the TPM 2.0 hardware signer to attach a hardware root-of-trust signature to the command
-   payload (proving it passed all IDMZ checks) and returns the notarized signature back to the buffers.
-8. The fully signed packet is then dropped down to the <strong>Southbound Driver (Write Relay)</strong>. The Driver transmits the 
+   preventing unsafe commands from reaching the physical assets.</li>
+<li>If the command passes the safety audit, it is then forwarded to the <strong>Cryptographic Notary Buffers</strong>. </li>
+<li>The Notary Buffers work with the TPM 2.0 hardware signer to attach a hardware root-of-trust signature to the command
+   payload (proving it passed all IDMZ checks) and returns the notarized signature back to the buffers.</li>
+<li>The fully signed packet is then dropped down to the <strong>Southbound Driver (Write Relay)</strong>. The Driver transmits the 
    hardware notarized command through the Southbound Firewall to the target PLC. The Southbound Firewall acts as a 
    stateful inspection boundary between Level 3.5 IDMZ and the OT network. This firewall will only allow vetted 
-   deterministic commands to target field devices.
-   - <strong>Primary Path</strong>: Primary Path: The register write is routed through the Southbound Firewall directly to the active
-     field equipment controller (<code>PLC_P</code>).
-   - <strong>Failover Path</strong>: If <code>PLC_P</code> fails to respond or reports process drift, the Southbound Driver instantly redirects
-   the execution target through the firewall to the mirrored warm standby controller (<code>PLC_S</code>).
-   - <strong>Pessimistic Confirmation of Success Loop</strong>: The Southbound Driver does not immediately report success. It waits 
+   deterministic commands to target field devices.</li>
+<li><strong>Primary Path</strong>: Primary Path: The register write is routed through the Southbound Firewall directly to the active
+     field equipment controller (<code>PLC_P</code>).</li>
+<li><strong>Failover Path</strong>: If <code>PLC_P</code> fails to respond or reports process drift, the Southbound Driver instantly redirects
+   the execution target through the firewall to the mirrored warm standby controller (<code>PLC_S</code>).</li>
+<li><strong>Pessimistic Confirmation of Success Loop</strong>: The Southbound Driver does not immediately report success. It waits 
      for a hardware-level register verification from the target PLC by subscribing to the NATS Telemetry Stream (which
      watches the Northbound Ingest). Only after the physical feedback loop confirms the state does the Southbound Driver
-     updated the Redis Hot Cache, which then updates the UI dashboard with a <code>SUCCESS</code> status.</p>
-<h2 id="architectural-tradeoffs-design-considerations-justifications">Architectural Tradeoffs, Design Considerations, &amp; Justifications</h2>
-<h3 id="identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap">Identity and Access Management (IAM): Federated OIDC vs. Local Active Directory (LDAP)</h3>
+     updated the Redis Hot Cache, which then updates the UI dashboard with a <code>SUCCESS</code> status.</li>
+</ol>
+<h2 id="architectural-tradeoffs-design-considerations-justifications">Architectural Tradeoffs, Design Considerations, &amp; Justifications<a class="headerlink" href="#architectural-tradeoffs-design-considerations-justifications" title="Permanent link"></a></h2>
+<h3 id="identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap">Identity and Access Management (IAM): Federated OIDC vs. Local Active Directory (LDAP)<a class="headerlink" href="#identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap" title="Permanent link"></a></h3>
 <p>I placed the Identity Provide (IdP) in the enterprise zone (Level 5) using Federated OIDC to issue RS256 JWTs, rather 
 than hosting an LDAP (Lightweight Directory Access Protocol) server within the IDMZ. This is because 
 the enterprise zone is already strictly separated from the operational core by Firewall 1, so the risk of a 
@@ -935,7 +962,7 @@ zero-trust authentication that is well-suited for the strict and critical nature
 </tr>
 </tbody>
 </table>
-<h3 id="time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql">Time-Series Database: TimescaleDB vs. Alternate Time-Series Databases (InfluxDB, MongoDB, or standard PostgreSQL)</h3>
+<h3 id="time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql">Time-Series Database: TimescaleDB vs. Alternate Time-Series Databases (InfluxDB, MongoDB, or standard PostgreSQL)<a class="headerlink" href="#time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql" title="Permanent link"></a></h3>
 <p>I chose to use TimescaleDB as the time-series database for storing the raw telemetry data, rather than using a standard
 PostgreSQL instance or other time-series databases. TimescaleDB builds right on top of PostgreSQL. This allows the
 real-time telemetry, the intent audit logs, and the vector embeddings to all be stored within a single, unified database 
@@ -945,12 +972,12 @@ analysis. It also delivers the performance and scalability needed to handle high
 real-time.</p>
 <p><strong>Tradeoff</strong>:  InfluxDB and MongoDB are also time-series databases, but they do not offer the same level of 
 relational integrity or ACID compliance as TimescaleDB. A standard PostgreSQL instance could be used, but it may not 
-perform as well with high-frequency time-series data without the optimizations provided by TimescaleDB's hypertables 
+perform as well with high-frequency time-series data without the optimizations provided by TimescaleDB&rsquo;s hypertables 
 and indexing. InfluxDB is designed for time-series data, but it forces the system into fragmented data storage where 
 the vector embeddings and relational data are stored separately, which adds complexity to the architecture.</p>
 <p><strong>Justification</strong>: Because TimescaleDB sits on top of PostgreSQL it allows the LangGraph Agent to perform complex joins
 between the live $Z$-Score anomaly and the vectorized PDF manuals in milliseconds.</p>
-<h3 id="nginx-reverse-proxy-vs-dedicated-api-gateway">Nginx Reverse Proxy vs. Dedicated API Gateway</h3>
+<h3 id="nginx-reverse-proxy-vs-dedicated-api-gateway">Nginx Reverse Proxy vs. Dedicated API Gateway<a class="headerlink" href="#nginx-reverse-proxy-vs-dedicated-api-gateway" title="Permanent link"></a></h3>
 <p>I chose to use Nginx as the reverse proxy and API gateway, rather than deploying a dedicated API gateway because it is
 a stateless C-binary that supports RS256 JWT authentication and strict rate-limiting. Nginx provides and air-gapped,
 zero-dependency perimeter that drops malformed API requests and traps command storms without requiring a cloud 
@@ -965,34 +992,34 @@ incoming API requests, enforces rate-limiting to prevent DDoS attack patterns, a
 with valid RS256 JWTs to reach the command queue. By using Nginx, I can maintain a secure, high-performance gateway 
 with strict security requirements for the operational environment without violating the air-gap or introducing 
 unnecessary complexity.</p>
-<h3 id="prometheus-vs-traditional-rdbms-for-system-health-monitoring">Prometheus vs. Traditional RDBMS for System Health Monitoring</h3>
+<h3 id="prometheus-vs-traditional-rdbms-for-system-health-monitoring">Prometheus vs. Traditional RDBMS for System Health Monitoring<a class="headerlink" href="#prometheus-vs-traditional-rdbms-for-system-health-monitoring" title="Permanent link"></a></h3>
 <p>I chose to use Prometheus as the monitoring solution for system health and performance metrics. Although, traditional
-RDBMS solutions could be used, Prometheus' is specifically designed for monitoring and alerting, with built-in support
+RDBMS solutions could be used, Prometheus&rsquo; is specifically designed for monitoring and alerting, with built-in support
 for time-series data, flexible queries, and Grafana for visualization. </p>
 <p><strong>Tradeoff</strong>: Other system health monitors, like push-based monitors (Datadog), would violate the Purdue Model by
 requiring an open conduit from the IDMZ to the cloud. </p>
 <p><strong>Justification</strong>: Prometheus uses a local, pull-based scraping model. It will natively sit inside the IDMZ and actively
 scrape the local containers for internal health metrics. This allows for the observability stack to be completely 
 contained within the IDMZ. </p>
-<h3 id="redis-vs-memcached-for-hot-state-cache">Redis vs. Memcached for Hot State Cache</h3>
+<h3 id="redis-vs-memcached-for-hot-state-cache">Redis vs. Memcached for Hot State Cache<a class="headerlink" href="#redis-vs-memcached-for-hot-state-cache" title="Permanent link"></a></h3>
 <p>I chose to use Redis as the hot state cache for real-time telemetry and $Z$-Score lookups, rather than Memcached, 
 because heavy LLM queries to TimescaleDB could lock tables and delay the write-path of critical field sensor data.</p>
 <p><strong>Tradeoff</strong>: Memcached is a simpler and can be faster for simple caching use cases. However, it does not support 
 data persistence or advanced data structures like Redis does. Redis provides more features and flexibility, 
 but it may require more resources to run. If I rely solely on TimescaleDB for both historical telemetry and reading
-live state it could cause intense I/O contention between the LangGraph Agent's LLM queries and the Bytewax 
-stream processor's high-frequency writes.</p>
+live state it could cause intense I/O contention between the LangGraph Agent&rsquo;s LLM queries and the Bytewax 
+stream processor&rsquo;s high-frequency writes.</p>
 <p><strong>Justification</strong>: Redis provides a high-performance, in-memory data store that can handle the low-latency requirements 
 of real-time telemetry lookups. I implemented it to finalize the CQRS architecture by separating the read and write 
 models. By using Redis as a hot state cache, the LangGraph Agent and the UI can instantly pull context without touching 
 TimescaleDB. Redis acts as a high-speed snapshot of the plant floor and prevents the relational historian and AI 
 reasoning loop from a bottleneck.</p>
-<h3 id="vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc">Vector Database: pgVector vs. Dedicated Vector Database (Pinecone, Milvus, etc.)</h3>
+<h3 id="vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc">Vector Database: pgVector vs. Dedicated Vector Database (Pinecone, Milvus, etc.)<a class="headerlink" href="#vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc" title="Permanent link"></a></h3>
 <p>I chose to use a local <code>pgVector</code> extension within the PostgreSQL (TimescaleDB) instance for vector storage and 
 similarity search, rather than deploying a separate dedicated vector database like Pinecone or Milvus. This decision 
 was made to maintain strict architectural isolation and minimize the attack surface within the IDMZ. By using 
 <code>pgVector</code>, I can keep all data storage within a single, self-contained database environment that is already protected 
-by the IDMZ's security controls. By using <code>pgVector</code> I am able to reduce the complexity of the architecture and 
+by the IDMZ&rsquo;s security controls. By using <code>pgVector</code> I am able to reduce the complexity of the architecture and 
 eliminate the need for additional network communication between separate services.  If using a dedicated vector 
 database, it could introduce latency and potential vulnerabilities. Additionally, <code>pgVector</code> provides sufficient 
 performance for our use case, as the vector search operations are not expected to be high-frequency or latency-sensitive 
@@ -1010,7 +1037,7 @@ access (violating the air-gap). Milvus and Weaviate, for example, require deploy
 the constrained IDMZ. By utilizing <code>pgvector</code>, I can keep time-series telemetry, relational safety constraints, and
 vector embeddings within a single, ACID-compliant, hardened PostgreSQL engine. This simplifies WORM backup protocols 
 and limits the attack surface.</p>
-<h3 id="message-broker-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker: NATS JetStream vs. Kafka vs. RabbitMQ</h3>
+<h3 id="message-broker-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h3>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
 that is appropriate for the high-velocity telemetry data in an OT environment. NATS JetStream offers lightweight
@@ -1084,18 +1111,18 @@ unnecessary complexity for this use case. </p>
 </tr>
 </tbody>
 </table>
-<h2 id="evaluation-of-cognitive-frameworks-and-orchestration-engines">Evaluation of Cognitive Frameworks and Orchestration Engines</h2>
+<h2 id="evaluation-of-cognitive-frameworks-and-orchestration-engines">Evaluation of Cognitive Frameworks and Orchestration Engines<a class="headerlink" href="#evaluation-of-cognitive-frameworks-and-orchestration-engines" title="Permanent link"></a></h2>
 <p>When designing the AI reasoning layer, I evaluated both the cognitive frameworks and orchestration engines
 available for building the Oversight system. Because this system has to handle high-velocity industrial telemetry and
 interfaces with physical hardware on the Level 3.5 IDMZ boundary, I needed a solution that could provide strict schema 
 enforcement, advanced reasoning capabilities, and strong security controls. I decided to prioritize deterministic 
 constraints, data sovereignty, network topology boundaries, and safety interlocks.</p>
-<h3 id="cognitive-frameworks">Cognitive Frameworks</h3>
-<h4 id="gemini-35-flash-cloud-based-llm-api">Gemini 3.5 Flash (Cloud Based LLM API)</h4>
+<h3 id="cognitive-frameworks">Cognitive Frameworks<a class="headerlink" href="#cognitive-frameworks" title="Permanent link"></a></h3>
+<h4 id="gemini-35-flash-cloud-based-llm-api">Gemini 3.5 Flash (Cloud Based LLM API)<a class="headerlink" href="#gemini-35-flash-cloud-based-llm-api" title="Permanent link"></a></h4>
 <p><strong>Considerations</strong>: When moving data from the Level 3.5 IDMZ to a third-party LLM API (over public HTTPS - 
 Port 443 -NIC 1), there are network security risks, data privacy concerns, and potential latency issues involved. Under 
 IEC 62443, any outbound conduit increases the potential attack surface of the gateway. If the LLM API is compromised, 
-an attacker could manipulate the AI Agent's responses or inject malicious commands. Sending sensitive operational data
+an attacker could manipulate the AI Agent&rsquo;s responses or inject malicious commands. Sending sensitive operational data
 to an external cloud service also raises concerns about data privacy and compliance. Strict schema-enforced JSON is 
 critical for generating reliable payloads that the Semantic Gatekeeper can immediately audit against the Forbidden
 Register List and Constraint Boundaries without throwing a <code>SCHEMA_TYPE_MISMATCH</code> error. In addition to this, the 
@@ -1104,7 +1131,7 @@ F1 score of $\ge 0.92$. </p>
 <p><strong>F1 Score</strong>: Measures the harmonic mean of precision and recall. A low F1 score means that the model is generating a 
 high number of false positives or nuisance alarms. A high F1 score means that the model is generating accurate 
 predictions with minimal false positives and nuisance alarms.</p>
-<p><strong>Self-Correction Mechanism</strong>: Gemini 3.5 Flash's advanced reasoning capabilities allow it to perform internal 
+<p><strong>Self-Correction Mechanism</strong>: Gemini 3.5 Flash&rsquo;s advanced reasoning capabilities allow it to perform internal 
 self-correction steps. The system will filter out its own bad ideas before the human operator ever sees them. This is 
 critical for maintaining a high F1 score and by the time an intent hits the operational dashboard, it has already 
 highly-accurate and viable.</p>
@@ -1127,7 +1154,7 @@ highly-accurate and viable.</p>
 <p><strong>Justification</strong>: I selected Gemini 3.5 Flash for the AI reasoning layer because of its advanced reasoning capabilities,
 and for how it handles massive context windows with strict schema enforcement. The necessity to have advanced agentic
 performance justifies creating an isolated Northbound Ingest to bridge cloud data safely into the Level 3.5 IDMZ.</p>
-<h4 id="open-source-high-throughput-third-party-llms-llama-3-falcon-40b-etc">Open-Source High-throughput Third Party LLMs (Llama 3, Falcon 40B, etc.)</h4>
+<h4 id="open-source-high-throughput-third-party-llms-llama-3-falcon-40b-etc">Open-Source High-throughput Third Party LLMs (Llama 3, Falcon 40B, etc.)<a class="headerlink" href="#open-source-high-throughput-third-party-llms-llama-3-falcon-40b-etc" title="Permanent link"></a></h4>
 <p><strong>Considerations</strong>: Deploying an open-source LLM within the IDMZ would require significant computational resources,
 which may not be doable for the constraints of the operational environment. Managing and maintaining
 an open-source LLM would also require additional expertise and resources. While it would allow for complete control over 
@@ -1140,7 +1167,7 @@ reduces the F1 score of the system.</p>
 <p><strong>Justification</strong>: I rejected open-source LLMs for the AI reasoning later because of the computational resources and
 small context windows. The OT environment is already resource-constrained and latency-sensitive, so deploying a large 
 open-source LLM would not be practical. </p>
-<h4 id="local-on-device-edge-compute-self-hosted-phi-4-gemma-3">Local On-Device Edge Compute (Self-hosted Phi-4 / Gemma 3)</h4>
+<h4 id="local-on-device-edge-compute-self-hosted-phi-4-gemma-3">Local On-Device Edge Compute (Self-hosted Phi-4 / Gemma 3)<a class="headerlink" href="#local-on-device-edge-compute-self-hosted-phi-4-gemma-3" title="Permanent link"></a></h4>
 <p><strong>Considerations</strong>: Deploying a local on-device edge compute solution would provide complete control over the model 
 and data, on our own IPC edge hardware and entirely inside the IDMZ. The performance and capabilities of these models 
 may not meet the requirements of the system but could provide a good option for a failover or backup reasoning engine.</p>
@@ -1166,7 +1193,7 @@ mandatory to partition the resources.  As noted in <a href="/docs/fat/FAT-03-saf
 and <a href="/docs/infrastructure.md">Infrastructure Design Document</a>, I will cap the usage of the CPU to 40% to prevent it 
 from starving the critical real-time processes of the system. In addition to this, the IPC must have sufficient RAM
 (at least 16GB) and a compatible GPU to run Phi-4-mini effectively.</p>
-<h3 id="graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents">Graph-Based Orchestration Engines vs. Linear Pipeline / Autonomous Agents</h3>
+<h3 id="graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents">Graph-Based Orchestration Engines vs. Linear Pipeline / Autonomous Agents<a class="headerlink" href="#graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents" title="Permanent link"></a></h3>
 <p>I chose LangGraph as the orchestration engine for the AI reasoning layer because of its support for complex graph-based
 execution and its ability to handle large context windows with strict schema enforcement. These are all critical for the
 real-time monitoring and control requirements of the system. </p>
@@ -1174,10 +1201,10 @@ real-time monitoring and control requirements of the system. </p>
 which could be catastrophic for Industrial Safety. LangChain is highly deterministic but it lacks the cyclic routing
 required to handle complex errors or fallback loops.</p>
 <p><strong>Justification</strong>: The LangGraph Agent provides a structured, deterministic execution environment that is essential for
-the safety-critical nature of the system. Nodes represent discrete reasoning tasks (e.g., "Check Bounds," "Query RAG"),
+the safety-critical nature of the system. Nodes represent discrete reasoning tasks (e.g., &ldquo;Check Bounds,&rdquo; &ldquo;Query RAG&rdquo;),
 and edges define exactly how the agent can route between states. This means that the AI cannot invent a new execution
 path.</p>
-<h3 id="ntp-vs-ptp-for-time-synchronization">NTP vs PTP for Time Synchronization</h3>
+<h3 id="ntp-vs-ptp-for-time-synchronization">NTP vs PTP for Time Synchronization<a class="headerlink" href="#ntp-vs-ptp-for-time-synchronization" title="Permanent link"></a></h3>
 <p>I chose to use PTP (Precision Time Protocol - <strong>IEEE 1588v2</strong>) instead of NTP (Network Time Protocol) because PTP provides a much higher
 level of precision and accuracy, which is critical for the real-time monitoring and control requirements.</p>
 <p><strong>Tradeoff</strong>: NTP is simpler and easy to configure, however it only guarantees millisecond accuracy. This introduces

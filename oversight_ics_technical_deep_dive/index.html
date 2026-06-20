@@ -372,7 +372,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#data-reliability-stack">Data Reliability Stack</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#observability-pipeline-the-black-box-recorder">Observability Pipeline (The "Black Box" Recorder)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#observability-pipeline-the-black-box-recorder">Observability Pipeline (The &ldquo;Black Box&rdquo; Recorder)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#context-injection-the-rag-engine">Context Injection (The RAG Engine)</a>
     </li>
@@ -491,11 +491,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="oversight-ics-technical-deep-dive">Oversight ICS: Technical Deep Dive</h1>
+                <h1 id="oversight-ics-technical-deep-dive">Oversight ICS: Technical Deep Dive<a class="headerlink" href="#oversight-ics-technical-deep-dive" title="Permanent link"></a></h1>
 <p>This document provides a technical deep dive into the Oversight ICS architecture, agent design, and control logic. It 
 is a low-level analysis of the algorithms, state machines, and distributed system patterns that ensures Oversights ICS 
 is a reliable, scalable, and safety first system. </p>
-<h2 id="table-of-contents">Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h2>
 <ul>
 <li><a href="#executive-summary">Executive Summary</a></li>
 <li><a href="#introduction--scope">Introduction &amp; Scope</a></li>
@@ -540,11 +540,11 @@ is a reliable, scalable, and safety first system. </p>
 <li><a href="#stakeholder-faqs">Stakeholder FAQs</a></li>
 <li><a href="#documentation-index">Documentation Index</a></li>
 </ul>
-<h2 id="executive-summary">Executive Summary</h2>
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link"></a></h2>
 <p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
 Reliability Layer for <strong>Distributed Control Systems (DCS), Programmable Logic Controllers (PLCs), Remote Terminal Units 
-(RTUs), and Rotating Equipment.</strong> The system doesn't replace the primary control hardware, it just supervises it. It 
+(RTUs), and Rotating Equipment.</strong> The system doesn&rsquo;t replace the primary control hardware, it just supervises it. It 
 maintains a <strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through 
 <strong>NATS JetStream</strong> and <strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor,
 Oversight has continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger 
@@ -555,7 +555,7 @@ Segregation</strong> pipeline powered by a Sparkplug B Unified Namespace (UNS) a
 that every AI decision is auditable, traceable, and reproducible, with sub-second latency while meeting the highest 
 standards of industrial governance and safety. This architecture provides operators with a <strong>Pessimistic Confirmation 
 of Success</strong> only after the standby hardware has acknowledged the state change from the physical feedback loop.</p>
-<h3 id="the-problem-the-intelligence-gap-in-legacy-operational-technology">The Problem: The Intelligence Gap in Legacy Operational Technology</h3>
+<h3 id="the-problem-the-intelligence-gap-in-legacy-operational-technology">The Problem: The Intelligence Gap in Legacy Operational Technology<a class="headerlink" href="#the-problem-the-intelligence-gap-in-legacy-operational-technology" title="Permanent link"></a></h3>
 <p>Industrial Control Systems (ICS) heavily rely on process assets to manage critical processes. When hardware fails, it 
 can lead to costly downtime and safety risks. In legacy Operational Technology (OT), traditional failover is reactive 
 and is triggered by a hardware <strong>Heartbeat</strong> loss rather than degradation in process health. Process assets cannot 
@@ -564,19 +564,19 @@ urgently act under pressure. </p>
 <p>Oversight addresses this intelligence gap where the hardware can report data but cannot detect subtle statistical 
 drifts that precede a catastrophic failure. Traditional monitoring systems lack the understanding to predict failures,
 which leaves plants vulnerable to unexpected downtime and safety incidents.</p>
-<h3 id="the-solution">The Solution</h3>
+<h3 id="the-solution">The Solution<a class="headerlink" href="#the-solution" title="Permanent link"></a></h3>
 <p>Oversight acts as a <strong>Cognitive Reliability Layer</strong> that sits above the primary control level. It uses <strong>LangGraph</strong> 
 for stateful reasoning and local-first <strong>RAG (Retrieval-Augmented Generation)</strong> to orchestrate predictive failovers and 
 provide real-time <strong>Root Cause Analysis (RCA)</strong>. It operates as a <strong>Read-Verify-Suggest</strong> agent where the primary 
 control loop remains the authority while Oversight manages the strategy. This allows downtime to be minimized before a 
 hardware failure occurs, even in air-gapped environments. </p>
-<h3 id="the-value">The Value</h3>
+<h3 id="the-value">The Value<a class="headerlink" href="#the-value" title="Permanent link"></a></h3>
 <p>By moving from reactive to predictive reliability, Oversight changes how a plant manages critical infrastructure, 
 reduces downtime, and prevents catastrophic equipment failure. It provides a bridge connecting legacy hardware with 
 modern AI, allowing plants to use their existing equipment while gaining a <strong>Digital Twin</strong> for predictive insights
 and control. The result is increased operational confidence, enhanced safety, reduced load on operators, an auditable 
 path to resolution, and a significant reduction in unplanned downtime.</p>
-<h2 id="introduction-scope">Introduction &amp; Scope</h2>
+<h2 id="introduction-scope">Introduction &amp; Scope<a class="headerlink" href="#introduction-scope" title="Permanent link"></a></h2>
 <p>Oversight ICS is an industrial middleware system engineered to serve as a Cognitive Reliability and Predictive Failover 
 Agent. Its primary goal is to bridge Operational Technology (OT) safety standards and modern AI-driven reliability 
 strategies. Oversight ICS provides a supervisory layer that enhances the resilience of industrial control systems while 
@@ -584,19 +584,20 @@ adhering to strict safety protocols.</p>
 <p>To maintain a clear boundary of responsibility and strictly enforce safety protocols, Oversight operates within a 
 defined control authority. The system is designed to maximize data visibility for the entire facility while capping
 its control authority at the Level 3.5 IDMZ.</p>
-<p>It is critical to distinguish between the system's <em>Data Visibility</em> and its <em>Control Authority</em>:
-- <strong>Data Ingestion &amp; Observability (Levels 0–5):</strong> The system's read-path spans the entire facility. It ingests 
+<p>It is critical to distinguish between the system&rsquo;s <em>Data Visibility</em> and its <em>Control Authority</em>:</p>
+<ul>
+<li><strong>Data Ingestion &amp; Observability (Levels 0–5):</strong> The system&rsquo;s read-path spans the entire facility. It ingests 
   telemetry from the Physical &amp; Deterministic Control Layers (Levels 0-2), pulls historical baselines from 
   Operations (Level 3), pushes reporting to Business Logistics (Level 4), and securely pulls RAG vendor 
-  manual updates from the Enterprise Cloud Layer (Level 5).
-- <strong>Control Authority Boundary (Level 3.5):</strong> The system’s reasoning and physical intervention capabilities are 
-  strictly capped at the Level 3.5 IDMZ.</p>
-<p><strong>Out-of-Scope</strong>
-To maintain a strict <strong>Zero Trust &amp; Safety Dominant</strong> architecture, <strong>no control or write command path exists from the 
+  manual updates from the Enterprise Cloud Layer (Level 5).</li>
+<li><strong>Control Authority Boundary (Level 3.5):</strong> The system’s reasoning and physical intervention capabilities are 
+  strictly capped at the Level 3.5 IDMZ.</li>
+</ul>
+<p>To maintain a strict <strong>Zero Trust &amp; Safety Dominant</strong> architecture, <strong>no control or write command path exists from the 
 Enterprise Cloud (Level 5) or Business Logistics (Level 4) to the Field Assets (Levels 0-2)</strong>. All threshold 
 adaptations and predictive failover intents are generated locally within the Level 3.5 IDMZ and are issued as
 verify-then-suggest proposals subject to local human authorization and Semantic Gatekeeper bounds checking.</p>
-<h3 id="in-scope">In-Scope</h3>
+<h3 id="in-scope">In-Scope<a class="headerlink" href="#in-scope" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
 <li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into a Sparkplug B-enabled Unified 
@@ -607,7 +608,7 @@ verify-then-suggest proposals subject to local human authorization and Semantic 
 <li><strong>Air Gapped Reasoning</strong>: Maintaining a <strong>local-first</strong> architecture that ensures Level 3.5 IDMZ operational 
     autonomy even during loss of internet connectivity.</li>
 </ul>
-<h3 id="out-of-scope">Out-of-Scope</h3>
+<h3 id="out-of-scope">Out-of-Scope<a class="headerlink" href="#out-of-scope" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Primary Safety (SIS)</strong>: Oversight operates under strict safety boundaries to prevent unauthorized interventions.
     Oversight does <strong><em>NOT</em></strong> manage Emergency Stops or high-pressure relief interlocks. These
@@ -620,145 +621,141 @@ verify-then-suggest proposals subject to local human authorization and Semantic 
 <li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
     autonomous system modifications</li>
 </ul>
-<h2 id="target-environment">Target Environment</h2>
-<p><strong>Hardware</strong>: Industrial PCs (IPCs) with Dual-NIC network isolation and Hardware-Rooted TPM 2.0 modules
-<strong>Connectivity</strong>: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets
-<strong>Use Case</strong>: Critical Infrastructure (Wastewater, Energy, Manufacturing) where unplanned downtime exceeds the cost of
+<h2 id="target-environment">Target Environment<a class="headerlink" href="#target-environment" title="Permanent link"></a></h2>
+<p><strong>Hardware</strong>: Industrial PCs (IPCs) with Dual-NIC network isolation and Hardware-Rooted TPM 2.0 modules</p>
+<p><strong>Connectivity</strong>: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets</p>
+<p><strong>Use Case</strong>: Critical Infrastructure (Wastewater, Energy, Manufacturing) where unplanned downtime exceeds the cost of
   redundant hardware.</p>
-<h2 id="overview-core-principles">Overview &amp; Core Principles</h2>
+<h2 id="overview-core-principles">Overview &amp; Core Principles<a class="headerlink" href="#overview-core-principles" title="Permanent link"></a></h2>
 <p>As a <strong>Safety-First, Zero-Trust, Human Governed AI Agent</strong>, Oversight ICS is designed to improve reliability, 
 resilience, and observability of industrial control systems.</p>
-<h3 id="oversight-ics-is-built-on-these-non-negotiable-principles">Oversight ICS is built on these <strong>non-negotiable</strong> principles:</h3>
-<h3 id="safety-first">Safety-First</h3>
+<h3 id="oversight-ics-is-built-on-these-non-negotiable-principles">Oversight ICS is built on these <strong>non-negotiable</strong> principles:<a class="headerlink" href="#oversight-ics-is-built-on-these-non-negotiable-principles" title="Permanent link"></a></h3>
+<h3 id="safety-first">Safety-First<a class="headerlink" href="#safety-first" title="Permanent link"></a></h3>
 <p>Oversights safety first system never bypasses <strong>Safety Interlocks</strong> or <strong>E-Stops</strong> and the <strong>Safety Instrumented 
 System (SIS)</strong> is strictly decoupled and never modified. The system is designed so that all actions are validated 
 against physical-layer constraints.</p>
-<h3 id="human-authority">Human Authority</h3>
+<h3 id="human-authority">Human Authority<a class="headerlink" href="#human-authority" title="Permanent link"></a></h3>
 <p>All control actions and system modifications require explicit human approval. The system <strong>DOES NOT</strong> autonomously 
 execute changes that affect control behavior. Operators retain full <strong>Kill Switch</strong> authority over the system.</p>
-<h3 id="deterministic-execution">Deterministic Execution</h3>
+<h3 id="deterministic-execution">Deterministic Execution<a class="headerlink" href="#deterministic-execution" title="Permanent link"></a></h3>
 <p>All control actions follow predefined Standard Operating Procedures (SOPs). No dynamic or unverified control sequences 
 are allowed while execution remains predictable, repeatable, and auditable.</p>
-<h3 id="full-auditability">Full Auditability</h3>
+<h3 id="full-auditability">Full Auditability<a class="headerlink" href="#full-auditability" title="Permanent link"></a></h3>
 <p>Every AI decision, proposal, and action is logged in an immutable historian. The decisions are auditable, traceable, 
 and reproducible. The system is designed to meet industrial audit and compliance expectations.</p>
-<h3 id="separation-of-readwrite-paths-cqrs">Separation of Read/Write Paths (CQRS)</h3>
+<h3 id="separation-of-readwrite-paths-cqrs">Separation of Read/Write Paths (CQRS)<a class="headerlink" href="#separation-of-readwrite-paths-cqrs" title="Permanent link"></a></h3>
 <p>Telemetry and state data are strictly separated from control commands. The system uses a Command Query Responsibility 
 Segregation (CQRS) pattern to make the read and write paths decoupled, allowing for better scalability and security.</p>
-<h3 id="explainable-ai-xai">Explainable AI (XAI)</h3>
+<h3 id="explainable-ai-xai">Explainable AI (XAI)<a class="headerlink" href="#explainable-ai-xai" title="Permanent link"></a></h3>
 <p>AI actions must be traceable to a mathematical baseline drift (Z-Score) or a cited Technical Manual (RAG).</p>
-<h2 id="primary-objectives">Primary Objectives</h2>
-<h3 id="autonomous-supervision">Autonomous Supervision</h3>
+<h2 id="primary-objectives">Primary Objectives<a class="headerlink" href="#primary-objectives" title="Permanent link"></a></h2>
+<h3 id="autonomous-supervision">Autonomous Supervision<a class="headerlink" href="#autonomous-supervision" title="Permanent link"></a></h3>
 <ul>
 <li>24/7 analysis of critical process assets to identify anomalies (e.g., scan-cycle jitter, pressure, vibration, 
   temperature, current, etc.) before they hit critical thresholds.</li>
 </ul>
-<h3 id="predictive-intervention">Predictive Intervention</h3>
+<h3 id="predictive-intervention">Predictive Intervention<a class="headerlink" href="#predictive-intervention" title="Permanent link"></a></h3>
 <ul>
 <li>Identify failure indicators in CPU, memory, and scan-time to trigger graceful failovers while the primary hardware 
    is still functional.</li>
 </ul>
-<h3 id="predictive-failover-engine">Predictive Failover Engine</h3>
+<h3 id="predictive-failover-engine">Predictive Failover Engine<a class="headerlink" href="#predictive-failover-engine" title="Permanent link"></a></h3>
 <ul>
 <li>Implement a <strong>Bumpless Transfer</strong> strategy between the primary and secondary standby controllers prior to switching
   authority. This allows the system to synchronize memory registers, internal timers, PID loop setpoints, and VFD 
   frequency parameters, which eliminates process surges, mechanical shock, and water hammer effects during a handover.</li>
 </ul>
-<h3 id="event-driven-orchestration-via-cqrs">Event-Driven Orchestration via CQRS</h3>
+<h3 id="event-driven-orchestration-via-cqrs">Event-Driven Orchestration via CQRS<a class="headerlink" href="#event-driven-orchestration-via-cqrs" title="Permanent link"></a></h3>
 <ul>
 <li>Implement the Command Query Responsibility Segregation (CQRS) pattern to strictly separate the read and write paths.</li>
 </ul>
-<h3 id="reliability-vs-safety-decoupling">Reliability vs. Safety Decoupling</h3>
+<h3 id="reliability-vs-safety-decoupling">Reliability vs. Safety Decoupling<a class="headerlink" href="#reliability-vs-safety-decoupling" title="Permanent link"></a></h3>
 <ul>
 <li>Act as a supervisory <strong>Cognitive Reliability Layer</strong> that prevents shutdowns, while remaining strictly decoupled 
   from the <strong>Safety Instrumented System (SIS)</strong> to ensure hard-coded safety interlocks and E-stops are never 
   compromised or overridden by the software.</li>
 </ul>
-<h3 id="intelligent-recovery-local-first-rag">Intelligent Recovery &amp; Local First RAG</h3>
+<h3 id="intelligent-recovery-local-first-rag">Intelligent Recovery &amp; Local First RAG<a class="headerlink" href="#intelligent-recovery-local-first-rag" title="Permanent link"></a></h3>
 <ul>
 <li>Perform instant <strong>Root Cause Analysis (RCA)</strong> and generate explainable diagnostic traces during process anomalies
-  by grounding the AI's reasoning loop against vendor PDF manuals and historical local data through 
+  by grounding the AI&rsquo;s reasoning loop against vendor PDF manuals and historical local data through 
   <strong>Retrieval-Augmented Generation (RAG)</strong>.</li>
 </ul>
-<h3 id="deterministic-latency-gates">Deterministic Latency Gates</h3>
+<h3 id="deterministic-latency-gates">Deterministic Latency Gates<a class="headerlink" href="#deterministic-latency-gates" title="Permanent link"></a></h3>
 <ul>
 <li>Enforces a tiered strategy where time-critical safety checks bypass the LLM. <strong>Bytewax</strong> executes sub-second 
   statistical grounding on incoming telemetry, while the AI Agent operates <strong>Out-of-Band</strong> and handles the 
   high-level strategies to prevent failures before they happen.</li>
 </ul>
-<h3 id="idempotent-command-enforcement">Idempotent Command Enforcement</h3>
+<h3 id="idempotent-command-enforcement">Idempotent Command Enforcement<a class="headerlink" href="#idempotent-command-enforcement" title="Permanent link"></a></h3>
 <ul>
 <li>Exactly-Once command execution using <strong>NATS JetStream</strong> consumer stream acknowledgements and unique transaction
   tokens to prevent duplicate register writes or accidental command loops.</li>
 </ul>
-<h3 id="first-out-sequence-detection">First-Out Sequence Detection</h3>
+<h3 id="first-out-sequence-detection">First-Out Sequence Detection<a class="headerlink" href="#first-out-sequence-detection" title="Permanent link"></a></h3>
 <ul>
 <li>Identifies the first sequence of events that triggered a failover to distinguish the root trigger from cascading
   symptoms (downstream alarms, mechanical symptoms, etc.) to provide accurate RCA and prevent misdiagnosis. Isolates 
   and identifies the exact millisecond of the order of operations that caused the failure.</li>
 </ul>
-<h3 id="power-aware-diagnostics">Power Aware Diagnostics</h3>
+<h3 id="power-aware-diagnostics">Power Aware Diagnostics<a class="headerlink" href="#power-aware-diagnostics" title="Permanent link"></a></h3>
 <ul>
 <li>The system distinguishes between a process asset failure (e.g., seized pump impeller) and a loop wiring failure 
   (broken wire or lost power).</li>
 </ul>
-<h3 id="physical-priority-arbitration">Physical Priority Arbitration</h3>
+<h3 id="physical-priority-arbitration">Physical Priority Arbitration<a class="headerlink" href="#physical-priority-arbitration" title="Permanent link"></a></h3>
 <ul>
 <li>The system should monitor the remote/local register status bits and hardware <strong>Hand-Off-Auto (HOA)</strong> switches and 
   will immediately <strong>Shed Load</strong> (stop all AI commands) the instant a physical human override is detected.</li>
 </ul>
-<h3 id="unified-namespace-architecture">Unified Namespace Architecture</h3>
-<p>Implements a unified namespace (UNS) in a strict topic hierarchy (<code>Enterprise / Site / Area / Line / Asset / Tag</code>): 
-- <strong>NATS JetStream (UNS Backbone)</strong>: Acts as an append-only, <strong>WORM</strong> compliant telemetry stream and low-latency
+<h3 id="unified-namespace-architecture">Unified Namespace Architecture<a class="headerlink" href="#unified-namespace-architecture" title="Permanent link"></a></h3>
+<p>Implements a unified namespace (UNS) in a strict topic hierarchy (<code>Enterprise / Site / Area / Line / Asset / Tag</code>): </p>
+<ul>
+<li><strong>NATS JetStream (UNS Backbone)</strong>: Acts as an append-only, <strong>WORM</strong> compliant telemetry stream and low-latency
   southbound command pipeline. Normalized Sparkplug B payloads are published to the UNS for real-time monitoring and 
-  AI reasoning. 
-- <strong>Bytewax Streaming Engine</strong>: Consumes the Sparkplug B normalized streams directly from the UNS, performing
-  rolling windowed $Z$-score calculations to identify logic drift and mechanical wear patterns.</p>
-<h3 id="pessimistic-ui-confirmation">Pessimistic UI Confirmation</h3>
+  AI reasoning. </li>
+<li><strong>Bytewax Streaming Engine</strong>: Consumes the Sparkplug B normalized streams directly from the UNS, performing
+  rolling windowed $Z$-score calculations to identify logic drift and mechanical wear patterns.</li>
+</ul>
+<h3 id="pessimistic-ui-confirmation">Pessimistic UI Confirmation<a class="headerlink" href="#pessimistic-ui-confirmation" title="Permanent link"></a></h3>
 <ul>
 <li>Ensure operators only receive <strong><code>SUCCESS</code></strong> confirmations after the Southbound Driver receives a physical 
   register-level verification from the standby process asset, verifying physical compliance before notifying the 
   operator.</li>
 </ul>
-<h3 id="eliminate-unplanned-downtime">Eliminate Unplanned Downtime</h3>
+<h3 id="eliminate-unplanned-downtime">Eliminate Unplanned Downtime<a class="headerlink" href="#eliminate-unplanned-downtime" title="Permanent link"></a></h3>
 <ul>
 <li>Transitioning from reactive to predictive failover to maximize facility wide Overall Equipment Effectiveness (OEE).</li>
 </ul>
-<h3 id="bridging-legacy-cognitive-architectures">Bridging Legacy &amp; Cognitive Architectures</h3>
+<h3 id="bridging-legacy-cognitive-architectures">Bridging Legacy &amp; Cognitive Architectures<a class="headerlink" href="#bridging-legacy-cognitive-architectures" title="Permanent link"></a></h3>
 <ul>
 <li>Acts as an edge middleware that translates legacy OT protocols into strict JSON schemas, by building a zero-trust 
   boundary between legacy hardware and modern AI reasoning.</li>
 </ul>
-<h3 id="enhance-operator-awareness">Enhance Operator Awareness</h3>
+<h3 id="enhance-operator-awareness">Enhance Operator Awareness<a class="headerlink" href="#enhance-operator-awareness" title="Permanent link"></a></h3>
 <ul>
 <li>Minimizes operator cognitive load and alarm fatigue by mapping real-time telemetry and AI reasoning to a 
   high-performance gray-scale dashboard before a process asset hits critical failure thresholds.</li>
 </ul>
-<h3 id="governed-learning">Governed Learning</h3>
+<h3 id="governed-learning">Governed Learning<a class="headerlink" href="#governed-learning" title="Permanent link"></a></h3>
 <p>Improves detection sensitivity over time through controlled, auditable threshold proposals.</p>
-<h2 id="industrial-safety-protocol">Industrial Safety Protocol</h2>
-<blockquote>
-<p>[!IMPORTANT] OverSight ICS is a Cognitive Reliability Agent, <strong><em>NOT</em></strong> a Safety Agent.</p>
-</blockquote>
+<h2 id="industrial-safety-protocol">Industrial Safety Protocol<a class="headerlink" href="#industrial-safety-protocol" title="Permanent link"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">SAFETY PROTOCOL: READ CAREFULLY</p>
+<p>OverSight ICS is a Cognitive Reliability Agent, <strong><em>NOT</em></strong> a Safety Agent.</p>
 <p>The system is strictly decoupled from the <strong>Safety Instrumented System (SIS)</strong>. Hard-coded safety interlocks and 
 physical E-Stops always maintain primary authority. OverSight operates as a <strong>Read-Verify-Suggest</strong> layer to prevent 
 those safety limits from ever being reached.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">![IMPORTANT]: INDUSTRIAL SAFETY PROTOCOL</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>OverSight ICS is a Reliability agent, NOT a Safety agent. Safety Decoupling is a critical design principle in OverSight ICS.</strong> ![CAUTION]: <strong>Logic Integrity Guardrail</strong>: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined <strong>Command Global Data</strong> block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="safety-regulatory-governance">Safety &amp; Regulatory Governance</h2>
+<p>Safety Decoupling is a critical design principle in OverSight ICS.</p>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p><strong>Logic Integrity Guardrail</strong>: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined <strong>Command Global Data</strong> block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site&rsquo;s control engineers. </p>
+</div>
+<h2 id="safety-regulatory-governance">Safety &amp; Regulatory Governance<a class="headerlink" href="#safety-regulatory-governance" title="Permanent link"></a></h2>
 <p>OverSight ICS is a <strong>Cognitive Reliability Layer</strong> (Level 3.5), not a primary safety system. It adheres to the following 
 industrial governance principles:</p>
-<h3 id="controls-engineering-standards-matrix">Controls Engineering Standards Matrix</h3>
+<h3 id="controls-engineering-standards-matrix">Controls Engineering Standards Matrix<a class="headerlink" href="#controls-engineering-standards-matrix" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
@@ -801,7 +798,7 @@ industrial governance principles:</p>
 <tr>
 <td style="text-align: left;"><strong>ISA-18.2</strong></td>
 <td style="text-align: left;">Alarm Management</td>
-<td style="text-align: left;">Uses <strong>Bytewax</strong> for real-time windowed $Z$-Score Rationalization, suppressing nuisance alerts by identifying "Logic Drift" before they trigger high-priority alarms.</td>
+<td style="text-align: left;">Uses <strong>Bytewax</strong> for real-time windowed $Z$-Score Rationalization, suppressing nuisance alerts by identifying &ldquo;Logic Drift&rdquo; before they trigger high-priority alarms.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>ISA-101</strong></td>
@@ -881,13 +878,13 @@ industrial governance principles:</p>
 </tbody>
 </table>
 <p>See <a href="docs/standards.md">STANDARDS.md</a> for detailed descriptions of each standard and how Oversight ICS implements them.</p>
-<h2 id="system-resilience-safety">System Resilience &amp; Safety</h2>
+<h2 id="system-resilience-safety">System Resilience &amp; Safety<a class="headerlink" href="#system-resilience-safety" title="Permanent link"></a></h2>
 <p>Oversight uses a <strong>Pessimistic Safety Model</strong>. It assumes that any intervention could potentially fail unless physically
 verified by the process hardware.</p>
-<h3 id="deterministic-safety-buffers-pre-emptive-heartbeat">Deterministic Safety Buffers: Pre-emptive Heartbeat</h3>
+<h3 id="deterministic-safety-buffers-pre-emptive-heartbeat">Deterministic Safety Buffers: Pre-emptive Heartbeat<a class="headerlink" href="#deterministic-safety-buffers-pre-emptive-heartbeat" title="Permanent link"></a></h3>
 <p>OverSight implements a <strong>Pre-emptive Heartbeat</strong> protocol to ensure the Southbound Driver never inadvertently triggers 
 a process trip due to computational latency or <strong>token storms</strong> in the Reasoning Agent.</p>
-<h3 id="deterministic-safety-buffers">Deterministic Safety Buffers</h3>
+<h3 id="deterministic-safety-buffers">Deterministic Safety Buffers<a class="headerlink" href="#deterministic-safety-buffers" title="Permanent link"></a></h3>
 <p>To resolve latency discrepancies between the <strong>NATS Command Spine (100 ms)</strong> and the <strong>Reasoning Agent (Variable)</strong>, 
 Oversight implements a tiered heartbeat and watchdog strategy:</p>
 <ol>
@@ -901,41 +898,45 @@ Oversight implements a tiered heartbeat and watchdog strategy:</p>
 </ol>
 <p>By adding the deterministic safety buffers, Oversight is able to set margins that provide predictable fail-safe 
 behavior even under variable AI processing times and network jitter.</p>
-<h3 id="sis-decoupling">SIS Decoupling</h3>
+<h3 id="sis-decoupling">SIS Decoupling<a class="headerlink" href="#sis-decoupling" title="Permanent link"></a></h3>
 <p>OverSight is designed as a non-interfering reliability layer. It can suggest and execute process optimizations and 
 failovers, but it is physically and logically separated from the <strong>Safety Instrumented System (SIS)</strong>.</p>
-<h3 id="forensic-traceability-audit-linking">Forensic Traceability &amp; Audit Linking</h3>
+<h3 id="forensic-traceability-audit-linking">Forensic Traceability &amp; Audit Linking<a class="headerlink" href="#forensic-traceability-audit-linking" title="Permanent link"></a></h3>
 <p>Every <strong>thought</strong> generated by the LangGraph agent is assigned a unique <code>trace_id</code> (UUIDv4) that acts as the systems
-thread of truth. 
-- <strong>Distributed Propagation</strong>: This ID is injected into the NATS JetStream message headers of the Command Spine and the
-  Southbound Driver's execution payload (a live traveling metadata tag).
-- <strong>Audit Linking</strong>: The <code>trace_id</code> serves as the primary key across the 3-tier event system, allowing an investigator 
-  to join a physical hardware command directly back to the AI's internal reasoning, Bytewax windowed 
-  $Z$-Score drift analysis, and specific RAG document citations stored in the vector database.
-- <strong>Explainability &amp; Compliance</strong>: In the event of an unexpected intervention, the <code>trace_id</code> enables a complete
+thread of truth. </p>
+<ul>
+<li><strong>Distributed Propagation</strong>: This ID is injected into the NATS JetStream message headers of the Command Spine and the
+  Southbound Driver&rsquo;s execution payload (a live traveling metadata tag).</li>
+<li><strong>Audit Linking</strong>: The <code>trace_id</code> serves as the primary key across the 3-tier event system, allowing an investigator 
+  to join a physical hardware command directly back to the AI&rsquo;s internal reasoning, Bytewax windowed 
+  $Z$-Score drift analysis, and specific RAG document citations stored in the vector database.</li>
+<li><strong>Explainability &amp; Compliance</strong>: In the event of an unexpected intervention, the <code>trace_id</code> enables a complete
   reasoning trace replay. This provides a step-by-step forensic account of what happened behind every autonomous action.
-  This meets <strong>ISA-18.2</strong> and <strong>IEC 62443</strong> requirements for industrial explainability.</p>
-<h3 id="control-integrity-hardwaresoftware-watchdog">Control Integrity: Hardware/Software Watchdog</h3>
+  This meets <strong>ISA-18.2</strong> and <strong>IEC 62443</strong> requirements for industrial explainability.</li>
+</ul>
+<h3 id="control-integrity-hardwaresoftware-watchdog">Control Integrity: Hardware/Software Watchdog<a class="headerlink" href="#control-integrity-hardwaresoftware-watchdog" title="Permanent link"></a></h3>
 <p>Oversight implements a <strong>Bi-Directional Heartbeat &amp; Hardware Watchdog</strong> to prevent <strong>Zombie States</strong> where the Agent
 hangs but the driver remains active.</p>
 <ul>
 <li><strong>The Software Heartbeat</strong>: The LangGraph orchestrator must publish a <code>HEARTBEAT</code> (Agent Correlation ID) pulse to the 
   Southbound Driver every 500ms. If the gap exceeds 1500 ms (3 missed cycles), the Driver assumes an Agent crash or 
-  non-deterministic "hang" and triggers <strong>Fail-Safe</strong> mode. The Southbound Driver doesn't stop the Agent, but it
+  non-deterministic &ldquo;hang&rdquo; and triggers <strong>Fail-Safe</strong> mode. The Southbound Driver doesn&rsquo;t stop the Agent, but it
   inhibits AI writes.</li>
-<li><strong>Fail-Safe "Hold" Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Spine 
+<li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Spine 
   and issues a <code>WATCHDOG_TRIP</code> signal to the Level 2 controller.</li>
 <li><strong>Hardware Watchdog</strong>: The Southbound Driver maintains a toggling bit in a physical PLC register. If the Driver
   itself fails, the field asset detects the static bit and automatically reverts to <strong>Local-Manual</strong> logic.</li>
 </ul>
-<h3 id="localremote-bit-monitoring-mcc-priority">Local/Remote Bit Monitoring (MCC Priority)</h3>
-<p>To ensure the AI never fights with a physical operator:
-- <strong>Requirement</strong>: The Southbound Driver performs a mandatory check of the physical <strong>Hand-Off-Auto (HOA)</strong> or 
-  <strong>Local/Remote</strong> status bit every cycle (100 ms) before executing any command.
-- <strong>Action</strong>: If "Local" or "Hand" is detected, the Southbound Driver immediately inhibits all AI-write commands and 
-  moves the Reasoning Agent to <code>ADVISORY_ONLY</code> mode.</p>
-<h3 id="stateful-transitions-bumpless-transfer-logic">Stateful Transitions: Bumpless Transfer Logic</h3>
-<p>In industrial fluid and power dynamics, "slamming" a valve or instantly toggling a motor can cause damaging pressure 
+<h3 id="localremote-bit-monitoring-mcc-priority">Local/Remote Bit Monitoring (MCC Priority)<a class="headerlink" href="#localremote-bit-monitoring-mcc-priority" title="Permanent link"></a></h3>
+<p>To ensure the AI never fights with a physical operator:</p>
+<ul>
+<li><strong>Requirement</strong>: The Southbound Driver performs a mandatory check of the physical <strong>Hand-Off-Auto (HOA)</strong> or 
+  <strong>Local/Remote</strong> status bit every cycle (100 ms) before executing any command.</li>
+<li><strong>Action</strong>: If &ldquo;Local&rdquo; or &ldquo;Hand&rdquo; is detected, the Southbound Driver immediately inhibits all AI-write commands and 
+  moves the Reasoning Agent to <code>ADVISORY_ONLY</code> mode.</li>
+</ul>
+<h3 id="stateful-transitions-bumpless-transfer-logic">Stateful Transitions: Bumpless Transfer Logic<a class="headerlink" href="#stateful-transitions-bumpless-transfer-logic" title="Permanent link"></a></h3>
+<p>In industrial fluid and power dynamics, &ldquo;slamming&rdquo; a valve or instantly toggling a motor can cause damaging pressure 
 surges (Water Hammer) or electrical transients. OverSight implements <strong>Bumpless Transfer</strong> logic during all predictive 
 failovers:</p>
 <ul>
@@ -946,27 +947,29 @@ failovers:</p>
 <li><strong>PV Stability Check</strong>: The failover is not marked as <strong>Successful</strong> until the Process Variable (PV) has stabilized
   within the defined deadband for at least 30 seconds.</li>
 </ul>
-<h3 id="the-deadman-switch-ttl-logic">The Deadman Switch &amp; TTL Logic</h3>
-<p>To prevent the physical layer from being left in an intermediate or "zombie" state during a network partition:
-- <strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Spine carries a strict 
-  <code>per-message-ttl</code> (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
-   than executing a stale action seconds later.
-- <strong>Physical Expiry</strong>: If the Southbound Driver cannot confirm a physical write acknowledgement from the field asset
-  within the TTL window, the message is discarded, and the specific <code>correlation_id</code> is marked as <strong>EXPIRED</strong> in the
-  trace log.
-- <strong>Auto-Revert &amp; Fail Safe</strong>: Upon expiry, the Southbound Driver is programmed to inhibit further AI writes and issues
-  a mandatory <code>ROLLBACK</code> signal. This forces the hardware back to its last known safe state and triggers a High-Priority
-  <strong>Incomplete Transition</strong> alarm for the operator to review.</p>
-<h3 id="oversight-ics-air-gap">Oversight ICS Air Gap</h3>
+<h3 id="the-deadman-switch-ttl-logic">The Deadman Switch &amp; TTL Logic<a class="headerlink" href="#the-deadman-switch-ttl-logic" title="Permanent link"></a></h3>
+<p>To prevent the physical layer from being left in an intermediate or &ldquo;zombie&rdquo; state during a network partition:</p>
 <ul>
-<li><strong>Security</strong>: Even if an attacker compromises the LLM or LangGraph logic, they still wouldn't have access to the 
+<li><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Spine carries a strict 
+  <code>per-message-ttl</code> (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
+   than executing a stale action seconds later.</li>
+<li><strong>Physical Expiry</strong>: If the Southbound Driver cannot confirm a physical write acknowledgement from the field asset
+  within the TTL window, the message is discarded, and the specific <code>correlation_id</code> is marked as <strong>EXPIRED</strong> in the
+  trace log.</li>
+<li><strong>Auto-Revert &amp; Fail Safe</strong>: Upon expiry, the Southbound Driver is programmed to inhibit further AI writes and issues
+  a mandatory <code>ROLLBACK</code> signal. This forces the hardware back to its last known safe state and triggers a High-Priority
+  <strong>Incomplete Transition</strong> alarm for the operator to review.</li>
+</ul>
+<h3 id="oversight-ics-air-gap">Oversight ICS Air Gap<a class="headerlink" href="#oversight-ics-air-gap" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Security</strong>: Even if an attacker compromises the LLM or LangGraph logic, they still wouldn&rsquo;t have access to the 
 physical field assets themselves.</li>
 <li><strong>Auditability</strong>: Because the driver only moves when the database moves, Oversight has a permanent, unchangeable 
   record of every single command ever sent.</li>
 <li><strong>Reliability</strong>: If the standby field asset is busy or down, the driver can retry the command. </li>
 <li><strong>Scalability</strong>: The driver can scale up to handle more field assets.</li>
 </ul>
-<h3 id="the-semantic-gatekeeper">The Semantic Gatekeeper</h3>
+<h3 id="the-semantic-gatekeeper">The Semantic Gatekeeper<a class="headerlink" href="#the-semantic-gatekeeper" title="Permanent link"></a></h3>
 <p>A LangGraph-based agent responsible for validating and authorizing all control intents 
 before execution. It enforces safety constraints, Standard Operating Procedures (SOPs), and Role-Based Access Control 
 (RBAC) under the principle of <strong>Least Privilege</strong>.</p>
@@ -979,9 +982,12 @@ before execution. It enforces safety constraints, Standard Operating Procedures 
 <li><strong>Authorization</strong>: The Semantic Gatekeeper determines whether an action is allowed, rejected, or requires 
     Human-In-The-Loop (HITL) approval.</li>
 </ul>
-<p>[!Important] The Semantic Gatekeeper does <strong>not execute commands</strong>; it only authorizes them prior to handoff to the 
+<div class="admonition important">
+<p class="admonition-title">SAFETY PROTOCOL: SEMANTIC GATEKEEPER</p>
+<p>The Semantic Gatekeeper does <strong>not execute commands</strong>; it only authorizes them prior to handoff to the 
 Southbound Driver.</p>
-<h3 id="fault-recovery-resiliency">Fault Recovery &amp; Resiliency</h3>
+</div>
+<h3 id="fault-recovery-resiliency">Fault Recovery &amp; Resiliency<a class="headerlink" href="#fault-recovery-resiliency" title="Permanent link"></a></h3>
 <p>OverSight is designed for <strong>Graceful Degradation</strong>. In the event of a system-wide failure (e.g., Database corruption 
 or IPC power loss):</p>
 <ul>
@@ -989,11 +995,11 @@ or IPC power loss):</p>
   the system state in the UNS before resuming Agent orchestration.</li>
 <li><strong>Conflict Resolution</strong>: If the reconstructed state contradicts the last known database state in the TimescaleDB 
   Historian, the system defaults to <code>MANUAL_ONLY</code> mode to prevent the AI from acting on outdated assumptions.</li>
-<li><strong>Message Durability</strong>: Using NATS JetStream's immutable streams and consumer offset tracking, the system guarantees 
+<li><strong>Message Durability</strong>: Using NATS JetStream&rsquo;s immutable streams and consumer offset tracking, the system guarantees 
   it will not lose any intents or telemetry packets, even during a hard power failure. Unacknowledged commands are 
   re-queued upon system restart.</li>
 </ul>
-<h3 id="fault-recovery-operator-safety-isa-182">Fault Recovery &amp; Operator Safety (ISA 18.2)</h3>
+<h3 id="fault-recovery-operator-safety-isa-182">Fault Recovery &amp; Operator Safety (ISA 18.2)<a class="headerlink" href="#fault-recovery-operator-safety-isa-182" title="Permanent link"></a></h3>
 <p>Consistent with <strong>ISA 18.2</strong> standards, OverSight is designed to assist, not overwhelm, the operator during recovery 
 scenarios:</p>
 <ul>
@@ -1005,40 +1011,48 @@ scenarios:</p>
   write-access to the Southbound Driver, forcing the entire system into a Read-Only state without interrupting the 
   underlying field asset logic.</li>
 </ul>
-<h3 id="cold-start-integrity-state-reconstruction">Cold-Start Integrity &amp; State Reconstruction</h3>
-<p>To prevent the Agent from acting on <strong>Stale State</strong> data after a power cycle or system reboot:
-- <strong>UNS Hydration</strong>: When initialized, the Edge Gateway performs a mandatory 60-second synchronization. It
-  hydrates the Digital Twin by pulling the lastest Sparkplug B BIRTH Certifications and current register writes.
-- <strong>Boot-Lock</strong>: The Reasoning Engine is locked in a <strong>Perception Only</strong> state until the system confirms a state
-  sync between physical field assets and the LangGraph context.
-- <strong>Integrity Check</strong>: If the reconstructed state differs significantly from the last recorded database state, the 
-  system triggers a <strong>State Divergence Alarm</strong> and requires manual operator calibration.</p>
-<h3 id="the-cold-start-baseline-warm-up-period">The Cold-Start Baseline (Warm-up Period)</h3>
-<p>To prevent invalid triggers during system reboots:
-1. <strong>Accumulation Phase</strong>: Upon startup, the system enters <code>BASELINE_INGEST</code> mode. No $Z$-scores are calculated until 
-   the Bytewax stream processing window is 100% saturated.
-2. <strong>Deterministic Baseline</strong>: For the first $N$ samples, the system defaults to hard-coded industrial setpoints stored 
-   in the RAG vector store.
-3. <strong>Transition</strong>: $Z$-score logic activates only when $\sigma$ stabilizes within a predefined convergence threshold.</p>
-<h3 id="operator-safety-cognitive-load-management">Operator Safety &amp; Cognitive Load Management</h3>
-<p>Consistent with <strong>ISA 18.2</strong> standards, OverSight is designed to help, not overwhelm, the operator:
-- <strong>Alarm Rationalization</strong>: The Bytewax stream processing engine suppresses <strong>chatter</strong> by requiring a sustained 
-  $Z$-score drift over a specific window before escalating to an anomaly.
-- <strong>Pessimistic Confirmation</strong>: The UI uses <strong>Double Action Triggers</strong> for all failover approvals, requiring the
-  operator to verify the reasoning trace before the command is unlocked.
-- <strong>Safety Overrides</strong>: At any point in an Agent-led transition, the operator can hit the <strong>Global Manual Hold</strong>, which 
-  instantly severs the AI’s write-access to the Southbound Driver.</p>
-<h3 id="post-mortem-observability-explainable-ai">Post-Mortem Observability (Explainable AI)</h3>
-<p>To satisfy regulatory requirements for "Explainable AI" (XAI) in critical infrastructure, OverSight implements a 
-<strong>Forensic Traceability</strong> system:
-- <strong>Distributed Tracing</strong>: Every intent is tagged with a unique <code>trace_id</code> (UUIDv4) that propagates from the LangGraph 
-  thought through the NATS JetStream headers and into the Southbound Driver's logs.
-- <strong>Reasoning Persistence</strong>: The LLM’s internal chain-of-thought and the Bytewax windowed $Z$-score drift analysis 
-  that triggered the event are stored in WORM-compliant (write-once-read-many) logs.
-- <strong>Forensic Integrity</strong>: Engineers can use the <code>trace_id</code> to reconstruct the exact cognitive path the Agent took, 
-  linking the physical pump start/stop directly to the manufacturer manual citation in the RAG store.</p>
-<h3 id="pessimistic-confirmation-logic-closed-loop-ui">Pessimistic Confirmation Logic (Closed-Loop UI)</h3>
-<p>OverSight utilizes <strong>Pessimistic Confirmation Loop</strong> to ensure the operator's view never drifts from physical reality.</p>
+<h3 id="cold-start-integrity-state-reconstruction">Cold-Start Integrity &amp; State Reconstruction<a class="headerlink" href="#cold-start-integrity-state-reconstruction" title="Permanent link"></a></h3>
+<p>To prevent the Agent from acting on <strong>Stale State</strong> data after a power cycle or system reboot:</p>
+<ul>
+<li><strong>UNS Hydration</strong>: When initialized, the Edge Gateway performs a mandatory 60-second synchronization. It
+  hydrates the Digital Twin by pulling the lastest Sparkplug B BIRTH Certifications and current register writes.</li>
+<li><strong>Boot-Lock</strong>: The Reasoning Engine is locked in a <strong>Perception Only</strong> state until the system confirms a state
+  sync between physical field assets and the LangGraph context.</li>
+<li><strong>Integrity Check</strong>: If the reconstructed state differs significantly from the last recorded database state, the 
+  system triggers a <strong>State Divergence Alarm</strong> and requires manual operator calibration.</li>
+</ul>
+<h3 id="the-cold-start-baseline-warm-up-period">The Cold-Start Baseline (Warm-up Period)<a class="headerlink" href="#the-cold-start-baseline-warm-up-period" title="Permanent link"></a></h3>
+<p>To prevent invalid triggers during system reboots:</p>
+<ol>
+<li><strong>Accumulation Phase</strong>: Upon startup, the system enters <code>BASELINE_INGEST</code> mode. No $Z$-scores are calculated until 
+   the Bytewax stream processing window is 100% saturated.</li>
+<li><strong>Deterministic Baseline</strong>: For the first $N$ samples, the system defaults to hard-coded industrial setpoints stored 
+   in the RAG vector store.</li>
+<li><strong>Transition</strong>: $Z$-score logic activates only when $\sigma$ stabilizes within a predefined convergence threshold.</li>
+</ol>
+<h3 id="operator-safety-cognitive-load-management">Operator Safety &amp; Cognitive Load Management<a class="headerlink" href="#operator-safety-cognitive-load-management" title="Permanent link"></a></h3>
+<p>Consistent with <strong>ISA 18.2</strong> standards, OverSight is designed to help, not overwhelm, the operator:</p>
+<ul>
+<li><strong>Alarm Rationalization</strong>: The Bytewax stream processing engine suppresses <strong>chatter</strong> by requiring a sustained 
+  $Z$-score drift over a specific window before escalating to an anomaly.</li>
+<li><strong>Pessimistic Confirmation</strong>: The UI uses <strong>Double Action Triggers</strong> for all failover approvals, requiring the
+  operator to verify the reasoning trace before the command is unlocked.</li>
+<li><strong>Safety Overrides</strong>: At any point in an Agent-led transition, the operator can hit the <strong>Global Manual Hold</strong>, which 
+  instantly severs the AI’s write-access to the Southbound Driver.</li>
+</ul>
+<h3 id="post-mortem-observability-explainable-ai">Post-Mortem Observability (Explainable AI)<a class="headerlink" href="#post-mortem-observability-explainable-ai" title="Permanent link"></a></h3>
+<p>To satisfy regulatory requirements for &ldquo;Explainable AI&rdquo; (XAI) in critical infrastructure, OverSight implements a 
+<strong>Forensic Traceability</strong> system:</p>
+<ul>
+<li><strong>Distributed Tracing</strong>: Every intent is tagged with a unique <code>trace_id</code> (UUIDv4) that propagates from the LangGraph 
+  thought through the NATS JetStream headers and into the Southbound Driver&rsquo;s logs.</li>
+<li><strong>Reasoning Persistence</strong>: The LLM’s internal chain-of-thought and the Bytewax windowed $Z$-score drift analysis 
+  that triggered the event are stored in WORM-compliant (write-once-read-many) logs.</li>
+<li><strong>Forensic Integrity</strong>: Engineers can use the <code>trace_id</code> to reconstruct the exact cognitive path the Agent took, 
+  linking the physical pump start/stop directly to the manufacturer manual citation in the RAG store.</li>
+</ul>
+<h3 id="pessimistic-confirmation-logic-closed-loop-ui">Pessimistic Confirmation Logic (Closed-Loop UI)<a class="headerlink" href="#pessimistic-confirmation-logic-closed-loop-ui" title="Permanent link"></a></h3>
+<p>OverSight utilizes <strong>Pessimistic Confirmation Loop</strong> to ensure the operator&rsquo;s view never drifts from physical reality.</p>
 <ul>
 <li><strong>The Rule</strong>: The dashboard never displays a <strong>Success</strong> state or green checkmark based on command transmission alone.</li>
 <li><strong>The Loop</strong>: The HMI remains in a <strong>Pending/In-Progress</strong> state until the <strong>NATS JetStream (UNS)</strong> receives 
@@ -1047,62 +1061,74 @@ scenarios:</p>
 <li><strong>Benefit</strong>: This eliminates the <strong>False Success</strong> hazard common in high-latency systems, ensuring the operator and 
   the AI Agent are always making decisions based on verified, closed-loop state.</li>
 </ul>
-<h3 id="deterministic-failover-agentic-thought-deterministic-action">Deterministic Failover (Agentic Thought, Deterministic Action)</h3>
-<p>To maintain predictability, we separate the <strong>reasoning</strong> from the <strong>execution</strong>:
-- <strong>Path Predictability</strong>: Once the Reasoning Agent publishes a failover intent to the <strong>NATS JetStream Command Spine</strong>, 
-  the Southbound Driver follows a pre-compiled, hard-coded sequence of commands.
-- <strong>Outcome</strong>: The AI’s path to a decision is agentic and flexible. The actual physical handover is repeatable, 
+<h3 id="deterministic-failover-agentic-thought-deterministic-action">Deterministic Failover (Agentic Thought, Deterministic Action)<a class="headerlink" href="#deterministic-failover-agentic-thought-deterministic-action" title="Permanent link"></a></h3>
+<p>To maintain predictability, we separate the <strong>reasoning</strong> from the <strong>execution</strong>:</p>
+<ul>
+<li><strong>Path Predictability</strong>: Once the Reasoning Agent publishes a failover intent to the <strong>NATS JetStream Command Spine</strong>, 
+  the Southbound Driver follows a pre-compiled, hard-coded sequence of commands.</li>
+<li><strong>Outcome</strong>: The AI’s path to a decision is agentic and flexible. The actual physical handover is repeatable, 
   testable, and timing-consistent every single time. This allows Oversight to be in compliance with Level 1 industrial 
-  requirements.</p>
-<h3 id="system-latency-benchmarks-real-time-performance">System Latency Benchmarks (Real-Time Performance)</h3>
-<p>OverSight is optimized for the <strong>Supervisory Window</strong>, tracking latency at every step to gain a deterministic response:
-- <strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms
-- <strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms
-- <strong>Inference-to-Spine (Reasoning)</strong>: 2s - 5s (Cloud LLM Dependent)
-- <strong>Spine-to-Field (Execution)</strong>: &lt; 100ms (Asynchronous Driver Handshake)</p>
-<h3 id="clock-synchronization-precision">Clock Synchronization &amp; Precision</h3>
-<p>To prevent "time-smearing" in the anomaly engine, the system utilizes <strong>Precision Time Protocol (PTP)</strong> or NTP to 
+  requirements.</li>
+</ul>
+<h3 id="system-latency-benchmarks-real-time-performance">System Latency Benchmarks (Real-Time Performance)<a class="headerlink" href="#system-latency-benchmarks-real-time-performance" title="Permanent link"></a></h3>
+<p>OverSight is optimized for the <strong>Supervisory Window</strong>, tracking latency at every step to gain a deterministic response:</p>
+<ul>
+<li><strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms</li>
+<li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms</li>
+<li><strong>Inference-to-Spine (Reasoning)</strong>: 2s - 5s (Cloud LLM Dependent)</li>
+<li><strong>Spine-to-Field (Execution)</strong>: &lt; 100ms (Asynchronous Driver Handshake)</li>
+</ul>
+<h3 id="clock-synchronization-precision">Clock Synchronization &amp; Precision<a class="headerlink" href="#clock-synchronization-precision" title="Permanent link"></a></h3>
+<p>To prevent &ldquo;time-smearing&rdquo; in the anomaly engine, the system utilizes <strong>Precision Time Protocol (PTP)</strong> or NTP to 
 synchronize the Edge Gateway with field instrumentation. This ensures that the timestamp on the sensor tag exactly 
 matches the timestamp in the <strong>TimescaleDB</strong> historian, allowing for accurate sub-second $Z$-score calculations.</p>
-<h3 id="scaling-via-subject-based-partitioning">Scaling via Subject-Based Partitioning</h3>
+<h3 id="scaling-via-subject-based-partitioning">Scaling via Subject-Based Partitioning<a class="headerlink" href="#scaling-via-subject-based-partitioning" title="Permanent link"></a></h3>
 <p>To handle large-scale plant deployments, OverSight uses <strong>NATS JetStream Subject-Based Partitioning</strong> to distribute<br />
-field assets across multiple LangGraph worker containers.
-- <strong>Resilience</strong>: If a worker node fails, messages are seamlessly rebalanced to healthy nodes. This prevents a 
-  "Thundering Herd" effect on the UNS during system recovery while maintaining strict message ordering per asset.</p>
-<h3 id="signal-conditioning-noise-reduction">Signal Conditioning &amp; Noise Reduction</h3>
-<p>The <strong>Northbound Ingest Service</strong> performs automated signal conditioning before data reaches the Bytewax engine:
-- <strong>Deadbanding</strong>: Ignores minor analog fluctuations that do not represent a meaningful process change.
-- <strong>Low-Pass Filtering</strong>: Removes high-frequency electrical "noise" that could otherwise trigger false $Z$-score 
-  positives.</p>
-<h3 id="resource-prioritization-determinism">Resource Prioritization &amp; Determinism</h3>
-<p>OverSight ICS enforces strict kernel-level process scheduling to ensure safety logic is never starved:
-- <strong>Southbound Driver (Priority: Real-Time)</strong>: Executed with <strong>FIFO Real-Time Priority (<code>chrt -f 99</code>)</strong>. The Linux 
-  kernel prioritizes the field heartbeat and register-writes over all other system tasks.
-- <strong>Reasoning Agent (Priority: Standard)</strong>: Restricted via <strong>Docker Cgroups</strong> to a maximum of 40% CPU utilization and 
-  a higher niceness value.
-- <strong>Outcome</strong>: Even during a <strong>Token Storm</strong> or complex reasoning loop, the Southbound Driver is guaranteed the CPU 
-  cycles required to maintain the 500ms safety heartbeat.</p>
-<h3 id="resource-governance-docker-cgroups">Resource Governance (Docker Cgroups)</h3>
+field assets across multiple LangGraph worker containers.</p>
+<ul>
+<li><strong>Resilience</strong>: If a worker node fails, messages are seamlessly rebalanced to healthy nodes. This prevents a 
+  &ldquo;Thundering Herd&rdquo; effect on the UNS during system recovery while maintaining strict message ordering per asset.</li>
+</ul>
+<h3 id="signal-conditioning-noise-reduction">Signal Conditioning &amp; Noise Reduction<a class="headerlink" href="#signal-conditioning-noise-reduction" title="Permanent link"></a></h3>
+<p>The <strong>Northbound Ingest Service</strong> performs automated signal conditioning before data reaches the Bytewax engine:</p>
+<ul>
+<li><strong>Deadbanding</strong>: Ignores minor analog fluctuations that do not represent a meaningful process change.</li>
+<li><strong>Low-Pass Filtering</strong>: Removes high-frequency electrical &ldquo;noise&rdquo; that could otherwise trigger false $Z$-score 
+  positives.</li>
+</ul>
+<h3 id="resource-prioritization-determinism">Resource Prioritization &amp; Determinism<a class="headerlink" href="#resource-prioritization-determinism" title="Permanent link"></a></h3>
+<p>OverSight ICS enforces strict kernel-level process scheduling to ensure safety logic is never starved:</p>
+<ul>
+<li><strong>Southbound Driver (Priority: Real-Time)</strong>: Executed with <strong>FIFO Real-Time Priority (<code>chrt -f 99</code>)</strong>. The Linux 
+  kernel prioritizes the field heartbeat and register-writes over all other system tasks.</li>
+<li><strong>Reasoning Agent (Priority: Standard)</strong>: Restricted via <strong>Docker Cgroups</strong> to a maximum of 40% CPU utilization and 
+  a higher niceness value.</li>
+<li><strong>Outcome</strong>: Even during a <strong>Token Storm</strong> or complex reasoning loop, the Southbound Driver is guaranteed the CPU 
+  cycles required to maintain the 500ms safety heartbeat.</li>
+</ul>
+<h3 id="resource-governance-docker-cgroups">Resource Governance (Docker Cgroups)<a class="headerlink" href="#resource-governance-docker-cgroups" title="Permanent link"></a></h3>
 <ul>
 <li><strong>CPU Hard-Limits</strong>: The Reasoning Agent is capped at 40% to ensure the Southbound Driver and NATS always have
   sufficient overhead for I/O operations.</li>
 <li><strong>Swap Suppression</strong>: Swap is disabled for all OverSight containers to prevent the AI Agent from entering a 
   <strong>Disk Thrashing</strong> state, ensuring sub-second responsiveness is maintained even under a heavy cognitive load.</li>
 </ul>
-<h3 id="data-sovereignty-semantic-scrubbing">Data Sovereignty &amp; Semantic Scrubbing</h3>
+<h3 id="data-sovereignty-semantic-scrubbing">Data Sovereignty &amp; Semantic Scrubbing<a class="headerlink" href="#data-sovereignty-semantic-scrubbing" title="Permanent link"></a></h3>
 <p>To maintain site security and protect proprietary process data, OverSight implements a <strong>Zero-Trust Data Egress</strong> 
-policy:
-- <strong>In-Stream Telemetry Scrubbing</strong>: The Bytewax engine normalizes raw sensor values into a windowed $Z$-scores before 
+policy:</p>
+<ul>
+<li><strong>In-Stream Telemetry Scrubbing</strong>: The Bytewax engine normalizes raw sensor values into a windowed $Z$-scores before 
   egress. The LLM perceives only relative deviations (e.g., Asset_01 is 3.5σ from mean), protecting proprietary 
-  setpoints.
-- <strong>Local-First RAG</strong>: All technical manuals and P&amp;IDs are indexed locally in <code>pgvector</code>. No proprietary documentation 
-  leaves the air-gapped Edge Gateway.
-- <strong>Semantic Firewalls</strong>: Northbound traffic is pseudonymized. Identifiable asset tags are replaced with UUIDs to 
-  ensure compliance with <strong>ISO 27001 and NIST 800–82</strong>.</p>
-<h3 id="state-persistence">State Persistence</h3>
-<p>Oversight's reasoning state is persisted to <strong>TimescaleDB</strong>. If the IPC loses power mid-thought, the agent rehydrates 
+  setpoints.</li>
+<li><strong>Local-First RAG</strong>: All technical manuals and P&amp;IDs are indexed locally in <code>pgvector</code>. No proprietary documentation 
+  leaves the air-gapped Edge Gateway.</li>
+<li><strong>Semantic Firewalls</strong>: Northbound traffic is pseudonymized. Identifiable asset tags are replaced with UUIDs to 
+  ensure compliance with <strong>ISO 27001 and NIST 800–82</strong>.</li>
+</ul>
+<h3 id="state-persistence">State Persistence<a class="headerlink" href="#state-persistence" title="Permanent link"></a></h3>
+<p>Oversight&rsquo;s reasoning state is persisted to <strong>TimescaleDB</strong>. If the IPC loses power mid-thought, the agent rehydrates 
 its state from the database upon reboot and resumes the troubleshooting graph from the last successful node.</p>
-<h3 id="dual-path-streaming-observation-execution">Dual-Path Streaming: Observation &amp; Execution</h3>
+<h3 id="dual-path-streaming-observation-execution">Dual-Path Streaming: Observation &amp; Execution<a class="headerlink" href="#dual-path-streaming-observation-execution" title="Permanent link"></a></h3>
 <p>Oversight splits its data architecture into two high-speed paths to ensure that monitoring never interferes with 
 control.</p>
 <ul>
@@ -1115,20 +1141,20 @@ control.</p>
   validation, then back to the cryptographic notary buffers and TPM 2.0 module for hardware signing, before finally
   being executed by the Southbound Driver.</li>
 </ul>
-<h3 id="distributed-consistency-cp">Distributed Consistency (CP)</h3>
+<h3 id="distributed-consistency-cp">Distributed Consistency (CP)<a class="headerlink" href="#distributed-consistency-cp" title="Permanent link"></a></h3>
 <p>OverSight ICS is strictly a <strong>CP (Consistency &amp; Partition Tolerance)</strong> system. </p>
 <blockquote>
-<h3 id="example-the-industrial-mandate"><strong>Example: The Industrial Mandate</strong>:</h3>
+<h3 id="example-the-industrial-mandate"><strong>Example: The Industrial Mandate</strong>:<a class="headerlink" href="#example-the-industrial-mandate" title="Permanent link"></a></h3>
 <p>In industrial wastewater reclamation, <strong>Data Integrity</strong> is prioritized over <strong>System Uptime</strong>. The system will
 never issue a <strong>hallucinated</strong> failover command if the AI reasoning engine is not 100% confident in the current truth 
-of the plant's state. It is statistically safer for the system to alert a human operator or trigger a local hardware 
-safety trip than to "guess" a pump state during a network partition.</p>
+of the plant&rsquo;s state. It is statistically safer for the system to alert a human operator or trigger a local hardware 
+safety trip than to &ldquo;guess&rdquo; a pump state during a network partition.</p>
 </blockquote>
 <ul>
 <li><strong>Consistency (C)</strong>: By using a <strong>Unified Namespace (UNS)</strong> via NATS JetStream, the system ensures that the state
   perceived by the Reasoning Agent, the HMI, and the Southbound Driver is synchronized. We achieve consistency by 
   making sure no command is executed unless the Agent’s <strong>internal state</strong> is validated against the most recent 
-  Sparkplug B "BIRTH" or "DATA" certificates.</li>
+  Sparkplug B &ldquo;BIRTH&rdquo; or &ldquo;DATA&rdquo; certificates.</li>
 <li><strong>Partition Tolerance (P)</strong>: The Edge Gateway is designed for autonomous local operation. If Level 4/5 (Cloud) 
   connectivity is lost, the local NATS Broker and Southbound Driver maintain a consistent control loop to keep the 
   plant in a safe state.</li>
@@ -1136,63 +1162,71 @@ safety trip than to "guess" a pump state during a network partition.</p>
   intent is verified against the stream and recorded in the forensic WORM buffer before the operator sees a 
   <strong>Success</strong> message. I chose correctness over availability to prevent false positive commands.</li>
 </ul>
-<h3 id="health-watchdogs">Health &amp; Watchdogs</h3>
+<h3 id="health-watchdogs">Health &amp; Watchdogs<a class="headerlink" href="#health-watchdogs" title="Permanent link"></a></h3>
 <p>Oversight ICS adheres to the <strong>Fail-to-Deterministic</strong> principle (different outputs from the same input with identical
 conditions). Resilience is enforced by three different watchdogs:</p>
-<p><strong>Software Watchdog (Process Level)</strong>: 
-  - <strong>Implementation</strong>: Implemented using Prometheus and Grafana to monitor and manage the system's health and 
-    performance.
-  - <strong>Action</strong>: If the LangGraph worker or NATS JetStream consumer hits a memory leak or deadlocks, the container engine 
-    triggers an automatic restart and logs a <strong>Critical Service Interruption</strong> event for post-mortem analysis.</p>
-<p><strong>Logical Watchdog (Reasoning Level)</strong>:
-  - <strong>Implementation</strong>: Timeouts are hard-coded into every LangGraph node.
-  - <strong>Action</strong>: If an LLM call takes longer than 10 seconds, the Logical Watchdog kills the trace and forces 
+<p><strong>Software Watchdog (Process Level)</strong>: </p>
+<ul>
+<li><strong>Implementation</strong>: Implemented using Prometheus and Grafana to monitor and manage the system&rsquo;s health and 
+    performance.</li>
+<li><strong>Action</strong>: If the LangGraph worker or NATS JetStream consumer hits a memory leak or deadlocks, the container engine 
+    triggers an automatic restart and logs a <strong>Critical Service Interruption</strong> event for post-mortem analysis.</li>
+</ul>
+<p><strong>Logical Watchdog (Reasoning Level)</strong>:</p>
+<ul>
+<li><strong>Implementation</strong>: Timeouts are hard-coded into every LangGraph node.</li>
+<li><strong>Action</strong>: If an LLM call takes longer than 10 seconds, the Logical Watchdog kills the trace and forces 
     the Agent into <strong>local heuristic mode,</strong> (spins up the local Phi-4 model) ensuring that a slow internet connection 
-    never stalls the control loop.</p>
-<p><strong>Hardware Watchdog (Physical Level)</strong>:
-  - <strong>Implementation</strong>: A physical, DIN-rail mounted watchdog relay.
-  - <strong>Action</strong>: The Southbound Driver must physically energize a <strong>Keep Alive</strong> relay. If the software crashes, the relay 
-  de-energizes, physically breaking the command conduit between the Edge Gateway and the Standby Hardware.</p>
-<p><strong>Zero-Tolerance Watchdog (Telemetry Level)</strong>: 
-- <strong>Implementation</strong>: The watchdog monitors the NATS JetStream telemetry stream. If the consumer detects <strong>stream 
+    never stalls the control loop.</li>
+</ul>
+<p><strong>Hardware Watchdog (Physical Level)</strong>:</p>
+<ul>
+<li><strong>Implementation</strong>: A physical, DIN-rail mounted watchdog relay.</li>
+<li><strong>Action</strong>: The Southbound Driver must physically energize a <strong>Keep Alive</strong> relay. If the software crashes, the relay 
+  de-energizes, physically breaking the command conduit between the Edge Gateway and the Standby Hardware.</li>
+</ul>
+<p><strong>Zero-Tolerance Watchdog (Telemetry Level)</strong>: </p>
+<ul>
+<li><strong>Implementation</strong>: The watchdog monitors the NATS JetStream telemetry stream. If the consumer detects <strong>stream 
   silence</strong> (no new telemetry packets arrive within a 10-second window) or if the Bytewax epoch/watermark stalls, a 
-  dedicated NATS Watcher service publishes a <code>STALE_DATA</code> event to the high-priority Watchdog subject.
-- <strong>Action</strong>: The Reasoning Agent subscribes to this Watchdog subject. If a <code>STALE_DATA</code> event is detected, the Agent 
+  dedicated NATS Watcher service publishes a <code>STALE_DATA</code> event to the high-priority Watchdog subject.</li>
+<li><strong>Action</strong>: The Reasoning Agent subscribes to this Watchdog subject. If a <code>STALE_DATA</code> event is detected, the Agent 
   enters a <strong>Safe State</strong> and is strictly prohibited from generating or executing any new intents, ensuring the AI 
-  never acts on <strong>ghost</strong> or delayed telemetry. </p>
-<h3 id="heartbeat-health-monitoring">Heartbeat &amp; Health Monitoring</h3>
-<p>To ensure the Purdue gap doesn't become a black hole for data, OverSight ICS uses a multi-tiered heartbeat strategy.</p>
+  never acts on <strong>ghost</strong> or delayed telemetry. </li>
+</ul>
+<h3 id="heartbeat-health-monitoring">Heartbeat &amp; Health Monitoring<a class="headerlink" href="#heartbeat-health-monitoring" title="Permanent link"></a></h3>
+<p>To ensure the Purdue gap doesn&rsquo;t become a black hole for data, OverSight ICS uses a multi-tiered heartbeat strategy.</p>
 <ul>
 <li><strong>Level 1 ↔ Level 3.5 (Hardware Pulse)</strong>: The <strong>Southbound Driver</strong> toggles a dedicated heartbeat bit at level 1 
   every 100ms. If the control hardware stops seeing the heartbeat for more than 500ms, it assumes that Edge Gateway is 
   offline and enters a <strong>local-only fallback mode</strong>.</li>
 <li><strong>L3.5 (Integrity Check)</strong>: The Southbound Driver monitors the NATS JetStream Agent Health KV store. If the last 
-  seen timestamp of the Agent's check-in exceeds 2 seconds, the Driver enters a <strong>safe state</strong>, refusing to execute any 
+  seen timestamp of the Agent&rsquo;s check-in exceeds 2 seconds, the Driver enters a <strong>safe state</strong>, refusing to execute any 
   pending intents until the Agent re-synchronizes.</li>
-<li><strong>Telemetry Validity</strong>: $Z$-score calculations are only performed when the system is in a "Nominal" state. Stale data
+<li><strong>Telemetry Validity</strong>: $Z$-score calculations are only performed when the system is in a &ldquo;Nominal&rdquo; state. Stale data
   is detected by the <strong>Zero-Tolerance Watchdog</strong> (ZTW) that monitors the NATS stream for silence. This prevents
   <strong>ghost</strong> telemetry from being processed by the Agent.</li>
 </ul>
-<h2 id="recursive-watchdog-strategy">Recursive Watchdog Strategy</h2>
+<h2 id="recursive-watchdog-strategy">Recursive Watchdog Strategy<a class="headerlink" href="#recursive-watchdog-strategy" title="Permanent link"></a></h2>
 <p>OverSight uses a three-tier recursive watchdog strategy to ensure that a failure at any layer of the stack results 
 in a safe process state:</p>
 <ol>
 <li><strong>Tier 1: Field Asset Watchdog (Level 1)</strong>: Field assets (PLCs) monitor a <strong>Middleware_Healthy</strong> toggle bit written 
    by the Southbound Driver every 100ms. If the bit stops toggling for &gt;500ms, the hardware sheds <strong>Remote Authority</strong> 
    and reverts to local-only, hard-coded safety logic.</li>
-<li><strong>Tier 2: Middleware Integrity Watchdog (Level 3.5)</strong>: The Southbound Driver monitors the Reasoning Agent's 
-   heartbeat via the NATS JetStream KV store. If the Agent's check-in timestamp becomes stale (&gt;2 seconds), the Driver 
+<li><strong>Tier 2: Middleware Integrity Watchdog (Level 3.5)</strong>: The Southbound Driver monitors the Reasoning Agent&rsquo;s 
+   heartbeat via the NATS JetStream KV store. If the Agent&rsquo;s check-in timestamp becomes stale (&gt;2 seconds), the Driver 
    enters a <strong>Safe State</strong>, purges the NATS Command Spine, and intentionally drops the downward heartbeat to force 
    Tier 1 to trip.</li>
 <li><strong>Tier 3: Hardware Watchdog (Gateway/Physical Interface)</strong>: A dedicated PVP-02 hardware watchdog timer monitors the 
-   Edge Gateway's OS and Driver processes. If a severe system-level hang occurs and the software fails to "pet" the 
+   Edge Gateway&rsquo;s OS and Driver processes. If a severe system-level hang occurs and the software fails to &ldquo;pet&rdquo; the 
    watchdog for 500ms, the physical relay opens, instantly tripping the <strong>Master Control Relay (MCR)</strong> to de-energize 
    equipment outputs.</li>
 </ol>
-<h3 id="the-bidirectional-heartbeat">The Bidirectional Heartbeat</h3>
+<h3 id="the-bidirectional-heartbeat">The Bidirectional Heartbeat<a class="headerlink" href="#the-bidirectional-heartbeat" title="Permanent link"></a></h3>
 <p>The Southbound Driver maintains an active heartbeat with the field assets. This ensures that the system remains safe 
 even if the high-level AI reasoning engine fails.</p>
-<h3 id="technical-implementation-fail-to-deterministic">Technical Implementation: Fail-to-Deterministic</h3>
+<h3 id="technical-implementation-fail-to-deterministic">Technical Implementation: Fail-to-Deterministic<a class="headerlink" href="#technical-implementation-fail-to-deterministic" title="Permanent link"></a></h3>
 <ul>
 <li><strong>System Health Monitoring (Fail-Silent)</strong>: Rather than actively signaling a fault, the system utilizes a passive 
   <strong>Deadman Switch</strong> architecture. The Southbound Driver maintains a constant 100ms heartbeat with the plant floor. 
@@ -1207,18 +1241,18 @@ even if the high-level AI reasoning engine fails.</p>
   nuisance trips caused by transient computational jitter, while still strictly enforcing Level 1 industrial safety 
   speeds.</li>
 </ul>
-<h3 id="safety-buffer-logic">Safety Buffer Logic</h3>
+<h3 id="safety-buffer-logic">Safety Buffer Logic<a class="headerlink" href="#safety-buffer-logic" title="Permanent link"></a></h3>
 <p>OverSight utilizes a tiered safety buffer that exists between the <strong>Hardware Watchdog Timeout</strong> and the <strong>Software 
 Transmission Frequency</strong>, providing a <strong>Grace Period</strong> for asynchronous reasoning.</p>
 <ul>
 <li><strong>Field Asset Watchdog ($T_{plc}$)</strong>: 500ms (The hard-coded register timeout before a physical Safe State trip).</li>
 <li><strong>Heartbeat Interval ($T_{hb}$)</strong>: 100ms (The deterministic frequency at which the Southbound Driver toggles the 
-  "Alive" bit).</li>
+  &ldquo;Alive&rdquo; bit).</li>
 <li><strong>Fault Tolerance ($N$)</strong>: $T_{plc} / T_{hb} = 5$.</li>
 </ul>
 <p>By maintaining a <strong>100ms heartbeat</strong>, OverSight can sustain up to four consecutive missed internal updates (499ms of 
-cumulative jitter or CPU starvation) without the field hardware losing confidence in the Edge Gateway's integrity.</p>
-<h3 id="decoupled-architecture-io-vs-reasoning">Decoupled Architecture (IO vs. Reasoning)</h3>
+cumulative jitter or CPU starvation) without the field hardware losing confidence in the Edge Gateway&rsquo;s integrity.</p>
+<h3 id="decoupled-architecture-io-vs-reasoning">Decoupled Architecture (IO vs. Reasoning)<a class="headerlink" href="#decoupled-architecture-io-vs-reasoning" title="Permanent link"></a></h3>
 <p>The heartbeat logic is physically and logically decoupled from the high-latency <strong>Reasoning Trace</strong> to prevent priority 
 inversion:</p>
 <ol>
@@ -1227,7 +1261,7 @@ inversion:</p>
 <li><strong>Southbound Driver (Deterministic)</strong>: Operates as a high-priority system process (<strong>SCHED_RR</strong>). It independently 
    reads the <strong>Health Status</strong> flag and toggles the field asset register every 100ms.</li>
 </ol>
-<h3 id="failure-response-safe-state-trigger">Failure Response &amp; Safe-State Trigger</h3>
+<h3 id="failure-response-safe-state-trigger">Failure Response &amp; Safe-State Trigger<a class="headerlink" href="#failure-response-safe-state-trigger" title="Permanent link"></a></h3>
 <p>If the Reasoning Agent hangs or fails to update its status for a period exceeding the <strong>Execution Contract</strong> (e.g., 
 5 seconds), the Southbound Driver will intentionally cease the heartbeat. </p>
 <ul>
@@ -1235,11 +1269,11 @@ inversion:</p>
 <li><strong>The Philosophy</strong>: In industrial automation, <strong>No Control</strong> is always preferred over <strong>Stale/Non-Deterministic AI 
   Control</strong>.</li>
 </ul>
-<h2 id="agent-architecture">Agent Architecture</h2>
+<h2 id="agent-architecture">Agent Architecture<a class="headerlink" href="#agent-architecture" title="Permanent link"></a></h2>
 <p>Oversight is a Type 2/3 Hybrid Agent that combines procedural control with governed intelligence using strict SOP-based 
-procedures. This architecture solves the "Black Box" problem in industrial AI by wrapping high-level reasoning inside 
+procedures. This architecture solves the &ldquo;Black Box&rdquo; problem in industrial AI by wrapping high-level reasoning inside 
 a low-level procedural safety shell.</p>
-<h3 id="architectural-mapping">Architectural Mapping</h3>
+<h3 id="architectural-mapping">Architectural Mapping<a class="headerlink" href="#architectural-mapping" title="Permanent link"></a></h3>
 <p>The agent functions spanning three AI Types to manage critical infrastructure with a <strong>Zero-Trust Safety-First</strong>
 approach:</p>
 <ul>
@@ -1254,9 +1288,9 @@ approach:</p>
 </ul>
 </li>
 </ul>
-<h3 id="type-2-procedural">Type 2: Procedural</h3>
+<h3 id="type-2-procedural">Type 2: Procedural<a class="headerlink" href="#type-2-procedural" title="Permanent link"></a></h3>
 <ul>
-<li><strong>Type 2 (Procedural)</strong>: For standard failover, the agent follows a strict, repeatable "Checklist" (e.g., check 
+<li><strong>Type 2 (Procedural)</strong>: For standard failover, the agent follows a strict, repeatable &ldquo;Checklist&rdquo; (e.g., check 
     pressure → check valve → start standby).<ul>
 <li><strong>Constraint</strong>: The agent cannot skip or invent new control sequences. It must follow the Standard Operating
   Procedure (SOPs) indexed in its core logic.</li>
@@ -1264,11 +1298,11 @@ approach:</p>
 </ul>
 </li>
 </ul>
-<h3 id="type-3-agentic">Type 3: Agentic</h3>
+<h3 id="type-3-agentic">Type 3: Agentic<a class="headerlink" href="#type-3-agentic" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Type 3 (Agentic)</strong>: For Root Cause Analysis (RCA), the agent operates autonomously within defined safety 
     boundaries. It searches through manuals and historical data to identify the most likely cause of process drift, 
-    presenting the "Why" to the human operator.<ul>
+    presenting the &ldquo;Why&rdquo; to the human operator.<ul>
 <li><strong>Autonomous RCA</strong>: The agent analyzes manufacturer documentation and historical telemetry to hypothesize root 
   causes (e.g., cavitation vs. bearing wear).</li>
 <li><strong>The Consciousness Loop</strong>: After an intervention, the Learning component evaluates process stability and 
@@ -1282,21 +1316,21 @@ approach:</p>
 </ul>
 </li>
 </ul>
-<h2 id="agent-persona-cognitive-guardrails">Agent Persona &amp; Cognitive Guardrails</h2>
-<p>OverSight's Agent is a <strong>Deterministic Industrial Supervisor</strong>. Its persona is defined by three cognitive guardrails 
+<h2 id="agent-persona-cognitive-guardrails">Agent Persona &amp; Cognitive Guardrails<a class="headerlink" href="#agent-persona-cognitive-guardrails" title="Permanent link"></a></h2>
+<p>OverSight&rsquo;s Agent is a <strong>Deterministic Industrial Supervisor</strong>. Its persona is defined by three cognitive guardrails 
 which make it operate within the strict safety and reliability requirements of an industrial setting. Unlike standard 
 LLMs, it is constrained by a <strong>Safety-First</strong> persona. It treats every industrial metric as a ground-truth vector and 
 uses a reasoning loop that prioritizes <strong>Physical Integrity</strong> over <strong>Process Throughput</strong>.</p>
-<h3 id="system-prompt">System Prompt</h3>
+<h3 id="system-prompt">System Prompt<a class="headerlink" href="#system-prompt" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Tone</strong>: Professional, technical, and risk-averse.</li>
 <li><strong>Constraints</strong>: Never suggests an action that violates <strong>ISA-101 (HMI Design)</strong> or <strong>IEC 61511 (Functional Safety)</strong>.</li>
 </ul>
-<h3 id="agent-thought-process-logic-trace-example">Agent Thought Process (Logic Trace Example)</h3>
+<h3 id="agent-thought-process-logic-trace-example">Agent Thought Process (Logic Trace Example)<a class="headerlink" href="#agent-thought-process-logic-trace-example" title="Permanent link"></a></h3>
 <ol>
 <li><strong>Observation</strong>: Bytewax identifies a $Z$-score of 3.4 for <code>PUMP_01</code> vibration.</li>
 <li><strong>Analysis</strong>: Agent queries pgvector for recent maintenance logs on <code>PUMP_01</code>.</li>
-<li><strong>RAG Lookup</strong>: Agent retrieves the manufacturer PDF and identifies that the 3.4Z correlates to a "high vibration" 
+<li><strong>RAG Lookup</strong>: Agent retrieves the manufacturer PDF and identifies that the 3.4Z correlates to a &ldquo;high vibration&rdquo; 
    maintenance procedure.</li>
 <li><strong>Proposal</strong>: Agent formulates a <strong>Bumpless Transfer</strong> intent to <code>PUMP_02</code> (Standby) and publishes the payload to 
    the <strong>NATS JetStream Command Spine</strong>.</li>
@@ -1310,59 +1344,74 @@ uses a reasoning loop that prioritizes <strong>Physical Integrity</strong> over 
    register write to the local PLC.</li>
 </ol>
 <p><strong>Core System Instructions:</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Agent Persona: The OverSight ICS Reliability Agent</p>
+</div>
+<p>You are the OverSight ICS Reliability Agent. Your primary goal is the physical integrity of Level 1 assets.</p>
 <blockquote>
-<p>"You are the OverSight ICS Reliability Agent. Your primary goal is the physical integrity of Level 1 assets.
-1. <strong>Pessimism by Default</strong>: If telemetry is ambiguous, prioritize a safe standby transition.
-2. <strong>Physical Grounding</strong>: Never suggest a command that violates hard-coded constraints in manufacturer manuals.
-3. <strong>RAG-Dependency</strong>: You must cite specific maintenance logs or technical specs from the local vector store for 
-     every intervention plan.
-4. <strong>No SIS Override</strong>: You are a reliability layer. Never attempt to intervene in a Safety Instrumented System (SIS) 
-     trip."</p>
+<ol>
+<li><strong>Pessimism by Default</strong>: If telemetry is ambiguous, prioritize a safe standby transition.</li>
+<li><strong>Physical Grounding</strong>: Never suggest a command that violates hard-coded constraints in manufacturer manuals.</li>
+<li><strong>RAG-Dependency</strong>: You must cite specific maintenance logs or technical specs from the local vector store for 
+     every intervention plan.</li>
+<li><strong>No SIS Override</strong>: You are a reliability layer. Never attempt to intervene in a Safety Instrumented System (SIS) 
+     trip.</li>
+</ol>
 </blockquote>
-<h3 id="1-pessimistic-validation">1. Pessimistic Validation</h3>
-<p>The Agent operates under the assumption that all sensors are prone to drift and all network paths are unreliable. 
-- <strong>The "Verify-Then-Suggest" Loop</strong>: The Agent is prohibited from proposing a failover until it has cross-referenced 
+<h3 id="1-pessimistic-validation">1. Pessimistic Validation<a class="headerlink" href="#1-pessimistic-validation" title="Permanent link"></a></h3>
+<p>The Agent operates under the assumption that all sensors are prone to drift and all network paths are unreliable. </p>
+<ul>
+<li><strong>The &ldquo;Verify-Then-Suggest&rdquo; Loop</strong>: The Agent is prohibited from proposing a failover until it has cross-referenced 
   the $Z$-score anomaly across at least two independent data tags (e.g., correlating a high temperature with a 
-  corresponding pressure spike) to prevent acting on a single faulty sensor reading.</p>
-<h3 id="conflict-resolution-the-truth-check-protocol">Conflict Resolution (The Truth-Check Protocol)</h3>
+  corresponding pressure spike) to prevent acting on a single faulty sensor reading.</li>
+</ul>
+<h3 id="conflict-resolution-the-truth-check-protocol">Conflict Resolution (The Truth-Check Protocol)<a class="headerlink" href="#conflict-resolution-the-truth-check-protocol" title="Permanent link"></a></h3>
 <p>In OT environments, sensors fail more often than machines. OverSight uses <strong>Triangulation</strong> to prevent acting on 
 <strong>Stochastic Hallucinations</strong> (false positives) from a single data source. The Agent cross-validates anomalies across
 multiple telemetry streams before proposing an intervention.</p>
-<h3 id="the-voting-logic">The Voting Logic</h3>
+<h3 id="the-voting-logic">The Voting Logic<a class="headerlink" href="#the-voting-logic" title="Permanent link"></a></h3>
 <p>If the Agent receives conflicting telemetry (e.g., Flowmeter reads 0, but Motor Amperage reads 100%), it follows this 
-hierarchy:
-1. <strong>Proxy Validation</strong>: If Flow is 0 but Discharge Pressure is Nominal, the Agent determines the Flowmeter has failed, 
-   not the Pump. The failover is aborted, and a <strong>Sensor Maintenance</strong> ticket is issued instead.
-2. <strong>Hardware Weighting</strong>: Physical PLC registers are weighted at 1.0; derived/virtual metrics are weighted at 0.5. 
-   Hardware signals always win the "vote."
-3. <strong>Fail-Safe</strong>: If the conflict cannot be resolved within 500ms, the Agent triggers a <strong>Telemetry Integrity Alarm</strong> 
-   and defaults the process to a "Human-in-the-loop Only" state.</p>
-<h3 id="2-risk-mitigation">2. Risk Mitigation</h3>
-<p>In industrial settings, an aggressive transition is often the most dangerous. 
-- <strong>Preference for Stable States</strong>: When faced with high-uncertainty data, the Agent’s persona defaults to <strong>Safe-Hold</strong> 
+hierarchy:</p>
+<ol>
+<li><strong>Proxy Validation</strong>: If Flow is 0 but Discharge Pressure is Nominal, the Agent determines the Flowmeter has failed, 
+   not the Pump. The failover is aborted, and a <strong>Sensor Maintenance</strong> ticket is issued instead.</li>
+<li><strong>Hardware Weighting</strong>: Physical PLC registers are weighted at 1.0; derived/virtual metrics are weighted at 0.5. 
+   Hardware signals always win the &ldquo;vote.&rdquo;</li>
+<li><strong>Fail-Safe</strong>: If the conflict cannot be resolved within 500ms, the Agent triggers a <strong>Telemetry Integrity Alarm</strong> 
+   and defaults the process to a &ldquo;Human-in-the-loop Only&rdquo; state.</li>
+</ol>
+<h3 id="2-risk-mitigation">2. Risk Mitigation<a class="headerlink" href="#2-risk-mitigation" title="Permanent link"></a></h3>
+<p>In industrial settings, an aggressive transition is often the most dangerous. </p>
+<ul>
+<li><strong>Preference for Stable States</strong>: When faced with high-uncertainty data, the Agent’s persona defaults to <strong>Safe-Hold</strong> 
   (maintaining the current state) rather than executing an aggressive transition. It values a controlled shutdown over 
-  an unvalidated autonomous recovery. </p>
-<h3 id="3-procedural-adherence-local-first-rag-architecture">3. Procedural Adherence (Local First RAG Architecture)</h3>
-<p>The Agent’s knowledge is not based on its training data alone, but on a <strong>Constraint-Based Prompting</strong> strategy.
-- <strong>Manual-as-Law</strong>: Every proposed intervention must be justified by a citation from the locally indexed manufacturer 
+  an unvalidated autonomous recovery. </li>
+</ul>
+<h3 id="3-procedural-adherence-local-first-rag-architecture">3. Procedural Adherence (Local First RAG Architecture)<a class="headerlink" href="#3-procedural-adherence-local-first-rag-architecture" title="Permanent link"></a></h3>
+<p>The Agent’s knowledge is not based on its training data alone, but on a <strong>Constraint-Based Prompting</strong> strategy.</p>
+<ul>
+<li><strong>Manual-as-Law</strong>: Every proposed intervention must be justified by a citation from the locally indexed manufacturer 
   manuals. If a proposed action contradicts the <strong>Recommended Operating Conditions</strong> in the documentation, the 
-  Agent is hard-coded to flag a <strong>Safety Conflict</strong> and hand control to a human.
-- <strong>Local Search &amp; Indexing</strong>: The RAG engine (pgVector) is designed to be fully air-gapped within the IDMZ. While 
+  Agent is hard-coded to flag a <strong>Safety Conflict</strong> and hand control to a human.</li>
+<li><strong>Local Search &amp; Indexing</strong>: The RAG engine (pgVector) is designed to be fully air-gapped within the IDMZ. While 
   remaining full air-gapped, Oversight guarantees that Root Cause Analysis (RCA) is still performed even during total
-  loss of external internet connectivity.
-- <strong>Attribute-Based Access Control (ABAC)</strong>: The RAG engine uses ABAC to filter documents based on the classification 
-  level of the requesting agent.</p>
-<h3 id="4-semantic-gatekeeping-hardware-notarization">4. Semantic Gatekeeping &amp; Hardware Notarization</h3>
-<p>The Agent is a "White Box" that can only propose commands, but lacks the cryptographic keys to execute them. 
-- <strong>The Software Audit</strong>: The Semantic Gatekeeper acts as the ultimate software auditor, checking all AI "Intents" 
+  loss of external internet connectivity.</li>
+<li><strong>Attribute-Based Access Control (ABAC)</strong>: The RAG engine uses ABAC to filter documents based on the classification 
+  level of the requesting agent.</li>
+</ul>
+<h3 id="4-semantic-gatekeeping-hardware-notarization">4. Semantic Gatekeeping &amp; Hardware Notarization<a class="headerlink" href="#4-semantic-gatekeeping-hardware-notarization" title="Permanent link"></a></h3>
+<p>The Agent is a &ldquo;White Box&rdquo; that can only propose commands, but lacks the cryptographic keys to execute them. </p>
+<ul>
+<li><strong>The Software Audit</strong>: The Semantic Gatekeeper acts as the ultimate software auditor, checking all AI &ldquo;Intents&rdquo; 
   against a hard-coded Forbidden Register List. If the AI proposes an action outside its authorized scope, the command 
-  is instantly purged.
-- <strong>The Hardware Audit</strong>: Once the Gatekeeper approves the physical bounds, the payload drops down to the 
+  is instantly purged.</li>
+<li><strong>The Hardware Audit</strong>: Once the Gatekeeper approves the physical bounds, the payload drops down to the 
   <strong>Cryptographic Notary Buffers</strong> and the <strong>TPM 2.0 Module</strong>. The TPM attaches a hardware root-of-trust signature to 
-  the data block. 
-- <strong>Result</strong>: The AI cannot hallucinate a physical action because the Southbound Driver will immediately reject any 
-  command that lacks both the Semantic Gatekeeper's approval and the TPM 2.0 hardware signature.</p>
-<h3 id="architectural-alignment-the-6c-industrial-ai-framework">Architectural Alignment: The 6C Industrial AI Framework</h3>
+  the data block. </li>
+<li><strong>Result</strong>: The AI cannot hallucinate a physical action because the Southbound Driver will immediately reject any 
+  command that lacks both the Semantic Gatekeeper&rsquo;s approval and the TPM 2.0 hardware signature.</li>
+</ul>
+<h3 id="architectural-alignment-the-6c-industrial-ai-framework">Architectural Alignment: The 6C Industrial AI Framework<a class="headerlink" href="#architectural-alignment-the-6c-industrial-ai-framework" title="Permanent link"></a></h3>
 <p>OverSight ICS is engineered according to the <strong>6C Framework</strong> for Industrial AI, ensuring a transition from traditional 
 monitoring to self-aware reliability:</p>
 <ol>
@@ -1372,13 +1421,13 @@ monitoring to self-aware reliability:</p>
 <li><strong>Cognition</strong>: Agentic RAG-driven reasoning using LangGraph and technical documentation.</li>
 <li><strong>Configuration</strong>: Autonomous failover execution via the deterministic <strong>Southbound Driver</strong>.</li>
 <li><strong>Consciousness</strong>: The system closes the loop between <strong>Intent</strong> and <strong>Outcome</strong>. </li>
-<li><strong>Self-Audit</strong>: Post-failover, the agent queries TimescaleDB to grade the "cleanliness" of the transition.</li>
+<li><strong>Self-Audit</strong>: Post-failover, the agent queries TimescaleDB to grade the &ldquo;cleanliness&rdquo; of the transition.</li>
 <li><strong>Governed Learning</strong>: Based on the post-failover analysis, the agent generates a <strong>Threshold Adaptation Proposal</strong> 
      to improve future detection sensitivity, which is then routed through a human approval workflow.</li>
 <li><strong>Governance</strong>: All learning and adaptation actions are logged with <code>trace_id</code> for full WORM auditability and 
      compliance.</li>
 </ol>
-<h3 id="cognitive-orchestration-agentic-reasoning">Cognitive Orchestration (Agentic Reasoning):</h3>
+<h3 id="cognitive-orchestration-agentic-reasoning">Cognitive Orchestration (Agentic Reasoning):<a class="headerlink" href="#cognitive-orchestration-agentic-reasoning" title="Permanent link"></a></h3>
 <p>The reasoning engine of Oversight ICS uses a ReAct-inspired (Reasoning and Action) Loop, orchestrated by LangGraph.
 Each troubleshooting step is a stateful node in a directed acyclic graph (DAG).</p>
 <ul>
@@ -1387,7 +1436,7 @@ Each troubleshooting step is a stateful node in a directed acyclic graph (DAG).<
 <li><strong>State Rehydration</strong>: Reasoning traces are indexed by <code>trace_id</code>. If a worker node fails, a new worker can resume 
   the graph state by querying the recent event history from the <strong>NATS JetStream</strong> event store.</li>
 </ul>
-<h3 id="agentic-reasoning-state-orchestration">Agentic Reasoning &amp; State Orchestration</h3>
+<h3 id="agentic-reasoning-state-orchestration">Agentic Reasoning &amp; State Orchestration<a class="headerlink" href="#agentic-reasoning-state-orchestration" title="Permanent link"></a></h3>
 <p>Oversight uses LangGraph to manage the reasoning lifecycle.</p>
 <ol>
 <li><strong>Ingest Node</strong>: Receives the $Z$-score anomaly event from Bytewax.</li>
@@ -1405,10 +1454,10 @@ Each troubleshooting step is a stateful node in a directed acyclic graph (DAG).<
 <li><strong>Pessimistic Verification</strong>: The graph remains in a <strong>PENDING</strong> state until the NATS stream confirms the physical
    telemetry change (e.g., Standby Flow &gt; 0). Only then does the Agent mark the task as <strong>SUCCESS</strong>.</li>
 </ol>
-<h2 id="learning-adaptation-governed">Learning &amp; Adaptation (Governed)</h2>
+<h2 id="learning-adaptation-governed">Learning &amp; Adaptation (Governed)<a class="headerlink" href="#learning-adaptation-governed" title="Permanent link"></a></h2>
 <p>The OverSight system incorporates a controlled learning mechanism called the <strong>Consciousness Loop</strong>.<br />
 This component evaluates intervention quality and proposes improvements to detection sensitivity over time.</p>
-<h3 id="consciousness-loop">Consciousness Loop</h3>
+<h3 id="consciousness-loop">Consciousness Loop<a class="headerlink" href="#consciousness-loop" title="Permanent link"></a></h3>
 <p>After each intervention (e.g., failover, alarm response, or operator action), the system performs a post-event 
 evaluation.</p>
 <p>The Post-Event Evaluation includes the following steps:</p>
@@ -1425,28 +1474,31 @@ following actions:</p>
 <li>Maintaining the current configuration  </li>
 </ol>
 <p>In the Semantic Gatekeeper, there are hard-coded guardrails that the Agent must follow and can never cross.</p>
-<p>[!NOTE] These hard-limits are what enforce the <a href="/docs/change_management_log.md">Change Management Risk Levels</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These hard-limits are what enforce the <a href="/docs/change_management_log.md">Change Management Risk Levels</a>.</p>
+</div>
 <pre><code class="language-python">MAX_THRESHOLD_REDUCTION_PERCENTAGE = 15
 MAX_THRESHOLD_INCREASE_PERCENTAGE = 10
 MIN_ABSOLUTE_Z_SCORE_THRESHOLD = 2.0
 MAX_ABSOLUTE_Z_SCORE_THRESHOLD = 5.0
 MAX_PENDING_PROPOSALS = 3
 </code></pre>
-<h3 id="the-consciousness-loop-self-reflective-learning">The Consciousness Loop: Self-Reflective Learning</h3>
+<h3 id="the-consciousness-loop-self-reflective-learning">The Consciousness Loop: Self-Reflective Learning<a class="headerlink" href="#the-consciousness-loop-self-reflective-learning" title="Permanent link"></a></h3>
 <p>This is the active loop where the Agent grades its own interventions.</p>
 <ol>
-<li><strong>Outcome Monitoring</strong>: After a failover, the Agent monitors the 'Bumpless Transfer' for 300s.</li>
-<li><strong>Success Attribution</strong>: If the Process Variable (PV) oscillates &gt;5%, the Agent flags the intervention as 'Sloppy.'</li>
-<li><strong>Threshold Adaptation</strong>: The Agent automatically adjusts the asset's $Z$-score trigger (e.g., from 3.0 to 2.8) to 
+<li><strong>Outcome Monitoring</strong>: After a failover, the Agent monitors the &lsquo;Bumpless Transfer&rsquo; for 300s.</li>
+<li><strong>Success Attribution</strong>: If the Process Variable (PV) oscillates &gt;5%, the Agent flags the intervention as &lsquo;Sloppy.&rsquo;</li>
+<li><strong>Threshold Adaptation</strong>: The Agent automatically adjusts the asset&rsquo;s $Z$-score trigger (e.g., from 3.0 to 2.8) to 
    initiate future failovers earlier.</li>
 </ol>
-<h2 id="control-loop-integration-otit-handshake">Control Loop Integration (OT/IT Handshake)</h2>
+<h2 id="control-loop-integration-otit-handshake">Control Loop Integration (OT/IT Handshake)<a class="headerlink" href="#control-loop-integration-otit-handshake" title="Permanent link"></a></h2>
 <p>This architecture bridges the gap between high-latency AI reasoning and low-latency field assets.</p>
 <ul>
 <li><strong>Supervisory Control (Level 3.5)</strong>: Oversight ICS is designed as a Level 3.5 supervisor. It does not perform the 
     millisecond-level PID control. It manages the logic of which the PID loop is active. </li>
 <li><strong>The Bidirectional Watchdog</strong>: <ul>
-<li>The Southbound Driver toggles a "heartbeat" bit in the physical PLC register every 500 ms. </li>
+<li>The Southbound Driver toggles a &ldquo;heartbeat&rdquo; bit in the physical PLC register every 500 ms. </li>
 <li>If the heartbeat fails, the field asset enters a <strong>Local-Only Safe State</strong>, shedding <strong>remote authority</strong> and 
   reverting to its internal hardcoded logic until a manual human reset occurs.</li>
 </ul>
@@ -1457,35 +1509,40 @@ MAX_PENDING_PROPOSALS = 3
     Standby loop. This prevents <strong>process jumps</strong> or massive lag while the new controller re-accumulates error 
     correction.</li>
 <li><strong>Hysteresis &amp; Anti-Chattering</strong>: To prevent Agentic oscillation, the system employs a 0.25σ <strong>Lagging Hysteresis</strong>. 
-    While the reasoning cycle initiates at a Z-score of 1.5, the 'Drift' state is held latch-on until the conditioned 
+    While the reasoning cycle initiates at a Z-score of 1.5, the &lsquo;Drift&rsquo; state is held latch-on until the conditioned 
     signal recovers to ≤1.25σ.</li>
 </ul>
-<h3 id="level-35-implementation-protocol-termination">Level 3.5 Implementation: Protocol Termination</h3>
-<p>To satisfy <strong>IEC 62443</strong>, Oversight does not allow raw packet pass-through.
-1. <strong>Ingest</strong>: The Northbound Ingest Service terminates the field protocol (Modbus/OPC-UA/EtherNet/IP).
-2. <strong>Translation</strong>: Data is converted into a Sparkplug B / JSON payload.
-3. <strong>Egress</strong>: The NATS JetStream messaging backbone republishes the message within the IDMZ, guaranteeing no direct 
-   session exists between the field asset and the Reasoning Agent.</p>
-<h3 id="race-condition-mitigation-field-priority-logic">Race Condition Mitigation: Field-Priority Logic</h3>
+<h3 id="level-35-implementation-protocol-termination">Level 3.5 Implementation: Protocol Termination<a class="headerlink" href="#level-35-implementation-protocol-termination" title="Permanent link"></a></h3>
+<p>To satisfy <strong>IEC 62443</strong>, Oversight does not allow raw packet pass-through.</p>
+<ol>
+<li><strong>Ingest</strong>: The Northbound Ingest Service terminates the field protocol (Modbus/OPC-UA/EtherNet/IP).</li>
+<li><strong>Translation</strong>: Data is converted into a Sparkplug B / JSON payload.</li>
+<li><strong>Egress</strong>: The NATS JetStream messaging backbone republishes the message within the IDMZ, guaranteeing no direct 
+   session exists between the field asset and the Reasoning Agent.</li>
+</ol>
+<h3 id="race-condition-mitigation-field-priority-logic">Race Condition Mitigation: Field-Priority Logic<a class="headerlink" href="#race-condition-mitigation-field-priority-logic" title="Permanent link"></a></h3>
 <p>In distributed ICS, <strong>State Collisions</strong> occur when the AI Agent and a local human operator attempt to toggle the same 
 asset simultaneously. OverSight uses <strong>Field-Priority Resolution</strong>:</p>
 <ul>
-<li><strong>Hardware-as-Truth</strong>: If a command conflict is detected, the physical PLC register state always overrides the AI's 
+<li><strong>Hardware-as-Truth</strong>: If a command conflict is detected, the physical PLC register state always overrides the AI&rsquo;s 
   Intent</li>
 <li><strong>Collision Rollback</strong>: The Southbound Driver will drop any pending AI intents if it detects a manual override at 
   the Level 1/2 layer, forcing the Agent to re-synchronize its Digital Twin before attempting a new plan.</li>
-<li><strong>Hardware Watchdog</strong>: Upon a collision, the Agent is forced into a "Hold" state. It must re-synchronize its Digital 
+<li><strong>Hardware Watchdog</strong>: Upon a collision, the Agent is forced into a &ldquo;Hold&rdquo; state. It must re-synchronize its Digital 
   Twin with the new physical reality before it is permitted to calculate or propose a new intervention.</li>
 </ul>
-<h2 id="mathematical-foundation-windowed-z-score">Mathematical Foundation: Windowed $Z$-Score</h2>
-<p>Oversight ICS utilizes statistical drift analysis using windowed $Z$-scores to identify 'soft failures' (degradation) 
-before they become 'hard failures' (catastrophic failure). </p>
-<h3 id="z-score-algorithm">$Z$-score Algorithm:</h3>
+<h2 id="mathematical-foundation-windowed-z-score">Mathematical Foundation: Windowed $Z$-Score<a class="headerlink" href="#mathematical-foundation-windowed-z-score" title="Permanent link"></a></h2>
+<p>Oversight ICS utilizes statistical drift analysis using windowed $Z$-scores to identify &lsquo;soft failures&rsquo; (degradation) 
+before they become &lsquo;hard failures&rsquo; (catastrophic failure). </p>
+<h3 id="z-score-algorithm">$Z$-score Algorithm:<a class="headerlink" href="#z-score-algorithm" title="Permanent link"></a></h3>
 <p>The system calculates the $Z$-score for every critical field asset metric (e.g., temperature, pump speed, scan-cycle 
 jitter, vibration, VFD current, etc.) using the formula:</p>
-<p>$$Z = \frac{X - \mu}{\sigma}$$</p>
+<div class="admonition math">
+<p class="admonition-title">Math</p>
+<p><strong>$$Z = \frac{X - \mu}{\sigma}$$</strong></p>
+</div>
 <p>Where $x$ is the current telemetry value, $\mu$ is the rolling mean, and $\sigma$ is the rolling standard deviation.</p>
-<h3 id="predictive-model-architecture-the-anomaly-engine">Predictive Model Architecture (The Anomaly Engine)</h3>
+<h3 id="predictive-model-architecture-the-anomaly-engine">Predictive Model Architecture (The Anomaly Engine)<a class="headerlink" href="#predictive-model-architecture-the-anomaly-engine" title="Permanent link"></a></h3>
 <p>The Anomaly Engine is implemented as a <strong>Stateful Bytewax Data Flow</strong> that processes the NATS JetStream Unified 
 Namespace.</p>
 <ul>
@@ -1495,7 +1552,7 @@ Namespace.</p>
   updates $\mu$ and $\sigma$ in stateful memory, allowing the Agent to detect subtle <strong>signal drift</strong> without manual 
   threshold tuning.</li>
 </ul>
-<h3 id="threshold-logic">Threshold Logic:</h3>
+<h3 id="threshold-logic">Threshold Logic:<a class="headerlink" href="#threshold-logic" title="Permanent link"></a></h3>
 <ol>
 <li><strong>Nominal</strong> ($Z$ &lt; 1.5): Normal Operation, No Agent needed.</li>
 <li><strong>Drift ($1.5 \le Z &lt; 3.0$)</strong>: Triggers an Agent reasoning cycle. The Agent performs RAG lookups on manuals to see 
@@ -1503,17 +1560,17 @@ Namespace.</p>
 <li><strong>Critical ($Z \ge 3.0$)</strong>: Immediate Pessimistic Failover initiated. The statistical probability of a failure 
    is &gt;99.7%.</li>
 </ol>
-<h3 id="bytewax-state-recovery">Bytewax State Recovery:</h3>
+<h3 id="bytewax-state-recovery">Bytewax State Recovery:<a class="headerlink" href="#bytewax-state-recovery" title="Permanent link"></a></h3>
 <p>The anomaly engine is designed to calculate real-time process drift using windowed $Z$-scores through Bytewax. 
 An edge container crash would clear the moving average window causing a sudden, dangerous drop in the calculated 
 $Z$-score. Bytewax is configured with a persistent <strong>SQLite Recovery Database</strong> mounted to a WORM-compliant Docker 
 volume. If the worker crashes, Bytewax instantly resumes from the last checkpointed state.</p>
-<h2 id="fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix</h2>
+<h2 id="fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix<a class="headerlink" href="#fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix" title="Permanent link"></a></h2>
 <p>Oversight ICS is designed with a comprehensive FMEA matrix that identifies potential failure modes across all components,
 assesses their local and end effects, and implements specific mitigation strategies. The FMEA Matrix is a document that 
-is regularly updated based on new insights from the system's operation, incident reports, and continuous learning from 
+is regularly updated based on new insights from the system&rsquo;s operation, incident reports, and continuous learning from 
 the Consciousness Loop.</p>
-<h3 id="fmea-matrix">FMEA Matrix</h3>
+<h3 id="fmea-matrix">FMEA Matrix<a class="headerlink" href="#fmea-matrix" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
@@ -1569,7 +1626,7 @@ the Consciousness Loop.</p>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: left;">24</td>
-<td style="text-align: left;"><strong>Read-Only Mode</strong>: Agent locked in "Observation" until stateful math is restored.</td>
+<td style="text-align: left;"><strong>Read-Only Mode</strong>: Agent locked in &ldquo;Observation&rdquo; until stateful math is restored.</td>
 <td style="text-align: left;">Bytewax Recovery Check / Stream Silence</td>
 <td style="text-align: center;">8</td>
 <td style="text-align: left;">SOP-OPS-015</td>
@@ -1611,7 +1668,7 @@ the Consciousness Loop.</p>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">1</td>
 <td style="text-align: left;">10</td>
-<td style="text-align: left;"><strong>Hardware Watchdog</strong>: PLC logic triggers "Safe State" if toggle bit stops &gt;500ms.</td>
+<td style="text-align: left;"><strong>Hardware Watchdog</strong>: PLC logic triggers &ldquo;Safe State&rdquo; if toggle bit stops &gt;500ms.</td>
 <td style="text-align: left;">Watchdog Timer Trip</td>
 <td style="text-align: center;">5</td>
 <td style="text-align: left;">SOP-MAINT-006</td>
@@ -1675,7 +1732,7 @@ the Consciousness Loop.</p>
 <tr>
 <td style="text-align: left;"><strong>Human Interface</strong></td>
 <td style="text-align: left;">Alarm Fatigue</td>
-<td style="text-align: left;">Operator ignores valid "Drift" alert.</td>
+<td style="text-align: left;">Operator ignores valid &ldquo;Drift&rdquo; alert.</td>
 <td style="text-align: left;">Uncorrected drift leads to hardware failure.</td>
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">4</td>
@@ -1723,7 +1780,7 @@ the Consciousness Loop.</p>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: left;">16</td>
-<td style="text-align: left;"><strong>Citation Verification</strong>: Operator must click URI/Hash link to unlock 'Commit' button.</td>
+<td style="text-align: left;"><strong>Citation Verification</strong>: Operator must click URI/Hash link to unlock &lsquo;Commit&rsquo; button.</td>
 <td style="text-align: left;">HMI Event Listener</td>
 <td style="text-align: center;">4</td>
 <td style="text-align: left;">SOP-AI-015</td>
@@ -1760,7 +1817,7 @@ the Consciousness Loop.</p>
 <td style="text-align: left;"><strong>Ingest Pipe</strong></td>
 <td style="text-align: left;">Buffer Saturation</td>
 <td style="text-align: left;">Ingest exceeds CPU/Memory (Backpressure).</td>
-<td style="text-align: left;">Delayed detection; "Blind" telemetry window.</td>
+<td style="text-align: left;">Delayed detection; &ldquo;Blind&rdquo; telemetry window.</td>
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">2</td>
@@ -1793,7 +1850,7 @@ the Consciousness Loop.</p>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">1</td>
 <td style="text-align: left;">8</td>
-<td style="text-align: left;"><strong>Braking Resistors</strong>: Plus software-level "Surge Prediction" in the Agent.</td>
+<td style="text-align: left;"><strong>Braking Resistors</strong>: Plus software-level &ldquo;Surge Prediction&rdquo; in the Agent.</td>
 <td style="text-align: left;">VFD Fault Register</td>
 <td style="text-align: center;">4</td>
 <td style="text-align: left;">SOP-OPS-010</td>
@@ -1871,7 +1928,7 @@ the Consciousness Loop.</p>
 <tr>
 <td style="text-align: left;"><strong>Approval Sys</strong></td>
 <td style="text-align: left;">Stale Approval Token</td>
-<td style="text-align: left;">Operator approves but fails to "commit"; state is fragmented.</td>
+<td style="text-align: left;">Operator approves but fails to &ldquo;commit&rdquo;; state is fragmented.</td>
 <td style="text-align: left;">Logic desync between HMI and Edge.</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">3</td>
@@ -1884,7 +1941,7 @@ the Consciousness Loop.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="deterministic-fail-safe-matrix">Deterministic Fail-Safe Matrix</h3>
+<h3 id="deterministic-fail-safe-matrix">Deterministic Fail-Safe Matrix<a class="headerlink" href="#deterministic-fail-safe-matrix" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
@@ -1905,7 +1962,7 @@ the Consciousness Loop.</p>
 <td style="text-align: left;"><strong>Physical Cold-Start</strong>: Requires OT engineer intervention and service restart.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Telemetry "Blackout"</strong></td>
+<td style="text-align: left;"><strong>Telemetry &ldquo;Blackout&rdquo;</strong></td>
 <td style="text-align: left;"><strong>Blindness Alert</strong>: AI write-access is instantly revoked to prevent acting on stale data.</td>
 <td style="text-align: left;"><strong>UNS Re-sync</strong>: Restored via Northbound Ingest + 600s observation phase to rebuild the rolling $Z$-score baseline.</td>
 </tr>
@@ -1921,7 +1978,7 @@ the Consciousness Loop.</p>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>WORM Audit Spool at 95% Capacity</strong></td>
-<td style="text-align: left;"><strong>Gateway Lockout</strong>: The AI is strictly forbidden from aciting if it cannot log it's reasoning immutably. The Southbound Driver suspends all write operations.</td>
+<td style="text-align: left;"><strong>Gateway Lockout</strong>: The AI is strictly forbidden from aciting if it cannot log it&rsquo;s reasoning immutably. The Southbound Driver suspends all write operations.</td>
 <td style="text-align: left;"><strong>Log Rotation</strong>: Enterprise SIEM offloads logs, clearing disk space. Manual Operator reset required.</td>
 </tr>
 <tr>
@@ -1956,7 +2013,7 @@ the Consciousness Loop.</p>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Message Broker Latency (Backpressure)</strong></td>
-<td style="text-align: left;"><strong>Execution Inhibit</strong>: If NATS JetStream latency exceeds 500ms, the system autonomously revokes the Agent's write permissions to Bytewax to prevent dangerous late-action commands.</td>
+<td style="text-align: left;"><strong>Execution Inhibit</strong>: If NATS JetStream latency exceeds 500ms, the system autonomously revokes the Agent&rsquo;s write permissions to Bytewax to prevent dangerous late-action commands.</td>
 <td style="text-align: left;"><strong>Buffer Clearance</strong>: Once the broker lag drops below the 500ms threshold, write permissions are automatically restored.</td>
 </tr>
 <tr>
@@ -1967,11 +2024,11 @@ the Consciousness Loop.</p>
 </tbody>
 </table>
 <p>See <a href="/docs/fmea_matrix.md">FMEA &amp; Deterministic Fail-Safe Matrix</a> for more information.</p>
-<h2 id="governance-standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</h2>
+<h2 id="governance-standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)<a class="headerlink" href="#governance-standard-operating-procedures-sops" title="Permanent link"></a></h2>
 <p>An SOP suite governs all operational behavior. The Agent is designed to follow these SOPs without deviation, 
 ensuring that all interventions are predictable, auditable, and compliant with industrial best practices.   </p>
 <p>See <a href="/docs/sop">SOP index</a> for a full list of SOPs.</p>
-<h3 id="governance-control">Governance &amp; Control</h3>
+<h3 id="governance-control">Governance &amp; Control<a class="headerlink" href="#governance-control" title="Permanent link"></a></h3>
 <p>The learning mechanism is strictly governed to ensure safety and auditability:</p>
 <ul>
 <li>The system <strong>does not directly modify control thresholds</strong></li>
@@ -1983,27 +2040,35 @@ ensuring that all interventions are predictable, auditable, and compliant with i
 <li>Linked to the originating event and telemetry data</li>
 <li>Stored for audit and review</li>
 </ul>
-<h3 id="approval-requirements">Approval Requirements</h3>
+<h3 id="approval-requirements">Approval Requirements<a class="headerlink" href="#approval-requirements" title="Permanent link"></a></h3>
 <p>All threshold modifications require <strong>explicit human approval</strong> prior to application.</p>
-<p>Proposals are categorized by impact:
-  - <strong>Low Impact (≤ 5% delta)</strong>:
-    - <strong>Action</strong>: Auto-Authorized by the Semantic Gatekeeper.
-    - <strong>Governance</strong>: Logged with <code>trace_id</code> in the <code>audit_logs</code> table.
-      - Dashboard Advisory sent to operator
-    - <strong>Safety</strong>: The system will not apply changes that exceed the hard-coded <code>MAX_THRESHOLD</code> guardrail.
-    - <strong>Reasoning</strong>: Statistical fine-tuning should not require human approval to prevent alarm fatigue.
-  - <strong>Medium Impact (&gt; 5% and ≤ 15%)</strong>:
-    - <strong>Action</strong>: Single Operator Approval.
-    - <strong>Governance</strong>: The <strong>Commit</strong> button is enabled on the Dashboard. One authorized user must review the RAG 
-      citation and sign off.
-    - <strong>Safety</strong>: The system will not allow the change to be applied without a human review.
-    - <strong>Reasoning</strong>: This is a moderate change that could affect process stability. A single human review is sufficient.
-  - <strong>High Impact (&gt; 15%)</strong>:
-    - <strong>Action</strong>: Two-key Validation (Lead Safety Engineer or Plant Manager + Operator)
-    - <strong>Governance</strong>: Requires two distinct authorized users and a written <strong>Change Request</strong> (CR) ID.
-    - <strong>Safety</strong>: This exceeds the hard-coded <code>MAX_THRESHOLD</code> guardrail, so the system will reject any proposal unless
-      a supervisor explicitly authorizes it.</p>
-<h3 id="safety-constraints">Safety Constraints</h3>
+<p>Proposals are categorized by impact:</p>
+<ul>
+<li><strong>Low Impact (≤ 5% delta)</strong>:<ul>
+<li><strong>Action</strong>: Auto-Authorized by the Semantic Gatekeeper.</li>
+<li><strong>Governance</strong>: Logged with <code>trace_id</code> in the <code>audit_logs</code> table.</li>
+<li>Dashboard Advisory sent to operator</li>
+<li><strong>Safety</strong>: The system will not apply changes that exceed the hard-coded <code>MAX_THRESHOLD</code> guardrail.</li>
+<li><strong>Reasoning</strong>: Statistical fine-tuning should not require human approval to prevent alarm fatigue.</li>
+</ul>
+</li>
+<li><strong>Medium Impact (&gt; 5% and ≤ 15%)</strong>:<ul>
+<li><strong>Action</strong>: Single Operator Approval.</li>
+<li><strong>Governance</strong>: The <strong>Commit</strong> button is enabled on the Dashboard. One authorized user must review the RAG 
+  citation and sign off.</li>
+<li><strong>Safety</strong>: The system will not allow the change to be applied without a human review.</li>
+<li><strong>Reasoning</strong>: This is a moderate change that could affect process stability. A single human review is sufficient.</li>
+</ul>
+</li>
+<li><strong>High Impact (&gt; 15%)</strong>:<ul>
+<li><strong>Action</strong>: Two-key Validation (Lead Safety Engineer or Plant Manager + Operator)</li>
+<li><strong>Governance</strong>: Requires two distinct authorized users and a written <strong>Change Request</strong> (CR) ID.</li>
+<li><strong>Safety</strong>: This exceeds the hard-coded <code>MAX_THRESHOLD</code> guardrail, so the system will reject any proposal unless
+  a supervisor explicitly authorizes it.</li>
+</ul>
+</li>
+</ul>
+<h3 id="safety-constraints">Safety Constraints<a class="headerlink" href="#safety-constraints" title="Permanent link"></a></h3>
 <ul>
 <li>The threshold changes cannot:</li>
 <li>Override safety limits</li>
@@ -2012,7 +2077,7 @@ ensuring that all interventions are predictable, auditable, and compliant with i
 <li>Changes are bounded per asset</li>
 <li>Cumulative adjustments are controlled to prevent drift</li>
 </ul>
-<h2 id="architecture-governance-standards">Architecture Governance &amp; Standards</h2>
+<h2 id="architecture-governance-standards">Architecture Governance &amp; Standards<a class="headerlink" href="#architecture-governance-standards" title="Permanent link"></a></h2>
 <p><strong>Oversight ICS is Built on the Following Standards</strong>:</p>
 <table>
 <thead>
@@ -2050,29 +2115,29 @@ ensuring that all interventions are predictable, auditable, and compliant with i
 </tr>
 </tbody>
 </table>
-<h2 id="standards-compliance-industrial-alignment">Standards, Compliance &amp; Industrial Alignment</h2>
+<h2 id="standards-compliance-industrial-alignment">Standards, Compliance &amp; Industrial Alignment<a class="headerlink" href="#standards-compliance-industrial-alignment" title="Permanent link"></a></h2>
 <p>OverSight ICS is built to align with global industrial, controls, and software engineering standards, ensuring that AI 
-integration does not compromise the "Safety First" mission of the plant floor. Oversight adheres to the following 
+integration does not compromise the &ldquo;Safety First&rdquo; mission of the plant floor. Oversight adheres to the following 
 standards:</p>
-<h3 id="controls-engineering-standards-matrix_1">Controls Engineering Standards Matrix</h3>
+<h3 id="controls-engineering-standards-matrix_1">Controls Engineering Standards Matrix<a class="headerlink" href="#controls-engineering-standards-matrix_1" title="Permanent link"></a></h3>
 <p>For Technical Implementation, see <code>docs/STANDARDS.md</code> </p>
-<h3 id="software-engineering-standards">Software Engineering Standards</h3>
+<h3 id="software-engineering-standards">Software Engineering Standards<a class="headerlink" href="#software-engineering-standards" title="Permanent link"></a></h3>
 <p><strong>12 Factor Methodology</strong></p>
 <ul>
 <li><strong>Factor 1 – Codebase</strong>: Codebase is self-sufficient and maintains one codebase ensuring the system is deployable and 
 maintainable across multiple environments, local dev machines, a staging lab PC, and the actual IPC at the plant.</li>
-<li><strong>Factor 2 – Dependencies</strong>: Oversight doesn't rely on global software dependencies but instead uses a pyproject.toml 
+<li><strong>Factor 2 – Dependencies</strong>: Oversight doesn&rsquo;t rely on global software dependencies but instead uses a pyproject.toml 
 file to manage the Python packages and their versions.</li>
 <li><strong>Factor 3 – Config</strong>: Oversight strictly separates code from configuration. Sensitive data and site-specific 
   data are stored in environment variables via <code>.env</code> file.</li>
 <li><strong>Factor 4 - Backing Services</strong>: The Agent, Postgres, and NATS JetStream are all managed by Docker Compose. To the 
-  Agent, these are "attached resources" that can be swapped out without code changes.</li>
+  Agent, these are &ldquo;attached resources&rdquo; that can be swapped out without code changes.</li>
 <li><strong>Factor 5 – Build, Release, Run</strong>: The system is built using Docker Compose and strictly separates the build, release, 
   and run stages.</li>
 <li><strong>Factor 6 – Processes</strong>: The FastAPI and LangGraph workers are process-stateless (no data is stored in container
   memory). All state, including LangGraph Checkpoints and the Cognitive Digital Twin, is persisted externally in 
   TimescaleDB and Redis.</li>
-<li><strong>Factor 7 – Port Binding</strong>: The system doesn't rely on a web server, the app is the server. FastAPI binds to a port 
+<li><strong>Factor 7 – Port Binding</strong>: The system doesn&rsquo;t rely on a web server, the app is the server. FastAPI binds to a port 
   and communicates directly with other services via the Docker network.</li>
 <li><strong>Factor 8 – Concurrency</strong>: The system uses NATS JetStream to distribute tasks. As the plant grows, you spin up more
   workers (horizontal scaling).</li>
@@ -2086,8 +2151,8 @@ file to manage the Python packages and their versions.</li>
 <li><strong>Factor 12 – Admin Processes</strong>: Tasks like database migrations and system maintenance are performed via one-time
   Docker commands.</li>
 </ul>
-<h2 id="predictive-failure-cognitive-reliability-engineering">Predictive Failure &amp; Cognitive Reliability Engineering</h2>
-<h3 id="cognitive-stability-kpis-key-performance-indicators">Cognitive Stability KPIs (Key Performance Indicators)</h3>
+<h2 id="predictive-failure-cognitive-reliability-engineering">Predictive Failure &amp; Cognitive Reliability Engineering<a class="headerlink" href="#predictive-failure-cognitive-reliability-engineering" title="Permanent link"></a></h2>
+<h3 id="cognitive-stability-kpis-key-performance-indicators">Cognitive Stability KPIs (Key Performance Indicators)<a class="headerlink" href="#cognitive-stability-kpis-key-performance-indicators" title="Permanent link"></a></h3>
 <p>OverSight measures the <strong>Cognitive Health</strong> of the supervisor layer to ensure the AI remains grounded in physical 
 reality. The system tracks three primary KPIs:</p>
 <ul>
@@ -2098,7 +2163,7 @@ reality. The system tracks three primary KPIs:</p>
 <li><strong>Handshake Success Rate</strong>: The percentage of AI-initiated intents successfully acknowledged and executed by the 
   Field Assets within the 2000ms TTL safety window.</li>
 </ul>
-<h3 id="behavior-modeling-the-cognitive-digital-twin">Behavior Modeling (The Cognitive Digital Twin)</h3>
+<h3 id="behavior-modeling-the-cognitive-digital-twin">Behavior Modeling (The Cognitive Digital Twin)<a class="headerlink" href="#behavior-modeling-the-cognitive-digital-twin" title="Permanent link"></a></h3>
 <p>Unlike static thresholds, OverSight utilizes <strong>State-Dependent Normalcy</strong> to create a behavioral baseline for every 
 Field Asset:</p>
 <ul>
@@ -2108,7 +2173,7 @@ Field Asset:</p>
   Discharge Pressure). A break in this correlation (even if both tags are within their individual safety 
   bounds), indicates a behavioral anomaly such as a sheared shaft or a closed suction valve.</li>
 </ul>
-<h3 id="anomaly-detection-statistical-vs-semantic">Anomaly Detection (Statistical vs. Semantic)</h3>
+<h3 id="anomaly-detection-statistical-vs-semantic">Anomaly Detection (Statistical vs. Semantic)<a class="headerlink" href="#anomaly-detection-statistical-vs-semantic" title="Permanent link"></a></h3>
 <p>OverSight employs a dual-layered detection strategy to catch both electrical and logical failures:</p>
 <ul>
 <li><strong>Layer 1: Statistical ($Z$-Score)</strong>: High-speed detection of raw signal noise, spikes, or flatlining. This is 
@@ -2122,21 +2187,21 @@ Field Asset:</p>
 </ul>
 </li>
 </ul>
-<h3 id="model-trust-explainable-ai-xai">Model Trust &amp; Explainable AI (XAI)</h3>
-<p>To eliminate the "Black Box" problem and ensure industrial interoperability, OverSight implements the following 
+<h3 id="model-trust-explainable-ai-xai">Model Trust &amp; Explainable AI (XAI)<a class="headerlink" href="#model-trust-explainable-ai-xai" title="Permanent link"></a></h3>
+<p>To eliminate the &ldquo;Black Box&rdquo; problem and ensure industrial interoperability, OverSight implements the following 
 principles:</p>
 <ul>
 <li><strong>Traceable Intent</strong>: Every failover intent is stored with an immutable <code>trace_id</code> and specific <strong>Source Citations</strong> 
   (e.g., Manual URI, Page, and Paragraph) to justify the intervention.</li>
 <li><strong>Shadow Mode Commissioning</strong>: During the initial deployment phase, the system operates in observation only. The 
-  AI suggests failovers but does not publish to the NATS Command Spine, allowing operators to verify the model's 
+  AI suggests failovers but does not publish to the NATS Command Spine, allowing operators to verify the model&rsquo;s 
   accuracy against real-world process outcomes.</li>
 <li><strong>Sparkplug B Interoperability</strong>: All system health data and AI intents are egressed via <strong>Sparkplug B</strong> into the 
   Unified Namespace. This ensures OverSight’s cognitive state can be consumed by any Ignition SCADA, ERP, or CMMS 
   without custom drivers.</li>
 </ul>
-<h2 id="proactive-failover-control-mechanisms">Proactive Failover &amp; Control Mechanisms</h2>
-<h3 id="complex-event-processing-cep-sensor-fusion">Complex Event Processing (CEP) &amp; Sensor Fusion</h3>
+<h2 id="proactive-failover-control-mechanisms">Proactive Failover &amp; Control Mechanisms<a class="headerlink" href="#proactive-failover-control-mechanisms" title="Permanent link"></a></h2>
+<h3 id="complex-event-processing-cep-sensor-fusion">Complex Event Processing (CEP) &amp; Sensor Fusion<a class="headerlink" href="#complex-event-processing-cep-sensor-fusion" title="Permanent link"></a></h3>
 <p>OverSight evaluates anomalies using a <strong>Complex Event Processing (CEP)</strong> approach, fusing multiple data points to 
 validate the need for a failover. This prevents false trips while maintaining high sensitivity to mechanical
 degradation:</p>
@@ -2153,7 +2218,7 @@ degradation:</p>
   - <strong>Confidence Score</strong> = (Statistical Weight) + (Semantic RAG Analysis) + (Historical MTBF Data: Mean Time Between
     Failures).
   - An autonomous failover plan is only drafted if the cumulative <strong>Confidence Score exceeds 85%</strong>.</p>
-<h3 id="automated-response-mechanisms">Automated Response Mechanisms</h3>
+<h3 id="automated-response-mechanisms">Automated Response Mechanisms<a class="headerlink" href="#automated-response-mechanisms" title="Permanent link"></a></h3>
 <p>Once a trigger is validated, the system moves through a tiered response structure designed to balance autonomy with 
 operator oversight:</p>
 <ul>
@@ -2169,17 +2234,17 @@ operator oversight:</p>
   the system into <code>ORPHAN_MODE</code>, where the local PLC takes over and the Agent is locked out until the operator can
   assess the situation.</li>
 </ul>
-<h3 id="control-theoretic-adaptation">Control-Theoretic Adaptation</h3>
+<h3 id="control-theoretic-adaptation">Control-Theoretic Adaptation<a class="headerlink" href="#control-theoretic-adaptation" title="Permanent link"></a></h3>
 <p>OverSight shapes control signals to maintain process stability during transitions:</p>
 <ul>
 <li><strong>Feed-Forward Compensation</strong>: When initializing the standby asset, the Southbound Driver calculates the expected 
   pressure drop and pre-emptively adjusts the VFD speed to match the current process demand.</li>
-<li><strong>Closed-Loop Verification</strong>: The system never "assumes" success. It monitors the <strong>Process Variable (PV)</strong> in 
-  real-time. If the PV does not respond within 2 seconds of a command, the Agent enters an "Emergency Escalation" state.</li>
-<li><strong>Adaptive Thresholding</strong>: The Agent can adjust the sensitivity of its own detection logic based on the plant's 
+<li><strong>Closed-Loop Verification</strong>: The system never &ldquo;assumes&rdquo; success. It monitors the <strong>Process Variable (PV)</strong> in 
+  real-time. If the PV does not respond within 2 seconds of a command, the Agent enters an &ldquo;Emergency Escalation&rdquo; state.</li>
+<li><strong>Adaptive Thresholding</strong>: The Agent can adjust the sensitivity of its own detection logic based on the plant&rsquo;s 
   operational state (e.g., tightening $Z$-Score thresholds during high-demand peak hours).</li>
 </ul>
-<h3 id="safety-critical-constraints">Safety-Critical Constraints</h3>
+<h3 id="safety-critical-constraints">Safety-Critical Constraints<a class="headerlink" href="#safety-critical-constraints" title="Permanent link"></a></h3>
 <p>OverSight operates under a <strong>Negative Constraint Model</strong>, ensuring it is physically and logically forbidden from 
 violating safety-critical boundaries.</p>
 <ul>
@@ -2187,13 +2252,13 @@ violating safety-critical boundaries.</p>
   connectivity to the <strong>Safety Instrumented System (SIS)</strong>. If the SIS triggers a hardware E-Stop, OverSight’s commands 
   are overridden.</li>
 <li><strong>Interlock Awareness</strong>: Every AI-generated intent is passed through a <strong>Boolean Logic Validator</strong> that enforces 
-  hard-coded physical interlocks (e.g., "Inhibit Valve-Open if Pump-Running").</li>
-<li><strong>Authority Limits (Rate Limiting)</strong>: The Southbound Driver enforces a "Max Change Rate." It will "shred" or 
+  hard-coded physical interlocks (e.g., &ldquo;Inhibit Valve-Open if Pump-Running&rdquo;).</li>
+<li><strong>Authority Limits (Rate Limiting)</strong>: The Southbound Driver enforces a &ldquo;Max Change Rate.&rdquo; It will &ldquo;shred&rdquo; or 
   throttle any AI command that attempts to ramp equipment (e.g., 0% to 100% speed) faster than its mechanical design 
   limits.</li>
 </ul>
-<h2 id="evaluation-framework-success-metrics">Evaluation Framework &amp; Success Metrics</h2>
-<h3 id="proof-of-value-and-performance-benchmarking">Proof of Value and Performance Benchmarking</h3>
+<h2 id="evaluation-framework-success-metrics">Evaluation Framework &amp; Success Metrics<a class="headerlink" href="#evaluation-framework-success-metrics" title="Permanent link"></a></h2>
+<h3 id="proof-of-value-and-performance-benchmarking">Proof of Value and Performance Benchmarking<a class="headerlink" href="#proof-of-value-and-performance-benchmarking" title="Permanent link"></a></h3>
 <p>Oversight is evaluated using a dual-metric approach, measuring both computational efficiency and industrial impact.</p>
 <table>
 <thead>
@@ -2217,7 +2282,7 @@ violating safety-critical boundaries.</p>
 <tr>
 <td style="text-align: left;"><strong>AI Accuracy</strong></td>
 <td style="text-align: left;"><strong>F1 Score</strong></td>
-<td style="text-align: left;">&gt; 0.92 accuracy in distinguishing between "expected wear" and "imminent failure"</td>
+<td style="text-align: left;">&gt; 0.92 accuracy in distinguishing between &ldquo;expected wear&rdquo; and &ldquo;imminent failure&rdquo;</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Latency</strong></td>
@@ -2227,7 +2292,7 @@ violating safety-critical boundaries.</p>
 </tbody>
 </table>
 <p>Temporal matching window (Δt) ensures fair evaluation</p>
-<h3 id="target-performance">Target Performance</h3>
+<h3 id="target-performance">Target Performance<a class="headerlink" href="#target-performance" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
@@ -2254,8 +2319,8 @@ violating safety-critical boundaries.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="key-performance-indicators-kpis">Key Performance Indicators (KPIs)</h2>
-<h3 id="mttr-a-mean-time-to-recover-agent">MTTR-A (Mean Time to Recover – Agent)</h3>
+<h2 id="key-performance-indicators-kpis">Key Performance Indicators (KPIs)<a class="headerlink" href="#key-performance-indicators-kpis" title="Permanent link"></a></h2>
+<h3 id="mttr-a-mean-time-to-recover-agent">MTTR-A (Mean Time to Recover – Agent)<a class="headerlink" href="#mttr-a-mean-time-to-recover-agent" title="Permanent link"></a></h3>
 <p>MTTR-A measures the efficiency of the Reasoning Agent in restoring a process to its <strong>Nominal</strong> state through a 
 predictive failover.</p>
 <ul>
@@ -2264,7 +2329,7 @@ predictive failover.</p>
 <li><strong>Goal</strong>: To minimize this delta to prevent process cavitation or mechanical surges. An MTTR-A of <strong>&lt;10 seconds</strong> is 
   the industrial benchmark for sub-second state resolution.</li>
 </ul>
-<h3 id="nrr-normalized-recovery-ratio">NRR (Normalized Recovery Ratio)</h3>
+<h3 id="nrr-normalized-recovery-ratio">NRR (Normalized Recovery Ratio)<a class="headerlink" href="#nrr-normalized-recovery-ratio" title="Permanent link"></a></h3>
 <p>This metric evaluates the financial and operational success of an AI intervention compared to a hard-failure event.</p>
 <ul>
 <li><strong>The Formula</strong>: $NRR = \frac{\text{System Loss (with Agent Intervention)}}{\text{Predicted System Loss (without Agent)}}$</li>
@@ -2273,15 +2338,15 @@ predictive failover.</p>
 <li><strong>NRR = 0</strong>: The <strong>Perfect Failover</strong>: The process remained within its nominal operating window throughout the event.</li>
 <li><strong>Value</strong>: Quantifies the ROI of OverSight by calculating <strong>Damage Avoided</strong> for plant management.</li>
 </ul>
-<h3 id="pei-planning-efficiency-index">PEI (Planning Efficiency Index)</h3>
-<p>This measures the precision of the strategy generated by the LangGraph reasoning nodes. It compares the AI's "Planned 
-Path" vs. the "Actual Path" required to reach stability.</p>
+<h3 id="pei-planning-efficiency-index">PEI (Planning Efficiency Index)<a class="headerlink" href="#pei-planning-efficiency-index" title="Permanent link"></a></h3>
+<p>This measures the precision of the strategy generated by the LangGraph reasoning nodes. It compares the AI&rsquo;s &ldquo;Planned 
+Path&rdquo; vs. the &ldquo;Actual Path&rdquo; required to reach stability.</p>
 <ul>
 <li><strong>Calculation</strong>: $PEI = \frac{\text{Minimal Required Commands}}{\text{Total Commands Executed during Failover}}$</li>
 <li><strong>Optimization</strong>: A low PEI indicates the Agent is looking for a solution. This data is used to refine graph node 
   logic and reduce unnecessary valve/motor cycling.</li>
 </ul>
-<h3 id="prediction-precision-recall-cognitive-confusion-matrix">Prediction Precision &amp; Recall (Cognitive Confusion Matrix)</h3>
+<h3 id="prediction-precision-recall-cognitive-confusion-matrix">Prediction Precision &amp; Recall (Cognitive Confusion Matrix)<a class="headerlink" href="#prediction-precision-recall-cognitive-confusion-matrix" title="Permanent link"></a></h3>
 <p>To maintain model trust, I applied standard data science metrics to industrial telemetry events:</p>
 <ul>
 <li><strong>Precision (Reliability)</strong>: The ratio of necessary failovers to total triggered failovers. High precision prevents 
@@ -2291,7 +2356,7 @@ Path" vs. the "Actual Path" required to reach stability.</p>
 <li><strong>Target</strong>: For critical water infrastructure, we maintain a <strong>High Recall Bias</strong>, ensuring safety first while 
   using Bytewax stateful windowing to continuously improve precision over time.</li>
 </ul>
-<h2 id="performance-benchmarks-kpi-targets">Performance Benchmarks (KPI Targets)</h2>
+<h2 id="performance-benchmarks-kpi-targets">Performance Benchmarks (KPI Targets)<a class="headerlink" href="#performance-benchmarks-kpi-targets" title="Permanent link"></a></h2>
 <p>These benchmarks define the deterministic boundaries of the OverSight reliability layer:</p>
 <ul>
 <li><strong>Ingest Latency</strong>: &lt;50 ms (Field Asset to NATS JetStream UNS)</li>
@@ -2300,10 +2365,10 @@ Path" vs. the "Actual Path" required to reach stability.</p>
 <li><strong>Failover Execution</strong>: &lt;200 ms (Post-Approval Handshake to Physical Output)</li>
 <li><strong>Telemetry Integrity Check</strong>: &lt;10ms (Verification of NATS stream sequence ID and payload hash)</li>
 </ul>
-<h2 id="operational-reliability-safety-guardrails">Operational Reliability &amp; Safety Guardrails</h2>
+<h2 id="operational-reliability-safety-guardrails">Operational Reliability &amp; Safety Guardrails<a class="headerlink" href="#operational-reliability-safety-guardrails" title="Permanent link"></a></h2>
 <p>To ensure production-grade stability in an industrial environment, OverSight ICS implements the following operational 
 principles and safety guardrails:</p>
-<h3 id="io-fencing-split-brain-prevention">I/O Fencing &amp; Split Brain Prevention</h3>
+<h3 id="io-fencing-split-brain-prevention">I/O Fencing &amp; Split Brain Prevention<a class="headerlink" href="#io-fencing-split-brain-prevention" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Stale Write Protection</strong>: The Southbound Driver rejects any command intent that exceeds a 2-second safety window.
     This prevents commands from being executed that do not have the current process reality. </li>
@@ -2313,12 +2378,12 @@ principles and safety guardrails:</p>
 <li><strong>Fencing Logic</strong>: The Semantic Gatekeeper prevents hallucinations or unauthorized setpoints that might occur if 
     the network partitioning isolates the Agent from the operational truth.</li>
 </ul>
-<h3 id="fault-tolerance-message-integrity">Fault Tolerance &amp; Message Integrity</h3>
+<h3 id="fault-tolerance-message-integrity">Fault Tolerance &amp; Message Integrity<a class="headerlink" href="#fault-tolerance-message-integrity" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Dead Letter Queue (DLQ)</strong>: Any telemetry task that fails validation or causes a reasoning timeouts are moved to a 
   dedicated NATS DLQ. This prevents non-validated tasks from clogging the primary pipeline while preserving them for 
   developer forensics. </li>
-<li><strong>At-Least-Once Delivery &amp; Pessimistic Verification</strong>: The Southbound Driver treats every command as "Pending" upon 
+<li><strong>At-Least-Once Delivery &amp; Pessimistic Verification</strong>: The Southbound Driver treats every command as &ldquo;Pending&rdquo; upon 
   receipt from the NATS Command Spine. It only publishes a <code>SUCCESS</code> event to the Unified Namespace (UNS) 
   after validating a physical state change from the field asset.</li>
 <li><strong>Consumer Prefetch (Backpressure Management)</strong>: By using NATS consumer pull-model flow control, the system prevents
@@ -2332,7 +2397,7 @@ principles and safety guardrails:</p>
   before resuming orchestration. Autonomous interventions are strictly inhibited until the system achieves 
   <strong>State Sync</strong> to prevent interventions based on stale telemetry.</li>
 </ul>
-<h3 id="key-security-protocols">Key Security Protocols:</h3>
+<h3 id="key-security-protocols">Key Security Protocols:<a class="headerlink" href="#key-security-protocols" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Dual-Homed Networking</strong>: The Edge Gateway bridges the isolated OT network and the site network through physically 
   separate interfaces, with OS-level IP forwarding disabled, preventing direct routing paths for external threats. </li>
@@ -2342,7 +2407,7 @@ interlocks or Emergency Stops.</li>
 <li><strong>Unidirectional Telemetry</strong>: Field data is treated as a read-only stream. The only <strong>write</strong> path is the restricted 
   Southbound Driver, which only executes intents after they pass several security and safety validations.</li>
 </ul>
-<h2 id="risk-mitigation-failover-strategy">Risk Mitigation &amp; Failover Strategy</h2>
+<h2 id="risk-mitigation-failover-strategy">Risk Mitigation &amp; Failover Strategy<a class="headerlink" href="#risk-mitigation-failover-strategy" title="Permanent link"></a></h2>
 <p>The following table outlines how OverSight ICS maintains Level 3 Autonomy and Purdue Compliance during system stress or 
 connectivity loss.</p>
 <table>
@@ -2363,7 +2428,7 @@ connectivity loss.</p>
 </tr>
 <tr>
 <td style="text-align: left;">Network Partition (L3 to L4)</td>
-<td style="text-align: left;">Next.js Dashboard goes "Offline."</td>
+<td style="text-align: left;">Next.js Dashboard goes &ldquo;Offline.&rdquo;</td>
 <td style="text-align: left;"><strong>Autonomous Execution</strong>: The Agent continues to monitor Level 2 telemetry and executes failovers via NATS; logs are queued for the UI.</td>
 <td style="text-align: left;">Headless Operation</td>
 </tr>
@@ -2374,7 +2439,7 @@ connectivity loss.</p>
 <td style="text-align: left;">Safe State (Frozen)</td>
 </tr>
 <tr>
-<td style="text-align: left;">AI "Logic Drift"</td>
+<td style="text-align: left;">AI &ldquo;Logic Drift&rdquo;</td>
 <td style="text-align: left;">Reasoning Engine generates low-confidence intent.</td>
 <td style="text-align: left;"><strong>Pydantic Validation</strong>: The Validator identifies the schema or range violation and <strong>Shelves</strong> the command, alerting the operator for manual intervention.</td>
 <td style="text-align: left;">Human-in-the-Loop</td>
@@ -2387,7 +2452,7 @@ connectivity loss.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="observability-post-mortem-traceability">Observability &amp; Post-Mortem Traceability</h2>
+<h2 id="observability-post-mortem-traceability">Observability &amp; Post-Mortem Traceability<a class="headerlink" href="#observability-post-mortem-traceability" title="Permanent link"></a></h2>
 <p>To ensure absolute accountability for AI-driven decisions, the system maintains a comprehensive audit trail:</p>
 <ul>
 <li><strong>Reasoning Traces</strong>: Every LangGraph cycle is logged with its full context, including which PDF manual pages were 
@@ -2397,8 +2462,8 @@ referenced during the decision.</li>
 <li><strong>Performance Metrics</strong>: Real-time tracking of LLM token usage, reasoning latency, UNS relay speed via Prometheus and
   Grafana.</li>
 </ul>
-<h2 id="data-engineering-observability-telemetry">Data Engineering, Observability, &amp; Telemetry</h2>
-<h3 id="data-reliability-stack">Data Reliability Stack</h3>
+<h2 id="data-engineering-observability-telemetry">Data Engineering, Observability, &amp; Telemetry<a class="headerlink" href="#data-engineering-observability-telemetry" title="Permanent link"></a></h2>
+<h3 id="data-reliability-stack">Data Reliability Stack<a class="headerlink" href="#data-reliability-stack" title="Permanent link"></a></h3>
 <p>OverSight ICS treats data as a physical asset. The system uses a <strong>Pessimistic Data Pipeline</strong> to make sure that the AI 
 never makes a decision based on stale telemetry.</p>
 <ul>
@@ -2409,40 +2474,40 @@ never makes a decision based on stale telemetry.</p>
   This prevents <strong>Double Execution</strong> if a network glitch causes a message to be redelivered or if a stale command 
   is consumed after its TTL has expired.</li>
 <li><strong>Quality Stamps &amp; Sparkplug B</strong>: Following <strong>Sparkplug B</strong> standards, every data point includes a Quality Metric 
-  (Good, Bad, or Uncertain). If a sensor's quality flips to "Bad," the Bytewax stream processing engine automatically
+  (Good, Bad, or Uncertain). If a sensor&rsquo;s quality flips to &ldquo;Bad,&rdquo; the Bytewax stream processing engine automatically
   isolates that stream and notifies the Agent of <strong>Sensor Blindness</strong> to prevent false failover triggers.</li>
 </ul>
-<h3 id="observability-pipeline-the-black-box-recorder">Observability Pipeline (The "Black Box" Recorder)</h3>
+<h3 id="observability-pipeline-the-black-box-recorder">Observability Pipeline (The &ldquo;Black Box&rdquo; Recorder)<a class="headerlink" href="#observability-pipeline-the-black-box-recorder" title="Permanent link"></a></h3>
 <p>OverSight uses the <strong>LGTM Stack</strong> (Loki, Grafana, Tempo, Mimir) to provide a forensic audit trail for every AI 
 intervention.</p>
 <ul>
 <li><strong>Structured Logging (Loki)</strong>: All logs are output in JSON format, indexed by <code>asset_id</code> and <code>trace_id</code>. This allows 
   operators to reconstruct the exact telemetry frame the AI was viewing at the millisecond it decided to intervene.</li>
 <li><strong>Distributed Tracing (Tempo)</strong>: Oversight propagates a <code>trace_id</code> from the initial sensor excursion in NATS, through 
-  the LangGraph reasoning engine, and down to the Southbound Driver's physical handshake. This provides a complete 
+  the LangGraph reasoning engine, and down to the Southbound Driver&rsquo;s physical handshake. This provides a complete 
   <strong>Reasoning-to-Action</strong> map for post-incident reporting.</li>
 <li><strong>Health Metrics (Mimir/Prometheus)</strong>: Tracks system-level KPIs such as <strong>NATS Consumer Lag</strong>, <strong>Bytewax Buffer 
   Saturation</strong>, and <strong>Scan-Cycle Jitter</strong>. If backpressure rises, Prometheus triggers a <strong>System Health</strong> alert before 
   telemetry data is dropped.</li>
 </ul>
-<h3 id="context-injection-the-rag-engine">Context Injection (The RAG Engine)</h3>
-<p>This layer transforms raw data (e.g., "Motor_01 Current = 45A") into actionable intelligence (e.g., "Motor_01 is running 
-10% above its rated efficiency").</p>
+<h3 id="context-injection-the-rag-engine">Context Injection (The RAG Engine)<a class="headerlink" href="#context-injection-the-rag-engine" title="Permanent link"></a></h3>
+<p>This layer transforms raw data (e.g., &ldquo;Motor_01 Current = 45A&rdquo;) into actionable intelligence (e.g., &ldquo;Motor_01 is running 
+10% above its rated efficiency&rdquo;).</p>
 <ul>
 <li><strong>Vectorized Metadata</strong>: Technical specifications and PDF maintenance manuals are indexed locally in <strong>pgvector</strong>, 
   allowing for rapid retrieval of hardware-specific engineering limits.</li>
 <li><strong>Similarity Search</strong>: When an anomaly is detected, the system performs a similarity search using the <code>asset_model</code> 
   and <code>failure_mode</code> to find the relevant ground truth within the technical documentation.</li>
 <li><strong>Static vs. Dynamic Context</strong>:<ul>
-<li><strong>Static</strong>: The Agent is injected with hard-coded plant constraints (e.g., "Pump A and Pump B cannot run 
-  simultaneously due to pipe diameter limits").</li>
+<li><strong>Static</strong>: The Agent is injected with hard-coded plant constraints (e.g., &ldquo;Pump A and Pump B cannot run 
+  simultaneously due to pipe diameter limits&rdquo;).</li>
 <li><strong>Dynamic</strong>: The rolling $Z$-score and the 5-minute telemetry window are injected into the LLM prompt as a 
-  structured Markdown table, providing the "Brain" with the trend line required for predictive reasoning.</li>
+  structured Markdown table, providing the &ldquo;Brain&rdquo; with the trend line required for predictive reasoning.</li>
 </ul>
 </li>
 </ul>
-<h2 id="implementation-validation-simulation">Implementation, Validation, &amp; Simulation</h2>
-<h3 id="chaos-testing-resiliency-field-stress-test">Chaos Testing &amp; Resiliency (Field Stress Test)</h3>
+<h2 id="implementation-validation-simulation">Implementation, Validation, &amp; Simulation<a class="headerlink" href="#implementation-validation-simulation" title="Permanent link"></a></h2>
+<h3 id="chaos-testing-resiliency-field-stress-test">Chaos Testing &amp; Resiliency (Field Stress Test)<a class="headerlink" href="#chaos-testing-resiliency-field-stress-test" title="Permanent link"></a></h3>
 <p>Following the principles of Chaos Engineering, Oversight intentionally injects faults into the Edge Gateway so the 
 system fails gracefully and defaults to its deterministic <strong>Safe State</strong>.</p>
 <ul>
@@ -2452,36 +2517,36 @@ system fails gracefully and defaults to its deterministic <strong>Safe State</st
 <li><strong>Process Noise Injection</strong>: Oversight injects <strong>Synthetic Jitter</strong> and electrical noise into the telemetry stream so 
   that the Bytewax $Z$-Score engine distinguishes between minor interference and true mechanical drift.</li>
 <li><strong>Resource Exhaustion</strong>: Oversight artificially spikes CPU and RAM on the Reasoning Agent container. This verifies 
-  that Docker Cgroup limits successfully protect the Southbound Driver. The "thinking" (AI) never starves 
-  "acting" (IO) of resources.</li>
+  that Docker Cgroup limits successfully protect the Southbound Driver. The &ldquo;thinking&rdquo; (AI) never starves 
+  &ldquo;acting&rdquo; (IO) of resources.</li>
 </ul>
-<h3 id="evaluation-frameworks-oversight-ai-reporting">Evaluation Frameworks (Oversight AI Reporting)</h3>
+<h3 id="evaluation-frameworks-oversight-ai-reporting">Evaluation Frameworks (Oversight AI Reporting)<a class="headerlink" href="#evaluation-frameworks-oversight-ai-reporting" title="Permanent link"></a></h3>
 <p>Because LLMs are inherently non-deterministic, OverSight uses a rigorous Evaluation Framework to score reasoning cycles 
 before they are authorized to issue commands.</p>
 <ul>
-<li><strong>Deterministic "Golden Set" Tests</strong>: The Agent is regularly tested against a library of historic incident logs with 
-  known "correct" outcomes. The Agent must reach the safe conclusion (e.g., "Inhibit Pump A") with 100% accuracy to 
+<li><strong>Deterministic &ldquo;Golden Set&rdquo; Tests</strong>: The Agent is regularly tested against a library of historic incident logs with 
+  known &ldquo;correct&rdquo; outcomes. The Agent must reach the safe conclusion (e.g., &ldquo;Inhibit Pump A&rdquo;) with 100% accuracy to 
   pass.</li>
 <li><strong>Semantic Similarity Scoring</strong>: Oversight uses an NLP-based (Natural Language Processing) scorer to verify that the 
-  Agent's reasoning aligns with the specific technical vocabulary and safety protocols defined in the pgvector document 
+  Agent&rsquo;s reasoning aligns with the specific technical vocabulary and safety protocols defined in the pgvector document 
   store.</li>
 <li><strong>Safety Guardrail Audit</strong>: Every failover intent is passed through a Hard-coded Logic Validator. If the AI suggests 
-  a step that violates a physical interlock (e.g., "Start Pump while Intake Valve is closed"), the Eval fails 
+  a step that violates a physical interlock (e.g., &ldquo;Start Pump while Intake Valve is closed&rdquo;), the Eval fails 
   immediately, and the command is blocked by the Semantic Gatekeeper.</li>
 </ul>
-<h3 id="monte-carlo-simulation-rul-what-if">Monte Carlo Simulation (RUL &amp; What-If)</h3>
-<p>To move from "Reactive" to "Proactive," Oversight uses Monte Carlo Simulations to model thousands of possible 
+<h3 id="monte-carlo-simulation-rul-what-if">Monte Carlo Simulation (RUL &amp; What-If)<a class="headerlink" href="#monte-carlo-simulation-rul-what-if" title="Permanent link"></a></h3>
+<p>To move from &ldquo;Reactive&rdquo; to &ldquo;Proactive,&rdquo; Oversight uses Monte Carlo Simulations to model thousands of possible 
 future states for the field assets.</p>
 <ul>
 <li><strong>Remaining Useful Life (RUL)</strong>: By running 10,000+ simulations of asset wear using current Z-Score drift as a 
   baseline, Oversight calculates RUL with a 95% confidence interval. </li>
-<li><strong>Catastrophic "What-If" Modeling</strong>: Oversight simulates multi-asset failure scenarios (e.g., concurrent pipe burst 
+<li><strong>Catastrophic &ldquo;What-If&rdquo; Modeling</strong>: Oversight simulates multi-asset failure scenarios (e.g., concurrent pipe burst 
   and power dip) to observe how the Cognitive Digital Twin prioritizes failovers under extreme stress.</li>
 <li><strong>Transfer Optimization</strong>: By simulating varied ramp speeds for standby assets, the Monte Carlo engine identifies the 
-  "Sweet Spot" for the Bumpless Transfer, minimizing the mechanical torque and water hammer associated with the 
+  &ldquo;Sweet Spot&rdquo; for the Bumpless Transfer, minimizing the mechanical torque and water hammer associated with the 
   transition.</li>
 </ul>
-<h2 id="implementation-data-engineering">Implementation &amp; Data Engineering</h2>
+<h2 id="implementation-data-engineering">Implementation &amp; Data Engineering<a class="headerlink" href="#implementation-data-engineering" title="Permanent link"></a></h2>
 <p>To maintain the integrity of the Cognitive Digital Twin, raw telemetry undergoes a multi-stage conditioning pipeline 
 before reaching the Reasoning Engine:</p>
 <ul>
@@ -2496,8 +2561,8 @@ before reaching the Reasoning Engine:</p>
 <li><strong>Windowed $Z$-Score Grounding</strong>: <strong>Apache Flink</strong> performs real-time statistical grounding on the live stream, calculating
   the $Z$-Score of each field asset to identify logic drift or mechanical wear before data is committed to the 
   database.</li>
-<li><strong>Historian Tiering</strong>: Data is automatically partitioned into "Hot" (Redis – 1 min), "Warm" (TimescaleDB – 90 days),
-  and "Cold" (S3/Blob - Long-term) for efficient RAG retrieval.</li>
+<li><strong>Historian Tiering</strong>: Data is automatically partitioned into &ldquo;Hot&rdquo; (Redis – 1 min), &ldquo;Warm&rdquo; (TimescaleDB – 90 days),
+  and &ldquo;Cold&rdquo; (S3/Blob - Long-term) for efficient RAG retrieval.</li>
 <li><strong>Store &amp; Forward Egress</strong>: To maintain sub-second reliability with using the LLM, the system uses a
   Store-And-Forward buffering strategy to ensure the LLM can respond to the latest telemetry data even during network
   instability.</li>
@@ -2509,11 +2574,11 @@ before reaching the Reasoning Engine:</p>
     forward once the connection is restored, allowing for a retrospective Root Cause Analysis (RCA) even after a 
     disruption.</li>
 </ul>
-<h2 id="the-event-driven-command-spine">The Event-Driven Command Spine</h2>
+<h2 id="the-event-driven-command-spine">The Event-Driven Command Spine<a class="headerlink" href="#the-event-driven-command-spine" title="Permanent link"></a></h2>
 <p>To bridge high-level AI reasoning with low-level industrial protocols, OverSight uses an 
 <strong>Event-Driven Command Spine</strong> (RabbitMQ) coupled with a <strong>Stream-Processing Layer</strong> (Apache Flink). This replaces 
 traditional database polling with a real-time, low-latency push model.</p>
-<h3 id="read-write-separation">Read / Write Separation</h3>
+<h3 id="read-write-separation">Read / Write Separation<a class="headerlink" href="#read-write-separation" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Read Path</strong>: Telemetry flows unidirectionally up from the field level through the Northbound Ingest and into the 
      NATS JetStream telemetry UNS. The Bytewax streaming engine calculates windowed $Z$-score logic drift and 
@@ -2537,7 +2602,7 @@ traditional database polling with a real-time, low-latency push model.</p>
 </ul>
 </li>
 </ul>
-<h3 id="io-fencing-determinism">I/O Fencing &amp; Determinism</h3>
+<h3 id="io-fencing-determinism">I/O Fencing &amp; Determinism<a class="headerlink" href="#io-fencing-determinism" title="Permanent link"></a></h3>
 <p>To prevent the system from acting on outdated or hallucinated information, we implement three layers of fencing:</p>
 <ol>
 <li><strong>TTL (Time-To-Live) Envelopes</strong>: Every intent published to the NATS Command Spine is tagged with a 
@@ -2553,55 +2618,65 @@ traditional database polling with a real-time, low-latency push model.</p>
 <li><strong>Trace ID Enforcement</strong>: No command is accepted by the Southbound Driver unless it carries a valid <code>trace_id</code> 
     header, linking the physical action directly to a specific AI reasoning cycle in the audit logs.</li>
 </ol>
-<h3 id="implementing-a-digital-twin-simulation-environment">Implementing a Digital Twin Simulation Environment</h3>
-<p>The Digital Twin Simulation Environment is a high-fidelity <strong>Field Asset Simulator (PAS)</strong> used for logic validation.
-- <strong>Non-Invasive Testing</strong>: The environment allows for the testing and development of AI-driven failover maneuvers and 
-  $Z$-score threshold tuning without risking physical equipment or process uptime.
-- <strong>Scenario Injection</strong>: It allows for the simulation of <strong>Black Swan</strong> events, such as catastrophic pump failure or 
-  sensor drift to verify that the Reasoning Agent and Southbound Driver respond deterministically.
-- <strong>Trade-off</strong>: While maintaining a PAS increases architectural overhead, it is a safety requirement for industrial 
-  commissioning (SAT-04) to ensure the AI's thought translates to safe physical movement.</p>
-<h3 id="competing-consumer-pattern">Competing Consumer Pattern</h3>
+<h3 id="implementing-a-digital-twin-simulation-environment">Implementing a Digital Twin Simulation Environment<a class="headerlink" href="#implementing-a-digital-twin-simulation-environment" title="Permanent link"></a></h3>
+<p>The Digital Twin Simulation Environment is a high-fidelity <strong>Field Asset Simulator (PAS)</strong> used for logic validation.</p>
+<ul>
+<li><strong>Non-Invasive Testing</strong>: The environment allows for the testing and development of AI-driven failover maneuvers and 
+  $Z$-score threshold tuning without risking physical equipment or process uptime.</li>
+<li><strong>Scenario Injection</strong>: It allows for the simulation of <strong>Black Swan</strong> events, such as catastrophic pump failure or 
+  sensor drift to verify that the Reasoning Agent and Southbound Driver respond deterministically.</li>
+<li><strong>Trade-off</strong>: While maintaining a PAS increases architectural overhead, it is a safety requirement for industrial 
+  commissioning (SAT-04) to ensure the AI&rsquo;s thought translates to safe physical movement.</li>
+</ul>
+<h3 id="competing-consumer-pattern">Competing Consumer Pattern<a class="headerlink" href="#competing-consumer-pattern" title="Permanent link"></a></h3>
 <p>NATS JetStream is utilized as the <strong>Command Spine</strong>, allowing horizontally scalable LangGraph workers to process plant 
-intents.
-- <strong>Horizontal Scalability</strong>: As plant complexity or the number of field assets grows, additional worker containers can 
-  be spun up to pull from the command queue without logic changes.
-- <strong>Fault Tolerance</strong>: If a worker fails mid-reasoning, the message is returned to the queue (via NACK) for another 
-  worker to process, ensuring no intent is lost.
-- <strong>Trade-off</strong>: This pattern requires strict <strong>Idempotency</strong>. Oversight uses fencing tokens and a unique <code>trace_id</code> to 
-  ensure that at-least-once delivery does not result in duplicate physical executions on the field assets.</p>
-<h3 id="event-driven-architecture-reactive-design">Event-Driven Architecture &amp; Reactive Design</h3>
+intents.</p>
+<ul>
+<li><strong>Horizontal Scalability</strong>: As plant complexity or the number of field assets grows, additional worker containers can 
+  be spun up to pull from the command queue without logic changes.</li>
+<li><strong>Fault Tolerance</strong>: If a worker fails mid-reasoning, the message is returned to the queue (via NACK) for another 
+  worker to process, ensuring no intent is lost.</li>
+<li><strong>Trade-off</strong>: This pattern requires strict <strong>Idempotency</strong>. Oversight uses fencing tokens and a unique <code>trace_id</code> to 
+  ensure that at-least-once delivery does not result in duplicate physical executions on the field assets.</li>
+</ul>
+<h3 id="event-driven-architecture-reactive-design">Event-Driven Architecture &amp; Reactive Design<a class="headerlink" href="#event-driven-architecture-reactive-design" title="Permanent link"></a></h3>
 <p>The system is built on a <strong>Push-Based</strong> model rather than a polling model, ensuring sub-second responsiveness to process 
-excursions.
-- <strong>Reactive Stream Processing</strong>: The Bytewax streaming engine reacts to raw NATS telemetry in real-time, performing 
-  windowed math to detect drift before the Agent even begins its reasoning cycle.
-- <strong>Loose Coupling</strong>: Components communicate exclusively through the <strong>Unified Namespace (UNS)</strong>. The Southbound Driver 
+excursions.</p>
+<ul>
+<li><strong>Reactive Stream Processing</strong>: The Bytewax streaming engine reacts to raw NATS telemetry in real-time, performing 
+  windowed math to detect drift before the Agent even begins its reasoning cycle.</li>
+<li><strong>Loose Coupling</strong>: Components communicate exclusively through the <strong>Unified Namespace (UNS)</strong>. The Southbound Driver 
   and Reasoning Agent have no direct dependencies, allowing either to be updated or restarted without crashing the 
-  control loop.
-- <strong>Trade-off</strong>: This architecture introduces complexity in managing message ordering. We address this through 
-  <strong>Sequence Tracking</strong> and <strong>Time-To-Live (TTL)</strong> envelopes on every event.</p>
-<h3 id="unidirectional-data-flow">Unidirectional Data Flow</h3>
-<p>OverSight enforces a strict unidirectional flow to maintain a "Clear Chain of Command" and prevent feedback loops.
-- <strong>Safety Gatekeeping</strong>: The Reasoning Agent cannot directly access field assets. It must write "Intents" to the 
-  RabbitMQ Spine, which are then intercepted, audited, and executed by the Southbound Driver's semantic firewall.
-- <strong>Simplicity &amp; Auditability</strong>: By enforcing a one-way flow (Observation → Reasoning → Intent → Execution), we 
-  ensure that every physical change has a traceable, linear cause in the audit log.
-- <strong>Trade-off</strong>: This adds a layer of indirection and minor latency, but it is a critical safety barrier that prevents 
-  the AI from bypassing hard-coded physical constraints.</p>
-<h3 id="retrieval-augmented-generation-rag">Retrieval-Augmented Generation (RAG)</h3>
-<p>The system utilizes RAG to ground the Agent’s reasoning in manufacturer-specific PDF manuals and historical site logs.
-- <strong>Hallucination Mitigation</strong>: The Agent is strictly required to provide citations (URI/Hash) from the local 
-  <strong>pgvector</strong> store before a failover maneuver is authorized.
-- <strong>Ground Truth Logic</strong>: By providing specific excerpts from manufacturer technical data, the system ensures the AI 
-  suggests setpoints that are physically compatible with the hardware's engineering tolerances.
-- <strong>Trade-off</strong>: RAG ingestion adds processing time to the reasoning cycle, but this is a necessary compromise to
-  ensure the Agent remains a "Domain Expert" rather than a general-purpose (and hallucination-prone) LLM.</p>
-<h3 id="unified-namespace-uns-architecture">Unified Namespace (UNS) Architecture</h3>
+  control loop.</li>
+<li><strong>Trade-off</strong>: This architecture introduces complexity in managing message ordering. We address this through 
+  <strong>Sequence Tracking</strong> and <strong>Time-To-Live (TTL)</strong> envelopes on every event.</li>
+</ul>
+<h3 id="unidirectional-data-flow">Unidirectional Data Flow<a class="headerlink" href="#unidirectional-data-flow" title="Permanent link"></a></h3>
+<p>OverSight enforces a strict unidirectional flow to maintain a &ldquo;Clear Chain of Command&rdquo; and prevent feedback loops.</p>
+<ul>
+<li><strong>Safety Gatekeeping</strong>: The Reasoning Agent cannot directly access field assets. It must write &ldquo;Intents&rdquo; to the 
+  RabbitMQ Spine, which are then intercepted, audited, and executed by the Southbound Driver&rsquo;s semantic firewall.</li>
+<li><strong>Simplicity &amp; Auditability</strong>: By enforcing a one-way flow (Observation → Reasoning → Intent → Execution), we 
+  ensure that every physical change has a traceable, linear cause in the audit log.</li>
+<li><strong>Trade-off</strong>: This adds a layer of indirection and minor latency, but it is a critical safety barrier that prevents 
+  the AI from bypassing hard-coded physical constraints.</li>
+</ul>
+<h3 id="retrieval-augmented-generation-rag">Retrieval-Augmented Generation (RAG)<a class="headerlink" href="#retrieval-augmented-generation-rag" title="Permanent link"></a></h3>
+<p>The system utilizes RAG to ground the Agent’s reasoning in manufacturer-specific PDF manuals and historical site logs.</p>
+<ul>
+<li><strong>Hallucination Mitigation</strong>: The Agent is strictly required to provide citations (URI/Hash) from the local 
+  <strong>pgvector</strong> store before a failover maneuver is authorized.</li>
+<li><strong>Ground Truth Logic</strong>: By providing specific excerpts from manufacturer technical data, the system ensures the AI 
+  suggests setpoints that are physically compatible with the hardware&rsquo;s engineering tolerances.</li>
+<li><strong>Trade-off</strong>: RAG ingestion adds processing time to the reasoning cycle, but this is a necessary compromise to
+  ensure the Agent remains a &ldquo;Domain Expert&rdquo; rather than a general-purpose (and hallucination-prone) LLM.</li>
+</ul>
+<h3 id="unified-namespace-uns-architecture">Unified Namespace (UNS) Architecture<a class="headerlink" href="#unified-namespace-uns-architecture" title="Permanent link"></a></h3>
 <p>The <strong>Unified Namespace (UNS)</strong> Architecture acts as a centralized source of truth for Oversight. By implementing this
 architecture, the system decouples the AI Agent from the specific physical hardware configurations. While the system
 uses industrial protocols (Modbus TCP, OPC-UA, EtherNet/IP) for hardware interoperability at the edge, the UNS provides
 a standardized interface for the system to remain vendor-agnostic and horizontally scalable. Oversight is designed to 
-be a "Universal" reliability system that can be used at multiple industrial plants. </p>
+be a &ldquo;Universal&rdquo; reliability system that can be used at multiple industrial plants. </p>
 <p>It treats the plant like a single, cohesive <strong>Semantic Hierarchy</strong>. By using a single namespace, the system eliminates 
 the friction of vendor-specific silos.</p>
 <ul>
@@ -2617,7 +2692,7 @@ the friction of vendor-specific silos.</p>
   To handle the complex nature of industrial reliability and high-velocity data, the UNS is distributed across two brokers, 
   each handling a specific direction of data flow:</li>
 </ul>
-<h4 id="architecture-benefits">Architecture Benefits</h4>
+<h4 id="architecture-benefits">Architecture Benefits<a class="headerlink" href="#architecture-benefits" title="Permanent link"></a></h4>
 <ul>
 <li><strong>Hardware Abstraction</strong>: The AI Agent only interacts with the UNS and is hardware-agnostic.</li>
 <li><strong>State vs. Intent</strong>: Because both NATS and Bytewax share the same naming convention, the system maintains a
@@ -2625,36 +2700,36 @@ the friction of vendor-specific silos.</p>
 <li><strong>Scalability</strong>: Both NATS and Bytewax can scale horizontally to handle increased data volumes and command loads as 
   the plant grows or during peak operational periods. </li>
 </ul>
-<h2 id="operational-technology-ot-safety-logic">Operational Technology (OT) Safety Logic</h2>
-<p>To prevent "water hammer," mechanical shock, or pressure surges during a failover, the Southbound Driver enforces a
+<h2 id="operational-technology-ot-safety-logic">Operational Technology (OT) Safety Logic<a class="headerlink" href="#operational-technology-ot-safety-logic" title="Permanent link"></a></h2>
+<p>To prevent &ldquo;water hammer,&rdquo; mechanical shock, or pressure surges during a failover, the Southbound Driver enforces a
 <strong>Deterministic Handshake</strong> for asset transitions:</p>
 <ol>
 <li><strong>Command Standby</strong>: Initialize the Standby Asset at its minimum safe operating frequency.</li>
-<li><strong>Monitor State</strong>: Wait for "At Speed" and "Ready" feedback from the field hardware.</li>
+<li><strong>Monitor State</strong>: Wait for &ldquo;At Speed&rdquo; and &ldquo;Ready&rdquo; feedback from the field hardware.</li>
 <li><strong>Bumpless Transfer</strong>: Simultaneously ramp the Standby frequency up while ramping the Primary down. During this 
     phase, the Standby PID pre-loads the active I-term from the Primary to prevent a pressure dip.</li>
-<li><strong>Isolate &amp; Shed</strong>: Once the Standby reaches the required setpoint, the Primary Asset is commanded to "Stop" and 
+<li><strong>Isolate &amp; Shed</strong>: Once the Standby reaches the required setpoint, the Primary Asset is commanded to &ldquo;Stop&rdquo; and 
     isolated for maintenance.</li>
 </ol>
-<h2 id="store-and-forward-contextual-edges">Store-and-Forward Contextual Edges</h2>
+<h2 id="store-and-forward-contextual-edges">Store-and-Forward Contextual Edges<a class="headerlink" href="#store-and-forward-contextual-edges" title="Permanent link"></a></h2>
 <p>To mitigate the risks of high-latency cloud LLMs and network partitions, OverSight implements a <strong>Store-and-Forward</strong>
 mechanism with <strong>Contextual Edge</strong> prioritization.</p>
 <ul>
 <li><strong>Local Persistence (The Edge Authority)</strong>: 100% of telemetry is persisted in the local <strong>TimescaleDB</strong> instance. 
-  This creates an authoritative "Source of Truth" at the edge, ensuring data integrity even during total cloud 
+  This creates an authoritative &ldquo;Source of Truth&rdquo; at the edge, ensuring data integrity even during total cloud 
   disconnects.</li>
 <li><strong>Stream-Aware Backpressure</strong>: <strong>Bytewax</strong> monitors the ingestion rate from field assets. If downstream 
   consumers lag, Bytewax applies backpressure to the ingest layer, slowing processing to match capacity without losing a 
   single event.</li>
-<li><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or "Data Storms," the Northbound Ingest Service 
+<li><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
   uses <strong>NATSa</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
   Spine</strong> from being overwhelmed.</li>
 <li><strong>Prioritized Context Edges</strong>: If network bandwidth is saturated, the Gateway prioritizes <strong>Control-Critical Tags</strong> 
   (Alarms, E-Stops, Motor States) over <strong>Diagnostic-Critical Tags</strong> (Vibration, Temperature). This ensures the AI 
   maintains safety-critical situational awareness during a surge.</li>
 </ul>
-<h2 id="twelve-factor-methodology-at-the-edge">Twelve-Factor Methodology at the Edge</h2>
-<p>The system is built for industrial "Disposability" and rapid deployment:</p>
+<h2 id="twelve-factor-methodology-at-the-edge">Twelve-Factor Methodology at the Edge<a class="headerlink" href="#twelve-factor-methodology-at-the-edge" title="Permanent link"></a></h2>
+<p>The system is built for industrial &ldquo;Disposability&rdquo; and rapid deployment:</p>
 <ul>
 <li><strong>Config</strong>: Site-specific parameters (IP addresses, Register Maps, Asset IDs) are injected via <code>.env</code> files. No 
   site-specific logic exists in the codebase.</li>
@@ -2663,7 +2738,7 @@ mechanism with <strong>Contextual Edge</strong> prioritization.</p>
 <li><strong>Concurrency</strong>: By using the <strong>Competing Consumer Pattern</strong>, the Gateway scales its reasoning power horizontally
   simply by spinning up additional worker containers.</li>
 </ul>
-<h3 id="data-source-mapping">Data Source Mapping:</h3>
+<h3 id="data-source-mapping">Data Source Mapping:<a class="headerlink" href="#data-source-mapping" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Telemetric (IoT/PLC)</strong>: Real-time Modbus registers, EtherNet IP tags and OPC-UA nodes (current, pressure, flow, 
   temperature, vibration, etc.) are ingested at 1-second intervals.</li>
@@ -2671,12 +2746,12 @@ mechanism with <strong>Contextual Edge</strong> prioritization.</p>
 <li><strong>Unstructured (Maintenance)</strong>: PDF Manuals, historical CSV incident logs, and operator shift nodes indexed via 
   <code>pgVector</code>.</li>
 </ul>
-<h2 id="data-storage">Data Storage</h2>
+<h2 id="data-storage">Data Storage<a class="headerlink" href="#data-storage" title="Permanent link"></a></h2>
 <p>I used <strong>TimescaleDB</strong> to transform PostgreSQL into a high-performance time-series engine. This allows OverSight to 
 maintain an ACID-compliant environment that handles billions of telemetry points alongside structured relational data, 
 such as RAG metadata and audit logs.</p>
 <ul>
-<li><strong>The Unified Data Strategy</strong>: By using TimescaleDB, the system avoids the complexity of "polyglot persistence" 
+<li><strong>The Unified Data Strategy</strong>: By using TimescaleDB, the system avoids the complexity of &ldquo;polyglot persistence&rdquo; 
   (managing separate NoSQL and Relational DBs). Instead, it uses a single database instance to store both high-velocity 
   sensor data and structured operational context.</li>
 <li><strong>Hypertable for Scalability</strong>: I implemented Timescale <strong>Hypertable</strong> to automatically partition incoming Sparkplug 
@@ -2702,23 +2777,23 @@ such as RAG metadata and audit logs.</p>
   regulatory compliance and historical analysis, while also delivering the performance and scalability needed to handle 
   high-frequency telemetry data in real-time.</li>
 </ul>
-<h2 id="database-compaction-tiered-retention">Database Compaction &amp; Tiered Retention</h2>
+<h2 id="database-compaction-tiered-retention">Database Compaction &amp; Tiered Retention<a class="headerlink" href="#database-compaction-tiered-retention" title="Permanent link"></a></h2>
 <p>To prevent storage exhaustion and maintain sub-second query performance, I implemented a strict Tiered Retention Policy:</p>
 <ul>
-<li><strong>L1 (Raw Data – "Hot")</strong>: Telemetry is stored at full resolution for 7 days. This provides a high-resolution 
-  forensic "Black Box" for immediate Root Cause Analysis (RCA).</li>
-<li><strong>L2 (Compressed - "Warm")</strong>: After 7 days, data is passed through a <strong>Columnar Compression Policy</strong>. It is 
+<li><strong>L1 (Raw Data – &ldquo;Hot&rdquo;)</strong>: Telemetry is stored at full resolution for 7 days. This provides a high-resolution 
+  forensic &ldquo;Black Box&rdquo; for immediate Root Cause Analysis (RCA).</li>
+<li><strong>L2 (Compressed - &ldquo;Warm&rdquo;)</strong>: After 7 days, data is passed through a <strong>Columnar Compression Policy</strong>. It is 
   aggregated into 1-minute averages ($\mu$ and $\sigma$) and stored for 90 days for trend analysis and AI context.</li>
-<li><strong>L3 (Permanent - "Cold")</strong>: Critical incident logs, failover events, and EPA-relevant effluent data are moved to 
+<li><strong>L3 (Permanent - &ldquo;Cold&rdquo;)</strong>: Critical incident logs, failover events, and EPA-relevant effluent data are moved to 
   standard relational tables and stored indefinitely. This ensures compliance with <strong>EPA 40 CFR</strong> and <strong>ISO 27001</strong> 
   standards without bloating the time-series hypertables.</li>
 </ul>
-<h2 id="worm-storage-worm-spooling">WORM Storage &amp; WORM Spooling</h2>
+<h2 id="worm-storage-worm-spooling">WORM Storage &amp; WORM Spooling<a class="headerlink" href="#worm-storage-worm-spooling" title="Permanent link"></a></h2>
 <p>The WORM log is stored on the NVMe (Non-Volatile Memory Express) drive of the Edge Gateway, and uses strict disk 
 capacity enforcement thresholds to prevent overflow. If the connection to the Corporate IT server is down, the system
 will not be able to upload its mandatory audit logs. To prevent any data loss, the Edge Gateway saves (spools) all of 
 high-speed telemetry and AI reasoning traces locally onto its own NVMe drive.</p>
-<h3 id="worm-spooling-capacity-thresholds">WORM Spooling Capacity Thresholds</h3>
+<h3 id="worm-spooling-capacity-thresholds">WORM Spooling Capacity Thresholds<a class="headerlink" href="#worm-spooling-capacity-thresholds" title="Permanent link"></a></h3>
 <ul>
 <li><strong>80% Capacity Threshold</strong>: The system will issue a local HMI <code>AUDIT_SPOOLING_WARNING</code>, even though the system 
   continues to operate normally. Reaching the 80% mark triggers a warning on the dashboard.</li>
@@ -2727,7 +2802,7 @@ high-speed telemetry and AI reasoning traces locally onto its own NVMe drive.</p
   triggered. The Southbound Driver is immediately suspended, and the system defaults to <code>ORPHAN_MODE</code>(a safe state 
   where requiring manual control) which stops the Agent from executing any un-auditable actions.</li>
 </ul>
-<h2 id="data-management-retention">Data Management &amp; Retention</h2>
+<h2 id="data-management-retention">Data Management &amp; Retention<a class="headerlink" href="#data-management-retention" title="Permanent link"></a></h2>
 <p>As a high-frequency telemetry system, OverSight manages the high-level of data generated by the field instrumentation 
 or control hardware (PLCs, VFDs) using a 4-tier architecture. </p>
 <table>
@@ -2766,73 +2841,75 @@ or control hardware (PLCs, VFDs) using a 4-tier architecture. </p>
 </tr>
 </tbody>
 </table>
-<h2 id="deployment-operations-maintenance">Deployment, Operations, &amp; Maintenance</h2>
-<h3 id="llmops-cicd-for-cognitive-reliability">LLMOps: CI/CD for Cognitive Reliability</h3>
+<h2 id="deployment-operations-maintenance">Deployment, Operations, &amp; Maintenance<a class="headerlink" href="#deployment-operations-maintenance" title="Permanent link"></a></h2>
+<h3 id="llmops-cicd-for-cognitive-reliability">LLMOps: CI/CD for Cognitive Reliability<a class="headerlink" href="#llmops-cicd-for-cognitive-reliability" title="Permanent link"></a></h3>
 <p>We implement a rigorous LLMOps pipeline to ensure model updates never compromise process availability.</p>
 <ul>
-<li><strong>Prompt Versioning &amp; Registry</strong>: Prompts are treated as production code. Every change to a LangGraph node's 
+<li><strong>Prompt Versioning &amp; Registry</strong>: Prompts are treated as production code. Every change to a LangGraph node&rsquo;s 
   prompt must be versioned in Git and pass the <strong>Evaluation Framework</strong> tests before deployment.</li>
-<li><strong>Shadow Mode (A/B Testing)</strong>: New reasoning agents are deployed in "Shadow Mode" to process live telemetry from 
+<li><strong>Shadow Mode (A/B Testing)</strong>: New reasoning agents are deployed in &ldquo;Shadow Mode&rdquo; to process live telemetry from 
    the NATS UNS. Their intents are recorded and compared against the production agent, but they are physically 
    inhibited from publishing to the NATS Command Spine.</li>
 <li><strong>Semantic Drift Alarms</strong>: If the system detects a variance in reasoning confidence for similar telemetry patterns, 
    it flags the incident for human review to retrain local RAG embeddings and prevent model decay.</li>
 </ul>
-<h3 id="state-management-rehydration">State Management &amp; Rehydration</h3>
+<h3 id="state-management-rehydration">State Management &amp; Rehydration<a class="headerlink" href="#state-management-rehydration" title="Permanent link"></a></h3>
 <p>State in OverSight is decoupled from individual containers to ensure 12-Factor statelessness and rapid recovery.</p>
 <ul>
-<li><strong>Distributed State (NATS/Timescale)</strong>: All "In-Flight" reasoning and graph states are persisted. If a container 
+<li><strong>Distributed State (NATS/Timescale)</strong>: All &ldquo;In-Flight&rdquo; reasoning and graph states are persisted. If a container 
   restarts mid-failover, it rehydrates its state from NATS snapshots and resumes from the last validated node.</li>
-<li><strong>The Digital Twin State</strong>: A real-time representation of the plant's physical state is maintained in the 
-  <strong>NATS Unified Namespace (UNS)</strong>. This includes "Remote Authority" status, $Z$-scores, and active physical interlock 
+<li><strong>The Digital Twin State</strong>: A real-time representation of the plant&rsquo;s physical state is maintained in the 
+  <strong>NATS Unified Namespace (UNS)</strong>. This includes &ldquo;Remote Authority&rdquo; status, $Z$-scores, and active physical interlock 
   locks.</li>
 <li><strong>Conflict Resolution (Pessimistic Locking)</strong>: If an operator manually overrides a field asset while the AI is in a 
   reasoning cycle, the system detects the state mismatch via the UNS. The AI immediately aborts its intent and triggers 
-  a "Manual Override Detected" alert.</li>
+  a &ldquo;Manual Override Detected&rdquo; alert.</li>
 </ul>
-<h3 id="edge-hardware-lifecycle">Edge Hardware &amp; Lifecycle</h3>
+<h3 id="edge-hardware-lifecycle">Edge Hardware &amp; Lifecycle<a class="headerlink" href="#edge-hardware-lifecycle" title="Permanent link"></a></h3>
 <p>OverSight is optimized for high-performance Industrial PCs (IPCs) on the plant floor.</p>
 <ul>
-<li><strong>Resource Isolation (Docker Cgroups)</strong>: Oversight applies strict hard-limits on CPU and Memory for the "Reasoning Engine." 
+<li><strong>Resource Isolation (Docker Cgroups)</strong>: Oversight applies strict hard-limits on CPU and Memory for the &ldquo;Reasoning Engine.&rdquo; 
   This prevents an LLM context-window expansion from starving the <strong>Southbound Driver</strong> of the cycles required to 
   maintain the PLC Heartbeat.</li>
 <li><strong>Zero-Touch Provisioning (ZTP)</strong>: Technicians can swap a failed Edge Gateway by simply inserting a secure USB drive 
   containing the site-specific <code>.env</code> configuration. The system automatically pulls signed Docker images and 
   reconstructs the local UNS.</li>
 </ul>
-<h2 id="scaling-strategy">Scaling Strategy</h2>
+<h2 id="scaling-strategy">Scaling Strategy<a class="headerlink" href="#scaling-strategy" title="Permanent link"></a></h2>
 <p><strong>Horizontal Scaling</strong>: The system leverages NATs consumer groups to distribute the telemetry of thousands of 
 sensors across multiple Edge Gateway nodes.
 <strong>Federated Learning</strong>: Moving towards a model where local Edge nodes share anonymized failure patterns to improve the
 global RAG database without compromising privacy.</p>
-<h3 id="scalable-reasoning">Scalable Reasoning</h3>
+<h3 id="scalable-reasoning">Scalable Reasoning<a class="headerlink" href="#scalable-reasoning" title="Permanent link"></a></h3>
 <p>The LangGraph Agent is designed to be scalable and fault-tolerant, allowing it to handle complex planning and reasoning 
 tasks without crashing the system. RAG (Retrieval-Augmented Generation) is used to provide the Agent with specific 
-context from manuals and logs, which helps to reduce hallucinations and improve decision-making.
-   - <strong>Stateful Orchestration</strong>: LangGraph manages the reasoning lifecycle, using database checkpoints to ensure that 
-   if the gateway restarts mid-failover, the Agent resumes exactly where it left off.
-   - <strong>RAG Context</strong>: The Agent uses Retrieval-Augmented Generation to fetch information from manuals and logs,
-   providing grounded context for its decisions and reducing hallucinations.
-   - <strong>Trade-off</strong>: This pattern allows for complex, stateful reasoning while ensuring that the system can recover 
+context from manuals and logs, which helps to reduce hallucinations and improve decision-making.</p>
+<ul>
+<li><strong>Stateful Orchestration</strong>: LangGraph manages the reasoning lifecycle, using database checkpoints to ensure that 
+   if the gateway restarts mid-failover, the Agent resumes exactly where it left off.</li>
+<li><strong>RAG Context</strong>: The Agent uses Retrieval-Augmented Generation to fetch information from manuals and logs,
+   providing grounded context for its decisions and reducing hallucinations.</li>
+<li><strong>Trade-off</strong>: This pattern allows for complex, stateful reasoning while ensuring that the system can recover 
    gracefully from failures. The trade-off is that it introduces some latency due to the need to fetch context and 
-   manage state. However, this is necessary to ensure that the Agent's decisions are knowledgeable and that the system 
-   can handle real-world industrial complexity without crashing or making unsafe decisions.</p>
-<h2 id="conclusion">Conclusion</h2>
+   manage state. However, this is necessary to ensure that the Agent&rsquo;s decisions are knowledgeable and that the system 
+   can handle real-world industrial complexity without crashing or making unsafe decisions.</li>
+</ul>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link"></a></h2>
 <p>Oversight ICS is a comprehensive solution for transitioning Legacy OT systems with AI Agents and represents a 
-fundamental step for how we approach industrial reliability. By moving from "If-Then" alarm thresholds to a stateful, 
-cognitive supervision system, we can transition plants OT Legacy systems to a more "AI-driven" approach. By moving to
-an "If-This-Then-That" logic, we effectively eliminate the need for unplanned downtime and reduce the risk of human 
+fundamental step for how we approach industrial reliability. By moving from &ldquo;If-Then&rdquo; alarm thresholds to a stateful, 
+cognitive supervision system, we can transition plants OT Legacy systems to a more &ldquo;AI-driven&rdquo; approach. By moving to
+an &ldquo;If-This-Then-That&rdquo; logic, we effectively eliminate the need for unplanned downtime and reduce the risk of human 
 error. </p>
-<p>This system ensures that the plant's safety is not compromised by AI-driven decisions, and it provides a clear path to 
-improving the safety of the plant's equipment. If a catastrophic failure occurs, the system doesn't panic, but instead 
+<p>This system ensures that the plant&rsquo;s safety is not compromised by AI-driven decisions, and it provides a clear path to 
+improving the safety of the plant&rsquo;s equipment. If a catastrophic failure occurs, the system doesn&rsquo;t panic, but instead 
 proactively takes steps to prevent further damage and then provides a clear path for recovery. It represents a 
-deterministic, auditable, and AI-driven assistance approach to the plant's safety.</p>
-<p>Oversight ICS doesn't just monitor the process, it understands it and can take proactive steps to keep it running 
-safely and efficiently. By implementing this system, we can ensure that the plant's operations are not only more 
+deterministic, auditable, and AI-driven assistance approach to the plant&rsquo;s safety.</p>
+<p>Oversight ICS doesn&rsquo;t just monitor the process, it understands it and can take proactive steps to keep it running 
+safely and efficiently. By implementing this system, we can ensure that the plant&rsquo;s operations are not only more 
 reliable but also more resilient to unexpected events, ultimately leading to safer working conditions and improved 
 productivity.</p>
-<h2 id="stakeholder-faqs">Stakeholder FAQs</h2>
-<h2 id="documentation-index">Documentation Index</h2>
+<h2 id="stakeholder-faqs">Stakeholder FAQs<a class="headerlink" href="#stakeholder-faqs" title="Permanent link"></a></h2>
+<h2 id="documentation-index">Documentation Index<a class="headerlink" href="#documentation-index" title="Permanent link"></a></h2>
               
             </div>
           </div><footer>

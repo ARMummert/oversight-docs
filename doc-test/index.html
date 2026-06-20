@@ -80,9 +80,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="oversight-ics-comprehensive-glossary">Oversight ICS: Comprehensive Glossary</h1>
+                <h1 id="oversight-ics-comprehensive-glossary">Oversight ICS: Comprehensive Glossary<a class="headerlink" href="#oversight-ics-comprehensive-glossary" title="Permanent link"></a></h1>
 <p>This glossary defines all critical bolded terminology found across the entire Oversight ICS project documentation.</p>
-<h2 id="a">A</h2>
+<h2 id="a">A<a class="headerlink" href="#a" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Active Control</strong>: The operational state where the system transitions from a passive monitoring role to autonomously managing predictive failovers and process interventions.</li>
 <li><strong>Alarm Triage &amp; Interpretation Table</strong>: A matrix used by operators to correlate system states, Z-Scores, and HMI colors to determine the appropriate response to anomalies.</li>
@@ -90,32 +90,32 @@
 <li><strong>API &amp; Message Schema Specification</strong>: The core governance document dictating the structural contracts, authentication (JWT), and rate-limiting rules for all inbound and outbound IDMZ traffic.</li>
 <li><strong>Asset Registry</strong>: The authoritative database table maintaining the unique UUIDs, MAC addresses, and firmware versions of all approved physical hardware spares.</li>
 </ul>
-<h2 id="b">B</h2>
+<h2 id="b">B<a class="headerlink" href="#b" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Bytewax</strong>: The Python-native stream processing framework used within the IDMZ to calculate rolling windows and statistical anomalies from the NATS JetStream.</li>
 </ul>
-<h2 id="c">C</h2>
+<h2 id="c">C<a class="headerlink" href="#c" title="Permanent link"></a></h2>
 <ul>
 <li><strong>CI/CD Pipeline</strong>: Continuous Integration/Continuous Deployment infrastructure utilizing GitHub Actions, trivy, and semgrep to enforce IEC 62443-4-1 secure lifecycle requirements.</li>
 <li><strong>CIP (Common Industrial Protocol)</strong>: An industrial protocol used over EtherNet/IP for tag-based communication with modern Allen-Bradley controllers.</li>
 <li><strong>CMMS (Centralized Maintenance Management System)</strong>: The site-wide software used to track work orders, maintenance schedules, and historical failure data.</li>
-<li><strong>Condition-Based Maintenance</strong>: A maintenance strategy that relies on the AI's Remaining Useful Life (RUL) prognostics to replace assets based on actual wear rather than fixed schedules.</li>
+<li><strong>Condition-Based Maintenance</strong>: A maintenance strategy that relies on the AI&rsquo;s Remaining Useful Life (RUL) prognostics to replace assets based on actual wear rather than fixed schedules.</li>
 <li><strong>Conduits</strong>: Logical or physical communication paths between different</li>
 <li><strong>Consciousness Loop</strong>: The continuous asynchronous evaluation cycle where the LangGraph Agent processes new telemetry, references historical patterns, and drafts predictive intents.</li>
 <li><strong>CQRS (Command Query Responsibility Segregation)</strong>: An architectural pattern separating the high-velocity telemetry read path (Redis/Timescale) from the highly governed command write path (Arbitrator/Southbound Driver).</li>
 </ul>
-<h2 id="d">D</h2>
+<h2 id="d">D<a class="headerlink" href="#d" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Degraded Mode</strong>: A resilient fallback state triggered by component failures (e.g., loss of cloud connectivity), ensuring the system sheds AI capabilities but maintains deterministic local safety.</li>
 </ul>
-<h2 id="e">E</h2>
+<h2 id="e">E<a class="headerlink" href="#e" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Edge IPC (Industrial PC)</strong>: The fanless, dual-NIC physical hardware appliance deployed on the plant floor to host the Oversight ICS middleware containers.</li>
 <li><strong>EtherNet/IP</strong>: An industrial Ethernet network protocol widely used for real-time control and data acquisition from PLCs and field devices.</li>
 <li><strong>Execution Token</strong>: The cryptographic permission object managed by the Level 1.5 Arbitrator, granting an entity (AI or Human) the temporary right to commit writes to physical registers.</li>
 <li><strong>Explainable AI (XAI)</strong>: The systemic capability to provide a fully transparent, auditable reasoning trace (via UUIDs and RAG citations) for every AI-generated decision.</li>
 </ul>
-<h2 id="f">F</h2>
+<h2 id="f">F<a class="headerlink" href="#f" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Factory Acceptance Test (FAT)</strong>: The rigorous validation protocol conducted prior to deployment to verify hardware, logic, and safety compliance (e.g., FAT-01, FAT-02, FAT-03).</li>
 <li><strong>Failure Mode and Effects Analysis (FMEA)</strong>: A living matrix that identifies potential component failures, assesses their operational impact, and maps deterministic fail-safe responses.</li>
@@ -123,16 +123,16 @@
 <li><strong>Field Assets</strong>: The physical rotating equipment, valves, and sensors located in Level 0 that execute the actual industrial process.</li>
 <li><strong>Functional Safety</strong>: The engineering discipline and compliance requirement (IEC 61511) ensuring that safety systems operate correctly in response to inputs, overriding all AI directives during critical events.</li>
 </ul>
-<h2 id="g">G</h2>
+<h2 id="g">G<a class="headerlink" href="#g" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Grafana</strong>: The Level 4 observability visualization engine used to query the Prometheus system metrics and TimescaleDB operational truth.</li>
 </ul>
-<h2 id="h">H</h2>
+<h2 id="h">H<a class="headerlink" href="#h" title="Permanent link"></a></h2>
 <ul>
 <li><strong>HMI (Human-Machine Interface)</strong>: The interactive dashboard (often synonymous with UI) utilized by Level 3 operators to monitor OEE, respond to alarms, and approve intents.</li>
 <li><strong>Human-in-the-Loop (HITL)</strong>: The operational requirement demanding a human operator physically verify and authorize high-impact AI intents before execution.</li>
 </ul>
-<h2 id="i">I</h2>
+<h2 id="i">I<a class="headerlink" href="#i" title="Permanent link"></a></h2>
 <ul>
 <li><strong>IACS (Industrial Automation and Control Systems)</strong>: The overarching term for the collection of personnel, hardware, and software that affects the safe operation of an industrial process.</li>
 <li><strong>IEC 62443-4-1</strong>: The cybersecurity standard specifying the secure product development lifecycle requirements, satisfied via automated SBOMs and dependency scanning.</li>
@@ -140,32 +140,32 @@
 <li><strong>Industrial Demilitarized Zone (IDMZ)</strong>: The strictly guarded Level 3.5 network enclave housing the cognitive agent, vector database, and gatekeeper, isolated from both IT and direct OT.</li>
 <li><strong>Intent Outbox</strong>: The authoritative PostgreSQL table acting as the transactional contract where all AI-generated intents must be persisted before physical execution.</li>
 <li><strong>ISA</strong>: 18.2 : The international standard for the management of alarm systems</li>
-<li><strong>ISO 9001</strong>: The international standard for quality management systems, incorporated into the system's Change Management and Document Control indexes.</li>
+<li><strong>ISO 9001</strong>: The international standard for quality management systems, incorporated into the system&rsquo;s Change Management and Document Control indexes.</li>
 </ul>
-<h2 id="j">J</h2>
+<h2 id="j">J<a class="headerlink" href="#j" title="Permanent link"></a></h2>
 <ul>
 <li><strong>JWT (JSON Web Token)</strong>: The RS256-signed cryptographic token used to verify identity and Role-Based Access Control (RBAC) across the Oversight API.</li>
 </ul>
-<h2 id="l">L</h2>
+<h2 id="l">L<a class="headerlink" href="#l" title="Permanent link"></a></h2>
 <ul>
-<li><strong>LangGraph</strong>: The core cognitive orchestration framework that drives the Reasoning Agent's multi-step decision-making, tool-calling, and intent generation.</li>
+<li><strong>LangGraph</strong>: The core cognitive orchestration framework that drives the Reasoning Agent&rsquo;s multi-step decision-making, tool-calling, and intent generation.</li>
 <li><strong>Level 0 (Physical Process)</strong>: The lowest tier of the Purdue Model containing the raw physical assets like pumps, actuators, and hardwired SIS interlocks.</li>
 <li><strong>Level 1 (Deterministic Control)</strong>: The Purdue tier containing PLCs and VFDs that execute microsecond-level logic loops based on physical inputs or gateway commands.</li>
 <li><strong>Level 1.5 (Arbitration)</strong>: A conceptual Zero-Trust tier sitting above Level 1, enforcing the Two-Key Protocol and hardware TPM signatures before allowing write access.</li>
 <li><strong>Level 2 (Supervisory Layer)</strong>: The tier traditionally housing localized HMIs and control panels that provide operators with direct line-of-sight command over specific plant areas.</li>
-<li><strong>Level 3 (Operational Core)</strong>: The tier housing central SCADA, MES, and Operational Historians acting as the facility's baseline 'Operational Truth'.</li>
+<li><strong>Level 3 (Operational Core)</strong>: The tier housing central SCADA, MES, and Operational Historians acting as the facility&rsquo;s baseline &lsquo;Operational Truth&rsquo;.</li>
 <li><strong>Level 3.5 (IDMZ)</strong>: The security boundary where the AI reasoning and IT/OT protocol termination occurs, preventing direct connections between the cloud and the plant floor.</li>
 <li><strong>Level 4 (Enterprise/UI)</strong>: The corporate network tier housing the primary web-based Dashboards and higher-level plant management interfaces.</li>
 <li><strong>Level 5 (Enterprise Cloud Hub)</strong>: The external cloud layer responsible for data lakes, SIEM aggregation, and external LLM inference routing.</li>
 <li><strong>LGTM Stack</strong>: An observability suite (Loki, Grafana, Tempo, Mimir) used for centralized logging and telemetry visualization.</li>
 </ul>
-<h2 id="m">M</h2>
+<h2 id="m">M<a class="headerlink" href="#m" title="Permanent link"></a></h2>
 <ul>
 <li><strong>MES (Manufacturing Execution System)</strong>: The Level 3 system that tracks and documents the transformation of raw materials into finished goods.</li>
 <li><strong>MiniLM-L6-v2</strong>: The local, lightweight embedding model used to vectorize and query the OEM manuals within the pgvector RAG database.</li>
 <li><strong>Modbus TCP</strong>: A legacy industrial communication protocol used primarily for power meters and secondary instrumentation.</li>
 </ul>
-<h2 id="n">N</h2>
+<h2 id="n">N<a class="headerlink" href="#n" title="Permanent link"></a></h2>
 <ul>
 <li><strong>NATS JetStream</strong>: The deterministic, append-only message broker utilized as the high-throughput Command Spine and Unified Namespace (UNS) backbone.</li>
 <li><strong>Nginx Perimeter Gateway</strong>: The secure reverse proxy handling TLS termination, JWT validation, and rate-limiting for all traffic entering the Level 3.5 IDMZ.</li>
@@ -173,7 +173,7 @@
 <li><strong>Northbound Firewall</strong>: The logical and physical barrier preventing uninitiated traffic from entering the IDMZ from the Level 4 Enterprise network.</li>
 <li><strong>Northbound Ingest</strong>: The microservice operating at the IDMZ boundary that translates raw Modbus/CIP/OPC-UA byte streams into normalized Sparkplug B payloads.</li>
 </ul>
-<h2 id="o">O</h2>
+<h2 id="o">O<a class="headerlink" href="#o" title="Permanent link"></a></h2>
 <ul>
 <li><strong>OIDC (OpenID Connect)</strong>: The federated identity framework used by the corporate IT network to authenticate users without storing passwords locally on the edge gateway.</li>
 <li><strong>OPC-UA</strong>: A modern, secure industrial communication architecture widely used as the primary telemetry ingest method.</li>
@@ -181,7 +181,7 @@
 <li><strong>Operational Playbook</strong>: The digitized technical manuals and Standard Operating Procedures (SOPs) utilized by the RAG system to generate context-aware intents.</li>
 <li><strong>Operator Databoard</strong>: The unified visualization panel where real-time anomalies, Z-scores, and AI reasoning traces are presented to the floor team.</li>
 </ul>
-<h2 id="p">P</h2>
+<h2 id="p">P<a class="headerlink" href="#p" title="Permanent link"></a></h2>
 <ul>
 <li><strong>P&amp;ID (Piping and Instrumentation Diagram)</strong>: The detailed engineering drawings that show the physical piping, valves, and control assets of the plant.</li>
 <li><strong>Passive Monitor</strong>: The non-actuating operational state where the system observes telemetry and generates Z-scores and advisories, but lacks the authority to execute writes.</li>
@@ -191,11 +191,11 @@
 <li><strong>Prometheus</strong>: The time-series database utilized specifically for scraping and storing internal system metrics, container health, and latency data (Technical Truth).</li>
 <li><strong>Protocol Buffers (Protobuf)</strong>: The highly efficient binary serialization format used to format telemetry streams on the NATS JetStream backbone.</li>
 </ul>
-<h2 id="q">Q</h2>
+<h2 id="q">Q<a class="headerlink" href="#q" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Quality Bit</strong>: An integer tag appended to industrial telemetry indicating the health of the sensor read (e.g., must be &gt;= 192 for the AI to consider the data valid).</li>
 </ul>
-<h2 id="r">R</h2>
+<h2 id="r">R<a class="headerlink" href="#r" title="Permanent link"></a></h2>
 <ul>
 <li><strong>RAG Collisions</strong>: An error state where the RAG pipeline retrieves contradictory instructions because a manual was updated without preserving the required semantic version history.</li>
 <li><strong>RBAC (Role-Based Access Control)</strong>: The security framework enforcing that operators, safety leads, and plant managers can only execute actions permitted by their specific assigned privileges.</li>
@@ -203,7 +203,7 @@
 <li><strong>Requirements Traceability Matrix (RTM)</strong>: A compliance document that links high-level system requirements directly to the specific Factory Acceptance Tests (FAT) that validate them.</li>
 <li><strong>Root Cause Analysis (RCA)</strong>: The automated diagnostic process where the AI correlates statistical drift with technical manuals to identify the underlying source of a mechanical anomaly.</li>
 </ul>
-<h2 id="s">S</h2>
+<h2 id="s">S<a class="headerlink" href="#s" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Safe Operating Envelope (SOE)</strong>: The hardcoded minimum and maximum physical thresholds (e.g., max pump RPM) loaded into the Semantic Gatekeeper that the AI can never violate.</li>
 <li><strong>Semantic Hash</strong>: A unique cryptographic signature assigned to a specific version of a technical document to ensure the AI always references the exact manual version active at the time of an incident.</li>
@@ -212,28 +212,28 @@
 <li><strong>Software Bill of Materials (SBOM)</strong>: The comprehensive manifest detailing every software dependency, model weight, and library version to secure the software supply chain.</li>
 <li><strong>Southbound Firewall</strong>: The rigid network boundary enforcing that only TPM-signed, hardware-notarized command blocks can exit the IDMZ into the Control Zone.</li>
 <li><strong>Sparkplug B</strong>: The industrial IoT specification governing how MQTT edge payloads are structured to ensure birth/death certificates and state awareness.</li>
-<li><strong>State Alignment</strong>: The mandatory pre-condition for Bumpless Transfer where the AI synchronizes its target setpoint with the physical asset's current state to prevent surges.</li>
-<li><strong>System Operating Modes</strong>: The governed states (e.g., Active Control, Advisory Mode, Orphan Mode) dictating the system's level of autonomy and safety fallback behavior.</li>
+<li><strong>State Alignment</strong>: The mandatory pre-condition for Bumpless Transfer where the AI synchronizes its target setpoint with the physical asset&rsquo;s current state to prevent surges.</li>
+<li><strong>System Operating Modes</strong>: The governed states (e.g., Active Control, Advisory Mode, Orphan Mode) dictating the system&rsquo;s level of autonomy and safety fallback behavior.</li>
 </ul>
-<h2 id="t">T</h2>
+<h2 id="t">T<a class="headerlink" href="#t" title="Permanent link"></a></h2>
 <ul>
 <li><strong>TimescaleDB</strong>: The PostgreSQL-based time-series historian acting as the immutable WORM audit log and long-term analytical storage for the Operational Truth.</li>
 <li><strong>TPM 2.0 (Trusted Platform Module)</strong>: The discrete hardware cryptoprocessor responsible for establishing the Hardware Root of Trust and signing all physical command intents.</li>
-<li><strong>Trace ID</strong>: A UUIDv4 tag appended to every agent thought and NATS message, providing the primary key for the 'Explainable AI' forensic audit trail.</li>
+<li><strong>Trace ID</strong>: A UUIDv4 tag appended to every agent thought and NATS message, providing the primary key for the &lsquo;Explainable AI&rsquo; forensic audit trail.</li>
 </ul>
-<h2 id="u">U</h2>
+<h2 id="u">U<a class="headerlink" href="#u" title="Permanent link"></a></h2>
 <ul>
 <li><strong>UI (User Interface)</strong>: The visual dashboard layer (synonymous with HMI) built with Next.js, serving as the interactive gateway for human oversight.</li>
 </ul>
-<h2 id="v">V</h2>
+<h2 id="v">V<a class="headerlink" href="#v" title="Permanent link"></a></h2>
 <ul>
-<li><strong>VFD (Variable Frequency Drive)</strong>: The critical hardware asset that controls the rotational speed of electric motors, frequently managed by the system's predictive failover intents.</li>
+<li><strong>VFD (Variable Frequency Drive)</strong>: The critical hardware asset that controls the rotational speed of electric motors, frequently managed by the system&rsquo;s predictive failover intents.</li>
 </ul>
-<h2 id="w">W</h2>
+<h2 id="w">W<a class="headerlink" href="#w" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Write-Access Token</strong>: The highly restricted software permission managed by the Arbitrator that dictates whether the Human or the AI currently holds the right to modify physical equipment.</li>
 </ul>
-<h2 id="z">Z</h2>
+<h2 id="z">Z<a class="headerlink" href="#z" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Zero Trust Industrial Architecture</strong>: A security framework that eliminates</li>
 <li><strong>Zero-Trust Architecture</strong>: The overarching security philosophy mandating that no actor, container, or request is trusted by default, requiring continuous cryptographic verification across all Purdue boundaries.</li>

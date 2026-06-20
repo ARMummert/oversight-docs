@@ -83,13 +83,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="oversight-ics-alarm-philosophy">Oversight ICS: Alarm Philosophy</h2>
-<h2 id="purpose-scope">Purpose &amp; Scope</h2>
+                <h2 id="oversight-ics-alarm-philosophy">Oversight ICS: Alarm Philosophy<a class="headerlink" href="#oversight-ics-alarm-philosophy" title="Permanent link"></a></h2>
+<h2 id="purpose-scope">Purpose &amp; Scope<a class="headerlink" href="#purpose-scope" title="Permanent link"></a></h2>
 <p>The purpose of this document is to provide a consistent framework for the identification, prioritization, and 
 management of alarms within the Oversight system. The alarms are presented to the operator in an actionable, 
 relevant, and timely manner. The goal is to prevent <strong>Alarm Fatigue</strong> while also maximizing operator situational 
 awareness. This document aligns with ISA-18.2 standards for alarm management.</p>
-<h2 id="roles-responsibilities">Roles &amp; Responsibilities</h2>
+<h2 id="roles-responsibilities">Roles &amp; Responsibilities<a class="headerlink" href="#roles-responsibilities" title="Permanent link"></a></h2>
 <p>In accordance with ISA-18.2, the alarm management lifecycle is governed by strict Role-Based Access Control (RBAC):</p>
 <table>
 <thead>
@@ -113,7 +113,7 @@ awareness. This document aligns with ISA-18.2 standards for alarm management.</p
 </tr>
 </tbody>
 </table>
-<h2 id="definition-of-an-alarm">Definition of an Alarm</h2>
+<h2 id="definition-of-an-alarm">Definition of an Alarm<a class="headerlink" href="#definition-of-an-alarm" title="Permanent link"></a></h2>
 <p>In accordance with ISA-18.2, a notification is only classified as an alarm if it is:</p>
 <ol>
 <li><strong>Abnormal</strong>: Represents a process deviation or equipment malfunction.</li>
@@ -127,7 +127,7 @@ awareness. This document aligns with ISA-18.2 standards for alarm management.</p
 Notifications that do not require an immediate response are classified as <strong>Advisories</strong> or <strong>Events</strong> and do not
 trigger audio/visual urgency.</p>
 </blockquote>
-<h2 id="alarm-priority-response-sla-matrix">Alarm Priority &amp; Response SLA Matrix</h2>
+<h2 id="alarm-priority-response-sla-matrix">Alarm Priority &amp; Response SLA Matrix<a class="headerlink" href="#alarm-priority-response-sla-matrix" title="Permanent link"></a></h2>
 <p>To ensure functional safety and clear lines of control authority, the following operator response thresholds are 
 strictly enforced. If a human operator does not acknowledge and initiate corrective action within the defined time 
 limit, the Agent will automatically revoke manual control authority and execute the fail-safe protocol. The following 
@@ -168,12 +168,12 @@ Service Level Agreement (SLA) defines the boundaries between human operation and
 </tr>
 </tbody>
 </table>
-<h2 id="master-alarm-database-details">Master Alarm Database Details</h2>
+<h2 id="master-alarm-database-details">Master Alarm Database Details<a class="headerlink" href="#master-alarm-database-details" title="Permanent link"></a></h2>
 <p>The Master Alarm Database is maintained in the Level 3.5 IDMZ using TimescaleDB and pgVector. It serves as the 
 single source of truth for all system alarm configurations. Every registered tag includes its baseline deviation limit 
 ($\sigma$), active $Z$-Score thresholds, response time SLAs, and its cryptographically linked RAG justification hash 
 referencing the vendor manuals.</p>
-<h2 id="alarm-design-techniques">Alarm Design Techniques</h2>
+<h2 id="alarm-design-techniques">Alarm Design Techniques<a class="headerlink" href="#alarm-design-techniques" title="Permanent link"></a></h2>
 <p>Oversight replaces <code>if-then</code> logic with statistical rationalization and signal conditioning to minimize nuisance alarms
 and prevent <strong>Chattering</strong>. </p>
 <ul>
@@ -185,7 +185,7 @@ and prevent <strong>Chattering</strong>. </p>
 </ul>
 <p><em>By applying Deadband and Hysteresis filtering at the Bytewax stream processor level, nominal process noise is shed
 before it reaches the reasoning layer, which drastically reduces false-positives.</em></p>
-<h2 id="management-of-change">Management of Change</h2>
+<h2 id="management-of-change">Management of Change<a class="headerlink" href="#management-of-change" title="Permanent link"></a></h2>
 <p>Changing an alarm threshold or deadband directly impacts functional process safety and the anomaly engine.</p>
 <ul>
 <li>Any modification to the Master Alarm Database requires formal MOC approval.</li>
@@ -197,7 +197,7 @@ before it reaches the reasoning layer, which drastically reduces false-positives
 </ul>
 <p><em>An annual Alarm System Audit will be conducted to compare the Master Alarm Database against the physical P&amp;ID 
 baselines and review the effectiveness of the $Z$-Score anomaly engine.</em></p>
-<h2 id="hmi-design-guide">HMI Design Guide</h2>
+<h2 id="hmi-design-guide">HMI Design Guide<a class="headerlink" href="#hmi-design-guide" title="Permanent link"></a></h2>
 <p>The Oversight ICS dashboard strictly adheres to the ISA-101 High-Performance HMI standard:</p>
 <ul>
 <li><strong>Grayscale</strong>: The interface utilizes a high-contrast grayscale layout to minimize cognitive load.</li>
@@ -206,7 +206,7 @@ baselines and review the effectiveness of the $Z$-Score anomaly engine.</em></p>
 <li><strong>Safety Delays</strong>: Includes visual countdown timers (Yellow Banners) during high-impact rate-limiting to prevent 
   operator <strong>blind clicking</strong> during crises.</li>
 </ul>
-<h2 id="performance-metrics-kpis">Performance Metrics (KPIs)</h2>
+<h2 id="performance-metrics-kpis">Performance Metrics (KPIs)<a class="headerlink" href="#performance-metrics-kpis" title="Permanent link"></a></h2>
 <p>System performance is measured using automated KPIs tracking the rolling 24-hour distribution.</p>
 <ul>
 <li><strong>Critical Distribution Cap</strong>: Critical alarms must not exceed 10% of the total alarm distribution in any 4-hour 
@@ -214,17 +214,17 @@ baselines and review the effectiveness of the $Z$-Score anomaly engine.</em></p>
 <li><strong>Alarm Flood Threshold</strong>: Triggers an automatic review if $&gt; 10$ alarms occur within 10 minutes.</li>
 <li><strong>Stale Alarm Threshold</strong>: Any alarm active beyond 24 hours is flagged for mandatory engineering intervention.</li>
 </ul>
-<h2 id="alarm-storage">Alarm Storage</h2>
+<h2 id="alarm-storage">Alarm Storage<a class="headerlink" href="#alarm-storage" title="Permanent link"></a></h2>
 <p>All alarm triggers, operator acknowledgments, and AI reasoning traces are permanently logged to a WORM storage volume. 
 These logs include high-precision IEEE 1588v2 (PTP) hardware timestamps and a SHA-256 payload hash to ensure absolute 
 forensic integrity for incident post-mortem and compliance auditing.</p>
-<h2 id="training-requirements">Training Requirements</h2>
+<h2 id="training-requirements">Training Requirements<a class="headerlink" href="#training-requirements" title="Permanent link"></a></h2>
 <p>Operators must complete the certification checklist outlined in the <code>operator_training_guide.md</code>. This includes 
-- Understanding the "Human-In-The-Loop" (HITL) model
+- Understanding the &ldquo;Human-In-The-Loop&rdquo; (HITL) model
 - Interpreting $Z$-Scores correctly (Nominal vs. Drift vs. Critical),
 - Locating trace IDs, and successfully executing a manual AI Lockout (Global Kill Switch).</p>
-<h2 id="alarm-rationalization-and-nuisance-suppression">Alarm Rationalization and Nuisance Suppression</h2>
-<h3 id="signal-conditioning-matrix">Signal Conditioning Matrix</h3>
+<h2 id="alarm-rationalization-and-nuisance-suppression">Alarm Rationalization and Nuisance Suppression<a class="headerlink" href="#alarm-rationalization-and-nuisance-suppression" title="Permanent link"></a></h2>
+<h3 id="signal-conditioning-matrix">Signal Conditioning Matrix<a class="headerlink" href="#signal-conditioning-matrix" title="Permanent link"></a></h3>
 <p>To maintain the integrity of the anomaly detection engine, all incoming telemetry is subjected to pre-processing 
 filters before being evaluated by the $Z$-Score engine. This prevents <strong>Chattering</strong> alarms caused by process noise or
 signal oscillation.</p>
@@ -262,7 +262,7 @@ signal oscillation.</p>
 <td style="text-align: left;">$\pm$0.5%</td>
 <td style="text-align: left;">15s</td>
 <td style="text-align: left;">5s</td>
-<td style="text-align: left;">Allows for momentary "hammer" or valve-stroke spikes</td>
+<td style="text-align: left;">Allows for momentary &ldquo;hammer&rdquo; or valve-stroke spikes</td>
 </tr>
 <tr>
 <td style="text-align: left;">Flow Rate</td>
@@ -278,7 +278,7 @@ signal oscillation.</p>
 <td style="text-align: left;">$\pm$1.0%</td>
 <td style="text-align: left;">60s</td>
 <td style="text-align: left;">60s</td>
-<td style="text-align: left;">Suppresses "slosh" effects in tanks and vessels.</td>
+<td style="text-align: left;">Suppresses &ldquo;slosh&rdquo; effects in tanks and vessels.</td>
 </tr>
 <tr>
 <td style="text-align: left;">VFD Current</td>
@@ -290,16 +290,16 @@ signal oscillation.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="detection-logic-z-score">Detection Logic ($Z$-Score)</h3>
+<h3 id="detection-logic-z-score">Detection Logic ($Z$-Score)<a class="headerlink" href="#detection-logic-z-score" title="Permanent link"></a></h3>
 <ol>
 <li><strong>Deviation Threshold</strong>: An alarm is only triggered if a process tag maintains a $Z$-Score drift of &gt; 3.0 for a 
    sustained period (default: 10 cycles).</li>
 <li><strong>State-Based Suppression</strong>: Alarms that are related to a specific asset are automatically suppressed if that asset
-   is currently in "Maintenance Mode" or "Out of Service Mode" in the Digital Twin.</li>
+   is currently in &ldquo;Maintenance Mode&rdquo; or &ldquo;Out of Service Mode&rdquo; in the Digital Twin.</li>
 <li><strong>Hysteresis</strong>: Once an alarm is active, the value must return to a $Z$-Score of &lt; 2.0 before the alarm can be
    cleared. This prevents rapid toggling on a noisy signal.</li>
 </ol>
-<h2 id="alarm-prioritization-response-target-matrix">Alarm Prioritization &amp; Response Target Matrix</h2>
+<h2 id="alarm-prioritization-response-target-matrix">Alarm Prioritization &amp; Response Target Matrix<a class="headerlink" href="#alarm-prioritization-response-target-matrix" title="Permanent link"></a></h2>
 <p>Oversight uses a targeted priority distribution to prevent <strong>High-Priority Saturation</strong> and <strong>Alarm Fatigue</strong>.</p>
 <table>
 <thead>
@@ -347,14 +347,14 @@ signal oscillation.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="operator-response">Operator Response</h2>
-<h3 id="response-protocols">Response Protocols</h3>
+<h2 id="operator-response">Operator Response<a class="headerlink" href="#operator-response" title="Permanent link"></a></h2>
+<h3 id="response-protocols">Response Protocols<a class="headerlink" href="#response-protocols" title="Permanent link"></a></h3>
 <p>Every alarm in the Oversight Dashboard must be accompanied by a Reasoning Trace and a RAG-proposed action.</p>
 <ol>
-<li><strong>Initial Response</strong>: The AI must state, "I am alerting because [DATA POINT] has drifted by [Z-SCORE], which exceeds 
-  the threshold of [THRESHOLD]."</li>
-<li><strong>Recommended Action</strong>: The AI must provide a recommended action, such as "I recommend checking the [SENSOR] for 
-  potential fouling or recalibration."</li>
+<li><strong>Initial Response</strong>: The AI must state, &ldquo;I am alerting because [DATA POINT] has drifted by [Z-SCORE], which exceeds 
+  the threshold of [THRESHOLD].&rdquo;</li>
+<li><strong>Recommended Action</strong>: The AI must provide a recommended action, such as &ldquo;I recommend checking the [SENSOR] for 
+  potential fouling or recalibration.&rdquo;</li>
 <li><strong>AI Confidence Level</strong>: Every alarm is assigned a <strong>Statistical Correlation Score</strong> (SCC) calculated as 
   $1 - (p\text{-value of current } Z\text{-drift})$.</li>
 <li><strong>Display</strong>: Confidence is shown as a <strong>Reliability Gauge</strong> on the HMI.</li>
@@ -362,38 +362,45 @@ signal oscillation.</p>
      potential sensor fault. </li>
 <li><strong>Operator Requirement</strong>: For alarms &lt; 85%, the operator must verify the sensor health using 
      <a href="/docs/sop/SOP-OPS-001_Sensor-Validation.md">SOP: Sensor Validation</a> before proceeding.</li>
-<li><strong>Confirmation</strong>: The operator must <strong>ACK</strong> the alarm to silence the audio and validate the AI's failover proposal to
+<li><strong>Confirmation</strong>: The operator must <strong>ACK</strong> the alarm to silence the audio and validate the AI&rsquo;s failover proposal to
   execute the recommended action.</li>
-<li><strong>Resolution</strong>: The AI must provide a resolution statement, such as "I have resolved the alarm and will no longer 
-  be alerted for this sensor." </li>
-<li><strong>Auditability</strong>: Operators must provide a comment when acknowledging "Critical" alarms.</li>
+<li><strong>Resolution</strong>: The AI must provide a resolution statement, such as &ldquo;I have resolved the alarm and will no longer 
+  be alerted for this sensor.&rdquo; </li>
+<li><strong>Auditability</strong>: Operators must provide a comment when acknowledging &ldquo;Critical&rdquo; alarms.</li>
 <li><strong>Explainability</strong>: The system cites the specific manufacturer manual section justifying the recommended response.</li>
 </ol>
-<h2 id="advanced-alarm-management-nuisance-suppression">Advanced Alarm Management &amp; Nuisance Suppression</h2>
-<h3 id="alarm-suppression-shelving">Alarm Suppression &amp; Shelving</h3>
-<p>Operators are permitted to "Shelve" an alarm for a maximum of <strong>4 hours</strong> during maintenance. Shelving an alarm will 
+<h2 id="advanced-alarm-management-nuisance-suppression">Advanced Alarm Management &amp; Nuisance Suppression<a class="headerlink" href="#advanced-alarm-management-nuisance-suppression" title="Permanent link"></a></h2>
+<h3 id="alarm-suppression-shelving">Alarm Suppression &amp; Shelving<a class="headerlink" href="#alarm-suppression-shelving" title="Permanent link"></a></h3>
+<p>Operators are permitted to &ldquo;Shelve&rdquo; an alarm for a maximum of <strong>4 hours</strong> during maintenance. Shelving an alarm will 
 suppress it from the dashboard for the remainder of the shelving period. However, the AI will continue to monitor the 
-underlying data and will automatically "Unshelve" the alarm if the $Z$-Score increases by a factor of 1.5, indicating 
+underlying data and will automatically &ldquo;Unshelve&rdquo; the alarm if the $Z$-Score increases by a factor of 1.5, indicating 
 a critical escalation. The system will then force a re-trigger of the alarm and alert the operator of the worsening 
 condition. <strong>The system limits the number of concurrent shelved alarms to 5</strong>. </p>
-<p>[!Advisory Response] If the limit of five concurrent shelved alarms is reached, the system issues a 
+<div class="admonition advisory">
+<p class="admonition-title">Shelving Rules</p>
+<p>If the limit of five concurrent shelved alarms is reached, the system issues a 
 <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> advisory. Operators must immediately execute SOP-SHELVED-01 to audit and clear shelf 
-slots to maintain system situational awareness.
-- <strong>Schema Enforcement</strong>: Configuration files <strong>MUST</strong> include <code>max_shelf_duration_minutes:240</code>.
-- <strong>Capacity Limits</strong>: The system limits the number of concurrent shelved alarms to <strong>5</strong>.
-- <strong>Capacity Advisory</strong>: If the limit of five is reached, the system issues a <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> 
-  advisory. Operators must execute <code>SOP-SHELVED-01</code> to audit and clear shelf slots to maintain plant situational 
-  awareness.
-- <strong>Re-Trigger Logic</strong>: If the shelved alarm's $Z$-Score increases by an additional factor of <strong>1.5</strong> (e.g., drifting
-  from $3.0\sigma$ to $4.5\sigma$), the system overrides the shelf, forces an immediate re-trigger on the dashboard, 
-  and alerts the operator to the worsening condition.</p>
+slots to maintain system situational awareness.</p>
+</div>
+<ul>
+<li><strong>Schema Enforcement</strong>: Configuration files <strong>MUST</strong> include <code>max_shelf_duration_minutes:240</code>.</li>
+<li><strong>Capacity Limits</strong>: The system limits the number of concurrent shelved alarms to <strong>5</strong>.</li>
+<li><strong>Capacity Advisory</strong>: If the limit of five is reached, the system issues a <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> 
+    advisory. Operators must execute <code>SOP-SHELVED-01</code> to audit and clear shelf slots to maintain plant situational 
+    awareness.</li>
+<li><strong>Re-Trigger Logic</strong>: If the shelved alarm&rsquo;s $Z$-Score increases by an additional factor of <strong>1.5</strong> (e.g., drifting
+    from $3.0\sigma$ to $4.5\sigma$), the system overrides the shelf, forces an immediate re-trigger on the dashboard, 
+    and alerts the operator to the worsening condition.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <blockquote>
-<p>[!NOTE]
-<strong>Deadband Logic</strong>: Once an alarm is triggered, the process variable must return past the setpoint by the deadband 
+<p><strong>Deadband Logic</strong>: Once an alarm is triggered, the process variable must return past the setpoint by the deadband 
 percentage before the alarm state can be cleared. This creates a buffer zone around the setpoint to stabilize the 
 alarm status.</p>
 </blockquote>
-<h3 id="advanced-nuisance-suppression-fmea-alignment">Advanced Nuisance Suppression (FMEA Alignment)</h3>
+</div>
+<h3 id="advanced-nuisance-suppression-fmea-alignment">Advanced Nuisance Suppression (FMEA Alignment)<a class="headerlink" href="#advanced-nuisance-suppression-fmea-alignment" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Oscillation Dampening (Alarm Suppression)</strong>: Post-Action Oscillation Dampening
   To prevent chattering immediately following an autonomous action (e.g., the AI updates a setpoint by 4%), the system 
@@ -406,7 +413,7 @@ alarm status.</p>
 <li><strong>Safety Override</strong>: The 15-minute alarm stability lock <strong>Never</strong> suppresses Emergency Stops or manual Level 1 safety 
   interlocks.</li>
 </ul>
-<h2 id="revision-history">Revision History</h2>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
 <table>
 <thead>
 <tr>

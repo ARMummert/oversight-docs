@@ -107,6 +107,7 @@ defined control authority. The system is designed to maximize data visibility fo
 its control authority at the Level 3.5 IDMZ.
 
 It is critical to distinguish between the system's *Data Visibility* and its *Control Authority*:
+
 - **Data Ingestion & Observability (Levels 0–5):** The system's read-path spans the entire facility. It ingests 
   telemetry from the Physical & Deterministic Control Layers (Levels 0-2), pulls historical baselines from 
   Operations (Level 3), pushes reporting to Business Logistics (Level 4), and securely pulls RAG vendor 
@@ -114,7 +115,6 @@ It is critical to distinguish between the system's *Data Visibility* and its *Co
 - **Control Authority Boundary (Level 3.5):** The system’s reasoning and physical intervention capabilities are 
   strictly capped at the Level 3.5 IDMZ.
 
-**Out-of-Scope**
 To maintain a strict **Zero Trust & Safety Dominant** architecture, **no control or write command path exists from the 
 Enterprise Cloud (Level 5) or Business Logistics (Level 4) to the Field Assets (Levels 0-2)**. All threshold 
 adaptations and predictive failover intents are generated locally within the Level 3.5 IDMZ and are issued as
@@ -147,7 +147,9 @@ verify-then-suggest proposals subject to local human authorization and Semantic 
 ## Target Environment
 
 **Hardware**: Industrial PCs (IPCs) with Dual-NIC network isolation and Hardware-Rooted TPM 2.0 modules
+
 **Connectivity**: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets
+
 **Use Case**: Critical Infrastructure (Wastewater, Energy, Manufacturing) where unplanned downtime exceeds the cost of
   redundant hardware.
 
@@ -235,6 +237,7 @@ AI actions must be traceable to a mathematical baseline drift (Z-Score) or a cit
 ### Unified Namespace Architecture
   
 Implements a unified namespace (UNS) in a strict topic hierarchy (`Enterprise / Site / Area / Line / Asset / Tag`): 
+
 - **NATS JetStream (UNS Backbone)**: Acts as an append-only, **WORM** compliant telemetry stream and low-latency
   southbound command pipeline. Normalized Sparkplug B payloads are published to the UNS for real-time monitoring and 
   AI reasoning. 
@@ -262,15 +265,17 @@ Improves detection sensitivity over time through controlled, auditable threshold
 
 ## Industrial Safety Protocol
 
-> [!IMPORTANT] OverSight ICS is a Cognitive Reliability Agent, ***NOT*** a Safety Agent.
+!!! important "SAFETY PROTOCOL: READ CAREFULLY"
+    OverSight ICS is a Cognitive Reliability Agent, ***NOT*** a Safety Agent.
 
-The system is strictly decoupled from the **Safety Instrumented System (SIS)**. Hard-coded safety interlocks and 
-physical E-Stops always maintain primary authority. OverSight operates as a **Read-Verify-Suggest** layer to prevent 
-those safety limits from ever being reached.
+    The system is strictly decoupled from the **Safety Instrumented System (SIS)**. Hard-coded safety interlocks and 
+    physical E-Stops always maintain primary authority. OverSight operates as a **Read-Verify-Suggest** layer to prevent 
+    those safety limits from ever being reached.
 
-| ![IMPORTANT]: INDUSTRIAL SAFETY PROTOCOL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **OverSight ICS is a Reliability agent, NOT a Safety agent. Safety Decoupling is a critical design principle in OverSight ICS.** ![CAUTION]: **Logic Integrity Guardrail**: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined **Command Global Data** block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+    Safety Decoupling is a critical design principle in OverSight ICS.
+
+!!! CAUTION
+    **Logic Integrity Guardrail**: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined **Command Global Data** block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers. 
 
 ## Safety & Regulatory Governance
 OverSight ICS is a **Cognitive Reliability Layer** (Level 3.5), not a primary safety system. It adheres to the following 
@@ -334,8 +339,10 @@ OverSight is designed as a non-interfering reliability layer. It can suggest and
 failovers, but it is physically and logically separated from the **Safety Instrumented System (SIS)**.
 
 ### Forensic Traceability & Audit Linking
+
 Every **thought** generated by the LangGraph agent is assigned a unique `trace_id` (UUIDv4) that acts as the systems
 thread of truth. 
+
 - **Distributed Propagation**: This ID is injected into the NATS JetStream message headers of the Command Spine and the
   Southbound Driver's execution payload (a live traveling metadata tag).
 - **Audit Linking**: The `trace_id` serves as the primary key across the 3-tier event system, allowing an investigator 
@@ -360,6 +367,7 @@ hangs but the driver remains active.
 
 ### Local/Remote Bit Monitoring (MCC Priority)
 To ensure the AI never fights with a physical operator:
+
 - **Requirement**: The Southbound Driver performs a mandatory check of the physical **Hand-Off-Auto (HOA)** or 
   **Local/Remote** status bit every cycle (100 ms) before executing any command.
 - **Action**: If "Local" or "Hand" is detected, the Southbound Driver immediately inhibits all AI-write commands and 
@@ -379,6 +387,7 @@ failovers:
 
 ### The Deadman Switch & TTL Logic
 To prevent the physical layer from being left in an intermediate or "zombie" state during a network partition:
+
 - **Command Time-to-Live (TTL)**: Every intent published to the NATS Command Spine carries a strict 
   `per-message-ttl` (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
    than executing a stale action seconds later.
@@ -410,8 +419,9 @@ before execution. It enforces safety constraints, Standard Operating Procedures 
   - **Authorization**: The Semantic Gatekeeper determines whether an action is allowed, rejected, or requires 
     Human-In-The-Loop (HITL) approval.
 
-[!Important] The Semantic Gatekeeper does **not execute commands**; it only authorizes them prior to handoff to the 
-Southbound Driver.
+!!! important "SAFETY PROTOCOL: SEMANTIC GATEKEEPER"
+    The Semantic Gatekeeper does **not execute commands**; it only authorizes them prior to handoff to the 
+    Southbound Driver.
 
 ### Fault Recovery & Resiliency
 OverSight is designed for **Graceful Degradation**. In the event of a system-wide failure (e.g., Database corruption 
@@ -439,6 +449,7 @@ scenarios:
 
 ### Cold-Start Integrity & State Reconstruction
 To prevent the Agent from acting on **Stale State** data after a power cycle or system reboot:
+
 - **UNS Hydration**: When initialized, the Edge Gateway performs a mandatory 60-second synchronization. It
   hydrates the Digital Twin by pulling the lastest Sparkplug B BIRTH Certifications and current register writes.
 - **Boot-Lock**: The Reasoning Engine is locked in a **Perception Only** state until the system confirms a state
@@ -448,6 +459,7 @@ To prevent the Agent from acting on **Stale State** data after a power cycle or 
 
 ### The Cold-Start Baseline (Warm-up Period)
 To prevent invalid triggers during system reboots:
+
 1. **Accumulation Phase**: Upon startup, the system enters `BASELINE_INGEST` mode. No $Z$-scores are calculated until 
    the Bytewax stream processing window is 100% saturated.
 2. **Deterministic Baseline**: For the first $N$ samples, the system defaults to hard-coded industrial setpoints stored 
@@ -456,6 +468,7 @@ To prevent invalid triggers during system reboots:
 
 ### Operator Safety & Cognitive Load Management
 Consistent with **ISA 18.2** standards, OverSight is designed to help, not overwhelm, the operator:
+
 - **Alarm Rationalization**: The Bytewax stream processing engine suppresses **chatter** by requiring a sustained 
   $Z$-score drift over a specific window before escalating to an anomaly.
 - **Pessimistic Confirmation**: The UI uses **Double Action Triggers** for all failover approvals, requiring the
@@ -466,6 +479,7 @@ Consistent with **ISA 18.2** standards, OverSight is designed to help, not overw
 ### Post-Mortem Observability (Explainable AI)
 To satisfy regulatory requirements for "Explainable AI" (XAI) in critical infrastructure, OverSight implements a 
 **Forensic Traceability** system:
+
 - **Distributed Tracing**: Every intent is tagged with a unique `trace_id` (UUIDv4) that propagates from the LangGraph 
   thought through the NATS JetStream headers and into the Southbound Driver's logs.
 - **Reasoning Persistence**: The LLM’s internal chain-of-thought and the Bytewax windowed $Z$-score drift analysis 
@@ -485,6 +499,7 @@ OverSight utilizes **Pessimistic Confirmation Loop** to ensure the operator's vi
 
 ### Deterministic Failover (Agentic Thought, Deterministic Action)
 To maintain predictability, we separate the **reasoning** from the **execution**:
+
 - **Path Predictability**: Once the Reasoning Agent publishes a failover intent to the **NATS JetStream Command Spine**, 
   the Southbound Driver follows a pre-compiled, hard-coded sequence of commands.
 - **Outcome**: The AI’s path to a decision is agentic and flexible. The actual physical handover is repeatable, 
@@ -493,6 +508,7 @@ To maintain predictability, we separate the **reasoning** from the **execution**
 
 ### System Latency Benchmarks (Real-Time Performance)
 OverSight is optimized for the **Supervisory Window**, tracking latency at every step to gain a deterministic response:
+
 - **Ingest-to-UNS (NATS)**: < 50ms
 - **UNS-to-Bytewax (Processing)**: < 20ms
 - **Inference-to-Spine (Reasoning)**: 2s - 5s (Cloud LLM Dependent)
@@ -506,17 +522,20 @@ matches the timestamp in the **TimescaleDB** historian, allowing for accurate su
 ### Scaling via Subject-Based Partitioning
 To handle large-scale plant deployments, OverSight uses **NATS JetStream Subject-Based Partitioning** to distribute  
 field assets across multiple LangGraph worker containers.
+
 - **Resilience**: If a worker node fails, messages are seamlessly rebalanced to healthy nodes. This prevents a 
   "Thundering Herd" effect on the UNS during system recovery while maintaining strict message ordering per asset.
 
 ### Signal Conditioning & Noise Reduction
 The **Northbound Ingest Service** performs automated signal conditioning before data reaches the Bytewax engine:
+
 - **Deadbanding**: Ignores minor analog fluctuations that do not represent a meaningful process change.
 - **Low-Pass Filtering**: Removes high-frequency electrical "noise" that could otherwise trigger false $Z$-score 
   positives.
 
 ### Resource Prioritization & Determinism
 OverSight ICS enforces strict kernel-level process scheduling to ensure safety logic is never starved:
+
 - **Southbound Driver (Priority: Real-Time)**: Executed with **FIFO Real-Time Priority (`chrt -f 99`)**. The Linux 
   kernel prioritizes the field heartbeat and register-writes over all other system tasks.
 - **Reasoning Agent (Priority: Standard)**: Restricted via **Docker Cgroups** to a maximum of 40% CPU utilization and 
@@ -525,6 +544,7 @@ OverSight ICS enforces strict kernel-level process scheduling to ensure safety l
   cycles required to maintain the 500ms safety heartbeat.
 
 ### Resource Governance (Docker Cgroups)
+
 - **CPU Hard-Limits**: The Reasoning Agent is capped at 40% to ensure the Southbound Driver and NATS always have
   sufficient overhead for I/O operations.
 - **Swap Suppression**: Swap is disabled for all OverSight containers to prevent the AI Agent from entering a 
@@ -533,6 +553,7 @@ OverSight ICS enforces strict kernel-level process scheduling to ensure safety l
 ### Data Sovereignty & Semantic Scrubbing
 To maintain site security and protect proprietary process data, OverSight implements a **Zero-Trust Data Egress** 
 policy:
+
 - **In-Stream Telemetry Scrubbing**: The Bytewax engine normalizes raw sensor values into a windowed $Z$-scores before 
   egress. The LLM perceives only relative deviations (e.g., Asset_01 is 3.5σ from mean), protecting proprietary 
   setpoints.
@@ -584,23 +605,27 @@ Oversight ICS adheres to the **Fail-to-Deterministic** principle (different outp
 conditions). Resilience is enforced by three different watchdogs:
 
 **Software Watchdog (Process Level)**: 
+
   - **Implementation**: Implemented using Prometheus and Grafana to monitor and manage the system's health and 
     performance.
   - **Action**: If the LangGraph worker or NATS JetStream consumer hits a memory leak or deadlocks, the container engine 
     triggers an automatic restart and logs a **Critical Service Interruption** event for post-mortem analysis.
 
 **Logical Watchdog (Reasoning Level)**:
+
   - **Implementation**: Timeouts are hard-coded into every LangGraph node.
   - **Action**: If an LLM call takes longer than 10 seconds, the Logical Watchdog kills the trace and forces 
     the Agent into **local heuristic mode,** (spins up the local Phi-4 model) ensuring that a slow internet connection 
     never stalls the control loop.
 
 **Hardware Watchdog (Physical Level)**:
+
   - **Implementation**: A physical, DIN-rail mounted watchdog relay.
   - **Action**: The Southbound Driver must physically energize a **Keep Alive** relay. If the software crashes, the relay 
   de-energizes, physically breaking the command conduit between the Edge Gateway and the Standby Hardware.
   
 **Zero-Tolerance Watchdog (Telemetry Level)**: 
+
 - **Implementation**: The watchdog monitors the NATS JetStream telemetry stream. If the consumer detects **stream 
   silence** (no new telemetry packets arrive within a 10-second window) or if the Bytewax epoch/watermark stalls, a 
   dedicated NATS Watcher service publishes a `STALE_DATA` event to the high-priority Watchdog subject.
@@ -642,6 +667,7 @@ The Southbound Driver maintains an active heartbeat with the field assets. This 
 even if the high-level AI reasoning engine fails.
 
 ### Technical Implementation: Fail-to-Deterministic
+
 - **System Health Monitoring (Fail-Silent)**: Rather than actively signaling a fault, the system utilizes a passive 
   **Deadman Switch** architecture. The Southbound Driver maintains a constant 100ms heartbeat with the plant floor. 
   If the Edge Gateway experiences resource starvation or a service lockup that exceeds the 500ms safety buffer, the 
@@ -756,16 +782,20 @@ uses a reasoning loop that prioritizes **Physical Integrity** over **Process Thr
    register write to the local PLC.
 
 **Core System Instructions:**
-> "You are the OverSight ICS Reliability Agent. Your primary goal is the physical integrity of Level 1 assets.
+!!! note "Agent Persona: The OverSight ICS Reliability Agent"
+
+  You are the OverSight ICS Reliability Agent. Your primary goal is the physical integrity of Level 1 assets.
+
 > 1. **Pessimism by Default**: If telemetry is ambiguous, prioritize a safe standby transition.
 > 2. **Physical Grounding**: Never suggest a command that violates hard-coded constraints in manufacturer manuals.
 > 3. **RAG-Dependency**: You must cite specific maintenance logs or technical specs from the local vector store for 
      every intervention plan.
 > 4. **No SIS Override**: You are a reliability layer. Never attempt to intervene in a Safety Instrumented System (SIS) 
-     trip."
+     trip.
 
 ### 1. Pessimistic Validation
 The Agent operates under the assumption that all sensors are prone to drift and all network paths are unreliable. 
+
 - **The "Verify-Then-Suggest" Loop**: The Agent is prohibited from proposing a failover until it has cross-referenced 
   the $Z$-score anomaly across at least two independent data tags (e.g., correlating a high temperature with a 
   corresponding pressure spike) to prevent acting on a single faulty sensor reading.
@@ -778,6 +808,7 @@ multiple telemetry streams before proposing an intervention.
 ### The Voting Logic
 If the Agent receives conflicting telemetry (e.g., Flowmeter reads 0, but Motor Amperage reads 100%), it follows this 
 hierarchy:
+
 1. **Proxy Validation**: If Flow is 0 but Discharge Pressure is Nominal, the Agent determines the Flowmeter has failed, 
    not the Pump. The failover is aborted, and a **Sensor Maintenance** ticket is issued instead.
 2. **Hardware Weighting**: Physical PLC registers are weighted at 1.0; derived/virtual metrics are weighted at 0.5. 
@@ -787,12 +818,14 @@ hierarchy:
 
 ### 2. Risk Mitigation
 In industrial settings, an aggressive transition is often the most dangerous. 
+
 - **Preference for Stable States**: When faced with high-uncertainty data, the Agent’s persona defaults to **Safe-Hold** 
   (maintaining the current state) rather than executing an aggressive transition. It values a controlled shutdown over 
   an unvalidated autonomous recovery. 
 
 ### 3. Procedural Adherence (Local First RAG Architecture)
 The Agent’s knowledge is not based on its training data alone, but on a **Constraint-Based Prompting** strategy.
+
 - **Manual-as-Law**: Every proposed intervention must be justified by a citation from the locally indexed manufacturer 
   manuals. If a proposed action contradicts the **Recommended Operating Conditions** in the documentation, the 
   Agent is hard-coded to flag a **Safety Conflict** and hand control to a human.
@@ -804,6 +837,7 @@ The Agent’s knowledge is not based on its training data alone, but on a **Cons
 
 ### 4. Semantic Gatekeeping & Hardware Notarization
 The Agent is a "White Box" that can only propose commands, but lacks the cryptographic keys to execute them. 
+
 - **The Software Audit**: The Semantic Gatekeeper acts as the ultimate software auditor, checking all AI "Intents" 
   against a hard-coded Forbidden Register List. If the AI proposes an action outside its authorized scope, the command 
   is instantly purged.
@@ -881,7 +915,8 @@ following actions:
 
 In the Semantic Gatekeeper, there are hard-coded guardrails that the Agent must follow and can never cross.
 
-[!NOTE] These hard-limits are what enforce the [Change Management Risk Levels](/docs/change_management_log.md).
+!!! note
+    These hard-limits are what enforce the [Change Management Risk Levels](/docs/change_management_log.md).
 
 ```python
 MAX_THRESHOLD_REDUCTION_PERCENTAGE = 15
@@ -919,6 +954,7 @@ This architecture bridges the gap between high-latency AI reasoning and low-late
 
 ### Level 3.5 Implementation: Protocol Termination
 To satisfy **IEC 62443**, Oversight does not allow raw packet pass-through.
+
 1. **Ingest**: The Northbound Ingest Service terminates the field protocol (Modbus/OPC-UA/EtherNet/IP).
 2. **Translation**: Data is converted into a Sparkplug B / JSON payload.
 3. **Egress**: The NATS JetStream messaging backbone republishes the message within the IDMZ, guaranteeing no direct 
@@ -944,7 +980,8 @@ before they become 'hard failures' (catastrophic failure).
 The system calculates the $Z$-score for every critical field asset metric (e.g., temperature, pump speed, scan-cycle 
 jitter, vibration, VFD current, etc.) using the formula:
 
-$$Z = \frac{X - \mu}{\sigma}$$
+!!! math
+    **$$Z = \frac{X - \mu}{\sigma}$$**
 
 Where $x$ is the current telemetry value, $\mu$ is the rolling mean, and $\sigma$ is the rolling standard deviation.
 
@@ -1051,6 +1088,7 @@ The learning mechanism is strictly governed to ensure safety and auditability:
 All threshold modifications require **explicit human approval** prior to application.
 
 Proposals are categorized by impact:
+
   - **Low Impact (≤ 5% delta)**:
     - **Action**: Auto-Authorized by the Semantic Gatekeeper.
     - **Governance**: Logged with `trace_id` in the `audit_logs` table.
@@ -1529,6 +1567,7 @@ To prevent the system from acting on outdated or hallucinated information, we im
 
 ### Implementing a Digital Twin Simulation Environment
 The Digital Twin Simulation Environment is a high-fidelity **Field Asset Simulator (PAS)** used for logic validation.
+
 - **Non-Invasive Testing**: The environment allows for the testing and development of AI-driven failover maneuvers and 
   $Z$-score threshold tuning without risking physical equipment or process uptime.
 - **Scenario Injection**: It allows for the simulation of **Black Swan** events, such as catastrophic pump failure or 
@@ -1539,6 +1578,7 @@ The Digital Twin Simulation Environment is a high-fidelity **Field Asset Simulat
 ### Competing Consumer Pattern
 NATS JetStream is utilized as the **Command Spine**, allowing horizontally scalable LangGraph workers to process plant 
 intents.
+
 - **Horizontal Scalability**: As plant complexity or the number of field assets grows, additional worker containers can 
   be spun up to pull from the command queue without logic changes.
 - **Fault Tolerance**: If a worker fails mid-reasoning, the message is returned to the queue (via NACK) for another 
@@ -1549,6 +1589,7 @@ intents.
 ### Event-Driven Architecture & Reactive Design
 The system is built on a **Push-Based** model rather than a polling model, ensuring sub-second responsiveness to process 
 excursions.
+
 - **Reactive Stream Processing**: The Bytewax streaming engine reacts to raw NATS telemetry in real-time, performing 
   windowed math to detect drift before the Agent even begins its reasoning cycle.
 - **Loose Coupling**: Components communicate exclusively through the **Unified Namespace (UNS)**. The Southbound Driver 
@@ -1559,6 +1600,7 @@ excursions.
 
 ### Unidirectional Data Flow
 OverSight enforces a strict unidirectional flow to maintain a "Clear Chain of Command" and prevent feedback loops.
+
 - **Safety Gatekeeping**: The Reasoning Agent cannot directly access field assets. It must write "Intents" to the 
   RabbitMQ Spine, which are then intercepted, audited, and executed by the Southbound Driver's semantic firewall.
 - **Simplicity & Auditability**: By enforcing a one-way flow (Observation → Reasoning → Intent → Execution), we 
@@ -1568,6 +1610,7 @@ OverSight enforces a strict unidirectional flow to maintain a "Clear Chain of Co
 
 ### Retrieval-Augmented Generation (RAG)
 The system utilizes RAG to ground the Agent’s reasoning in manufacturer-specific PDF manuals and historical site logs.
+
 - **Hallucination Mitigation**: The Agent is strictly required to provide citations (URI/Hash) from the local 
   **pgvector** store before a failover maneuver is authorized.
 - **Ground Truth Logic**: By providing specific excerpts from manufacturer technical data, the system ensures the AI 
@@ -1765,6 +1808,7 @@ global RAG database without compromising privacy.
 The LangGraph Agent is designed to be scalable and fault-tolerant, allowing it to handle complex planning and reasoning 
 tasks without crashing the system. RAG (Retrieval-Augmented Generation) is used to provide the Agent with specific 
 context from manuals and logs, which helps to reduce hallucinations and improve decision-making.
+
    - **Stateful Orchestration**: LangGraph manages the reasoning lifecycle, using database checkpoints to ensure that 
    if the gateway restarts mid-failover, the Agent resumes exactly where it left off.
    - **RAG Context**: The Agent uses Retrieval-Augmented Generation to fetch information from manuals and logs,

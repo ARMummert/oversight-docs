@@ -296,15 +296,17 @@ See [Control Authority Model](/docs/control_authority_model.md) for more informa
 
 ## Industrial Safety Protocol
 
-> [!IMPORTANT] OverSight ICS is a Cognitive Reliability Agent, ***NOT*** a Safety Agent.
+!!! important "SAFETY PROTOCOL: READ CAREFULLY"
+    OverSight ICS is a Cognitive Reliability Agent, ***NOT*** a Safety Agent.
 
-The system is strictly decoupled from the **Safety Instrumented System (SIS)**. Hard-coded safety interlocks and 
-physical E-Stops always maintain primary authority. OverSight operates as a **Read-Verify-Suggest** layer to prevent 
-those safety limits from ever being reached.
+    The system is strictly decoupled from the **Safety Instrumented System (SIS)**. Hard-coded safety interlocks and 
+    physical E-Stops always maintain primary authority. OverSight operates as a **Read-Verify-Suggest** layer to prevent 
+    those safety limits from ever being reached.
 
-| ![IMPORTANT]: INDUSTRIAL SAFETY PROTOCOL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **OverSight ICS is a Reliability agent, NOT a Safety agent. Safety Decoupling is a critical design principle in OverSight ICS.** ![CAUTION]: **Logic Integrity Guardrail**: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined **Command Global Data** block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers.                                                                                                                                                                                                                                                                                                                                                      |
+    Safety Decoupling is a critical design principle in OverSight ICS.
+
+!!! CAUTION
+    **Logic Integrity Guardrail**: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined **Command Global Data** block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site's control engineers. 
 
 ## Safety & Regulatory Governance
 OverSight ICS is a **Cognitive Reliability Layer** (Level 3.5), not a primary safety system. See [STANDARDS.md](docs/standards.md) 

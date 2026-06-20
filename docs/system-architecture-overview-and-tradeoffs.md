@@ -32,6 +32,7 @@ change from the physical feedback loop.
   (PLC/RTU/DCS), and rotating equipment. Oversight executes continuous windowed $Z$-Score drift analysis by streaming
   telemetry through a single instance of NATS JetStream and Bytewax. This allows the system to detect logic drift 
   before it causes a physical hardware failure.
+
 > **Strategic Orchestration**: Oversight doesn't just predict values; it plans a sequence of actions, validates them 
 > against a safety schema, and executes a managed failover plan.
 
@@ -160,10 +161,11 @@ The Purdue Model is used in industrial environments on six strict levels of cont
 Power Generation, etc.
 
 **Components**: Pumps, Actuators, Valves, Motors, Sensors, Safety Instrumented System (SIS),etc
-  - **Safety Instrumented Systems (SIS)**: The physical safety layer of the plant. These are hardwired, deterministic 
-    systems that monitor critical process parameters (e.g., pressure, temperature, flow rate) and trigger physical 
-    safety mechanisms (e.g., emergency shutdown, pressure release valves) when unsafe conditions are detected. The SIS 
-    sits adjacent to the primary process assets and operates independently of any software control layer.
+
+- **Safety Instrumented Systems (SIS)**: The physical safety layer of the plant. These are hardwired, deterministic 
+  systems that monitor critical process parameters (e.g., pressure, temperature, flow rate) and trigger physical 
+  safety mechanisms (e.g., emergency shutdown, pressure release valves) when unsafe conditions are detected. The SIS 
+  sits adjacent to the primary process assets and operates independently of any software control layer.
 
 **Software Engineering Context**: The real-world physical process equipment is the ultimate **Source of Truth**. Runtime
 logic deviations, motor winding destruction, hardware cavitation failure, or pipeline over-pressurization are all
@@ -213,6 +215,7 @@ Command Validation points, AI-to-PLC Write-Access Token Arbitration, etc.
 
 **Components**: Oversight Arbitrator, Hardware TPM 2.0 Notary Chip, Multi-Factor Authentication (MFA) Token 
 Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.
+
   - **Level 1.5 Arbitrator**: Responsible for managing the **Write-Access Token**, enforcing the **Bumpless Transfer 
     Protocol**, and arbitrating command authority between the AI Agent and Human Operators. It contains zero
     dependencies on neural networks, large language models, or dynamic cloud runtimes. The Arbitrator sits directly on
@@ -251,6 +254,7 @@ compromised, the physical assets remain safely insulated from malicious or unpre
 grid dispatch controls, etc.
 
 **Components**: HMIs, Local Control Room Panels
+
   - **HMI (Human-Machine Interface)**: HMIs are local touchscreens or operator terminals running graphics applications. 
     They are a real-time window into Level 1 PLC states, and continuously read and map controller tag values to 
     graphical dashboards. HMIs also have the authority to issue commands to field assets.
@@ -263,6 +267,7 @@ requires strict security controls and strict **Read-Write Path Bifurcation (Sepa
 the continuous high-frequency polling, but the **Write Path** is treated as a dangerous operation.  
 
 **Example:**
+
 If an operator repetitively clicks a button on the HMI, it can cause a **Command Storm** that overwhelms a PLC and 
 the physical communication bus can experience severe thread starvation. The network saturation can block a microsecond 
 controller heartbeat, causing the system watchdog to time out that will completely halt factory operations. 
@@ -276,6 +281,7 @@ In this case, the AI reasoning loops never saturate the real-time communication 
 Hubs, Chemical Facility Server Racks.
 
 **Components**: Plant-wide SCADA Systems, Manufacturing Execution Systems (MES), and Operational Historians.
+
   - **Operational Truth (SCADA / MES / Historian)**: The core source of truth for the plant's current state. These 
     exist independently of Oversight so that traditional plant control and monitoring remain deterministic and available
     even if Oversight is offline. SCADA on Level 3 functions as a site-wide data aggregator, polling the Level 2/1 
@@ -301,6 +307,7 @@ Cross-Domain Boundary Protection.
 **Components**: Northbound Ingest Service, NATS Telemetry Stream, Bytewax Streaming Engine, TimescaleDB Historian, 
 Redis Hot Cache, LangGraph Agent, Local Vector Database (`pgvector`), NATS Command Queue, Nginx Reverse Proxy (Automated 
 Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Observability Stack.
+
   - **Northbound Ingest Service**: Telemetry is streamed to the Northbound Ingest Service where protocol translation 
      (Modbus TCP, EtherNet/IP, OPC-UA) is performed and published. Normalized telemetry (Sparkplug B/MQTT) is published 
      directly into the NATS Telemetry Stream (the UNS backbone).
@@ -353,7 +360,8 @@ Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Ob
       the minimum required permissions to execute the intended action, and no more. An exploit in one area cannot compromise 
       the entire system.
 
-    [!NOTE]: The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.
+    !!! note
+        The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.
 
   - **Southbound Driver**: The final egress for write access. The Southbound Driver consumes the hardware-notarized
     block from the TPM module and the pushes the block through the Southbound Firewall, via Deep Packet Inspection for 
@@ -391,8 +399,9 @@ the Level 1.5 Arbitrator, and be audited against hardcoded physical constraints 
 catastrophic exploit or runtime failure within the heavy cognitive compute zone occurs, the zone remains fully isolated 
 from the physical kinetics of the plant, which remain fully protected by deterministic barriers.
 
-[!Note] **Out-of-Band** means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
-Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. 
+!!! note
+    **Out-of-Band** means that the AI agent is not directly connected to the live telemetry stream. Instead, it queries the
+    Redis Hot Cache for real-time state snapshots and the TimescaleDB for historical data. 
 
 ### Level 4: Secure Dashboard & Business Logistics Network
 
@@ -401,6 +410,7 @@ Analytics, Long-Term Data Lakes, Engineering Review Desktops, etc.
 
 **Components**: Enterprise Operational Dashboards, Corporate LAN, Performance Tools (Distributed Fleet Health 
 Aggregators).
+
 - **Enterprise Operational Dashboard**: Deployed as a secure, air-gapped interface inside the Level 3.5 IDMZ
   for operators, plant managers, and safety engineers. This dashboard provides real-time read-only telemetry and acts
   as a secure, restricted portal for issuing intents which are then processed by the lower-level safety layers.
@@ -511,6 +521,7 @@ and Central Observability for System Performance, Vendor Knowledge Distribution.
 
 **Components**: Enterprise SIEM(Security Information and Event Management),Observability Stack, Cloud Data Lakes, Vendor
 Knowledge Bases
+
 - **Enterprise SIEM**: Aggregated security event logging
 - **Observability Stack (Prometheus, Grafana)**:
   - **Prometheus**: Time-series database for monitoring system performance, latency, and error rates across the 
@@ -555,6 +566,7 @@ asynchronous Ethernet/IP CIP (Common Industrial Protocol) tag sessions for Rockw
 certificate-authenticated OPC-UA node subscriptions for modern edge controllers.*
 
 **The Telemetry Lifecycle and Read Path Execution**:
+
 1. Level 0 → Level 1: The physical kinetics of the plant are continuously sampled by field sensors and digitized into 
    unsigned integers by the I/O modules. The primary PLC (`PLC_P`) executes a cyclic scan loop, pulling the digitized 
    inputs into its memory tables and executing hardcoded logic to update the state of the physical assets.
@@ -588,6 +600,7 @@ certificate-authenticated OPC-UA node subscriptions for modern edge controllers.
 
 The system enforces a **Zero-Trust Execution** model. The AI Agent and UI never possess direct write access to field
 assets. All modifications must go through a multi-stage validation and arbitration process.
+
 1. When the intent is finalized by the LangGraph Agent, it issues a `Control Directive Proposal`. Instead of executing 
    it directly, the Agent routes the proposal down to the **NATS JetStream Logical Command Queue** inside Level 3.5 
    (IDMZ).

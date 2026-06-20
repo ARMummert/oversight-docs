@@ -184,22 +184,24 @@ underlying data and will automatically "Unshelve" the alarm if the $Z$-Score inc
 a critical escalation. The system will then force a re-trigger of the alarm and alert the operator of the worsening 
 condition. **The system limits the number of concurrent shelved alarms to 5**. 
 
-[!Advisory Response] If the limit of five concurrent shelved alarms is reached, the system issues a 
-`SHELVED_ALARM_CAPACITY_EXCEEDED` advisory. Operators must immediately execute SOP-SHELVED-01 to audit and clear shelf 
-slots to maintain system situational awareness.
-- **Schema Enforcement**: Configuration files **MUST** include `max_shelf_duration_minutes:240`.
-- **Capacity Limits**: The system limits the number of concurrent shelved alarms to **5**.
-- **Capacity Advisory**: If the limit of five is reached, the system issues a `SHELVED_ALARM_CAPACITY_EXCEEDED` 
-  advisory. Operators must execute `SOP-SHELVED-01` to audit and clear shelf slots to maintain plant situational 
-  awareness.
-- **Re-Trigger Logic**: If the shelved alarm's $Z$-Score increases by an additional factor of **1.5** (e.g., drifting
-  from $3.0\sigma$ to $4.5\sigma$), the system overrides the shelf, forces an immediate re-trigger on the dashboard, 
-  and alerts the operator to the worsening condition.
+!!! Advisory "Shelving Rules"
+    If the limit of five concurrent shelved alarms is reached, the system issues a 
+    `SHELVED_ALARM_CAPACITY_EXCEEDED` advisory. Operators must immediately execute SOP-SHELVED-01 to audit and clear shelf 
+    slots to maintain system situational awareness.
 
-> [!NOTE]
-> **Deadband Logic**: Once an alarm is triggered, the process variable must return past the setpoint by the deadband 
-> percentage before the alarm state can be cleared. This creates a buffer zone around the setpoint to stabilize the 
-> alarm status.
+- **Schema Enforcement**: Configuration files **MUST** include `max_shelf_duration_minutes:240`.
+  - **Capacity Limits**: The system limits the number of concurrent shelved alarms to **5**.
+  - **Capacity Advisory**: If the limit of five is reached, the system issues a `SHELVED_ALARM_CAPACITY_EXCEEDED` 
+    advisory. Operators must execute `SOP-SHELVED-01` to audit and clear shelf slots to maintain plant situational 
+    awareness.
+  - **Re-Trigger Logic**: If the shelved alarm's $Z$-Score increases by an additional factor of **1.5** (e.g., drifting
+    from $3.0\sigma$ to $4.5\sigma$), the system overrides the shelf, forces an immediate re-trigger on the dashboard, 
+    and alerts the operator to the worsening condition.
+
+!!! note
+    > **Deadband Logic**: Once an alarm is triggered, the process variable must return past the setpoint by the deadband 
+    > percentage before the alarm state can be cleared. This creates a buffer zone around the setpoint to stabilize the 
+    > alarm status.
 
 ### Advanced Nuisance Suppression (FMEA Alignment)
 - **Oscillation Dampening (Alarm Suppression)**: Post-Action Oscillation Dampening

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Networking &amp; Clock Topology - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Networking \u0026amp; Clock Topology";
+        var mkdocs_page_input_path = "network_topology.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../network-topology.md">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Networking &amp; Clock Topology</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="networking-clock-topology">Networking &amp; Clock Topology<a class="headerlink" href="#networking-clock-topology" title="Permanent link"></a></h1>
+<h2 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h2>
+<p>This document defines the physical and logical network topology of the Oversight ICS Edge Gateway. It guarantees strict
+isolation between the IDMZ and the Control Zone while also maintaining nanosecond time synchronization. NATS JetStream
+is used for both deterministic high-availability telemetry ingestion and low-latency command orchestration. NATS acts
+as the Unified Namespace spine, while Bytewax performs rolling windowed $Z$-Score anomaly detection. </p>
+<h2 id="2-full-system-topology">2. Full System Topology<a class="headerlink" href="#2-full-system-topology" title="Permanent link"></a></h2>
+<p>The following diagram illustrates the complete network topology of the Oversight ICS system.</p>
+<p>See <a href="/docs/assets/oversight-network-and-hardware-topology.svg">Network Topology Diagram</a> for a visual representation 
+of the network architecture.</p>
+<h3 id="network-architecture">Network Architecture<a class="headerlink" href="#network-architecture" title="Permanent link"></a></h3>
+<p>Oversight strictly separates decision-making, validation, and physical execution so that the AI-driven orchestration
+never compromises plant safety. It is designed as a <strong>Dual-Homed Hierarchical Gateway</strong> (physically separating traffic
+through dual NICs) that strictly enforces network segmentation based on the Purdue Model. Oversight uses a <strong>Logical
+Data Diode</strong> approach which eliminates IP forwarding to maintain a strict air-gapped architecture between the IT and OT
+networks.</p>
+<p>Oversight uses a <strong>Command Query Responsibility Segregation (CQRS)</strong> architecture to separate reads from writes. 
+- <strong>Read Path</strong>: Raw OT telemetry is normalized into a Sparkplug B unified namespace and streamed into NATS JetStream
+  for anomaly detection.
+- <strong>Write Path</strong>: All AI-generated control intents are submitted to the NATS Command Queue. The control intents 
+  undergo dual-authorization, cryptographic notary, semantic validation, and TPM 2.0 signing by the gatekeeper before
+  the Southbound Driver executes a hardware-notarized command to the control assets.</p>
+<p>See <a href="/docs/assets/oversight-purdue-model.svg">Oversight Purdue Model Diagram</a>, 
+<a href="/docs/assets/oversight-purdue-network-architecture.svg">Oversight Purdue Network Architecture Diagram</a> and
+<a href="/docs/assets/oversight-network-and-hardware-topology.d2">Oversight Network &amp; Hardware Topology</a> for a visual
+representation of the network architecture.</p>
+<h3 id="logical-network-segmentation">Logical Network Segmentation<a class="headerlink" href="#logical-network-segmentation" title="Permanent link"></a></h3>
+<p>The Oversight system operates as a <strong>Star Topology</strong> where the Edge Gateway is in the center of the network. </p>
+<ul>
+<li><strong>Northbound Ingest Service</strong>: The Northbound Ingest Service connects up to the Enterprise Zone for UI dashboards
+  and NTP time sync. </li>
+<li><strong>Southbound Driver</strong>: The Southbound Driver is the central point pushing hardware-notarized commands down to the 
+  OT environment. It is the only component allowed to communicate with the control assets.</li>
+</ul>
+<h3 id="industrial-protocols-control-assets">Industrial Protocols &amp; Control Assets<a class="headerlink" href="#industrial-protocols-control-assets" title="Permanent link"></a></h3>
+<p>The following table lists the supported industrial protocols and their associated control assets. The Edge Gateway
+supports multiple protocols to ensure compatibility with a wide range of industrial equipment.  </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Protocol</th>
+<th style="text-align: left;">Control Asset Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Modbus TCP</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">Legacy Asset Control</td>
+</tr>
+<tr>
+<td style="text-align: left;">OPC-UA TCP</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">Secure Telemetry Ingest (Sign/Encrypt)</td>
+</tr>
+<tr>
+<td style="text-align: left;">OPC-UA Pub/Sub</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">Publish/Subscribe Telemetry</td>
+</tr>
+<tr>
+<td style="text-align: left;">OPC-UA Client-Server</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">Request/Response Telemetry</td>
+</tr>
+<tr>
+<td style="text-align: left;">EtherNet/IP</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">CIP Explicit / Implicit Messaging</td>
+</tr>
+<tr>
+<td style="text-align: left;">MQTT (with Sparkplug B)</td>
+<td style="text-align: left;">Sensors, Gateway</td>
+<td style="text-align: left;">Stateful Unified Namespace (UNS) Ingest</td>
+</tr>
+<tr>
+<td style="text-align: left;">PTP (IEEE 1588v2)</td>
+<td style="text-align: left;">All OT Assets</td>
+<td style="text-align: left;">Nanosecond Clock Synchronization</td>
+</tr>
+<tr>
+<td style="text-align: left;">Producer-Consumer CIP Messaging</td>
+<td style="text-align: left;">Sensors, Actuators</td>
+<td style="text-align: left;">Asynchronous Data Exchange</td>
+</tr>
+<tr>
+<td style="text-align: left;">PROFINET*</td>
+<td style="text-align: left;">PLCs, RTUs</td>
+<td style="text-align: left;">Siemens Industrial Protocol</td>
+</tr>
+<tr>
+<td style="text-align: left;">IO-Link*</td>
+<td style="text-align: left;">Sensors, Actuators</td>
+<td style="text-align: left;">Device-Level Diagnostic Communication</td>
+</tr>
+<tr>
+<td style="text-align: left;">EtherCAT*</td>
+<td style="text-align: left;">Motion Controllers</td>
+<td style="text-align: left;">High-Speed Deterministic Control</td>
+</tr>
+</tbody>
+</table>
+<p><em>* PROFINET, IO-Link, &amp; EtherCAT are slated for future testing phases</em></p>
+<div class="admonition note conduit security rules">
+<p class="admonition-title">Note</p>
+</div>
+<p><em>Ingress traffic on NIC 1 is strictly limited to HTTPS (443) and NTP (123). Egress traffic on NIC 2 is strictly
+limited to pre-approved industrial protocols (Modbus 502, OPC-UA 4840) to validated PLC IP addresses.</em></p>
+<h2 id="3-communication-conduits-ports">3. Communication Conduits &amp; Ports<a class="headerlink" href="#3-communication-conduits-ports" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Source</th>
+<th style="text-align: left;">Destination</th>
+<th style="text-align: left;">Protocol</th>
+<th style="text-align: left;">Port</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Enterprise Zone</td>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">HTTPS</td>
+<td style="text-align: left;">443 (TCP)</td>
+<td style="text-align: left;">HMI Access &amp; API Calls</td>
+</tr>
+<tr>
+<td style="text-align: left;">Enterprise Zone</td>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">NTP</td>
+<td style="text-align: left;">123 (UDP)</td>
+<td style="text-align: left;">Master Clock Sync (Stratum 2)</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">Vertex AI Endpoint</td>
+<td style="text-align: left;">HTTPS</td>
+<td style="text-align: left;">443 (TCP)</td>
+<td style="text-align: left;">LLM Inference Egress (Gemini 1.5 Flash)</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">Internal Bus</td>
+<td style="text-align: left;">TCP</td>
+<td style="text-align: left;">4222 (TCP)</td>
+<td style="text-align: left;">NATS JetStream Telemetry Backbone (UNS)</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">Internal Bus</td>
+<td style="text-align: left;">TCP</td>
+<td style="text-align: left;">4222 (TCP)</td>
+<td style="text-align: left;">NATS JetStream Command Spine</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">Internal Bus</td>
+<td style="text-align: left;">RESP</td>
+<td style="text-align: left;">6379 (TCP)</td>
+<td style="text-align: left;">Redis Hot Cache</td>
+</tr>
+<tr>
+<td style="text-align: left;">Southbound Driver</td>
+<td style="text-align: left;">TPM 2.0 Module</td>
+<td style="text-align: left;">SPI / IPC</td>
+<td style="text-align: left;">N/A</td>
+<td style="text-align: left;">Hardware-Notarized Command Signing</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 1 (IDMZ)</td>
+<td style="text-align: left;">NIC 2 (L2)</td>
+<td style="text-align: left;">PTP</td>
+<td style="text-align: left;">319/320 (UDP)</td>
+<td style="text-align: left;">Precise Time Protocol (Event Timing)</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 2 (L2)</td>
+<td style="text-align: left;">Field Assets</td>
+<td style="text-align: left;">Modbus TCP</td>
+<td style="text-align: left;">502 (TCP)</td>
+<td style="text-align: left;">Legacy Asset Control</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 2 (L2)</td>
+<td style="text-align: left;">Field Assets</td>
+<td style="text-align: left;">OPC-UA TCP</td>
+<td style="text-align: left;">4840 (TCP)</td>
+<td style="text-align: left;">Secure Telemetry Ingest (Sign/Encrypt)</td>
+</tr>
+<tr>
+<td style="text-align: left;">NIC 2 (L2)</td>
+<td style="text-align: left;">Field Assets</td>
+<td style="text-align: left;">EtherNet/IP</td>
+<td style="text-align: left;">44818 (TCP/UDP)</td>
+<td style="text-align: left;">CIP Explicit / Implicit Messaging</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hardware-network-requirements">Hardware &amp; Network Requirements<a class="headerlink" href="#hardware-network-requirements" title="Permanent link"></a></h2>
+<h3 id="physical-hardware-requirements">Physical Hardware Requirements<a class="headerlink" href="#physical-hardware-requirements" title="Permanent link"></a></h3>
+<p>The Edge Gateway is designed for deployment in harsh OT environments (Class I, Div 2). To ensure high availability, 
+the following specifications are required:</p>
+<ul>
+<li><strong>Form Factor</strong>: <strong>Industrial PC (IPC)</strong> with <strong>Fanless Passive Cooling</strong> to prevent ingress of dust/particulates.</li>
+<li><strong>Mounting</strong>: Standard 35mm <strong>DIN-Rail mount</strong> for control cabinet integration.</li>
+<li><strong>Dual NIC Requirement</strong>: The IPC must have two independent physical network interface cards.</li>
+<li><strong>OT NIC</strong>: Connected to the isolated process network (Levels 1–2)</li>
+<li><strong>IT NIC</strong>: Connected to the business network (Level 4) for HMI and Level 5 API access.</li>
+<li><strong>Hardware Watchdog</strong>: Physical safety monitoring the Edge Gateway heartbeat. Failure forces the plant into
+  a local-only <strong>Safe State</strong>.</li>
+<li><strong>Environmental</strong>: <ul>
+<li>Operating Temperature: -20°C to 60°C.</li>
+<li>Ingress Protection: <strong>IP40</strong> (minimum for a cabinet), <strong>IP67</strong> (if external).</li>
+</ul>
+</li>
+<li><strong>EMC Compliance</strong>: Shielded RJ45 ports and surge protection to maintain NIC integrity in high-EMI environments 
+  (adjacent to VFDs/Motors).</li>
+<li><strong>Power</strong>: Dual 24V DC power inputs for redundancy.</li>
+</ul>
+<h3 id="hardware-simulation-development">Hardware Simulation &amp; Development<a class="headerlink" href="#hardware-simulation-development" title="Permanent link"></a></h3>
+<p>For development and testing, without requiring physical field instrumentation and control hardware (PLCs, 
+VFDs), OverSight ICS includes a <strong>virtual field asset cluster</strong> using <code>python-opcua</code> which simulates real-world logic 
+drift and scan-cycle jitter. The simulation environment is designed to be fully containerized, allowing the 
+<strong>Field Level</strong> to be spun up alongside the Gateway. It also uses <strong>fault injection</strong> to simulate memory leaks and 
+thermal stress to verify the Agent&rsquo;s predictive response.</p>
+<h3 id="virtual-network-container-segmentation">Virtual Network &amp; Container Segmentation<a class="headerlink" href="#virtual-network-container-segmentation" title="Permanent link"></a></h3>
+<p>Oversight ICS uses Docker for containerization to simplify the deployment and management of the system. 
+The Docker containers sit on top of the Edge Gateway, and each component of the system (Ingest Service, 
+Southbound Driver, Agent, etc.) runs in its own container. This allows for easy scaling, isolation, and management 
+for the different components of the system.</p>
+<ol>
+<li><strong>The Field Network</strong>: (<code>ot-bridge</code>) <ul>
+<li>Hardware Simulators / Physical Control Assets</li>
+<li><em>Only accessible by the Southbound Driver via NIC 2 (Level 1/2)</em></li>
+</ul>
+</li>
+<li><strong>The Industrial DMZ (<code>idmz_south</code> &amp; <code>idmz_north</code></strong>)<ul>
+<li><strong>Perimeter Gateways</strong>: </li>
+<li><strong>Nginx Proxy</strong> (Northbound Driver - <code>idmz_north</code>) - Terminates Northbound IT traffic.</li>
+<li><strong>Southbound Driver</strong> (Southbound Driver - <code>idmz_south</code>) - Terminates Southbound OT traffic.</li>
+<li><strong>The Reasoning Cluster</strong> (<code>edge_gateway</code>) </li>
+<li><strong>Cognitive</strong>: LangGraph, Ollama Engine (Phi-4), FastAPI</li>
+<li><strong>Data Services</strong>: TimescaleDB (Historian), PostgreSQL, Redis</li>
+<li><strong>Messaging</strong>: NATS JetStream (UNS)</li>
+<li><strong>Streaming</strong>: Bytewax (Anomaly Detection)</li>
+<li><strong>Security Guardrail</strong>: Semantic Gatekeeper</li>
+</ul>
+</li>
+<li><strong>The IT Network</strong> (<code>it_bridge</code> | Levels 4–5) <ul>
+<li>Dashboard - Read only visualization on HMI</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-security-controls">4. Security Controls<a class="headerlink" href="#4-security-controls" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Logical Star Topology</strong>: The network is designed to be a star topology, while all traffic is forced through the Edge 
+  Gateway.</li>
+<li><strong>Dual-NIC Isolation</strong>: There is no IP routing enabled between the two NICs and there is no direct path between the 
+  field zone and the enterprise zone.</li>
+<li><strong>Broker Segmentation</strong>: High-volume telemetry is logically separated from high-priority control commands via <strong>NATS 
+  Subject Segmentation</strong>. This prevents <strong>Network Flooding</strong> from delaying critical safety interventions or E-stops.</li>
+<li><strong>Clock Drift Mitigation</strong>: The system monitors PTP sync continuously. If the drift between the Southbound Driver and
+  the Level 2 field assets exceeds 50ms, the <strong>Bytewax</strong> layer triggers a <strong>Stale Data</strong> exception, forcing the AI into 
+  <code>ADVISORY_MODE</code> and locking out automated control writes.</li>
+<li><strong>Command Validation</strong>: </li>
+<li>All command proposals first go through the <strong>Level 1.5 Arbitrator</strong>, which validates the identity (<strong>Two-Key 
+    Protocol</strong>) and authority of the operator.</li>
+<li>If valid, the command is passed to the <strong>Semantic Gatekeeper</strong> for the final safety audit against the <strong>Forbidden
+    Register List</strong> and physical hardware limits.</li>
+<li><strong>Cryptographic Notary Buffers</strong>: Only if the semantic gatekeeper approves the command, it is sent to the 
+    cryptographic notary buffers to invoke the TPM 2.0 hardware signer.</li>
+<li><strong>Deterministic Execution</strong>: The hardware-notarized command block is passed to the <strong>Southbound Driver</strong> for 
+    deterministic execution on the control assets. The Southbound Driver must first pass through the <strong>Southbound
+    Firewall</strong>.</li>
+<li><strong>Semantic Integrity</strong>: Commands lacking a valid <code>justification_hash</code> or failing register-range validation are 
+  dropped and logged as a security event.</li>
+</ul>
+<h2 id="5-protocol-payload-standards">5. Protocol &amp; Payload Standards<a class="headerlink" href="#5-protocol-payload-standards" title="Permanent link"></a></h2>
+<p>The following data standards are enforced to maintain interoperability across the Unified Namespace (UNS):</p>
+<ul>
+<li><strong>Ingest Normalization</strong>: All raw industrial protocols are normalized into <strong>Sparkplug B</strong> payloads by the Northbound 
+  Ingest Service.</li>
+<li><strong>Payload Serialization</strong>: Telemetry streams within the NATS JetStream backbone use <strong>Protocol Buffers (Protobuf)</strong> to 
+  minimize latency and maintain strict schema enforcement for the AI Reasoning Agent.</li>
+<li><strong>State Representation</strong>: The <strong>Redis Hot Cache</strong> maintains a <strong>Pessimistic State</strong> where it only updates the 
+  <strong>current value</strong> of an asset once the Southbound Driver receives mechanical feedback from the field, closing the 
+  loop.</li>
+</ul>
+<h2 id="6-firewall-boundary-policies">6. Firewall Boundary Policies<a class="headerlink" href="#6-firewall-boundary-policies" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Northbound Boundary (Level 3.5 to Level 4):</strong> Default Deny Inbound. Only specific, authenticated proxy routes via 
+  NGINX are exposed to the Enterprise zone.</li>
+<li><strong>Southbound Boundary (Level 3.5 to Level 1/2):</strong> Strict IP and Protocol Binding. Only the verified Southbound Driver 
+  process is authorized to establish outbound connections to the physical field controllers.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 site_name: Oversight ICS
 site_description: A comprehensive documentation suite for Oversight ICS - A Cognitive Reliability & Predictive Failover Agent for Industrial Control Systems
 site_author: Amy Mummert
+repo_url: https://armummert.github.io/oversight-docs/
 
 nav:
     - Home: index.md
@@ -8,12 +9,28 @@ nav:
       - Glossary: glossary.md
       - Technical Deep Dive: oversight_ics_technical_deep_dive.md
       - System Architecture: system-architecture-overview-and-tradeoffs.md
+      - Network Topology: network_topology.md
+      - Alarm Management: alarm_philosophy.md
       - Oversight Context View: oversight-c4-context-view.svg
 
 theme:
     name: readthedocs
-    navigation_depth: 4
-    prev_next_buttons_location: top
+    prev_next_buttons_location: bottom
     sticky_navigation: true
+    highlightjs: true
+
 extra_css:
   - style.css
+
+markdown_extensions:
+  - smarty
+  - admonition
+  - toc:
+      permalink: 
+  - attr_list
+  - def_list
+  - tables
+  - fenced_code
+
+plugins:
+    - search

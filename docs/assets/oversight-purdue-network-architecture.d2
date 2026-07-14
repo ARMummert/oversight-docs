@@ -1,0 +1,492 @@
+# Oversight ICS - C4 Level 2 Container Diagram
+vars: {
+  d2-config: {
+    theme-id: 1
+    layout-engine: elk
+  }
+}
+
+classes: {
+  telemetry: {
+    style: {
+      stroke: "#2ecc71"
+      stroke-width: 4
+    }
+  }
+  control: {
+    style: {
+      stroke: "#3498db"
+      stroke-width: 4
+    }
+  }
+  security: {
+    style: {
+      stroke: "#34495e"
+      stroke-width: 4
+    }
+  }
+  safety: {
+    style: {
+      stroke: "#e74c3c"
+      stroke-width: 4
+    }
+  }
+  human_ux: {
+    shape: person
+    style: {
+      stroke: "#9b59b6"
+      stroke-width: 4
+    }
+  }
+  dashboard_ux: {
+    style: {
+      stroke: "#d35400"
+      stroke-width: 4
+    }
+  }
+  enterprise_zone: {
+    width: 600
+    height: 300
+    style: {
+      font-size: 32
+    }
+  }
+  operators: {
+    shape: person
+    width: 400
+    height: 400
+    style: {
+      font-size: 28
+      stroke: "#9b59b6"
+      stroke-width: 4
+    }
+  }
+  level3: {
+    width: 800
+    height: 250
+    style: {
+      font-size: 28
+      stroke-width: 4
+    }
+  }
+  level4: {
+    width: 500
+    height: 200
+    style: {
+      font-size: 28
+      stroke-width: 4
+    }
+  }
+}
+
+direction: down
+
+title: |md
+  # Oversight Container View
+| {near: top-center}
+
+# Personas
+operator: Field Operator {
+  class: operators
+}
+
+safety_lead: Lead Safety Engineer {
+  class: operators
+}
+
+plant_manager: Plant Manager {
+  class: operators
+}
+
+# Enterprise Zone
+level_5_enterprise: Level 5 - Enterprise Zone {
+  class: enterprise_zone
+  shape: cloud
+}
+
+# Middleware Zones
+oversight_middleware: Oversight ICS Middleware {
+  style: {font-size: 28; text-transform: uppercase; stroke-width: 4; stroke-dash: 6}
+
+  # Level 3.5 Industrial DMZ Zone
+  # Firewall Boundaries - Ingress
+  firewall_north: "Northbound IDMZ Firewall\n(IT / Level 4 Barrier)" {
+    shape: step
+    description: "Firewall that enforces strict\ningress controls and deep packet\ninspection for all incoming traffic."
+    style: {fill: "#e74c3c"; font-color: white; stroke-width: 3}
+  }
+
+  idmz_zone: Level 3.5 - IDMZ {
+    proxy_gateway: Nginx Perimeter Gateway {
+      description: "Terminates incoming API requests,\n validates schemas, verifies RS256 JWTs,\n and applies safety-critical rate-limiting."
+    }
+    prometheus_monitor: Prometheus System Monitor {
+      shape: cylinder
+      description: "Scrapes and stores high-frequency\n infrastructure health, container metrics,\n and service latencies."
+    }
+    grafana_ui: Grafana Observability Engine {
+      shape: rectangle
+      description: "Unified visualization engine querying\n Operational Truth (TimescaleDB) and\n Technical Truth (Prometheus)."
+    }
+    cognitive_agent: LangGraph Cognitive Agent {
+      description: "Runs asynchronous out-of-band evaluation\n loops to determine predictive anomalies and build playbooks."
+    }
+    ollama_engine: Ollama LLM Model {
+      shape: rectangle
+      description: "Local LLM model that generates\n predictive intents and reasoning\n traces for human review."
+    }
+    rag_db: pgvector Local Database {
+      shape: cylinder
+      description: "Stores localized semantic grounding\n rules, asset documentation, and\n architectural vector vectors."
+    }
+    nats_queue: NATS Command Queue {
+      shape: queue
+      description: "Append-only NATS JetStream\n broker capturing unverified state\n mutation payloads safely."
+    }
+    nb_ingest: Northbound Read Ingest {
+      description: "Signal normalizer - Packets parsed and serialized into Sparkplug B MQTT Schema."
+    }
+    nats_stream: NATS Telemetry Stream {
+      shape: queue
+      description: "Event backbone that establishes the Unified Namespace (UNS) architecture.\n\nImmutable Append-Only Log."
+    }
+    bytewax_processor: Bytewax Streaming Engine {
+      description: "Processes time-series telemetry frames\n to compute windowed statistical\n Z-Scores for anomaly detection."
+    }
+    redis_cache: Redis Hot State Cache {
+      shape: cylinder
+      description: "Tracks live operational variables with sub-millisecond\nlookups for instant application parsing."
+    }
+    timescale_db: TimescaleDB Historian {
+      shape: cylinder
+      description: "Maintains an unalterable chronological log of\n facility performance summaries and analytics."
+    }
+    semantic_gk: Semantic Gatekeeper {
+      description: "Audits signed instruction payloads against\npre-compiled hard physical safety boundaries."
+    }
+    sb_driver: Southbound Write Driver {
+      description: "Go engine that translates approved control frames\ninto raw Modbus/CIP wire data commands."
+    }
+  }
+
+  # Level 1.5 Control Authority Zone
+  l15_zone: Level 1.5 - Control Authority Model {
+    l15_arbitrator: Level 1.5 Arbitrator {
+      description: "Isolates proposals in buffer\n memory until Two-Key cryptographic\n JWT token validation passes."
+    }
+    notary_buffers: Cryptographic Notary Buffers {
+      description: "State-checking buffer for\nJWT/asymmetric key validation."
+    }
+    tpm_signer: TPM 2.0 Module {
+      shape: circle
+      description: "Cryptographically signs vetted\n instructions via a hardware silicon\n asymmetric root-of-trust."
+    }
+  }
+
+  # Level 4 Secure Dashboard
+  ui_app: Secure Dashboard\n(Level 4) {
+    shape: rectangle
+    description: "Web client delivering telemetry visuals,\nfailover controls, and Two-Key authorization prompts."
+    class: level4
+  }
+
+  # Firewall Boundaries - Egress
+  firewall_south: "Southbound Firewall\n(IDMZ / Level 3 Barrier)" {
+    shape: step
+    description: "Stateful inspection for\nall outbound commands."
+    style: {fill: "#e74c3c"; font-color: white; stroke-width: 3}
+  }
+}
+
+# Site Operations
+site_operations: Site Operations\n(Level 3 - Operational Core) {
+  class: level3
+}
+
+# Level 0-2 Field Assets
+field_assets: OT Process Assets\n(Level 0-2) {
+  class: level3
+}
+
+# Safety Instrumented System (SIS)
+safety_sis: Safety Instrumented\nSystem (SIS) {
+  class: level3
+}
+
+oversight_middleware.ui_app -> level_5_enterprise: "Requests RS256 JWTs\n via SSO Login" {
+  class: security
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "red"
+  }
+}
+level_5_enterprise -> oversight_middleware.firewall_north: "Pushes PDF Manuals,\n Asset Metadata &\n Maintenance Schedules" {
+  class: security
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+operator -> oversight_middleware.ui_app: "Accesses telemetry &\n proposes intents" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#9b59b6"
+  }
+}
+safety_lead -> oversight_middleware.ui_app: "Inspects proposals &\n applies dual-auth" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#9b59b6"
+  }
+}
+plant_manager -> oversight_middleware.ui_app: "Submits high-level\n overrides & secondary auth" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#9b59b6"
+  }
+}
+oversight_middleware.ui_app -> oversight_middleware.firewall_north: "Triggers a Request\n API requests / Two-Key Auth" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.redis_cache -> oversight_middleware.ui_app: "Subscribes for real-time telemetry updates" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.firewall_north -> oversight_middleware.idmz_zone.proxy_gateway: "Routes API Traffic\n & PDF Ingestion" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.proxy_gateway -> oversight_middleware.idmz_zone.rag_db: "Verifies & vectorizes\n OEM manuals" {
+  style: {
+  stroke-width: 4
+  font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.proxy_gateway -> oversight_middleware.idmz_zone.grafana_ui: "Routes dashboard traffic" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.prometheus_monitor -> oversight_middleware.idmz_zone.cognitive_agent: "Scrapes agent health metrics" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.prometheus_monitor -> oversight_middleware.idmz_zone.sb_driver: "Scrapes system latency" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.grafana_ui -> oversight_middleware.idmz_zone.prometheus_monitor: "Queries infrastructure truth" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.grafana_ui -> oversight_middleware.idmz_zone.timescale_db: "Queries operational truth" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+  }
+}
+oversight_middleware.idmz_zone.cognitive_agent -> oversight_middleware.idmz_zone.ollama_engine: "Invokes local phi-4 inference" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.ollama_engine -> oversight_middleware.idmz_zone.cognitive_agent: "Returns structured mitigation payload" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+field_assets -> oversight_middleware.idmz_zone.nb_ingest: "Streams registers\n [Modbus/OPC-UA/EtherNet/IP]" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.nb_ingest -> oversight_middleware.idmz_zone.nats_stream: "Publishes Sparkplug B frames" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.nats_stream -> oversight_middleware.idmz_zone.bytewax_processor: "Pipes time-series arrays" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.bytewax_processor -> oversight_middleware.idmz_zone.redis_cache: "Updates hot registers" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.bytewax_processor -> oversight_middleware.idmz_zone.timescale_db: "Appends historical entries" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+site_operations -> oversight_middleware.idmz_zone.nb_ingest: "Provides Operational Truth Sync" {
+  style: {
+    stroke-width: 4
+    font-size: 24
+    stroke: "#d35400"
+  }
+}
+oversight_middleware.idmz_zone.cognitive_agent -> oversight_middleware.idmz_zone.redis_cache: "Polls hot telemetry" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.cognitive_agent -> oversight_middleware.idmz_zone.rag_db: "Validates bounding context" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.cognitive_agent -> oversight_middleware.idmz_zone.timescale_db: "References historical patterns" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+oversight_middleware.idmz_zone.cognitive_agent -> oversight_middleware.idmz_zone.nats_queue: "Stages predictive proposals" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.timescale_db -> oversight_middleware.ui_app: "Renders PENDING Intent\n& AI Reasoning Trace" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke-dash: 5
+  }
+}
+oversight_middleware.idmz_zone.proxy_gateway -> oversight_middleware.idmz_zone.nats_queue: "Publishes manual UI\nintents & JWTs" {
+  style: {stroke-width: 4; font-size: 20; stroke: "#3498db"}
+}
+oversight_middleware.idmz_zone.nats_queue -> oversight_middleware.l15_zone.l15_arbitrator: "Consumes the proposals" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.l15_zone.l15_arbitrator -> oversight_middleware.ui_app: "Asserts interactive Two-Key prompts" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.l15_zone.l15_arbitrator -> oversight_middleware.idmz_zone.semantic_gk: "Routes dual-signed payload\n for semantic safety verification" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.semantic_gk -> oversight_middleware.l15_zone.notary_buffers: "Forwards approved\nsafety payload" {
+  style: {
+  stroke-width: 4
+  font-size: 20
+  stroke: "#3498db"
+  }
+}
+
+oversight_middleware.l15_zone.notary_buffers -> oversight_middleware.l15_zone.tpm_signer: "Requests Hardware-Rooted\n Signing" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+
+oversight_middleware.l15_zone.tpm_signer -> oversight_middleware.l15_zone.notary_buffers: "Returns Cryptographic\n Signature" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.l15_zone.notary_buffers -> oversight_middleware.idmz_zone.sb_driver: "Delivers fully assembled\nnotarized command block" {
+  style: {
+  stroke-width: 4
+  font-size: 20
+  stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.proxy_gateway -> oversight_middleware.idmz_zone.nb_ingest: "Forwards Read-Only Requests" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.sb_driver -> oversight_middleware.firewall_south: "Hardware-Notarized\n Block via Conduits" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.firewall_south -> field_assets: "Commits register writes & maintains watchdog heartbeat" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#3498db"
+  }
+}
+oversight_middleware.idmz_zone.sb_driver -> oversight_middleware.idmz_zone.nats_stream: "Subscribes to UNS telemetry\nfor pessimistic confirmation" {
+  style: {stroke-width: 4; font-size: 20; stroke: "#3498db"}
+}
+oversight_middleware.idmz_zone.timescale_db -> level_5_enterprise: "Pushes read-only summaries" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "#2ecc71"
+  }
+}
+# Strict SIS Decoupling
+safety_sis -> field_assets: "Hardwired Interlock Overrides (Absolute Priority)" {
+  style: {
+    stroke-width: 4
+    font-size: 20
+    stroke: "red"
+  }
+}

@@ -1,0 +1,103 @@
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: |md
+  # Oversight ICS - Secure Outbound Command Lifecycle - Write Path
+
+| {near: top-center}
+
+# Enterprise Boundary
+cloud_erp: Enterprise Cloud Hub (Level 5)
+
+f1: Firewall 1: IT Edge {
+  shape: rectangle
+  description: "Perimeter firewall enforcing strict\ningress controls and deep packet\ninspection for all incoming traffic."
+}
+
+level35: Level 3.5: IDMZ Cognitive Zone {
+  hmi: Enterprise Dashboard (Next.js) {
+    shape: parallelogram
+    description: "Operator interface for manual\noverride requests and monitoring."
+  }
+  agent: LangGraph Cognitive Agent {
+    shape: hexagon
+    description: "Stateful agent that generates\n directive proposals based on RAG\ncontext and real-time telemetry."
+  }
+}
+firewall3: Firewall 3: Lower IDMZ Wall {
+  description: "Stateful inspection for\nall outbound commands."
+}
+level3: Level 3: Operational Site Core - CQRS Architecture {
+  nats: NATS Command Queue {
+    shape: queue
+    description: "Centralized, prioritized event queue\n for all command proposals."
+  }
+  sb_driver: Southbound Driver (Write Relay) {
+    description: "Deterministic write executor with\n primary/standby failover logic."
+  }
+}
+firewall2: Firewall 2: Ops/HMI Boundary {
+  description: "Isolation boundary for\nmanual operator overrides."
+}
+level2: Level 2: Local HMI Assets {
+  local_hmi: Legacy Operator Station {
+    description: "Local control panel for\nemergency overrides."
+  }
+}
+level1_5: Level 1.5: Control Authority Model {
+  arbitrator: L1.5 Arbitrator {
+    shape: hexagon
+    description: "Consumes directives, freezes execution,\n and initiates the Two-Key protocol."
+  }
+  semantic_gk: Semantic Gatekeeper {
+    description: "Final safety audit check against\nhardcoded physical constraints."
+  }
+  tpm: TPM 2.0 Hardware Signer {
+    shape: circle
+    description: "Hardware root of trust to notarize\n the packet before transit to field."
+  }
+}
+firewall4: Firewall 4: Control Boundary {
+  description: "Protocol policing at\n the operational edge."
+}
+level1: Level 1: Field Automation Core {
+  plc_p: PLC_Primary {
+    description: "Primary controller for field assets."
+  }
+}
+
+# Write Path Connections
+# Enterprise Ingress
+cloud_erp -> f1: "External Audit"
+f1 -> level35.hmi: "Secure Ingress"
+
+# Agent & Override Proposals
+level35.agent -> firewall3: "1. Directive Proposal"
+level35.hmi -> firewall3: "Manual Proposal"
+firewall3 -> level3.nats: "Ingest Proposal"
+
+# Level 2 Operator Override Path (FIX: Arrow Added)
+level2.local_hmi -> firewall2: "Manual Override Request"
+firewall2 -> level3.nats: "2. Prioritized Override"
+
+# Pipeline Execution
+level3.nats -> level1_5.arbitrator: "3. Consume Proposal"
+level35.hmi -> level1_5.arbitrator: "4. Two-Key Dual-Auth JWTs"
+
+level1_5.arbitrator -> level1_5.semantic_gk: "5. Semantic Safety Audit"
+level1_5.semantic_gk -> level1_5.tpm: "6. TPM Hardware Sign"
+
+level1_5.tpm -> firewall4: "Signed Payload"
+firewall4 -> level3.sb_driver: "Final Verification"
+level3.sb_driver -> level1.plc_p: "7. Register Write"
+
+# Feedback Loop
+level1.plc_p -> level3.sb_driver: "8. Hardware-level Ack"
+level3.sb_driver -> firewall3: "Pessimistic Feedback Loop"
+firewall3 -> level35.hmi: "Dashboard Success Update"

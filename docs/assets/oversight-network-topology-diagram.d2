@@ -1,0 +1,160 @@
+# Oversight ICS - Network & Hardware Topology Diagram
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+
+direction: down
+title: |md
+  # Oversight ICS: Network & Hardware Topology
+  Strict Purdue Model Segmentation with Dual-NIC Isolation
+| {near: top-center}
+
+classes: {
+  cloud_zone: {
+    style: { fill: "#f0f3f4"; stroke: "#34495e"; stroke-width: 3; stroke-dash: 5 }
+  }
+  it_zone: {
+    style: { fill: "#eaf2f8"; stroke: "#2980b9"; stroke-width: 3 }
+  }
+  idmz_zone: {
+    style: { fill: "#fdedec"; stroke: "#c0392b"; stroke-width: 4 }
+  }
+  ot_zone: {
+    style: { fill: "#e9f7ef"; stroke: "#27ae60"; stroke-width: 3 }
+  }
+  firewall: {
+    shape: step
+    style: { fill: "#e74c3c"; font-color: white; stroke-width: 2 }
+  }
+  hardware: {
+    shape: square
+    style: { fill: "#ecf0f1"; stroke: "#7f8c8d"; stroke-width: 2 }
+  }
+  switch: {
+    shape: hexagon
+    style: { fill: "#bdc3c7"; stroke: "#2c3e50"; stroke-width: 2 }
+  }
+}
+
+Level_5: Level 5 - Enterprise Cloud Hub {
+  class: cloud_zone
+
+  ent_idp: Corporate IdP \n(SSO / OIDC) { shape: cylinder }
+  ent_siem: Enterprise SIEM \n(Log Aggregation) { shape: cylinder }
+}
+
+Level_4: Level 4 - Site IT Network {
+  class: it_zone
+
+  site_router: Site IT Router { class: switch }
+  dashboard: Secure Web Dashboard \n(Air-Gapped UI) { shape: square}
+  ntp_server: Master Clock Sync \n(Stratum 2 NTP) { shape: cylinder }
+
+  dashboard -> site_router
+  ntp_server -> site_router
+}
+
+FW_North: Northbound IT Firewall - Default Deny Inbound {
+  class: firewall
+  description: "Allows port 443 proxy ingress.\nAllows outbound HTTPS egress."
+}
+
+Level_35: Level 3.5 - Industrial DMZ {
+  class: idmz_zone
+
+  edge_ipc: Edge Gateway \n(Industrial PC Hardware) {
+    class: hardware
+    width: 600
+
+    nic_1: NIC 1 \n(Northbound) { shape: stored_data; style.fill: "#3498db" }
+
+    docker_bridge: Docker Internal Bridge Subnet {
+      shape: package
+      description: "NATS, TimescaleDB, Bytewax, LangGraph, Ollama (Phi-4)"
+      style: { fill: "#ffffff"; stroke-dash: 5 }
+    }
+
+    nic_2: NIC 2 \n(Southbound) { shape: stored_data; style.fill: "#2ecc71" }
+
+    nic_1 -> docker_bridge: "Nginx Ingress / Egress"
+    docker_bridge -> nic_2: "Southbound Driver I/O"
+  }
+}
+
+FW_South: Southbound OT Firewall - Strict IP Binding {
+  class: firewall
+  description: "Blocks all outbound internet.\nOnly passes whitelisted industrial protocols."
+}
+
+Level_3: Level 3 - Operational Core {
+  class: ot_zone
+
+  ot_core_switch: Core OT Switch { class: switch }
+  dcs_server: Distributed Control System \n(DCS) { class: hardware }
+  plant_scada: Plant-Wide SCADA { class: hardware }
+  historian: Operational Historian { shape: cylinder }
+
+  ot_core_switch -> dcs_server
+  ot_core_switch -> plant_scada
+  ot_core_switch -> historian
+}
+
+# --------------------------------------------------------
+# LEVEL 1 & 2: CONTROL & SUPERVISORY
+# --------------------------------------------------------
+Level_1_2: Level 1 & 2 - Control Network {
+  class: ot_zone
+
+  cell_switch: Process Cell Switch { class: switch }
+  local_hmi: Local Panel HMI { shape: square }
+
+  plc_p: Primary PLC \n(PLC_P) { class: hardware }
+  plc_s: Standby PLC \n(PLC_S) { class: hardware }
+  rtu_node: Remote Terminal Unit \n(RTU) { class: hardware }
+
+  cell_switch -> local_hmi
+  cell_switch -> plc_p
+  cell_switch -> plc_s
+  cell_switch -> rtu_node
+}
+
+# --------------------------------------------------------
+# LEVEL 0: PHYSICAL PROCESS
+# --------------------------------------------------------
+Level_0: Level 0 - Physical Kinetics {
+  style: { fill: "#ecf0f1"; stroke: "#95a5a6"; stroke-width: 3 }
+
+  sensors: I/O Modules & Sensors { shape: square }
+  actuators: Pumps & Actuators { shape: square }
+  sis: Hardwired Safety Interlocks \n(SIS) { shape: square; style.stroke: "red" }
+}
+
+# ========================================================
+# NETWORK CONNECTIONS & PORTS
+# ========================================================
+
+# IT to IDMZ
+Level_5.ent_idp <- Level_35.edge_ipc.nic_1: "HTTPS (TCP 443) SSO" { style: { stroke: "#3498db"; stroke-width: 2 } }
+Level_4.site_router -> FW_North: "IT Traffic"
+FW_North -> Level_35.edge_ipc.nic_1: "HTTPS (TCP 443)\nNTP (UDP 123)" { style: { stroke: "#3498db"; stroke-width: 3 } }
+
+# IDMZ to OT (Read & Write Paths)
+Level_35.edge_ipc.nic_2 -> FW_South: "Hardware Notarized Commands"
+FW_South -> Level_1_2.cell_switch: "Modbus TCP / CIP\n(Direct Control Path)" { style: { stroke: "#c0392b"; stroke-width: 3 } }
+
+Level_3.ot_core_switch -> FW_South: "Telemetry (Read-Only)"
+
+# Core to Cell (Industrial Protocols)
+Level_3.ot_core_switch <-> Level_1_2.cell_switch: "Modbus TCP (502)\nOPC-UA (4840)\nEtherNet/IP (44818)\nPTP (319/320)" {
+  style: { stroke: "#2ecc71"; stroke-width: 3 }
+}
+
+# Physical layer connections
+Level_1_2.plc_p -> Level_0.sensors: "Analog/Digital I/O"
+Level_1_2.plc_s -> Level_0.sensors
+Level_1_2.rtu_node -> Level_0.actuators: "Remote I/O"
+
+Level_0.sis -> Level_0.actuators: "Absolute Override" { style: { stroke: "red"; stroke-width: 3 } }

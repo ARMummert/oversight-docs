@@ -1,0 +1,42 @@
+---
+title: "OverSight ICS: Control Authority & Override Hierarchy"
+---
+graph TD
+    subgraph L0_Physical [Level 0: Physical Field]
+        Field[Field Devices & Actuators]
+    end
+
+    subgraph L1_Hardwired [Level 1: Hardware Safety & Override]
+        direction LR
+        HOA[Physical Hand-Off-Auto Switches]
+        SIS[Safety Instrumented System / Safety PLC]
+
+        HOA -->|Direct Hardware Interrupt| Field
+        SIS -->|Independent Trip Path| Field
+    end
+
+    subgraph L2_Deterministic [Level 2: Control Logic]
+        PLC[Standard PLC Logic / PID]
+        Interlock[Hardwired/Firmware Interlocks]
+
+        Interlock --> PLC
+        PLC -->|Command Signal| SIS
+    end
+
+    subgraph L35_Oversight [Level 3.5: AI & Security Layer]
+        AI[LangGraph Cognitive Agent]
+        MFA{Operator MFA / Sign-off}
+        Buffer[Command Validation Buffer]
+
+        AI -->|Proposed Intent| Buffer
+        Buffer -->|Critical Command| MFA
+        MFA -->|Approved| PLC
+        Buffer -->|Non-Critical| PLC
+    end
+
+    %% Styling for Authority
+    style SIS fill:#d63031,stroke:#fff,stroke-width:4px,color:#fff
+    style HOA fill:#d63031,stroke:#fff,stroke-width:4px,color:#fff
+    style AI fill:#2d3436,stroke:#74b9ff,stroke-width:2px,color:#fff
+    style Field fill:#ffffff,stroke:#333,color:#000
+    style MFA fill:#fdcb63,stroke:#333,color:#000

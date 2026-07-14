@@ -1,0 +1,40 @@
+flowchart TD
+    %% Entry Point
+    Start([Signed Command Intent]) --> RBAC_Gate{RBAC Verified?}
+
+    %% RBAC Check (Prerequisite)
+    RBAC_Gate -- No --> Deny[Access Denied: Unauthorized Role]
+    RBAC_Gate -- Yes --> ABAC_Engine[ABAC Policy Enforcement Point]
+
+    %% ABAC Attribute Evaluation Subgraphs
+    subgraph System_State_Attributes [System State Context]
+        Z_Score{Z-Score > 5?}
+        Plant_Mode{Plant Mode == Normal?}
+    end
+
+    subgraph Resource_Attributes [Resource Integrity]
+        Forbidden_Reg{Is Target in Forbidden Register List?}
+        Resource_ID[Verify PLC Tag Mapping]
+    end
+
+    %% Flow through ABAC Gates
+    ABAC_Engine --> Z_Score
+    Z_Score -- Yes --> Safety_Lockout[Trigger Safety Lockout State]
+    Z_Score -- No --> Plant_Mode
+
+    Plant_Mode -- Maintenance --> Manual_Bypass[Divert to Manual Control]
+    Plant_Mode -- Normal --> Forbidden_Reg
+
+    Forbidden_Reg -- Yes --> Security_Alert[Log Security Violation & Halt]
+    Forbidden_Reg -- No --> Resource_ID
+
+    %% Final Execution
+    Resource_ID --> Validation_Success{All Attributes Valid?}
+    Validation_Success -- Yes --> PLC_Execute([Command Sent to PLC])
+    Validation_Success -- No --> Deny
+
+    %% Styling
+    style Safety_Lockout fill:#000,stroke:#333,stroke-width:2px
+    style Security_Alert fill:#000,stroke:#333,stroke-width:2px
+    style PLC_Execute fill:#000,stroke:#333,stroke-width:2px
+    style Start fill:#000,stroke:#333,stroke-width:2px

@@ -1,0 +1,23 @@
+graph TD
+    subgraph Level_3 [Level 3: Cognitive Layer]
+        AI[AI Agent: LangGraph]
+        OP[Human Operator UI]
+    end
+
+    subgraph Level_1_5 [Level 1.5: Arbitration Layer]
+        SUP[Supervisor: Conflict Arbitrator]
+        TS{Write-Access Tokenization}
+    end
+
+    subgraph Level_1 [Level 1: Deterministic Control]
+        PLC[PLC / Field Assets]
+    end
+
+    %% Flow
+    AI -->|Propose Intent| SUP
+    OP -->|Request Change| SUP
+    SUP -->|Bumpless Transfer| TS
+    TS -->|Write Authorization| PLC
+
+    style TS fill:#000,stroke:#6c8ebf,stroke-width:2px
+    style SUP fill:#000,stroke:#6c8ebf,stroke-width:2px

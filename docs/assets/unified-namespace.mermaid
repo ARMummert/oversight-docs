@@ -1,0 +1,71 @@
+---
+title: "OverSight ICS: Unified Namespace (UNS) Hierarchy"
+config:
+    theme: dark
+    themeVariables:
+        fontSize: "16px"
+        fontFamily: "Monserrat"
+    flowchart:
+        useMinimap: true
+        htmlLabels: true
+        diagramPadding: 25
+        padding: 25
+        useMaxWidth: true
+        nodeSpacing: 25
+        rankSpacing: 50
+        curve: cardinal-orthogonal
+---
+flowchart LR
+    Root((UNS_Root)) --> Enterprise[Enterprise: Regional_Utility_Co]
+    Enterprise --> Site[Site: Wastewater_Plant_01]
+
+    subgraph Area_1 [Area: Lift_Station_01]
+        Site --> Pump_01[Asset: Pump_01]
+        Site --> Pump_02[Asset: Pump_02]
+        Site --> System_Health[Virtual: Area_Analytics]
+
+        subgraph Pump_01_Nodes [Data Tree: Pump_01]
+            Pump_01 --> Meta[Metadata]
+            Pump_01 --> Status[Status_&_Authority]
+            Pump_01 --> Telemetry[Telemetry]
+            Pump_01 --> AI_Insights[AI_Reasoning]
+            Pump_01 --> Cmds[Commands]
+
+            Meta --> Pump_Manufacturer[Pump Manufacturer: Goulds_3196]
+            Meta --> Pump_Model[Pump Model: 3196_i_Frame]
+            Meta --> Controller_Manufacturer[Controller Manufacturer: Allen-Bradley]
+            Meta --> Controller_Model[Controller Model: ControlLogix_5570]
+            Meta --> Motor_VFD_Brand[Motor/VFD Brand: PowerFlex_755]
+
+            Status --> Auth[Control_Authority: AI / Local / SCADA]
+            Status --> Quality[Data_Quality: Good / Bad / Stale]
+            Status --> Heartbeat[Last_Updated_Timestamp]
+
+            Telemetry --> Vib[Vibration_Inches_Sec]
+            Telemetry --> Flow[Flow_Rate_GPM]
+            Telemetry --> Current[Amperage_Draw]
+
+            AI_Insights --> Z[Z_Score_Vibration]
+            AI_Insights --> Health[Predictive_Health_Percent]
+
+            Cmds --> Remote_Start[Remote_Start_Stop]
+            Cmds --> Reset[Fault_Reset]
+            Cmds --> Failover[Request_Failover_to_P02]
+        end
+    end
+
+    Enterprise --> Global_Policy[Global_Safety_Policies]
+
+    classDef root fill:#2d3436,color:#fff,stroke-width:4px;
+    classDef site fill:#dfe6e9,stroke:#2d3436,stroke-width:2px,color:#2d3436;
+    classDef asset fill:#0984e3,color:#fff,font-weight:bold;
+    classDef safety fill:#fdcb6e,stroke:#333;
+    classDef brain fill:#6c5ce7,color:#fff;
+    classDef command fill:#d63031,color:#fff;
+
+    class Root root;
+    class Site site;
+    class Pump_01,Pump_02 asset;
+    class Status,Auth,Quality,Heartbeat safety;
+    class AI_Insights,Z,Health brain;
+    class Cmds,Remote_Start,Reset,Failover command;

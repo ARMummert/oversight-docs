@@ -1,0 +1,33 @@
+---
+title: The Unified Namespace & Streaming Backbone - Cognitive Observation & Execution Loop
+---
+
+flowchart TD
+    subgraph OT_Data [Field Level]
+        PLC[PLC Tags]
+    end
+
+    OT_Data -->|Raw Data| NI[Northbound Ingest]
+
+    subgraph UNS [The Unified Namespace]
+        direction TB
+        MQTT[(MQTT Broker)]
+        KAFKA[[Kafka Event History]]
+        NI -->|Sparkplug B| MQTT
+        MQTT <--> KAFKA
+    end
+
+    subgraph Speed_Layer [Serving Layer]
+        REDIS[(Redis Hot Cache)]
+    end
+
+    subgraph Consumers [UNS Consumers]
+        FLINK{Flink Conditioning}
+        AGENT[LangGraph Agent]
+        UI[Dashboard]
+    end
+
+    KAFKA --> FLINK
+    FLINK -->|Conditioned Insights| REDIS
+    REDIS -->|Instant State| AGENT
+    REDIS -->|WebSocket Stream| UI

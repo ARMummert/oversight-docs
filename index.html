@@ -169,14 +169,14 @@
 <h3 id="level-35-industrial-middleware-ai-driven-asset-orchestration">Level 3.5 Industrial Middleware | AI-Driven Asset Orchestration<a class="headerlink" href="#level-35-industrial-middleware-ai-driven-asset-orchestration" title="Permanent link"></a></h3>
 <h3 id="project-status-in-development">Project Status: <em>In Development</em><a class="headerlink" href="#project-status-in-development" title="Permanent link"></a></h3>
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link"></a></h2>
-<p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
+<p>Oversight ICS is a scalable, real-time, event-driven distributed system that uses AI Agents to orchestrate complex 
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
-Reliability Layer for <strong>Distributed Control Systems (DCS), Programmable Logic Controllers (PLCs), Remote Terminal Units 
-(RTUs), and Rotating Equipment.</strong> The system doesn&rsquo;t replace the primary control hardware, it just supervises it. It 
-maintains a <strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through 
-<strong>NATS JetStream</strong> and <strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor,
-Oversight has continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger 
-automated failovers before physical hardware fails.</p>
+Reliability Layer for <strong>Programmable Logic Controllers (PLCs), Remote Terminal Units(RTUs), and Rotating Equipment.</strong> 
+The Oversight system doesn&rsquo;t replace the primary control hardware, it just supervises it. It maintains a 
+<strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through <strong>NATS JetStream</strong> and
+<strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor, Oversight maintains 
+continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger automated 
+failovers before physical hardware fails.</p>
 <p>Oversight implements strict decoupling from <strong>Safety Instrumented Systems (SIS)</strong> to guarantee that AI-driven 
 reliability interventions never compromise hard-coded safety interlocks. The system relies on a <strong>Command Query 
 Responsibility Segregation</strong> streaming architecture that uses a single instance of NATS JetStream with Bytewax for 
@@ -194,19 +194,25 @@ change from the physical feedback loop.</p>
 </ul>
 <h2 id="software-engineering-tech-stack">Software Engineering &amp; Tech Stack<a class="headerlink" href="#software-engineering-tech-stack" title="Permanent link"></a></h2>
 <p>Oversight ICS is built using a modern, event-driven microservices architecture optimized for edge deployments in 
-physical industrial environments.
-- <strong>Stream Processing:</strong> Bytewax
-- <strong>UNS &amp; Command Spine:</strong> NATS JetStream
-- <strong>Orchestration:</strong> LangGraph, local Phi-4 / Gemini 3.5 Flash
-- <strong>Database:</strong> TimescaleDB
-- <strong>Vector Database:</strong> pgVector
-- <strong>In-Memory Cache:</strong> Redis
-- <strong>Backend/API:</strong> FastAPI (Python)
-- <strong>Security &amp; Hardware:</strong> TPM 2.0 Hardware Notary, RS256 JWTs, Dual-NIC Edge IPC, Level 1.5 Arbitrator, Nginx Perimeter
-  Gateway, Cgroup Resource Isolation, Cryptographic Notary Buffers
-- <strong>Containerization &amp; Orchestration:</strong> Docker Compose, GitHub Actions CI/CD, Linux Cgroups, Systemd Watchdogs
-- <strong>Monitoring &amp; Observability:</strong> Prometheus, Grafana, Loki (for air-gapped safety fallback engine), WORM-based Audit 
-  Logs, Immutable Historian</p>
+physical industrial environments.</p>
+<ul>
+<li>
+<p><strong>Stream Processing:</strong> Bytewax</p>
+</li>
+<li>
+<p><strong>UNS &amp; Command Spine:</strong> NATS JetStream</p>
+</li>
+<li><strong>Orchestration:</strong> LangGraph, local Phi-4 / Gemini 3.5 Flash</li>
+<li><strong>Database:</strong> TimescaleDB</li>
+<li><strong>Vector Database:</strong> pgVector</li>
+<li><strong>In-Memory Cache:</strong> Redis</li>
+<li><strong>Backend/API:</strong> FastAPI (Python)</li>
+<li><strong>Security &amp; Hardware:</strong> TPM 2.0 Hardware Notary, RS256 JWTs, Dual-NIC Edge IPC, Level 1.5 Arbitrator, Nginx Perimeter
+  Gateway, Cgroup Resource Isolation, Cryptographic Notary Buffers</li>
+<li><strong>Containerization &amp; Orchestration:</strong> Docker Compose, GitHub Actions CI/CD, Linux Cgroups, Systemd Watchdogs</li>
+<li><strong>Monitoring &amp; Observability:</strong> Prometheus, Grafana, Loki (for air-gapped safety fallback engine), WORM-based Audit 
+  Logs, Immutable Historian</li>
+</ul>
 <h2 id="installation-local-development">Installation &amp; Local Development<a class="headerlink" href="#installation-local-development" title="Permanent link"></a></h2>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link"></a></h3>
 <ul>
@@ -335,7 +341,7 @@ the Level 5 for RAG ingestion) and sanitizes it before it reaches the AI Agent.<
     Queue</strong> and <strong>Bytewax Streaming Engine</strong> execution path is sub-100 ms, it is designed to operate within a 
     500 ms supervisory safety watchdog window and does not replace Level 1 deterministic control loops.</li>
 <li><strong>Direct Cloud Control</strong>: No control or write command path exists from the Cloud (Level 5) to the Field (Level 0-2). 
-    All commands must be validated, authenticated and executed locally at the IDMZ/Edge (Level 3.5).</li>
+    All commands must be validated, authenticated, and executed locally at the IDMZ/Edge (Level 3.5).</li>
 <li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
     autonomous system modifications</li>
 </ul>
@@ -537,5 +543,5 @@ and for the specific safety protocols see <a href="/docs/fat/FAT-03-safety_and_s
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-08-10 22:22:16.188108+00:00
+Build Date UTC : 2026-08-10 22:26:16.670061+00:00
 -->

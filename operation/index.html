@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Operational Playbook - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Operational Playbook";
+        var mkdocs_page_input_path = "operation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Operational Playbook</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="operational-playbook">Operational Playbook<a class="headerlink" href="#operational-playbook" title="Permanent link"></a></h1>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">[User]</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">[Manager]</td>
+</tr>
+</tbody>
+</table>
+<p>This document defines the Standard Operating Procedures (SOP) for plant operators and shift supervisors interacting with the OverSight ICS dashboard.</p>
+<h2 id="1-alert-triage-interpretation">1. Alert Triage &amp; Interpretation<a class="headerlink" href="#1-alert-triage-interpretation" title="Permanent link"></a></h2>
+<p>OverSight categorizes asset health based on statistical drift ($Z$-Score). Use the following table to determine the severity of an incident.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">State</th>
+<th style="text-align: left;">$Z$-Score</th>
+<th style="text-align: left;">HMI Color</th>
+<th style="text-align: left;">System Action</th>
+<th style="text-align: left;">Operator Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Nominal</strong></td>
+<td style="text-align: left;">$&lt; 1.5$</td>
+<td style="text-align: left;">Green</td>
+<td style="text-align: left;">Background Monitoring</td>
+<td style="text-align: left;">None. Process is stable.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Drift</strong></td>
+<td style="text-align: left;">$1.5 - 3.0$</td>
+<td style="text-align: left;">Amber</td>
+<td style="text-align: left;">Agentic Reasoning Active</td>
+<td style="text-align: left;">Review drafted plan &amp; RAG citations.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Critical</strong></td>
+<td style="text-align: left;">$\ge 3.0$</td>
+<td style="text-align: left;">Red</td>
+<td style="text-align: left;"><strong>Autonomous Failover</strong></td>
+<td style="text-align: left;">Immediate physical verification.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-standard-operating-procedure-sop-red-alert">2. Standard Operating Procedure (SOP): Red Alert<a class="headerlink" href="#2-standard-operating-procedure-sop-red-alert" title="Permanent link"></a></h2>
+<p>When a <strong>Critical Failover</strong> is initiated, the system follows the <strong>Pessimistic Confirmation Loop</strong>.</p>
+<ol>
+<li><strong>Acknowledge Alarm</strong>: Silence the audible siren on the HMI to confirm you are aware of the incident.</li>
+<li><strong>Review Reasoning Trace</strong>: Open the &ldquo;Incident Card&rdquo; on the dashboard. Review the RAG-sourced citations (e.g., <em>&ldquo;Manual Pg. 45: Current spike indicates impeller blockage&rdquo;</em>) to understand the AI&rsquo;s &ldquo;Why.&rdquo;</li>
+<li><strong>Validate Physical State</strong>: </li>
+<li>Observe the <strong>Process Variable (PV)</strong> (e.g., Flow Rate, Pressure).</li>
+<li>Confirm the Standby Asset is &ldquo;Running&rdquo; and the Primary Asset is &ldquo;Stopped.&rdquo;</li>
+<li><strong>Closing the Loop</strong>: Once physical stability is confirmed, click <strong>&ldquo;Finalize Handover&rdquo;</strong>. This archives the LangGraph state and marks the incident as resolved.</li>
+</ol>
+<h2 id="3-manual-override-kill-switch">3. Manual Override &amp; Kill-Switch<a class="headerlink" href="#3-manual-override-kill-switch" title="Permanent link"></a></h2>
+<p>In the event of logic drift or &ldquo;Semantic Firewall&rdquo; rejection, use the following tiered override procedures:</p>
+<h3 id="software-override-level-1">Software Override (Level 1)<a class="headerlink" href="#software-override-level-1" title="Permanent link"></a></h3>
+<p>Toggle the <strong>&ldquo;Agent Authority&rdquo;</strong> switch to <strong>OFF</strong> on the Dashboard. This immediately kills the CDC Relay service, preventing the Agent from committing any new &ldquo;Intents&rdquo; to the Southbound Driver.</p>
+<h3 id="hardware-override-level-2">Hardware Override (Level 2)<a class="headerlink" href="#hardware-override-level-2" title="Permanent link"></a></h3>
+<p>Physically move the <strong>Hand-Off-Auto (HOA)</strong> switch on the local motor starter cabinet to <strong>HAND</strong> or <strong>OFF</strong>. This physically breaks the control circuit from the PLC, rendering OverSight (and the PLC) unable to command the equipment.</p>
+<h1 id="sop-id-process-name">SOP-[ID]: [Process Name]<a class="headerlink" href="#sop-id-process-name" title="Permanent link"></a></h1>
+<p><strong>Revision</strong>: 1.0 | <strong>Author</strong>: Amy Mummert | <strong>Criticality</strong>: [High/Medium/Low]</p>
+<h2 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h2>
+<p>A brief sentence explaining <em>why</em> this procedure exists.</p>
+<h2 id="2-prerequisites-safety">2. Prerequisites &amp; Safety<a class="headerlink" href="#2-prerequisites-safety" title="Permanent link"></a></h2>
+<ul>
+<li><strong>LOTO</strong>: Lock-Out Tag-Out requirements.</li>
+<li><strong>PPE</strong>: Personal Protective Equipment needed.</li>
+<li><strong>System State</strong>: Does the machine need to be stopped first?</li>
+</ul>
+<h2 id="3-step-by-step-execution">3. Step-by-Step Execution<a class="headerlink" href="#3-step-by-step-execution" title="Permanent link"></a></h2>
+<ol>
+<li><strong>[Action Verb]</strong> [Subject] [Details].</li>
+<li><strong>[Action Verb]</strong> [Subject] [Details].</li>
+</ol>
+<h2 id="4-verification">4. Verification<a class="headerlink" href="#4-verification" title="Permanent link"></a></h2>
+<p>How do I know I did it right? (e.g., &ldquo;Verify green light on HMI&rdquo;).</p>
+<h2 id="5-emergency-contacts">5. Emergency Contacts<a class="headerlink" href="#5-emergency-contacts" title="Permanent link"></a></h2>
+<p>Who to call if this doesn&rsquo;t work.</p>
+<p>Governance &amp; Compliance
+This playbook is governed by the broader <strong>Operational Security Procedures</strong> required for ISO 27001 and IEC 62443 compliance. </p>
+<ul>
+<li><strong>Access Reviews</strong>: Service account audits are performed quarterly per the <a href="../operational_procedures/#1-access-review-schedule">Access Review Schedule</a>.</li>
+<li><strong>Physical Security</strong>: Cabinet tamper alerts are handled as <code>SECURITY_PRIORITY_1</code> events.</li>
+<li><strong>Asset Registry</strong>: For a full list of data owners and classifications, see the <a href="../operational_procedures/#2-information-asset-register">Information Asset Register</a>.</li>
+</ul>
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

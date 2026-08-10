@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Telemetry Database Schema - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Telemetry Database Schema";
+        var mkdocs_page_input_path = "telemetry_database_schema.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Telemetry Database Schema</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="telemetry-database-schema">Telemetry Database Schema<a class="headerlink" href="#telemetry-database-schema" title="Permanent link"></a></h1>
+<h3 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h3>
+<p>This document defines the relational and time-series database schema for the Oversight ICS data layer. It is optimized
+for high-ingest rates (&gt; 10,000 points/sec) and sub-second similarity searches for AI Grounding.</p>
+<h3 id="2-infrastructure-requirements">2. Infrastructure Requirements<a class="headerlink" href="#2-infrastructure-requirements" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Engine</strong> PostgreSQL 16+</li>
+<li><strong>Extensions</strong>: </li>
+<li><code>TimescaleDB</code> (time-series optimization) for telemetry</li>
+<li><code>pgVector</code> (semantic vector storing) for RAG embeddings</li>
+<li><code>pgcrypto</code> (UUID generation) and cryptographic hashing for intent justification</li>
+</ul>
+<pre><code class="language-POSTGRESQL">-- Initial Setup
+CREATE EXTENSION IF NOT EXISTS &quot;timescaledb&quot; CASCADE; -- TimescaleDB extension for time-series optimizations
+CREATE EXTENSION IF NOT EXISTS &quot;pgcrypto&quot;; -- Provides UUID generation logic
+CREATE EXTENSION IF NOT EXISTS &quot;vector&quot;; -- Provides the VECTOR data type for RAG
+</code></pre>
+<h3 id="3-telemetry-hypertable">3. Telemetry Hypertable<a class="headerlink" href="#3-telemetry-hypertable" title="Permanent link"></a></h3>
+<p>This is the core time-series table for storing raw telemetry data from field assets. Timescale&rsquo;s hypertable
+architecture allows Oversight ICS to efficiently manage high-velocity data as the database grows to millions of rows.</p>
+<pre><code class="language-POSTGRESQL">-- Main Telemetry Table
+CREATE TABLE telemetry (
+    time TIMESTAMPTZ NOT NULL,
+    asset_id VARCHAR(50) NOT NULL,        -- Links to the UNS Asset Name
+    tag_name VARCHAR(100) NOT NULL,       -- e.g., 'discharge_pressure'
+    value DOUBLE PRECISION NOT NULL,      -- Numeric value of the telemetry point
+    quality INT DEFAULT 192               -- OPC-UA Quality Bit (192 = Good)
+);
+
+-- Convert to Hypertable partitioned by time
+SELECT create_hypertable('telemetry', 'time');
+
+-- Create index for rapid retrieval
+CREATE INDEX ON telemetry (asset_id, time DESC);
+</code></pre>
+<h3 id="4-rag-vector-table-knowledge-base">4. RAG Vector Table (Knowledge Base)<a class="headerlink" href="#4-rag-vector-table-knowledge-base" title="Permanent link"></a></h3>
+<p>This table stores the embedded manual fragments from the technical manuals. Oversight uses <code>pgcrypto's</code> unique 
+constraint capabilities for the integrity of the justification hash.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE knowledge_vector (
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    asset_type  VARCHAR(50) NOT NULL,
+    content     TEXT NOT NULL,  
+    justification_hash CHAR(64) UNIQUE NOT NULL, 
+    metadata    JSONB,       
+    embedding   VECTOR(384) NOT NULL        -- Optimized for MiniLM-L6-v2
+);
+
+-- Semantic search index
+CREATE INDEX ON knowledge_vector USING ivfflat (embedding vector_cosine_ops);
+</code></pre>
+<h3 id="5-intent-outbox-table">5. Intent Outbox Table<a class="headerlink" href="#5-intent-outbox-table" title="Permanent link"></a></h3>
+<p>This table service as the <strong>Technical Contract</strong> between the <strong>Reasoning Agent</strong> and the <strong>Southbound Driver</strong>. Every 
+command must be persisted here before exection.</p>
+<pre><code class="language-POSTGRESQL">
+CREATE TABLE intent_outbox (
+    -- Identity &amp; Status
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    trace_id UUID NOT NULL,
+    schema_version VARCHAR(20) NOT NULL DEFAULT '1.0.0',
+    -- Safety Deadlines &amp; Time Stamps
+    created_at TIMESTAMPTZ DEFAULT now(),
+    expires_at TIMESTAMPTZ NOT NULL,
+    processed_at TIMESTAMPTZ,
+    -- Target &amp; Action
+    asset_id VARCHAR(50) NOT NULL,
+    proposed_intent JSONB NOT NULL,
+    metadata JSONB,
+    -- Safety, Authority &amp; RAG
+    justification_hash TEXT NOT NULL,
+    operator_approval_id VARCHAR(50),
+    signature_tpm TEXT,
+    -- Execution State
+    status VARCHAR(20) DEFAULT 'PENDING',
+    attempt_count INT DEFAULT 0,
+    error_message TEXT,
+    -- Auditing
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50)                           
+);
+-- Index 1: Driver Queue Performance (Finds next valid command)
+CREATE INDEX idx_outbox_driver_queue ON intent_outbox (status, expires_at) WHERE status = 'PENDING';
+
+-- Index 2: Forensic Audit Trail (Reconstructs a specific reasoning path)
+CREATE INDEX idx_outbox_audit_trail ON intent_outbox (trace_id, asset_id);
+CREATE INDEX idx_intent_outbox_pending ON intent_outbox (status) WHERE status = 'PENDING';
+
+</code></pre>
+<h3 id="51-proposed-intent-payload-structure">5.1 Proposed Intent Payload Structure<a class="headerlink" href="#51-proposed-intent-payload-structure" title="Permanent link"></a></h3>
+<p>Every JSON entry in the payload column must adhere to this contract to pass the Semantic Gatekeeper.</p>
+<pre><code class="language-json">{
+  &quot;command_type&quot;: &quot;FAILOVER_SEQUENCE&quot;,
+  &quot;priority&quot;: &quot;HIGH&quot;,
+  &quot;sequence&quot;: [
+    {
+      &quot;step&quot;: 1,
+      &quot;action&quot;: &quot;WRITE_REGISTER&quot;,
+      &quot;address&quot;: &quot;40001&quot;,
+      &quot;value&quot;: 1,
+      &quot;description&quot;: &quot;Start Standby Asset&quot;
+    },
+    {
+      &quot;step&quot;: 2,
+      &quot;action&quot;: &quot;WAIT_FOR_VALUE&quot;,
+      &quot;address&quot;: &quot;40005&quot;,
+      &quot;value&quot;: 60.0,
+      &quot;tolerance&quot;: 0.5,
+      &quot;timeout_ms&quot;: 5000,
+      &quot;description&quot;: &quot;Wait for Standby RPM &gt;= 60Hz&quot;
+    }
+  ],
+  &quot;safety_envelope&quot;: {
+    &quot;max_pressure&quot;: 120.0,
+    &quot;max_current&quot;: 45.0
+  }
+}
+</code></pre>
+<h3 id="6-intent-archive-table">6. Intent Archive Table<a class="headerlink" href="#6-intent-archive-table" title="Permanent link"></a></h3>
+<p>This table is used to store the historical intents that have been successfully executed. It inherits the same schema as
+the <code>intent_outbox</code> table.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE intent_archive (
+    -- Inherits all columns from intent_outbox
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    trace_id UUID NOT NULL,
+    schema_version VARCHAR(20) NOT NULL DEFAULT '1.0.0',
+    created_at TIMESTAMPTZ DEFAULT now(),
+    expires_at TIMESTAMPTZ NOT NULL,
+    processed_at TIMESTAMPTZ,
+    asset_id VARCHAR(50) NOT NULL,
+    proposed_intent JSONB NOT NULL,
+    metadata JSONB,
+    justification_hash TEXT NOT NULL,
+    operator_approval_id VARCHAR(50),
+    signature_tpm TEXT,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    attempt_count INT DEFAULT 0,
+    error_message TEXT,
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50)                           
+);
+
+-- Enable TimescaleDB compression for the archive to save Edge storage
+SELECT create_hypertable('intent_archive', 'created_at');
+ALTER TABLE intent_archive SET (timescaledb.compress, timescaledb.compress_segmentby = 'asset_id');
+</code></pre>
+<h3 id="6-analytical-views">6. Analytical Views<a class="headerlink" href="#6-analytical-views" title="Permanent link"></a></h3>
+<p>To reduce the CPU load on the Reasoning Agent, $Z$-Score logic is moved to a database view.</p>
+<pre><code class="language-POSTGRESQL">CREATE OR REPLACE VIEW asset_health AS
+SELECT 
+    time,
+    asset_id,
+    tag_name,
+    value,
+    -- Time-based window provides consistent Z-Score baselines
+    (value - avg(value) OVER w) / NULLIF(stddev(value) OVER w, 0) AS z_score
+FROM telemetry
+WINDOW w AS (
+    PARTITION BY asset_id, tag_name 
+    ORDER BY time 
+    RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW
+);
+</code></pre>
+<h3 id="7-forbidden-registers-table">7. Forbidden Registers Table<a class="headerlink" href="#7-forbidden-registers-table" title="Permanent link"></a></h3>
+<p>This table is used to store the registers that are strictly forbidden from being written to.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE forbidden_registers (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    asset_id         VARCHAR(50) NOT NULL, 
+    register_address VARCHAR(100) NOT NULL, -- e.g., '40001' or 'PLC_A.Safety_Trip'
+    reason           TEXT NOT NULL,         -- e.g., 'Emergency Stop Bypass'
+    severity_level   INT DEFAULT 5,         -- 1-5 (5 = Absolute Block)
+    created_at       TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_forbidden_lookup ON forbidden_registers (asset_id, register_address);
+</code></pre>
+<h3 id="8-operator-sessions-table">8. Operator Sessions Table<a class="headerlink" href="#8-operator-sessions-table" title="Permanent link"></a></h3>
+<p>This table is used to store the operator sessions which are required to track who is currently authorized to approve
+high-risk intents.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE operator_sessions (
+    operator_id      VARCHAR(50) PRIMARY KEY,
+    session_token    TEXT NOT NULL,         -- Verified MFA Token
+    role             VARCHAR(20) NOT NULL,  -- Lead Engineer, Safety Lead, Operator
+    expires_at       TIMESTAMPTZ NOT NULL,  -- Short-lived authority (e.g., 4 hours)
+    last_action_at   TIMESTAMPTZ DEFAULT now()
+);
+</code></pre>
+<h3 id="9-audit-trail-table">9. Audit Trail Table<a class="headerlink" href="#9-audit-trail-table" title="Permanent link"></a></h3>
+<p>This table is used to store the audit trail of all actions taken by the system.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE audit_trail (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_time TIMESTAMPTZ DEFAULT now(),
+    operator_id VARCHAR(50) NOT NULL,
+    client_ip INET,  -- Network origin
+    action_type VARCHAR(20), -- e.g., `INSERT, UPDATE, DELETE`
+    table_name VARCHAR(50),
+    record_id UUID, -- The ID of the row that was changed
+    old_values JSONB,
+    new_values JSONB,
+    trace_id UUID
+);
+
+CREATE INDEX idx_audit_forensics ON audit_trail (event_time, table_name, record_id);
+</code></pre>
+<h3 id="10-asset-configuration-table">10. Asset Configuration Table<a class="headerlink" href="#10-asset-configuration-table" title="Permanent link"></a></h3>
+<p>This table is used to store the configuration of each asset.</p>
+<pre><code class="language-POSTGRESQL">CREATE TABLE asset_config (
+    asset_id         VARCHAR(50) PRIMARY KEY,
+    unit             VARCHAR(10),
+    min_setpoint     DOUBLE PRECISION,
+    max_setpoint     DOUBLE PRECISION,
+    critical_threshold DOUBLE PRECISION,
+    updated_at       TIMESTAMPTZ DEFAULT now()
+);
+</code></pre>
+<h3 id="11-data-retention-archival-policy">11. Data Retention &amp; Archival Policy<a class="headerlink" href="#11-data-retention-archival-policy" title="Permanent link"></a></h3>
+<p>Partitioning and automated data lifecycle management to prevent unbounded growth.</p>
+<ul>
+<li><strong>Telemetry</strong>: TimescaleDB <code>retention_policy</code> set to 90 days. Older data is compressed or moved to cold storage.</li>
+<li><strong>Intent Outbox</strong>: Rows with <code>status</code> of <code>SUCCESS</code> or <code>FAILED</code> older than 30 days are automatically moved to an
+  <code>intent_archive</code> table to maintain polling performance.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

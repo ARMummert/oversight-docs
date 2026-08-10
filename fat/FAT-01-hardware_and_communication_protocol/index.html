@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>FAT-01: Factory Acceptance Test – Hardware &amp; Communication Protocol - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "FAT-01: Factory Acceptance Test \u2013 Hardware \u0026amp; Communication Protocol";
+        var mkdocs_page_input_path = "fat/FAT-01-hardware_and_communication_protocol.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">FAT-01: Factory Acceptance Test – Hardware &amp; Communication Protocol</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="fat-01-factory-acceptance-test-hardware-communication-protocol">FAT-01: Factory Acceptance Test – Hardware &amp; Communication Protocol<a class="headerlink" href="#fat-01-factory-acceptance-test-hardware-communication-protocol" title="Permanent link"></a></h1>
+<h3 id="project">Project:<a class="headerlink" href="#project" title="Permanent link"></a></h3>
+<p>OverSight ICS | Version: 1.1 | <strong>Lead Engineer</strong>: armummert </p>
+<h3 id="scope">Scope:<a class="headerlink" href="#scope" title="Permanent link"></a></h3>
+<p>This document defines the protocol for validating the physical and logical network integrity, clock synchronization, 
+and telemetry ingest stability of the Industrial IPC and Edge Gateway hardware.</p>
+<h3 id="1-test-environment-setup">1. Test Environment Setup<a class="headerlink" href="#1-test-environment-setup" title="Permanent link"></a></h3>
+<h4 id="11-hardware-requirements">1.1 Hardware Requirements<a class="headerlink" href="#11-hardware-requirements" title="Permanent link"></a></h4>
+<ul>
+<li><strong>Hardware</strong>: Industrial PC (IPC) with fanless chassis and Intel Core i5 (or equivalent) @ 2.4GHz+</li>
+<li><strong>Storage</strong>: 256GB Industrial Grade SSD (SLC/pSLC)</li>
+<li><strong>Memory</strong>: 16GB ECC DDR4 RAM (Minimum)</li>
+<li><strong>Digital I/O</strong>: 1x DIN-Rail mounted Digital Output Module (for HW-06/08 physical relay check)</li>
+<li><strong>Networking</strong>: Dual 1GbE Intel i210/i211 NICs (Required for hardware-level PTP support)</li>
+<li><strong>Network Isolation</strong>: NIC 1 (Northbound / IT) and NIC 2 (Southbound / OT) must be physically connected to independent 
+  subnets.</li>
+<li><strong>Security</strong>: TPM 2.0 Module (Active and Provisioned)</li>
+</ul>
+<h4 id="12-core-software-stack">1.2 Core Software Stack<a class="headerlink" href="#12-core-software-stack" title="Permanent link"></a></h4>
+<p>The following software versions must be verified and locked before testing begins:
+- <strong>Edge Gateway</strong>: v1.0 (TLS 1.3 Enabled)
+- <strong>Southbound Driver</strong>: v1.0.0 (Deterministic C++ Build)
+- <strong>OS</strong>: Linux Mint / Debian 12 (Hardened Kernel - Real-time Kernel <code>PREEMPT_RT</code> preferred)
+- <strong>Containerization</strong>: Docker 24.0+ with Compose v2.20+ for service isolation and virtual networking.</p>
+<h3 id="13-communication-protocol-simulation">1.3 Communication Protocol &amp; Simulation<a class="headerlink" href="#13-communication-protocol-simulation" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Communication Protocol</strong>: Standardized on <strong>JSON over TLS 1.3</strong> (Northbound); <strong>Sparkplug B</strong> / <strong>MQTT</strong> 
+  (Southbound).</li>
+<li><strong>Northbound (NIC 1)</strong>: JSON over TLS 1.3.</li>
+<li><strong>Southbound (NIC 2)</strong>:<ul>
+<li><strong>MQTT</strong>: Sparkplug B for Unified Namespace (UNS).</li>
+<li><strong>OPC-UA</strong>: Binary TCP with Sign &amp; Encrypt (Basic256Sha256).</li>
+<li><strong>EtherNet/IP</strong>: CIP over TCP/UDP for Allen-Bradley asset integration.</li>
+<li><strong>Modbus TCP</strong>: Legacy register access for secondary instrumentation.</li>
+</ul>
+</li>
+<li><strong>Simulation</strong>: Oversight Field Asset Simulator (Fault Injection Module enabled) </li>
+<li><strong>Clock Sync</strong>: PTPd / chrony (configured for L2 PTP Grandmaster)</li>
+</ul>
+<h3 id="2-communication-hardware-test-cases">2. Communication &amp; Hardware Test Cases<a class="headerlink" href="#2-communication-hardware-test-cases" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Test Category</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Pass/Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>HW-01</strong></td>
+<td style="text-align: left;">Port Integrity</td>
+<td style="text-align: left;">Run <code>nmap -sT -p-</code> against NIC 1 and NIC 2.</td>
+<td style="text-align: left;">Only ports 443 (N) and 1883/502/44818 (S) are responsive.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-02</strong></td>
+<td style="text-align: left;">PTP Stability</td>
+<td style="text-align: left;">Monitor clock offset for 30 mins via <code>pmc</code>.</td>
+<td style="text-align: left;">Jitter remains &lt; 1μs; zero synchronization drift.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-03</strong></td>
+<td style="text-align: left;">Ingest Volume</td>
+<td style="text-align: left;">50 tags at 100ms intervals for 1 hour.</td>
+<td style="text-align: left;">100% packet success; zero buffer overflows in logs.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-04</strong></td>
+<td style="text-align: left;">Comms Fault</td>
+<td style="text-align: left;">Physically disconnect NIC 2 (Southbound) cable.</td>
+<td style="text-align: left;">System triggers <code>COMM_LOSS</code> alarm within &lt; 2s.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-05</strong></td>
+<td style="text-align: left;">Cert Security</td>
+<td style="text-align: left;">Connect via Gateway with expired/self-signed cert.</td>
+<td style="text-align: left;">Connection Rejected; log shows <code>AUTH_INVALID_CERT</code>.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-06</strong></td>
+<td style="text-align: left;">Watchdog Trip</td>
+<td style="text-align: left;">Execute <code>kill -STOP</code> on Southbound Driver process.</td>
+<td style="text-align: left;">Physical DO-0 Relay opens (Safe State) within 500ms.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-07</strong></td>
+<td style="text-align: left;">Modbus Security</td>
+<td style="text-align: left;">Spoof Modbus traffic from NIC 1 (Northbound).</td>
+<td style="text-align: left;">Driver drops packet; Firewall logs <code>UNAUTHORIZED_SOURCE</code>.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-08</strong></td>
+<td style="text-align: left;">Power Recovery</td>
+<td style="text-align: left;">Perform Hard Power Cut; Restore Power.</td>
+<td style="text-align: left;">DO-0 remains in Safe State until OS/Driver are initialized.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-09</strong></td>
+<td style="text-align: left;">NIC Isolation</td>
+<td style="text-align: left;">Initiate UDP Broadcast Storm on NIC 1 (IT side).</td>
+<td style="text-align: left;">NIC 2 control latency/jitter (HW-02) remains unaffected.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-10</strong></td>
+<td style="text-align: left;">OPC-UA Secure</td>
+<td style="text-align: left;">Attempt connection with untrusted client cert.</td>
+<td style="text-align: left;">Connection rejected; Audit log records security violation.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-11</strong></td>
+<td style="text-align: left;">EtherNet/IP Stability</td>
+<td style="text-align: left;">Simulate 5% packet loss on EtherNet/IP I/O traffic.</td>
+<td style="text-align: left;">Driver triggers Safe-State within RPI threshold.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-12</strong></td>
+<td style="text-align: left;">Thermal Stress</td>
+<td style="text-align: left;">Run CPU at 100% load for 30 minutes.</td>
+<td style="text-align: left;">No thermal throttling; PTP jitter (HW-02) remains &lt; 5μs.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-13</strong></td>
+<td style="text-align: left;">Disk Health</td>
+<td style="text-align: left;">Verify SSD S.M.A.R.T. status after 24hr soak.</td>
+<td style="text-align: left;">Zero &ldquo;Reallocated Sector&rdquo; counts; &ldquo;Wear Leveling&rdquo; &lt; 1%.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-14</strong></td>
+<td style="text-align: left;">Shielding</td>
+<td style="text-align: left;">Check continuity between NIC housing and ground.</td>
+<td style="text-align: left;">Resistance &lt; 1 Ohm (Ensures EMI protection for OT comms).</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>HW-15</strong></td>
+<td style="text-align: left;">Secure Boot Validation</td>
+<td style="text-align: left;">Alter OS kernel hash to simulate tampering and initiate boot.</td>
+<td style="text-align: left;">Boot process is blocked by TPM 2.0; OS load is prevented.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-hardware-signature-to-be-completed-on-site">3. Hardware Signature (To be completed on-site)<a class="headerlink" href="#3-hardware-signature-to-be-completed-on-site" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Manufacturer / Model</th>
+<th style="text-align: left;">Serial Number / Asset ID</th>
+<th style="text-align: left;">Firmware/BIOS Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Industrial IPC</strong></td>
+<td style="text-align: left;">(e.g., Advantech/OnLogic)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>NIC 1 (North)</strong></td>
+<td style="text-align: left;">Intel i210/211</td>
+<td style="text-align: left;">MAC:</td>
+<td style="text-align: left;">(Driver Version)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>NIC 2 (South)</strong></td>
+<td style="text-align: left;">Intel i210/211</td>
+<td style="text-align: left;">MAC:</td>
+<td style="text-align: left;">(Driver Version)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Digital I/O</strong></td>
+<td style="text-align: left;">(Modbus/GPIO Mod)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TPM Module</strong></td>
+<td style="text-align: left;">(Integrated/Discrete)</td>
+<td style="text-align: left;">Version: 2.0</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Power Supply</strong></td>
+<td style="text-align: left;">(DIN-rail DC/DC)</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SSD / Storage</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-sign-off">4. Sign-off<a class="headerlink" href="#4-sign-off" title="Permanent link"></a></h3>
+<p><strong>Test Performed By:</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ <strong>Date:</strong> </strong><strong><em>_</em></strong><strong><em>_</em>_<br />
+<strong>Witnessed By:</strong> </strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><em> <strong>Date:</strong> <strong><em>_</em></strong><strong><em>_</em></strong></em></p>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Version release 1.0.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-04-27</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Added HW-15 for TPM Secure Boot Validation</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

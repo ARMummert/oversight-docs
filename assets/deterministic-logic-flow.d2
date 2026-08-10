@@ -1,0 +1,131 @@
+
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+# Define Conduits (Firewalls)
+Northbound_FW: Northbound Firewall\n(Level 4/3.5 Barrier) {
+  shape: step
+  style: {
+    fill: red
+    stroke: white
+    font-color: white
+    stroke-width: 2
+  }
+}
+
+Southbound_FW: Southbound Firewall\n(Level 3.5/OT Barrier) {
+  shape: step
+  style: {
+    fill: red
+    stroke: white
+    font-color: white
+    stroke-width: 2
+  }
+}
+
+# Define Nodes & Shapes
+Field_Assets: Field Assets (Level 0-2) {
+  shape: cylinder
+}
+
+START: Ingestion (Northbound Service) {
+  shape: circle
+}
+
+Analyze: Analyze Telemetry
+
+DriftCheck: Z-Score Drift? {
+  shape: diamond
+}
+
+Propose: Propose Intent (LangGraph)
+
+Operator_HMI: Operator Dashboard (Level 4) {
+  shape: rectangle
+}
+
+HumanAuth: Pessimistic Confirmation {
+  shape: diamond
+}
+
+Arbitrator: Arbitrator Token Check (Level 1.5)
+
+Gatekeeper: Validate Gatekeeper {
+  shape: diamond
+  style: {
+    fill: black
+    stroke: white
+    stroke-width: 2
+  }
+}
+
+TPM: TPM 2.0 Intent Signer (Level 1.5)
+
+Execute: Execute Intent (Southbound Driver) {
+  style: {
+    fill: blue
+    stroke: white
+    stroke-width: 2
+  }
+}
+
+Alert: Trigger P1/P2 Alert
+
+Feedback: Verify Physical Feedback Loop
+
+SafeState: Safe State (Hardware Fallback) {
+  style: {
+    fill: red
+    stroke: white
+    stroke-width: 4
+  }
+}
+
+# --- LOGIC FLOW ---
+
+# Telemetry Up (Read Path)
+Field_Assets -> Southbound_FW: Raw Protocols
+Southbound_FW -> START: Allowed Conduits
+START -> Analyze
+Analyze -> DriftCheck
+
+# Loop if no drift
+DriftCheck -> Analyze: Nominal
+
+# Drift detected
+DriftCheck -> Propose: Drift Detected
+
+# Human Authorization via IT Firewall
+Propose -> Operator_HMI: Requests Override
+Operator_HMI -> Northbound_FW: JWT Signature
+Northbound_FW -> HumanAuth: Allowed Traffic
+
+# Validation & Execution (Write Path)
+HumanAuth -> Alert: Rejected
+HumanAuth -> Arbitrator: Approved
+
+Arbitrator -> Alert: Invalid Token
+Arbitrator -> Gatekeeper: Token Verified
+
+Gatekeeper -> Alert: Bounds Denied
+Gatekeeper -> TPM: Bounds Approved
+
+TPM -> Execute: Hardware Signed
+
+# Physical Execution down to OT
+Execute -> Southbound_FW: Signed Payload
+Southbound_FW -> Field_Assets: Validated Write
+
+# Verification Loop
+Field_Assets -> Feedback: Hardware State Change
+Feedback -> START: Success
+Feedback -> SafeState: Timeout/Failure
+
+# Safety Path
+Alert -> SafeState

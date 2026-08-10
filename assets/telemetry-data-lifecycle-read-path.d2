@@ -1,0 +1,110 @@
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: |md
+  # Oversight Telemetry Data Lifecycle - Read Path
+
+| {near: top-center}
+
+level0: Level 0: Physical Process Environment {
+  kinetics: Physical Process Kinetics {
+    description: "The real-world physical processes\n being monitored and controlled."
+  }
+  field: Field Sensors & Actuators {
+    description: "Physical devices measuring process\n variables (temperature, pressure, flow)\nand executing control actions\n (starting a pump or opening a valve)."
+  }
+  kinetics -> field: "Continuously sampled by field sensors."
+}
+level1: Level 1: Local Automation Core {
+  io: I/O Modules {
+    description: "Interface modules that connect\n field sensors and actuators to the PLC,\nhandling signal conditioning and isolation."
+  }
+  plc: PLCs & Sensors {
+    description: "Physical assets generating raw telemetry data\nin the form of register values and sensor readings.\n\nPrimary controller (PLC_P), Cyclic Scan Loops]\nRead/Write Registers."
+  }
+  registers: Raw Tag Registers {
+    shape: cylinder
+    description: "Data collection where raw\ntelemetry is exposed for polling.\n\nIncludes Industrial Protocol Wrappers,\nModbus/TCP Master-Slave polling,\nEthernet/IP CIP Tag Sessions, or\nOPC-UA monitored item pushes."
+  }
+  io -> plc: "PLC_P pulls telemetry from I/O Modules"
+  plc -> registers: "Commits to memory"
+}
+firewall4: Firewall 4: Level 1 to Level 2 DMZ {
+  description: "Network boundary enforcing strict protocol\n and data flow controls between the local\n automation core and the operations network."
+}
+firewall2: Firewall 2: Ops/HMI Boundary {
+  description: "Stateful inspection between\n local control assets and site core."
+}
+level2: Level 2: Local HMI Assets {
+  local_hmi: Local Operator Station
+}
+level3: Level 3: Operational Site Core - CQRS Architecture {
+  northbound: Northbound Ingest {
+    description: "Signal normalizer - Packets parsed and serialized\n into Sparkplug B MQTT Schema"
+  }
+  nats: NATS JetStream - Logical UNS Stream {
+    description: "Event backbone that establishes the\nUnified Namespace (UNS) architecture.\n\nImmutable Append-Only Log."
+  }
+  bytewax: Bytewax Stream Processor {
+    description: "Processes time-series telemetry frames\n to compute windowed statistical\n Z-Scores for anomaly detection."
+  }
+  redis: Redis Hot State Cache {
+    shape: cylinder
+    description: "Tracks live operational variables with sub-millisecond\nlookups for instant application parsing."
+  }
+  timescale: TimescaleDB Historian {
+    shape: cylinder
+    description: "Maintains an unalterable chronological log\n of facility performance summaries and analytics."
+  }
+}
+firewall3: Firewall 3: Lower IDMZ Wall {
+  description: "Stateful Outbound Only"
+}
+level35: Level 3.5: IDMZ Cognitive Zone {
+  cognitive_agent: LangGraph Cognitive Agent {
+    description: "Stateful Evaluation Loop\n\nCognitive agent that performs\n predictive analysis and failover proposal\n generation based on ingested\n telemetry and RAG context."
+  }
+  pgvector: pgvector Local RAG Context Database {
+    shape: cylinder
+    description: "Vector database storing embedded\n representations of asset documentation,\noperational limits, and historical\n incident reports for RAG retrieval."
+  }
+}
+level4: Level 4: Business Logisitics & Analytics {
+  erp: ERP (Enterprise Resource Planning) & Analytics {
+    description: "Operational performance summaries\n and analytics pushed out-of-band\n for enterprise consumption."
+  }
+}
+firewall1: Firewall 1: Corporate IT Edge {
+  description: "Boundary enforcing strict controls\n on data leaving the operations network\n towards enterprise systems."
+}
+level5: Level 5: Enterprise & Cloud {
+  corporate_erp: Corporate ERP & Analytics {
+    description: "Global corporate management system\n tracking fleet logistics, big-data summaries,\n and transactional metrics."
+  }
+}
+
+# Connections
+level1.registers -> firewall4: "Modbus/TCP, Ethernet/IP, OPC-UA Data Transit"
+level0 -> level1: "Physical to Digital Transition\n(Level 0 to Level 1 Boundary)"
+firewall4 -> level3.northbound: "Forward allowed industrial packets for normalization."
+level3.northbound -> level3.nats: "Publishes normalized telemetry to NATS JetStream."
+level3.nats -> level3.bytewax: "Bytewax stream workers consume the telemetry from JetStream."
+
+# Firewall 2 Connection
+level3.nats -> firewall2: "Pub/Sub Telemetry Mirror"
+firewall2 -> level2.local_hmi: "Filtered Local Monitoring"
+
+level3.bytewax -> level3.redis: "Updates hot state\n cache with latest\n telemetry and Z-Scores."
+level3.bytewax -> level3.timescale: "Appends historical\n telemetry & analytics\n to TimescaleDB."
+level3.redis -> firewall3: "Secure Stateful Outbound Connection."
+firewall3 -> level35.cognitive_agent: "Asynchronous Polling of Hot State Cache for Analysis."
+level35.cognitive_agent -> level35.pgvector: "Anomaly Found? Pull repair context & baseline maps."
+level3.timescale -> level4.erp: "Pushes batched performance and log summaries out-of-band."
+level4.erp -> firewall1: "Pushes clean data batches."
+firewall1 -> level5.corporate_erp: "Data Ingress for Corporate\n Analytics and Reporting."

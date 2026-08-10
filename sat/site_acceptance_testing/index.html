@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>OverSight ICS: Site Acceptance Test (SAT) Protocol (v1) - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS: Site Acceptance Test (SAT) Protocol (v1)";
+        var mkdocs_page_input_path = "sat/site_acceptance_testing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS: Site Acceptance Test (SAT) Protocol (v1)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-site-acceptance-test-sat-protocol-v1">OverSight ICS: Site Acceptance Test (SAT) Protocol (v1)<a class="headerlink" href="#oversight-ics-site-acceptance-test-sat-protocol-v1" title="Permanent link"></a></h1>
+<p><strong>Project:</strong> OverSight ICS Field Commissioning<br />
+<strong>Security Level:</strong> Level 3.5 IDMZ<br />
+<strong>Reference Document:</strong> <a href="/docs/COMMISSIONING.md">COMMISSIONING.md</a></p>
+<h2 id="1-scope-of-validation">1. Scope of Validation<a class="headerlink" href="#1-scope-of-validation" title="Permanent link"></a></h2>
+<p>This SAT Protocol serves as the final gateway before the system is permitted to enter <strong>Active Control</strong> mode on production field assets. It verifies that the Edge Gateway&rsquo;s theoretical safety models (RAG, Z-Scores) align with the physical realities of the plant floor.</p>
+<h2 id="2-infrastructure-time-sync-sat-01">2. Infrastructure &amp; Time-Sync (SAT-01)<a class="headerlink" href="#2-infrastructure-time-sync-sat-01" title="Permanent link"></a></h2>
+<p><em>Prerequisite: PTP Grandmaster must be active on Level 2 OT Network.</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Pass/Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">Verify PTP Lock</td>
+<td style="text-align: left;"><code>ptp4l</code> reports a steady lock with &lt; 500ns offset.</td>
+<td style="text-align: left;">[ ]</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">Failover Test</td>
+<td style="text-align: left;">Disconnect Primary PTP Clock.</td>
+<td style="text-align: left;">System fails over to Local Rubidium Oscillator; no heartbeat loss.</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.3</td>
+<td style="text-align: left;">WORM Check</td>
+<td style="text-align: left;">Attempt to delete a log entry via CLI.</td>
+<td style="text-align: left;">System returns &ldquo;Operation Not Permitted&rdquo; (WORM Integrity).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-operational-safety-control-sat-02">3. Operational Safety &amp; Control (SAT-02)<a class="headerlink" href="#3-operational-safety-control-sat-02" title="Permanent link"></a></h2>
+<p><em>Prerequisite: Field Assets must be in a steady &ldquo;Nominal&rdquo; state.</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Pass/Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">2.1</td>
+<td style="text-align: left;">Bumpless Transfer</td>
+<td style="text-align: left;">Toggle from <strong>Passive</strong> to <strong>Active</strong> mode.</td>
+<td style="text-align: left;">PID Integral initialized to current output; no process bump.</td>
+</tr>
+<tr>
+<td style="text-align: left;">2.2</td>
+<td style="text-align: left;">Forbidden Write</td>
+<td style="text-align: left;">Attempt to write to a &ldquo;Speed-Lock&rdquo; register.</td>
+<td style="text-align: left;"><code>403 FORBIDDEN_SOFTWARE_TAGOUT</code> returned; PLC value unchanged.</td>
+</tr>
+<tr>
+<td style="text-align: left;">2.3</td>
+<td style="text-align: left;">Z-Score Drift</td>
+<td style="text-align: left;">Simulate a 10% flow transient.</td>
+<td style="text-align: left;">HMI triggers &ldquo;Real-Time Drift&rdquo; alert within &lt; 2 seconds.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-security-dual-auth-sat-03">4. Security &amp; Dual-Auth (SAT-03)<a class="headerlink" href="#4-security-dual-auth-sat-03" title="Permanent link"></a></h2>
+<p><em>Prerequisite: Primary and Secondary operator accounts must be provisioned.</em></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Expected Result</th>
+<th style="text-align: left;">Pass/Fail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">3.1</td>
+<td style="text-align: left;">Self-Approval Block</td>
+<td style="text-align: left;">Primary Operator attempts to approve their own High-Impact CR.</td>
+<td style="text-align: left;">API returns <code>401 ERROR_INVALID_DUAL_AUTH</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">3.2</td>
+<td style="text-align: left;">LOTO Hardware</td>
+<td style="text-align: left;">Flip the physical &ldquo;Hand/Local&rdquo; switch at the PLC cabinet.</td>
+<td style="text-align: left;">API returns <code>403 FORBIDDEN_HARDWARE_LOTO</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">3.3</td>
+<td style="text-align: left;">IDMZ Isolation</td>
+<td style="text-align: left;">Attempt to <code>ping</code> a NIC 2 (OT) address from the Business Network (IT).</td>
+<td style="text-align: left;">Request times out; no bridging detected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-final-acceptance-evidence">5. Final Acceptance &amp; Evidence<a class="headerlink" href="#5-final-acceptance-evidence" title="Permanent link"></a></h2>
+<p>The following evidence must be attached to this protocol for final sign-off:
+1. <strong>PTP Sync Logs</strong> (60-minute stable window).
+2. <strong>SHA-256 Integrity Report</strong> from the Auditor Agent.
+3. <strong>FMEA Alignment Report</strong> signed by the Safety Lead.</p>
+<h3 id="authorization-for-live-production">Authorization for Live Production<a class="headerlink" href="#authorization-for-live-production" title="Permanent link"></a></h3>
+<p>I, the undersigned, certify that the OverSight ICS system has been verified against the physical constraints of this site and is authorized for <strong>Active Control</strong> mode.</p>
+<p><strong>Safety Lead Signature:</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ <strong>Date:</strong> </strong><strong><em>_</em>_<br />
+<strong>Plant Manager Signature:</strong> </strong><strong><em>_</em></strong><strong><em>_</em></strong>__ <strong>Date:</strong> <strong><em>_</em></strong>_</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

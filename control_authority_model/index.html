@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Oversight ICS Control Authority Model - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Oversight ICS Control Authority Model";
+        var mkdocs_page_input_path = "control_authority_model.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Oversight ICS Control Authority Model</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-control-authority-model">Oversight ICS Control Authority Model<a class="headerlink" href="#oversight-ics-control-authority-model" title="Permanent link"></a></h1>
+<h2 id="1-purpose-scope">1. Purpose &amp; Scope<a class="headerlink" href="#1-purpose-scope" title="Permanent link"></a></h2>
+<p>The purpose of this document is to govern control authority between the AI Agent, Human Operators, and deterministic 
+logic. The Control Authority Model specifies authority over all field assets (PLCs, VFDs, Actuators, etc.) within the 
+Process Asset ecosystem.</p>
+<h2 id="2-functional-hierarchy">2. Functional Hierarchy<a class="headerlink" href="#2-functional-hierarchy" title="Permanent link"></a></h2>
+<p>According to ISA-95 standard, the Control Authority Model is structured as follows:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Level</th>
+<th style="text-align: left;">Role</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">Enterprise/HMI</td>
+<td style="text-align: left;">High-level monitoring and decision-making interface (Next.js Dashboard).</td>
+</tr>
+<tr>
+<td style="text-align: left;">3.5</td>
+<td style="text-align: left;">Cognitive</td>
+<td style="text-align: left;">The <strong>LangGraph Agent</strong> analyzes telemetry to purpose an intent (e.g., modulating pump speed for predictive maintenance).</td>
+</tr>
+<tr>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">Supervisory</td>
+<td style="text-align: left;">Human Operators provide oversight and can acknowledge or override AI-generated intents via the HMI interface. They have the authority to issue commands directly to field assets when necessary.</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.5</td>
+<td style="text-align: left;">Arbitration</td>
+<td style="text-align: left;">The <strong>Control Authority Model</strong> acts as a gatekeeper, managing the Write-Access Token to so that only one entity has command authority at any given time.</td>
+</tr>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Deterministic</td>
+<td style="text-align: left;">Field Assets (PLCs, VFDs) receive validated commands and execute them against their own hardwired interlocks and PID logic.</td>
+</tr>
+<tr>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Physical</td>
+<td style="text-align: left;">Safety Instrumented Systems (SIS) and Hand-Off-Auto (HOA) switches provide the ultimate authority, capable of physically disconnecting the process from all digital logic in case of emergencies or safety violations.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-command-authority-arbitration-logic">3. Command Authority Arbitration Logic<a class="headerlink" href="#3-command-authority-arbitration-logic" title="Permanent link"></a></h2>
+<h3 id="31-write-access-token">3.1 Write-Access Token<a class="headerlink" href="#31-write-access-token" title="Permanent link"></a></h3>
+<p>To maintain integrity and prevent race conditions (two commands from being executed simultaneously), Oversight uses 
+a <strong>Write-Access Token</strong>.</p>
+<blockquote>
+<p>Write-Access Tokens are cryptographically signed by the TPM (Trusted Platform Module) 2.0 to ensure non-repudiation 
+(proving that a statement was made without any interference from someone else) and secure provenance (recording the 
+origin).</p>
+</blockquote>
+<ul>
+<li><strong>Ownership</strong>: Only one entity (AI Agent or Human Operator) may have a Write-Access Token at any given time.</li>
+<li><strong>Requests</strong>: Authority is requested from the Arbitrator. The Arbitrator evaluates the system state before 
+  granting the token.</li>
+<li><strong>Heartbeat Requirement</strong>: The token holder must maintain a continuous cryptographic heartbeat. If the heartbeat 
+  fails, the token is immediately revoked and the system enters <code>ORPHAN_MODE</code>.</li>
+</ul>
+<h3 id="32-bumpless-transfer-protocol">3.2 Bumpless Transfer Protocol<a class="headerlink" href="#32-bumpless-transfer-protocol" title="Permanent link"></a></h3>
+<p>To prevent mechanical surges and industrial reliability with transitioning authority (e.g., from AI to Human Operator), 
+the system enforces <strong>State Alignment</strong> and <strong>Ramp Constraints</strong>.</p>
+<ul>
+<li><strong>State Alignment</strong>: The entity acquiring authority must synchronize its intended setpoints with real-time 
+  field telemetry before the Token is officially granted.</li>
+<li><strong>Ramp Constraints</strong>: The Arbitrator enforces safety &ldquo;ramps&rdquo; to move parameters to new targets, preventing 
+  mechanical surges.</li>
+</ul>
+<h1 id="control-authority-model-system-operating-modes">Control Authority Model: System Operating Modes<a class="headerlink" href="#control-authority-model-system-operating-modes" title="Permanent link"></a></h1>
+<p>The OverSight ICS uses a structured hierarchy of authority modes to ensure deterministic safety, clear command 
+provenance, and seamless transitions between AI-driven optimization and human-led safety protocols.</p>
+<h2 id="4-authority-mode-matrix">4. Authority Mode Matrix<a class="headerlink" href="#4-authority-mode-matrix" title="Permanent link"></a></h2>
+<p>The following table defines the operational boundaries for each system state. These modes are enforced at <strong>Level 1.5 
+(The Arbitration Layer)</strong>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Token Holder</th>
+<th style="text-align: left;">Command Path</th>
+<th style="text-align: left;">Technical Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>CONTROL_ENABLED</code></td>
+<td style="text-align: left;"><strong>AI Agent</strong></td>
+<td style="text-align: left;">AI → Gateway → Field Asset</td>
+<td style="text-align: left;"><strong>Full Autonomous:</strong> The LangGraph agent holds the active Write-Access Token. Intents are signed by the TPM 2.0 and executed directly.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ADVISORY_MODE</code></td>
+<td style="text-align: left;"><strong>None (Parked)</strong></td>
+<td style="text-align: left;">AI → HMI (Human Approval)</td>
+<td style="text-align: left;"><strong>Human-in-the-Loop:</strong> AI proposes intents; however, the Token is parked at the Arbitrator. Execution requires manual acknowledgment via MFA.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>MONITOR_ONLY</code></td>
+<td style="text-align: left;"><strong>None</strong></td>
+<td style="text-align: left;">Field Asset → AI (Passive)</td>
+<td style="text-align: left;"><strong>Passive Observation:</strong> The system observes telemetry and logs state. The Arbitrator blocks all outbound &ldquo;Intent&rdquo; packets from the AI.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AI_LOCKOUT</code></td>
+<td style="text-align: left;"><strong>Human</strong></td>
+<td style="text-align: left;">HMI → Field Asset</td>
+<td style="text-align: left;"><strong>Manual Digital:</strong> AI is logically severed from the control loop. Only the Operator (Level 3) can issue commands via the SCADA/HMI.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>MAINTENANCE_MODE</code></td>
+<td style="text-align: left;"><strong>Technician</strong></td>
+<td style="text-align: left;">Local Interface (Level 0/1)</td>
+<td style="text-align: left;"><strong>Local Override:</strong> Remote commands (AI or HMI) are blocked. Authority is restricted to local physical interaction at the asset.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ORPHAN_MODE</code></td>
+<td style="text-align: left;"><strong>PLC (Local)</strong></td>
+<td style="text-align: left;">Local Deterministic Logic</td>
+<td style="text-align: left;"><strong>Comm-Loss Fail-Safe:</strong> Triggered by heartbeat loss. AI/HMI are disabled; the PLC reverts to its local, hardcoded safety logic.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SAFETY_LOCKOUT</code></td>
+<td style="text-align: left;"><strong>SIS</strong></td>
+<td style="text-align: left;">Physical Safety Chain</td>
+<td style="text-align: left;"><strong>Critical Trip:</strong> All digital write-access is destroyed. Requires a physical hardware reset after a safety violation or E-Stop event.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>COMMISSIONING_MODE</code></td>
+<td style="text-align: left;"><strong>Shared(Supervised)</strong></td>
+<td style="text-align: left;">AI/HMI → Gateway (Restricted)</td>
+<td style="text-align: left;"><strong>Sandbox Testing</strong>: Commands are permitted but subject to ultra-tight &ldquo;Semantic Gatekeeper&rdquo; constraints and manual per-step validation. TPM 2.0 testing key used to sign packets while verifying new hardware spares.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-logic-enforcement-arbitration-rules">5. Logic Enforcement &amp; Arbitration Rules<a class="headerlink" href="#5-logic-enforcement-arbitration-rules" title="Permanent link"></a></h2>
+<h3 id="51-token-priority-precedence">5.1 Token Priority Precedence<a class="headerlink" href="#51-token-priority-precedence" title="Permanent link"></a></h3>
+<p>The Arbitrator must always prioritize the mode with the lowest <strong>Purdue Level</strong> to ensure safety over automation:
+1. <strong>Priority 1 (Highest):</strong> <code>SAFETY_LOCKOUT</code> / <code>MAINTENANCE_MODE</code> (Level 0).
+2. <strong>Priority 2:</strong> <code>ORPHAN_MODE</code> (Level 1).
+3. <strong>Priority 3:</strong> <code>AI_LOCKOUT</code> (Level 3).
+4. <strong>Priority 4:</strong> <code>MONITOR_ONLY</code> (Level 3).
+5. <strong>Priority 5:</strong> <code>ADVISORY_MODE</code> (Level 3.5).
+6. <strong>Priority 6 (Lowest):</strong> <code>CONTROL_ENABLED</code> (Level 3.5).</p>
+<h3 id="52-immediate-revocation">5.2 Immediate Revocation<a class="headerlink" href="#52-immediate-revocation" title="Permanent link"></a></h3>
+<p>Upon transition to <code>ORPHAN_MODE</code> or <code>SAFETY_LOCKOUT</code>, the Arbitrator is programmed to:
+-   Immediately invalidate the current <strong>Write-Access Token</strong>.
+-   Instruct the <strong>TPM 2.0</strong> to stop all signing operations for AI-generated packets.
+-   Trigger a <strong>Critical Event</strong> log in the TimescaleDB Historian for forensic audit.</p>
+<h2 id="6-hardware-root-of-trust-tpm-20-integration">6. Hardware Root of Trust (TPM 2.0 Integration)<a class="headerlink" href="#6-hardware-root-of-trust-tpm-20-integration" title="Permanent link"></a></h2>
+<p>The <strong>TPM 2.0</strong> acts as the hardware root of trust for all command authorization. The following security measures are 
+enforced:
+-   <strong>Intent Signing:</strong> Every command must be signed by the TPM 2.0 using non-exportable keys.
+-   <strong>Platform Attestation:</strong> The TPM verifies the <strong><a href="/docs/sbom_compliance_report.md">SBOM</a> (Software Bill of Materials)</strong> and platform state before signing.
+-   <strong>Non-Repudiation:</strong> Every command is cryptographically tied to the hardware, creating an immutable audit trail in <strong>TimescaleDB</strong>.</p>
+<h2 id="7-the-override-hierarchy-priority-stack">7. The Override Hierarchy (Priority Stack)<a class="headerlink" href="#7-the-override-hierarchy-priority-stack" title="Permanent link"></a></h2>
+<p>This stack defines which system component has the ultimate authority during a conflict:</p>
+<ol>
+<li><strong>Priority 1 (Absolute): Physical HOA/SIS (Level 0)</strong> - Hardwired switches and safety trips.</li>
+<li><strong>Priority 2: Hardware Root of Trust / TPM (Level 0.5)</strong> - Blocks signing if hardware integrity is compromised.</li>
+<li><strong>Priority 3: Local PLC Safety Logic (Level 1)</strong> – Deterministic local interlocks on the field asset.</li>
+<li><strong>Priority 4: Network Heartbeat / Arbitrator (Level 1.5)</strong> - Forces <code>ORPHAN_MODE</code> upon loss of communication.</li>
+<li><strong>Priority 5: Human Operator Command (Level 3)</strong> - Manual overrides via HMI/SCADA.</li>
+<li><strong>Priority 6: Semantic Gatekeeper (Level 3.5)</strong> - Validates AI intents against allowed physical operating ranges.</li>
+<li><strong>Priority 7 (Lowest): AI Agent Proposed Intent (Level 3.5)</strong> - Predictive optimization intents.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+---
+title: "OverSight ICS: Fail-Safe State Machine"
+---
+stateDiagram-v2
+    [*] --> Integrity_Check: System Boot
+
+    state Integrity_Check {
+        [*] --> Verify_SBOM
+        Verify_SBOM --> Verify_PTP_Sync
+        Verify_PTP_Sync --> [*]: Validation Pass
+    }
+
+    Integrity_Check --> Normal_Ops: Valid Heartbeat & Signatures
+
+    state Normal_Ops {
+        [*] --> Cognitive_Control: Agent Active
+        Cognitive_Control --> Validation_Pending: Intent Received
+        Validation_Pending --> Cognitive_Control: Command Signed & Executed
+        Validation_Pending --> Safety_Lockout_State: Policy Violation
+        Critical_Anomaly --> Safety_Lockout_State: Z-Score > 5
+    }
+
+    state Safety_Lockout_State {
+        direction TB
+        [*] --> Set_Safe_IO: Trigger Hardware Safe-State
+        Set_Safe_IO --> Notify_Operator: SNMP/SMS Alert
+        Notify_Operator --> Awaiting_Admin_Reset: Hold in Stasis
+    }
+
+    state Bypass_Mode {
+        Local_HMI_Control --> PLC_Only_Logic
+    }
+
+    %% Critical Transitions
+    Normal_Ops --> Bypass_Mode: Gateway Heartbeat Lost (Orphan Mode)
+    Safety_Lockout_State --> Bypass_Mode: Level 0 Key-Switch Override
+
+    %% The "Trust but Verify" Recovery Path
+    Bypass_Mode --> Integrity_Check: System Re-Initialization Request
+
+    %% Finality
+    Safety_Lockout_State --> Post_Mortem: Emergency Power Off (UPS-Backed)
+    Post_Mortem --> [*]: Flash Logs to TimescaleDB

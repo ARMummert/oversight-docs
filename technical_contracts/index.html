@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OverSight ICS: Technical Contracts &amp; Data Handshakes - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS: Technical Contracts \u0026amp; Data Handshakes";
+        var mkdocs_page_input_path = "technical_contracts.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS: Technical Contracts &amp; Data Handshakes</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-technical-contracts-data-handshakes">OverSight ICS: Technical Contracts &amp; Data Handshakes<a class="headerlink" href="#oversight-ics-technical-contracts-data-handshakes" title="Permanent link"></a></h1>
+<h2 id="1-the-transactional-outbox-schema-postgresql">1. The Transactional Outbox Schema (PostgreSQL)<a class="headerlink" href="#1-the-transactional-outbox-schema-postgresql" title="Permanent link"></a></h2>
+<p><strong>AUTHORITATIVE SOURCE</strong>: The SQL definition below is the master schema for the Oversight system. All references in
+<code>TELEMETRY_DATABASE_SCHEMA</code> or other documentation are non-authoritative and must mirror the section exactly.</p>
+<p>The <code>outbox</code> table is the single source of truth for the <strong>Southbound Driver</strong>. All AI intents must be persisted here 
+before execution.</p>
+<pre><code class="language-sql">CREATE TABLE intent_outbox (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    trace_id UUID NOT NULL,               -- Link to LangGraph Reasoning Trace
+    asset_id VARCHAR(50) NOT NULL,        -- e.g., 'PUMP_001'
+    status VARCHAR(20) DEFAULT 'PENDING', -- PENDING, EXECUTING, SUCCESS, FAILED
+
+    -- The Command Contract
+    payload JSONB NOT NULL,               -- Detailed JSON (See Section 1.1)
+
+    -- Security &amp; Timing
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL,      -- Command TTL (Default: created_at + 2000ms)
+
+    -- Forensic Traceability
+    justification_hash TEXT NOT NULL,     -- SHA-256 of the RAG citation context
+    operator_approval_id UUID             -- Required for 'High Impact' actions
+);
+</code></pre>
+<h3 id="11-intent-payload-structure">1.1 Intent Payload Structure<a class="headerlink" href="#11-intent-payload-structure" title="Permanent link"></a></h3>
+<p>Every JSON entry in the payload column must adhere to this contract to pass the Semantic Gatekeeper.</p>
+<pre><code class="language-json">{
+  &quot;command_type&quot;: &quot;FAILOVER_SEQUENCE&quot;,
+  &quot;priority&quot;: &quot;HIGH&quot;,
+  &quot;sequence&quot;: [
+    {
+      &quot;step&quot;: 1,
+      &quot;action&quot;: &quot;WRITE_REGISTER&quot;,
+      &quot;address&quot;: &quot;40001&quot;,
+      &quot;value&quot;: 1,
+      &quot;description&quot;: &quot;Start Standby Asset&quot;
+    },
+    {
+      &quot;step&quot;: 2,
+      &quot;action&quot;: &quot;WAIT_FOR_VALUE&quot;,
+      &quot;address&quot;: &quot;40005&quot;,
+      &quot;value&quot;: 60.0,
+      &quot;tolerance&quot;: 0.5,
+      &quot;timeout_ms&quot;: 5000,
+      &quot;description&quot;: &quot;Wait for Standby RPM &gt;= 60Hz&quot;
+    }
+  ],
+  &quot;safety_envelope&quot;: {
+    &quot;max_pressure&quot;: 120.0,
+    &quot;max_current&quot;: 45.0
+  }
+}
+</code></pre>
+<h3 id="12-asset-specific-payload-schemas">1.2 Asset-Specific Payload Schemas<a class="headerlink" href="#12-asset-specific-payload-schemas" title="Permanent link"></a></h3>
+<h3 id="121-plc-payload">1.2.1 PLC Payload<a class="headerlink" href="#121-plc-payload" title="Permanent link"></a></h3>
+<p>For standard I/O and logic solvers, the payload focuses on discrete memory addresses:</p>
+<pre><code class="language-json">{
+  &quot;asset_type&quot;: &quot;PLC&quot;,
+  &quot;action&quot;: &quot;WRITE_REGISTER&quot;,
+  &quot;address&quot;: &quot;40012&quot;,
+  &quot;value_type&quot;: &quot;INT16&quot;,
+  &quot;value&quot;: 1
+}
+</code></pre>
+<h3 id="122-vfd-payload">1.2.2 VFD Payload<a class="headerlink" href="#122-vfd-payload" title="Permanent link"></a></h3>
+<p>For motor drives, the payload uses engineering-unit abstractions to prevent scaling errors in the AI:</p>
+<pre><code class="language-json">{
+  &quot;asset_type&quot;: &quot;VFD&quot;,
+  &quot;action&quot;: &quot;SET_SPEED&quot;,
+  &quot;units&quot;: &quot;Hz&quot;,
+  &quot;target_value&quot;: 45.5,
+  &quot;ramp_rate_sec&quot;: 10.0,
+  &quot;torque_limit_pct&quot;: 110
+}
+</code></pre>
+<p><em>Note: The Southbound Driver is responsible for translating the &ldquo;Hz&rdquo; value into the specific raw hex value required 
+by the VFD manufacturer&rsquo;s protocol.</em></p>
+<h2 id="2-sequence-of-operations-soos-bumpless-transfer">2. Sequence of Operations (SOOs): Bumpless Transfer<a class="headerlink" href="#2-sequence-of-operations-soos-bumpless-transfer" title="Permanent link"></a></h2>
+<h3 id="phase-a-dry-run-isolation-check">Phase A: Dry Run &amp; Isolation Check<a class="headerlink" href="#phase-a-dry-run-isolation-check" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Pre-Condition Check</strong> Before initiating the 20Hz spin, the Agent must verify the physical isolation state.</li>
+<li><strong>Common Header Logic</strong>: If the suction/discharge valves are shared with the primary active circuit (Common
+   Header), the Dry Run is <strong>FORBIDDEN</strong> unless a bypass or min-flow path is confirmed <strong>OPEN</strong>. If no isolation is
+   possible, skip to Phase B.</li>
+<li><strong>Execution</strong>: Command the Standby asset to its minimum frequency (e.g., 20Hz for a VFDs) with zero load.</li>
+</ol>
+<h3 id="phase-b-synchronization">Phase B: Synchronization<a class="headerlink" href="#phase-b-synchronization" title="Permanent link"></a></h3>
+<p>To guarantee <strong>Process Stability</strong>, the Agent must follow this hard-coded sequence when generating a failover intent.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Phase</th>
+<th style="text-align: left;">Action</th>
+<th style="text-align: left;">Success Criteria</th>
+<th style="text-align: left;">Failure Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1. Sync</td>
+<td style="text-align: left;">Push PID State: Sync Primary Output_CV and <code>I-Term</code> to Standby.</td>
+<td style="text-align: left;">ACK from Standby; <strong>Delta &lt; 0.5%</strong></td>
+<td style="text-align: left;">Abort Failover; Alarm</td>
+</tr>
+<tr>
+<td style="text-align: left;">2. Initiate</td>
+<td style="text-align: left;">Command Standby to <code>START</code> at minimum ramp</td>
+<td style="text-align: left;">Standby <code>Running</code> bit=TRUE</td>
+<td style="text-align: left;">Retry (Max 2); Alarm</td>
+</tr>
+<tr>
+<td style="text-align: left;">3. Equalize</td>
+<td style="text-align: left;">Ramp Standby until Discharge Pressure matches Primary</td>
+<td style="text-align: left;">Pressure Delta &lt; 2%</td>
+<td style="text-align: left;">Hold State; Operator Veto</td>
+</tr>
+<tr>
+<td style="text-align: left;">4. Handover</td>
+<td style="text-align: left;">Command Primary to <code>STOP</code> while Standby takes load</td>
+<td style="text-align: left;">Primary <code>Current</code> = 0</td>
+<td style="text-align: left;">Alarm: <strong>Incomplete Stop</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">5. Verify</td>
+<td style="text-align: left;">Monitor UNS for 30s stability</td>
+<td style="text-align: left;">$Z$-Score &lt; 1.5.</td>
+<td style="text-align: left;">Revert to Phase 1</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!IMPORTANT]
+Bumpless Transfer Requirement: To prevent pressure surges during handover, the Standby Controller&rsquo;s Integral term 
+must be preloaded with the Active Controller&rsquo;s current value. This prevents the &ldquo;I-term&rdquo; from starting at zero and 
+causing a massive initial correction (overshoot).</p>
+</blockquote>
+<h3 id="21-performance-scaled-state-coherence">2.1 Performance-Scaled State Coherence<a class="headerlink" href="#21-performance-scaled-state-coherence" title="Permanent link"></a></h3>
+<p>To guarantee true <strong>Bumpless Transfer</strong> with non-identical physical characteristics (e.g., impeller wear, motor 
+efficiency, or pipe friction), the Reasoning Agent must perform <strong>Dynamic Gain Scaling</strong> on the PID state variables 
+before injecting them into the Standby Controller.</p>
+<h3 id="the-wear-incompatibility-risk">The Wear-Incompatibility Risk:<a class="headerlink" href="#the-wear-incompatibility-risk" title="Permanent link"></a></h3>
+<p>If field asset A is wearing out and field asset B is new, asset A&rsquo;s <strong>Integral (I-term)</strong> will be much larger than 
+asset B&rsquo;s <strong>Integral (I-term)</strong> and the Standby Controller will be unable to correctly compensate for the difference. 
+Injecting asset A&rsquo;s raw <strong>I-term</strong> into asset B would result in an immediate overshoot and potential high-pressure
+trip.</p>
+<h3 id="non-identical-asset-mitigation-warm-up-normalization">Non-Identical Asset Mitigation (Warm-Up &amp; Normalization)<a class="headerlink" href="#non-identical-asset-mitigation-warm-up-normalization" title="Permanent link"></a></h3>
+<p>To account for incompatibility risk between two field assets where the Primary and Standby controllers exhibit 
+different wear patterns or mechanical characteristics, the Reasoning Agent must execute the following phased 
+transition. This prevents surges caused by transferring control states between non-identical physical endpoints.</p>
+<h3 id="phase-a-zero-load-profiling">Phase A: Zero-Load Profiling<a class="headerlink" href="#phase-a-zero-load-profiling" title="Permanent link"></a></h3>
+<p>Before the Standby field asset assumes the process load, the Reasoning Agent will initiate a <strong>Dry Run</strong> sequence.</p>
+<ol>
+<li><strong>Command</strong>: The Southbound Driver commands Asset B to its minimum stable operating speed (e.g., 20Hz for a VFD).</li>
+<li><strong>Measurement</strong>: The Agent captures the Baseline Amperage ($A_{base}$) and Power Consumption ($P_{base}$) under 
+   zero-load conditions.</li>
+<li><strong>Validation</strong>: This baseline is compared against the Digital Twin’s &ldquo;New&rdquo; commissioning data to establish a current 
+   <strong>Degradation Offset.</strong></li>
+</ol>
+<h3 id="phase-b-scaling-factor-calculation-r_p">Phase B: Scaling Factor Calculation ($R_p$)<a class="headerlink" href="#phase-b-scaling-factor-calculation-r_p" title="Permanent link"></a></h3>
+<p>The Agent shall not use raw output values ($CV$) from the Primary asset. Instead, it must calculate and apply a 
+<strong>Performance Ratio ($R_p$)</strong>:$$R_p = \frac{\mu_{Power}(Asset_{Standby})}{\mu_{Power}(Asset_{Primary})}$$</p>
+<ol>
+<li><strong>Logic</strong>: If Asset B requires 10% more power than Asset A to achieve the same RPM/Flow due to impeller wear, 
+   the Agent shall &ldquo;up-scale&rdquo; the output command string by 1.1x during the handover.</li>
+<li><strong>Contract Requirement</strong>: The $R_p$ value must be logged in the justification_hash for the failover intent.</li>
+</ol>
+<h3 id="phase-c-integral-i-term-clamping-equalization">Phase C: Integral (I-term) Clamping &amp; Equalization<a class="headerlink" href="#phase-c-integral-i-term-clamping-equalization" title="Permanent link"></a></h3>
+<p>During the transition window defined in the Sequence of Operations (SOO), the following safety constraints apply to the 
+Standby Controller:</p>
+<ol>
+<li><strong>Preloading</strong>: The scaled I-term is injected into the Standby PID register.</li>
+<li><strong>Safety Clamping</strong>: The Agent commands the field asset to enforce a 120-second <strong>Stability Lock</strong>. During this 
+   window, the I-term is restricted to a movement within $\pm 2\%$ of the injected value.</li>
+<li><strong>Purpose</strong>: This prevents <strong>Integral Wind-up</strong> surges if the physical equalization (pressure balancing) takes 
+   longer than the software execution.</li>
+</ol>
+<h3 id="handover-gate">Handover Gate:<a class="headerlink" href="#handover-gate" title="Permanent link"></a></h3>
+<p>The &ldquo;Handover&rdquo; step (Step 4 in the SOO) is FORBIDDEN from executing until:</p>
+<ul>
+<li>The $R_p$ calculation is completed and verified.</li>
+<li>The Standby asset has maintained a stable discharge pressure within 5% of the Primary for a minimum of 15 seconds.</li>
+<li><strong>Standardized Tolerance</strong>: The Standby asset has maintained a stable discharge pressure within 2% (aligned with
+  FAT-03, ST-09) of the Primary for a minimum of 15 seconds.</li>
+</ul>
+<h2 id="3-state-of-grace">3. State of Grace<a class="headerlink" href="#3-state-of-grace" title="Permanent link"></a></h2>
+<p>When service startup initiates, the Agent is forbidden from issuing commands until the following warm-up is complete:</p>
+<ul>
+<li><strong>Discovery</strong>: Query <code>GET /api/v1/assets</code> to map the current UNS hierarchy.</li>
+<li><strong>Observation Phase (600s)</strong>: Ingest telemetry into TimescaleDB without active reasoning to stabilize the rolling 
+  mean ($\mu$).</li>
+<li><strong>HMI Visibility</strong>: The Agent shall broadcast a <code>SYSTEM_STATUS</code> message every 10 seconds during this window. The
+  HMI <strong>MUST</strong> display: <code>**STATE OF GRACE: [x] SECONDS REMAINING**</code>.</li>
+<li><code>Agent_Authority_Ready</code>:</li>
+<li><strong>Integrity Sync</strong>: Compare physical register values against the last known state in the Digital Twin.</li>
+<li><strong>Authority Handshake</strong>: Set <code>Agent_Authority_Ready</code> bit to <code>TRUE</code> on the Southbound Driver only after the 600ms 
+  timer expires.</li>
+</ul>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-17</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial drafting of Outbox Schema and SOOs.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Commissioning Guide - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Commissioning Guide";
+        var mkdocs_page_input_path = "commissioning.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Commissioning Guide</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="commissioning-guide">Commissioning Guide<a class="headerlink" href="#commissioning-guide" title="Permanent link"></a></h1>
+<p>This document defines the formal validation procedures for the OverSight ICS Edge Gateway. Successful completion of
+these tests is a prerequisite for the <strong>Active Control</strong> or <strong>Passive Monitor</strong> mode of operation.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link"></a></h2>
+<ul>
+<li><a href="/docs/install.md">Installation Guide</a> must be completed.</li>
+<li><a href="../fat/FAT-01-hardware_and_communication_protocol/">FAT-01: Hardware &amp; Communication Protocol</a> must be completed with all tests passing.</li>
+<li><a href="../fat/FAT-02-functional_and_logic_protocol/">FAT-02: Functional &amp; Logic Protocol</a> must be completed with all tests passing.</li>
+<li><a href="../fat/FAT-03-safety_and_security_protocol/">FAT-03: Safety and Security Protocol</a> must be completed with all tests passing.</li>
+<li><a href="/docs/sat/site_acceptance_testing.md">Site Acceptance Testing (SAT)</a> must be completed with all tests passing.</li>
+</ul>
+<h2 id="phase-0-pre-energization-physical-audit">Phase 0: Pre-Energization &amp; Physical Audit<a class="headerlink" href="#phase-0-pre-energization-physical-audit" title="Permanent link"></a></h2>
+<p>Before applying the OverSight ICS Edge Gateway, the following industrial pre-commissioning steps must be recorded
+in the site log:</p>
+<ul>
+<li>[ ]  <strong>Insulation Resistance (Megger) Testing</strong>: Verify that all new 24 V DC power runs and communication cabling meets 
+  minimum mega-ohm requirements.</li>
+<li>[ ] <strong>P&amp;ID Walk-down</strong>: Physically trace the sensor-to-gateway path to ensure the &ldquo;Digital Twin&rdquo; tag mapping 
+  (e.g., <code>PUMP_01_FLOW</code>) matches the physical instrument location.</li>
+<li>[ ] <strong>Loop Checking</strong>: Perform a 4–20 mA loop check to confirm signals generated at the field instrument are correctly
+   received at the Field Asset/Gateway without scaling errors.</li>
+</ul>
+<h2 id="phase-1-ptp-time-synchronization-verification">Phase 1: PTP &amp; Time Synchronization Verification<a class="headerlink" href="#phase-1-ptp-time-synchronization-verification" title="Permanent link"></a></h2>
+<p>Before powering up the OverSight ICS Edge Gateway, the PTP clocks must be verified.</p>
+<ul>
+<li>[ ] <strong>PTP Grandmaster Clock</strong>: Run</li>
+</ul>
+<pre><code class="language-bash">pmc -u -b 0 'GET TIME_PROPERTIES_DATA_SET'
+</code></pre>
+<p>to verify the properties of the Sratum 1 PTP Grandmaster clock on the Northbound NIC (NIC 1).</p>
+<ul>
+<li>
+<p>[ ] <strong>PTP Grandmaster Lock</strong>: Run 
+<code>bash 
+  pmc -u -b 0 'GET TIME_PROPERTIES_DS'</code> 
+  to verify the Sratum 1 PTP Grandmaster
+  lock on the Southbound NIC (NIC 2).</p>
+</li>
+<li>
+<p>[ ] <strong>Jitter Verification</strong>: Confirm PTP jitter remains $&lt;100\mu s$ on the local Level 2 subnet for a continuous 
+  10-minute window.</p>
+</li>
+<li>
+<p>[ ] <strong>Boundary Verification</strong>: Check the supervisory scan rate and heartbeat interval. The system must maintain a 
+  deterministic timing model with a 100 ms processing window and heartbeat interval, allowing for a 5x safety buffer 
+  before the hardware watchdog triggers a safe state.</p>
+</li>
+</ul>
+<h2 id="phase-2-hardware-cgroup-isolation-sbom-verification">Phase 2: Hardware, Cgroup Isolation &amp; SBOM Verification<a class="headerlink" href="#phase-2-hardware-cgroup-isolation-sbom-verification" title="Permanent link"></a></h2>
+<p>The Oversight ICS Edge Gateway uses cgroups for resource isolation and verifies the software integrity via the 
+SBOM manifest. </p>
+<ul>
+<li>[ ] <strong>Resource Locking</strong>: Verify the Reasoning Agent service is locked to CPU cores 0–1 via <code>systemd</code> slices to prevent
+      resource exhaustion.</li>
+<li>[ ] <strong>SBOM Integrity</strong>: Verify the running service hashes match the 
+      <a href="/docs/sbom_compliance_report.md">SBOM Compliance Report</a>. If hashes do not match, the system must trigger a 
+      P1 incident.</li>
+<li>[ ] <strong>Northbound Restriction</strong>: Confirm the firewall blocks all Layer 3 traffic except to the designated Vertex AI
+      Endpoint via NIC 1 (Northbound).</li>
+<li>[ ] <strong>Dual-NIC Isolation</strong>: Verify that no IP forwarding is enabled between NIC 1 (Blue/IT) and NIC 2 (Green/OT).</li>
+</ul>
+<h3 id="timing-determinism-boundaries">Timing &amp; Determinism Boundaries<a class="headerlink" href="#timing-determinism-boundaries" title="Permanent link"></a></h3>
+<p>Oversight ICS operates under a deterministic timing model. These boundaries are all for safe supervisory control while 
+distinguishing between the field asset&rsquo;s hard real-time tasks and the Edge Gateway&rsquo;s Supervisory tasks. Confirm the
+following boundaries are maintained:</p>
+<ul>
+<li>[ ] <strong>Supervisory Scan Rate</strong>: 100 ms processing window </li>
+<li>[ ] <strong>Heartbeat Interval</strong>: 100 ms mandatory signal to field assets </li>
+<li>[ ] <strong>Watchdog Timeout</strong>: 500 ms hardware relay trigger </li>
+<li>[ ] <strong>Safety Buffer (5x)</strong>: This allows for four consecutive missed heartbeats (due to computational jitter or network 
+  latency) before the hardware relay opens, forcing a <strong>Safe State</strong>.</li>
+<li>[ ] <strong>PTP Sync</strong>: Verification of Stratum 1 PTP Grandmaster lock on NIC 2 (OT Network).</li>
+<li>[ ] <strong>Dual-NIC Isolation</strong>: Verification that NIC 1 (Northbound) and NIC 2 (Southbound) are on independent subnets 
+      with no IP forwarding enabled.</li>
+</ul>
+<h3 id="edge-gateway-specifications">Edge Gateway Specifications<a class="headerlink" href="#edge-gateway-specifications" title="Permanent link"></a></h3>
+<ul>
+<li>[ ] <strong>Hardware</strong>: Industrial PC (IPC) with 4-Core CPU, 16GB RAM.</li>
+<li>[ ] <strong>Power</strong>: Redundant Dual 24 V DC industrial power inputs.</li>
+<li>[ ] <strong>Interfaces</strong>: Dual-NIC (Network Interface Cards) for physical layer isolation.</li>
+<li>[ ] <strong>OS</strong>: Linux (Ubuntu 22.04 LTS or equivalent) with Docker Engine 24.0+.</li>
+</ul>
+<h3 id="network-segmentation-idmz">Network Segmentation (IDMZ)<a class="headerlink" href="#network-segmentation-idmz" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Interface</th>
+<th style="text-align: left;">Zone</th>
+<th style="text-align: left;">Connectivity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>NIC 1</strong></td>
+<td style="text-align: left;"><strong>Blue (IT)</strong></td>
+<td style="text-align: left;"><strong>Northbound</strong>: Connected to the Plant Business Network (Level 4) for UI and LLM API calls.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>NIC 2</strong></td>
+<td style="text-align: left;"><strong>Green (OT)</strong></td>
+<td style="text-align: left;"><strong>Southbound</strong>: Connected to isolated OT Network (Level 1, 2). No gateway, no internet access.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="phase-3-power-physical-power-validation-procedures-pvp">Phase 3: Power &amp; Physical Power Validation Procedures (PVP)<a class="headerlink" href="#phase-3-power-physical-power-validation-procedures-pvp" title="Permanent link"></a></h2>
+<p>Before powering up the OverSight ICS Edge Gateway, the physical integrity of the IPC must be verified.</p>
+<h3 id="pvp-01-redundant-power-failover">PVP-01: Redundant Power Failover<a class="headerlink" href="#pvp-01-redundant-power-failover" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Action</strong>: Apply 24 V DC to both V1 and V2 power inputs.</li>
+<li><strong>Test</strong>: Disconnect the Primary Rail (V1)</li>
+<li><strong>Requirement</strong>: The IPC must remain powered on without rebooting.</li>
+<li><strong>Verification</strong>: Confirm <strong>&ldquo;Primary Power Loss&rdquo;</strong> is logged in the OverSight ICS HMI log.</li>
+</ol>
+<h3 id="pvp-02-physical-watchdog-trigger">PVP-02: Physical Watchdog Trigger<a class="headerlink" href="#pvp-02-physical-watchdog-trigger" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Action</strong>: Start the <code>southbound_driver</code> service to engage the heartbeat.</li>
+<li><strong>Test</strong>: Manually terminate the service process (kill -9)</li>
+<li><strong>Requirement</strong>: The physical hardware watchdog relay must open within 500ms of heartbeat cessation (matching the
+   5x safety buffer).</li>
+<li><strong>Verification</strong>: Verify the connected process registers a <code>Communication_Fault</code> and enters <strong>Safe State</strong>.</li>
+</ol>
+<h2 id="phase-4-installation-verification-pre-flight">Phase 4: Installation Verification Pre-Flight<a class="headerlink" href="#phase-4-installation-verification-pre-flight" title="Permanent link"></a></h2>
+<p>Before beginning any Operational Acceptance Tests (OAT), verify that the following from <a href="/docs/install.md">Installation Guide</a> are complete:</p>
+<ul>
+<li>[ ] <strong>Physical Mounting</strong>: IPC is DIN rail mounted in the control cabinet with dual 24 V DC rails connected.</li>
+<li>[ ] <strong>Dual-NIC Isolation</strong>:</li>
+<li><strong>NIC 1</strong> is verified on the <strong>Blue (IT)</strong> subnet.</li>
+<li><strong>NIC 2</strong> is verified on the <strong>Green (OT)</strong> subnet with no default gateway and no internet access.</li>
+<li>[ ] <strong>Compliance Check</strong>: The <code>compliance_watcher.py</code> script has returned <code>INFO: System Compliant</code> for a 
+      continuous 5-minute period.</li>
+<li>[ ] <strong>Clock Sync</strong>: <code>chrony</code> (NIC 1) and <code>ptp4l</code> (NIC 2) are confirmed stable.</li>
+</ul>
+<h2 id="phase-5-semantic-gatekeeper-state-of-grace">Phase 5: Semantic Gatekeeper &ldquo;State of Grace&rdquo;<a class="headerlink" href="#phase-5-semantic-gatekeeper-state-of-grace" title="Permanent link"></a></h2>
+<p>The Semantic Gatekeeper is the first service to run on the OverSight ICS Edge Gateway. It performs a critical role 
+in validating the integrity of all incoming commands and proposals before they can affect the field assets. Before 
+proceeding to functional validation, the Gatekeeper must be verified to be in a &ldquo;State of Grace&rdquo; where it is fully 
+operational but has not yet blocked any commands.</p>
+<ul>
+<li>[ ] <strong>Unauthorized Write Test</strong>: Attempt to inject a <strong>Forbidden</strong> register write (per <a href="/docs/fat/FAT-03-safety_and_security_protocol.md">FAT-03 - ST-01</a>)</li>
+<li>[ ] <strong>Rejection Logic</strong>: Confirm that the Southbound Driver rejects the write with a <code>403 FORBIDDEN</code> error and logs a
+      P1 Security Violation event.</li>
+</ul>
+<h2 id="phase-6-operational-readiness-data-layer">Phase 6: Operational Readiness – Data Layer<a class="headerlink" href="#phase-6-operational-readiness-data-layer" title="Permanent link"></a></h2>
+<ul>
+<li>[ ] <strong>Table Loading</strong>: Successfully load the <code>asset_config</code> and <code>forbidden_registers</code> tables into the production
+      environment.</li>
+<li>[ ] <strong>SOE Mapping</strong>: Every asset must be mapped to a <strong>Safe Operating Envelope (SOE)</strong> before software validation.
+      Define the mechanical limits (e.g., RPM, Hz) for each asset using <a href="/docs/sop/SOP-OPS-003_Safe-Operating-Envelope.md">SOP-SAFE-ENVELOPE-01</a>.</li>
+<li>[ ] <strong>Persistence</strong>: Attempt to process an intent with an invalid <code>justification_hash</code> and verify that it is rejected.</li>
+<li>[ ] <strong>Forbidden List</strong>: Load the <strong>Forbidden Register List</strong> for speed-locks and critical interlocks. </li>
+</ul>
+<h3 id="asset_config-table"><code>asset_config</code> Table<a class="headerlink" href="#asset_config-table" title="Permanent link"></a></h3>
+<p>The <code>asset_config</code> table contains the following information for each asset:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Asset Type</th>
+<th style="text-align: left;">Unit</th>
+<th style="text-align: left;">Min Setpoint</th>
+<th style="text-align: left;">Max Setpoint</th>
+<th style="text-align: left;">Critical Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Pump</td>
+<td style="text-align: left;">RPM</td>
+<td style="text-align: left;">300</td>
+<td style="text-align: left;">3600</td>
+<td style="text-align: left;">&gt;3800 (over-speed)</td>
+</tr>
+<tr>
+<td style="text-align: left;">VFD</td>
+<td style="text-align: left;">Hz</td>
+<td style="text-align: left;">15.0</td>
+<td style="text-align: left;">60.0</td>
+<td style="text-align: left;">&gt;62.0 (Thermal Trip)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Valve</td>
+<td style="text-align: left;">Pos</td>
+<td style="text-align: left;">0%</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: left;">N/A</td>
+</tr>
+</tbody>
+</table>
+<p>[!NOTE] <em>These limits must be cross-referenced against Master FMEA and the plant&rsquo;s physical relief valve settings.</em></p>
+<h2 id="phase-61-rag-ingestion-verification-sop-ai-01">Phase 6.1: RAG Ingestion Verification (<a href="/docs/sop/SOP-AI-002_RAG-Ingestion-and-Vector-Indexing.md">SOP-AI-01</a>)<a class="headerlink" href="#phase-61-rag-ingestion-verification-sop-ai-01" title="Permanent link"></a></h2>
+<ul>
+<li>[ ] <strong>Document Ingestion</strong>: Upload site-specific manuals to the ingest directory per 
+      <a href="/docs/sop/SOP-AI-002_RAG-Ingestion-and-Vector-Indexing.md">SOP-AI-01</a>.</li>
+<li>[ ] <strong>Vector Integrity</strong>: Issue a test query to the Vector DB; verify the system returns a relevant citation with a 
+      valid <code>justification_uuid</code>.</li>
+</ul>
+<h2 id="phase-62-operational-readiness-simulation">Phase 6.2: Operational Readiness - Simulation<a class="headerlink" href="#phase-62-operational-readiness-simulation" title="Permanent link"></a></h2>
+<h2 id="phase-7-functional-validation-loop-checks">Phase 7: Functional Validation &amp; Loop Checks<a class="headerlink" href="#phase-7-functional-validation-loop-checks" title="Permanent link"></a></h2>
+<p>Detailed step-by-step validation is located in <a href="/docs/validation_protocols.md">VALIDATION_PROTOCOLS.md</a>.</p>
+<ul>
+<li>[ ] <strong>Bumpless Transfer</strong>: Perform a <strong>Passive to Active</strong> transfer simulation and verify that no disruption to 
+      the field asset or heartbeat cessation occurs.</li>
+<li>[ ] <strong>MFA-Training</strong>: Complete operator MFA training and validate secure session creation in the <code>operator_sessions</code>
+      portal.</li>
+<li>[ ] <strong>Signature Verification</strong>: Attempt to process an intent with an invalid <code>justification_hash</code> and verify that it 
+      is rejected.</li>
+<li>[ ] <strong>Gatekeeper Block</strong>: Verify high-impact threshold changes (&gt;15%) require two-key bypass and CR form.</li>
+<li>[ ] <strong>Heartbeat Trip</strong>: Manually stop the Southbound Driver; verify the PLC enters <strong>Safe State</strong> within 500ms.</li>
+<li>[ ] <strong>SOP-AI-03 Readiness</strong>: Verify that the operator can successfully execute the steps in 
+     <a href="/docs/sop/SOP-OPS-002_Alarm-Triage-and-Response.md">SOP-AI-03</a> to respond to a $Z$-Score alert.</li>
+</ul>
+<h3 id="71-software-middleware-validation-protocols-svp">7.1: Software &amp; Middleware Validation Protocols (SVP)<a class="headerlink" href="#71-software-middleware-validation-protocols-svp" title="Permanent link"></a></h3>
+<p>The following tests must be completed before energizing the physical outputs.</p>
+<ul>
+<li>
+<p>[ ] <strong>Outbox-to-Driver Latency</strong>: Manually insert a <strong>No-Op</strong> intent into the <code>intent_outbox</code> table; verify the
+Southbound Driver picks up the row and marks it as <code>EXECUTING</code> within &lt;50ms.</p>
+</li>
+<li>
+<p>[ ] <strong>TPM Signature Verification</strong>: Attempt to process an intent with an invalid <code>justification_hash</code>; verify the 
+Southbound Driver rejects the command with a <code>SIGNATURE_MISMATCH</code> error.</p>
+</li>
+<li>
+<p>[ ] <strong>TTL Expiry Logic</strong>: Insert an intent with an expires_at timestamp set in the past; verify the Driver immediately 
+moves it to <code>FAILED</code> without attempting a PLC write.</p>
+</li>
+<li>
+<p>[ ] <strong>Digital Twin Sync</strong>: Verify that the <code>asset_registry</code> in the Gateway matches the current UNS (Unified Name Space) 
+hierarchy with zero <strong>Orphaned Tags</strong>.</p>
+</li>
+</ul>
+<p>These SVP tests verify that the <strong>Thick Edge</strong> stack is healthy and communicating internally.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test ID</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Procedure</th>
+<th style="text-align: left;">Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>SVP-01</strong></td>
+<td style="text-align: left;">Container Stack</td>
+<td style="text-align: left;">Run <code>docker compose ps</code></td>
+<td style="text-align: left;">All services (FastAPI, Timescale, RabbitMQ) show Up (healthy).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SVP-02</strong></td>
+<td style="text-align: left;">Telemetry Ingest</td>
+<td style="text-align: left;">Check <code>telemetry_ingest</code> logs for active OPC-UA/Modbus polling.</td>
+<td style="text-align: left;">Logs show successful OPC-UA subscription with Quality=Good for at least 3 tags. Modbus polling reports &lt;1% timeout rate over a 60-second window.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SVP-03</strong></td>
+<td style="text-align: left;">RAG Readiness</td>
+<td style="text-align: left;">Issue a test query to the Vector DB via the local API.</td>
+<td style="text-align: left;">System returns a relevant citation from the uploaded PDF manuals.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SVP-04</strong></td>
+<td style="text-align: left;">Persistence</td>
+<td style="text-align: left;">Restart <code>timescaledb</code> container</td>
+<td style="text-align: left;">Data integrity is maintained and no loss of historical $Z$-Score baselines.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SVP-05</strong></td>
+<td style="text-align: left;">Signing Logic</td>
+<td style="text-align: left;">Attempt a <strong>No-Op</strong> intent write</td>
+<td style="text-align: left;">Verify the <strong>TPM 2.0</strong> hardware-backs the <code>justification_hash</code> signature as defined in the CSMP.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-logic-discrete-io-validation">7.2: Logic &amp; Discrete I/O Validation<a class="headerlink" href="#72-logic-discrete-io-validation" title="Permanent link"></a></h3>
+<p>This section focuses on data integrity and the deterministic handshake with the <strong>Logic Solver</strong>.</p>
+<ul>
+<li>[ ] <strong>Register Point-to-Point</strong>: Force a valve in the PLC (e.g., 40001 = 1234) and verify the Gateway reads the
+identical integer without bit-shift or scaling errors.</li>
+<li>[ ] <strong>Heartbeat Trip</strong>: Manually stop the Southbound Driver service and verify the PLC <code>OVERSIGHT_ACTIVE</code> bit drops
+and the asset enters <strong>Safe State</strong> within 500ms.</li>
+<li>[ ] <strong>Discrete Mapping</strong>: Toggle the physical switch (Hand-Off-Auto) and verify the status change is reflected in the
+Gateway&rsquo;s <code>asset_status</code> topic within 100ms.</li>
+<li>[ ] <strong>Write Authorization</strong>: Attempt to write to a register on the <strong>Forbidden Register List</strong> and verify the
+Southbound Driver blocks the write and logs <code>SECURITY_VIOLATION</code>.</li>
+</ul>
+<h3 id="73-vfd-rotating-equipment">7.3: VFD &amp; Rotating Equipment<a class="headerlink" href="#73-vfd-rotating-equipment" title="Permanent link"></a></h3>
+<p>This section focuses on the mechanical safety, frequency limits, and protective behavior of motor drives.</p>
+<ul>
+<li>[ ] <strong>Rotational Check</strong>: Issue a 5Hz <strong>Forward</strong> command via the Gateway and physicall verify the motor shaft rotates
+in the direction defined by the P&amp;ID.</li>
+<li>[ ] <strong>Clamping Logic</strong>: Attempt to send a speed setpoint below the <code>MIN_FREQ</code> (e.g., 5Hz on a 15Hz pump) and verify
+the VFD firmware clamps the output to the baseline minimum.</li>
+<li>[ ] <strong>Communication Loss (VFD Specific) Disconnect the Ethernet cable from the VFD and verify the driver performs an 
+immediate </strong>COAST-TO-STOP** rather than ramp down.</li>
+<li>[ ] <strong>Ramp Rate Audit</strong>: Command a speed change from 20Hz to 50Hz and verify the <strong>Time to Steady State</strong> matches
+the <code>ramp_rate_sec</code> defined in the <a href="/docs/technical_contracts.md">Technical Contract</a>.</li>
+<li>[ ] <strong>Torque Limit Verification</strong>: Verify that the Agent cannot exceed the hardware torque limits set in the VFD
+parameters during high-load scenarios.</li>
+</ul>
+<h2 id="phase-8-operational-acceptance-tests-oat">Phase 8: Operational Acceptance Tests (OAT)<a class="headerlink" href="#phase-8-operational-acceptance-tests-oat" title="Permanent link"></a></h2>
+<p>These tests verify the <strong>Semantic Gatekeeper</strong> and <strong>Consciousness Loop</strong> logic function correctly in a live-data 
+environment.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test ID</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Test Procedure</th>
+<th style="text-align: center;">Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>OAT-01</strong></td>
+<td style="text-align: left;">Gatekeeper Block</td>
+<td style="text-align: left;">Attempt to write a setpoint to a tag on the <strong>Forbidden Register List</strong>.</td>
+<td style="text-align: center;">Semantic Gatekeeper returns <code>403 FORBIDDEN</code>; write is blocked.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-02</strong></td>
+<td style="text-align: left;">Low-Impact $\Delta$</td>
+<td style="text-align: left;">Issue a threshold change proposal of &lt;5%</td>
+<td style="text-align: center;">System Auto-Approves; entry created in <code>threshold_history</code> as <code>SYSTEM_AUTO</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-03</strong></td>
+<td style="text-align: left;">Medium-Impact $\Delta$</td>
+<td style="text-align: left;">$\Delta$Issue a threshold change proposal of 10%.</td>
+<td style="text-align: center;">System stages proposal; requires Single-Operator sign-off via HMI.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-04</strong></td>
+<td style="text-align: left;">High-Impact Block</td>
+<td style="text-align: left;">Issue a threshold change proposal of &gt;15%.</td>
+<td style="text-align: center;">Gatekeeper Blocks command; requires Two-Key bypass and CR Form.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-05</strong></td>
+<td style="text-align: left;">RAG Traceability</td>
+<td style="text-align: left;">Inspect a committed threshold change in the Audit Log.</td>
+<td style="text-align: center;">Entry contains a valid <code>justification_uuid</code> linked to a documentation trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-06</strong></td>
+<td style="text-align: left;">Shelf Capacity</td>
+<td style="text-align: left;">Manually shelf 5 active alarms and attempt to shelf a 6th.</td>
+<td style="text-align: center;">System blocks 6th and issues <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OAT-07</strong></td>
+<td style="text-align: left;">SOP-SHELVED-01</td>
+<td style="text-align: left;">Trigger OAT-06 and require operator to clear a slot via SOP</td>
+<td style="text-align: center;">Operator successfully restores capacity using the triage steps in <a href="/docs/sop/SOP-OPS-004_Shelved-Alarms.md">SOP-SHELVED-01</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="phase-9-site-acceptance-test-sat">Phase 9: Site Acceptance Test (SAT)<a class="headerlink" href="#phase-9-site-acceptance-test-sat" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test ID</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Test Procedure</th>
+<th style="text-align: left;">Acceptance Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>SAT-01</strong></td>
+<td style="text-align: left;">End-to-End Anomaly</td>
+<td style="text-align: left;">Trigger a known mechanical transient (e.g, bypass valve cycle).</td>
+<td style="text-align: left;">HMI displays a &ldquo;Real-Time Drift&rdquo; alert within &lt;2 seconds.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SAT-02</strong></td>
+<td style="text-align: left;">Remote Notification</td>
+<td style="text-align: left;">Trigger a High-Severity alert.</td>
+<td style="text-align: left;">Verification that the alert was successfully pushed to the Level 4 Business Network.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SAT-03</strong></td>
+<td style="text-align: left;">SOP-AI-02 Readiness</td>
+<td style="text-align: left;">Operator performs a <strong>Threshold Review</strong> using the steps in <a href="/docs/sop/SOP-AI-003_Threshold_Adaptation_Review_and_Commitment.md">SOP-AI-02</a>.</td>
+<td style="text-align: left;">Operator successfully validates a proposal using the provided RAG reasoning (Trace UUID).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SAT-04</strong></td>
+<td style="text-align: left;">Bumpless Transfer</td>
+<td style="text-align: left;">Switch from <strong>Passive Monitor</strong> to <strong>Active Control</strong> mode during operation.</td>
+<td style="text-align: left;">No disruption to PLC logic; Southbound Driver maintains the heartbeat.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SAT-05</strong></td>
+<td style="text-align: left;">Security Integrity</td>
+<td style="text-align: left;">Run <code>compliance_watcher.py</code> while NIC 1 &amp; 2 are both connected.</td>
+<td style="text-align: left;">Script returns <code>INFO: System Compliant</code> with no unauthorized bridging detected.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="phase-10-baseline-training-48-72-hours">Phase 10: Baseline Training (48-72 hours)<a class="headerlink" href="#phase-10-baseline-training-48-72-hours" title="Permanent link"></a></h2>
+<p>The system must remain in <strong>Passive Monitor Mode</strong> for a minimum of 48 hours to establish the statistical baseline for
+the $Z$-Score anomaly detection.</p>
+<h2 id="phase-11-final-commissioning-sign-off">Phase 11: Final Commissioning Sign-Off<a class="headerlink" href="#phase-11-final-commissioning-sign-off" title="Permanent link"></a></h2>
+<p>I hereby certify that the OverSight ICS Edge Gateway has passed all safety and functional validations.</p>
+<h3 id="pre-flight-confirmation">Pre-Flight Confirmation:<a class="headerlink" href="#pre-flight-confirmation" title="Permanent link"></a></h3>
+<p>[ ] All Dual-NIC IP addresses are static and verified.</p>
+<p>[ ] PTP Grandmaster clock is stable and synced with Level 2 assets.</p>
+<p>[ ] The <strong>Forbidden List</strong> has been loaded and verified by the Safety Lead.</p>
+<p>[ ] <strong>Loop Checks</strong> and <strong>P&amp;ID Walk-down</strong> completed and logged.</p>
+<h3 id="required-authorization-signatures">Required Authorization Signatures:<a class="headerlink" href="#required-authorization-signatures" title="Permanent link"></a></h3>
+<p><strong>Lead OT Engineer</strong>: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em> Date: </strong><strong><em>_</em></strong>______<br />
+<em>Certifies all loop checks, PTP syncs, and environment provisioning are stable.</em></p>
+<p><strong>Safety Lead (Witness)</strong>: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ Date: </strong><strong><em>_</em></strong>______<br />
+<em>Certifies that the Forbidden Register List matches the site SOE and FMEA.</em></p>
+<p><strong>Plant Manager</strong>: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ Date: </strong><strong><em>_</em></strong>______<br />
+<em>Final authorization to transition the system from Passive Monitor to Active Control.</em></p>
+<p><strong>IT Network Administrator</strong>: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ Date: </strong><strong><em>_</em></strong>______<br />
+<em>Certifies the IDMZ Northboundn NIC configuration and verifies enterprise network isolation/firewall rules.</em></p>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-10</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial creation of Commissioning Document</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-04-24</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Document reorganization and timing and determinism boundaries updated</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

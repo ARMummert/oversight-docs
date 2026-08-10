@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>SOP-01: Recurring Maintenance Procedures - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SOP-01: Recurring Maintenance Procedures";
+        var mkdocs_page_input_path = "sop/SOP-MAINT-001_Recurring-Maintenance.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SOP-01: Recurring Maintenance Procedures</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="sop-01-recurring-maintenance-procedures">SOP-01: Recurring Maintenance Procedures<a class="headerlink" href="#sop-01-recurring-maintenance-procedures" title="Permanent link"></a></h1>
+<h3 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h3>
+<p>This Standard Operating Procedure (SOP) defines the recurring maintenance tasks that are required for the long-term
+reliability of the Oversight ICS data layer, the accuracy of the Reasoning Agent, and the physical integrity of the
+Edge Gateway hardware.</p>
+<h3 id="2-database-data-layer-management">2. Database &amp; Data Layer Management<a class="headerlink" href="#2-database-data-layer-management" title="Permanent link"></a></h3>
+<p>The following tasks are critical for TimescaleDB and pgVector to maintain performance targets defined in the
+<a href="/docs/telemetry_database_schema.md">Telemetry Database Schema</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Frequency</th>
+<th>Task ID</th>
+<th>Description</th>
+<th>Targeted Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weekly</td>
+<td>DB-01</td>
+<td>Verify TimescaleDB &ldquo;Chunk&rdquo; compression is active on the <code>telemetry</code> hypertable.</td>
+<td>Storage Optimization and disk pressure relief.</td>
+</tr>
+<tr>
+<td>Monthly</td>
+<td>DB-02</td>
+<td>Execute a <code>VACUUM ANALYZE</code> on the <code>knowledge_vector</code> table.</td>
+<td>Optimized query planning for RAG similarity searches.</td>
+</tr>
+<tr>
+<td>Quarterly</td>
+<td>DB-03</td>
+<td><strong>Z-Score Baseline Audit</strong>: Manually trigger the <code>recalculate_baselines()</code> script using a 30-day window of &ldquo;Steady State&rdquo; telemetry. <strong>Validation</strong>: The new $\mu$ and $\sigma$ must be compared against the previous quarter; shifts $&gt;15\%$ require a signed Engineering Justification.</td>
+<td>Prevents &ldquo;Alarm Fatigue&rdquo; or &ldquo;Missed Anomalies&rdquo; due to seasonal process drift.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-ai-rag-context-maintenance">3. AI &amp; RAG Context Maintenance<a class="headerlink" href="#3-ai-rag-context-maintenance" title="Permanent link"></a></h3>
+<p>To prevent <strong>Logic Drift</strong>, the Reasoning Agent&rsquo;s context must be synchronized with the actual physical state of the 
+plant.</p>
+<table>
+<thead>
+<tr>
+<th>Frequency</th>
+<th>Task ID</th>
+<th>Description</th>
+<th>Targeted Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Monthly</td>
+<td>AI-01</td>
+<td>Re-index the RAG Vector database with any new technical bulletins from VFD/PLC manufacturers.</td>
+<td>Prevention of hallucinations caused by outdated technical manuals.</td>
+</tr>
+<tr>
+<td>Monthly</td>
+<td>AI-02</td>
+<td>Review a random sample of <code>trace_id</code> logs from the <code>intent_outbox</code> for justification accuracy.</td>
+<td>Continuous improvement of the Reasoning Agent&rsquo;s logic.</td>
+</tr>
+<tr>
+<td>Quarterly</td>
+<td>AI-03</td>
+<td>Re-calculate $Z$-Score baselines for all assets to account for seasonal process changes.</td>
+<td>Reduction in &ldquo;Alarm Fatigue&rdquo; caused by shifting baseline noise.</td>
+</tr>
+<tr>
+<td>Semi-Annually</td>
+<td>AI-04</td>
+<td><strong>Forbidden Register List Audit</strong>: Compare the current <code>forbidden_list.json</code> against the site&rsquo;s most recent P&amp;ID and Electrical Safety Study.</td>
+<td>Ensures safety-critical interlocks are not bypassed by new equipment additions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-hardware-security-maintenance">4. Hardware &amp; Security Maintenance<a class="headerlink" href="#4-hardware-security-maintenance" title="Permanent link"></a></h3>
+<p>To keep the Industrial PC (IPC) a hardened deterministic host for the Southbound Driver.</p>
+<table>
+<thead>
+<tr>
+<th>Frequency</th>
+<th>Task ID</th>
+<th>Description</th>
+<th>Targeted Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weekly</td>
+<td>HW-01</td>
+<td>Inspect the physical dual-NIC cables for wear or unauthorized bridge attempts.</td>
+<td>Maintenance of physical IT/OT network isolation.</td>
+</tr>
+<tr>
+<td>Monthly</td>
+<td>HW-02</td>
+<td>Compare running service hashes against the <a href="/docs/sbom_compliance_report.md">SBOM Compliance Report</a></td>
+<td>Detection of unauthorized firmware or software modifications.</td>
+</tr>
+<tr>
+<td>180 Days</td>
+<td>HW-03</td>
+<td><strong>TPM Key Rotation &amp; Watchdog Test</strong>: Rotate the TPM 2.0 Root of Trust key per CSMP Section 11. Manually trip the Hardware Watchdog Relay to verify physical de-energization of the Master Control Relay (MCR).</td>
+<td>Cryptographic security and physical fail-safe verification.</td>
+</tr>
+<tr>
+<td>Annual</td>
+<td>HW-04</td>
+<td><strong>Cold Start Recovery Test</strong>: Perform a full system restore from the last stable recovery image. Pass Criteria: Full operational readiness (Reasoning Agent + Southbound Driver active) in &lt;15 minutes.</td>
+<td>Validation of <strong>Disaster Recovery</strong> and <strong>State of Grace</strong> timing.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

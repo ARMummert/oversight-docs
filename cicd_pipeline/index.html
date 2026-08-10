@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OverSight ICS: CI/CD Pipeline &amp; Secure Development Lifecycle - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS: CI/CD Pipeline \u0026amp; Secure Development Lifecycle";
+        var mkdocs_page_input_path = "cicd_pipeline.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS: CI/CD Pipeline &amp; Secure Development Lifecycle</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-cicd-pipeline-secure-development-lifecycle">OverSight ICS: CI/CD Pipeline &amp; Secure Development Lifecycle<a class="headerlink" href="#oversight-ics-cicd-pipeline-secure-development-lifecycle" title="Permanent link"></a></h1>
+<p><strong>Security Level</strong>: <code>Level 3.5 IDMZ</code><br />
+<strong>Framework Alignment</strong>: IEC 62443-4-1 (Secure Product Development Lifecycle)</p>
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link"></a></h2>
+<p>The Continuous Integration and Continuous Deployment (CI/CD) pipeline for OverSight ICS is designed to guarantee that 
+any software update (a patch to the <strong>LangGraph Agent</strong>, an update to the <strong>Semantic Gatekeeper</strong>, or a modification 
+of the <strong>Southbound Driver</strong>) maintains absolute safety, determinism, and cybersecurity resilience. Code cannot reach 
+the physical edge without passing strict automated and manual deployment gates.</p>
+<h2 id="2-automated-security-scanning-pipeline-gates">2. Automated Security Scanning (Pipeline Gates)<a class="headerlink" href="#2-automated-security-scanning-pipeline-gates" title="Permanent link"></a></h2>
+<p>Before any code can be merged into the <code>main</code> branch or compiled into a Docker artifact, it must pass the following 
+automated security checks. Failure at any of these gates halts the build pipeline immediately.</p>
+<h3 id="21-static-application-security-testing-sast">2.1 Static Application Security Testing (SAST)<a class="headerlink" href="#21-static-application-security-testing-sast" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Objective</strong>: Identify vulnerabilities in the source code before compilation.</li>
+<li><strong>Scope</strong>: Scans the Python (LangGraph) and C++ (Southbound Driver) codebases for hardcoded credentials, buffer 
+  overflows, and unsafe memory handling.</li>
+<li><strong>Gate Requirement</strong>: Zero (0) High/Critical vulnerabilities.</li>
+</ul>
+<h3 id="22-software-composition-analysis-sca">2.2 Software Composition Analysis (SCA)<a class="headerlink" href="#22-software-composition-analysis-sca" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Objective</strong>: Identify vulnerabilities in third-party libraries and dependencies.</li>
+<li><strong>Scope</strong>: Scans <code>uv.lock</code> / <code>pyproject.toml</code> files, Dockerfile base images, and C++ linked libraries against the 
+    National Vulnerability Database (NVD).</li>
+<li><strong>Gate Requirement</strong>: Blocks any build containing dependencies with a CVSS score $\ge 6.0$. Generates the initial 
+  <strong>SPDX manifest</strong> for the <a href="../sbom_compliance_report/">SBOM Compliance Report</a>.</li>
+</ul>
+<h3 id="23-dynamic-application-security-testing-dast">2.3 Dynamic Application Security Testing (DAST)<a class="headerlink" href="#23-dynamic-application-security-testing-dast" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Objective</strong>: Identify vulnerabilities in the running application from an external attacker&rsquo;s perspective.</li>
+<li><strong>Scope</strong>: Executes against a containerized ephemeral instance of the API Gateway, probing for OWASP Top 10 
+  vulnerabilities (e.g., JWT validation bypass, API rate-limit exhaustion).</li>
+<li><strong>Gate Requirement</strong>: Must pass the <strong>DDoS Rate-Limiting Check</strong> (verifying the <code>ERROR_SAFETY_DELAY_ACTIVE</code> triggers 
+  correctly under load).</li>
+</ul>
+<h2 id="3-the-three-tier-deployment-process">3. The Three-Tier Deployment Process<a class="headerlink" href="#3-the-three-tier-deployment-process" title="Permanent link"></a></h2>
+<p>In alignment with our Operational Security Procedures (ISO 27001), all updates to the <strong>Southbound Driver</strong> or 
+<strong>Semantic Gatekeeper</strong> must navigate a strict, phased rollout to physical assets.</p>
+<h3 id="phase-1-virtual-twin-integration">Phase 1: Virtual Twin Integration<a class="headerlink" href="#phase-1-virtual-twin-integration" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Environment</strong>: Fully simulated Level 1 and Level 2 environments (no physical hardware).</li>
+<li><strong>Action</strong>: The new build is subjected to the full <strong>Change Regression Test (CRT)</strong> suite (CRT-01 through CRT-11). 
+  $Z$-score algorithms are verified against simulated, high-variance process noise to ensure no false positives occur.</li>
+<li><strong>Exit Criteria</strong>: 100% pass rate on all automated regression tests.</li>
+</ul>
+<h3 id="phase-2-staging-monitor-only-mode">Phase 2: Staging (Monitor-Only Mode)<a class="headerlink" href="#phase-2-staging-monitor-only-mode" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Environment</strong>: A live, but non-critical, physical asset in the plant (e.g., a secondary utility pump).</li>
+<li><strong>Action</strong>: The software is deployed to the Edge Gateway but is hard-locked into <code>PASSIVE_MONITOR</code> mode. It can 
+  ingest telemetry and propose intents, but the Write-Access Token is disabled.</li>
+<li><strong>Exit Criteria</strong>: Minimum of 24 hours of stable operation with zero unhandled exceptions, zero logic drift alarms, 
+  and zero memory leaks.</li>
+</ul>
+<h3 id="phase-3-production-active-control">Phase 3: Production (Active Control)<a class="headerlink" href="#phase-3-production-active-control" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Environment</strong>: The live production Control Zone.</li>
+<li><strong>Action</strong>: The deployment is executed during a scheduled maintenance window.</li>
+<li><strong>Exit Criteria</strong>: Requires a signed approval in the <strong>Change Management Log</strong> by both the <strong>Lead OT Engineer</strong> and 
+  the <strong>Safety Lead</strong>. Following deployment, the system undergoes a live Verification Checkpoint to ensure the TPM 2.0 
+  signatures are functioning correctly.</li>
+</ul>
+<h2 id="4-hardware-root-of-trust-attestation">4. Hardware Root of Trust Attestation<a class="headerlink" href="#4-hardware-root-of-trust-attestation" title="Permanent link"></a></h2>
+<p>Upon successful completion of Phase 3, the CI/CD pipeline calculates the final SHA-256 hashes of the compiled binaries. 
+These hashes are injected into the <strong>WORM Writable WORM Storage</strong> and used by the TPM 2.0 module to verify the system&rsquo;s 
+integrity during cold boots.</p>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-05-14</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Baseline. Added SAST/DAST/SCA and Three-Tier Deployment Process.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

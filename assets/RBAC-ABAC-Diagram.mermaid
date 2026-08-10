@@ -1,0 +1,66 @@
+---
+title: "Oversight ICS: Hybrid Access Control (RBAC + ABAC)"
+config:
+  theme: dark
+  themeVariables:
+    fontSize: "14px"
+    fontFamily: "Monserrat"
+  flowchart:
+    curve: cardinal-orthogonal
+    nodeSpacing: 45
+    rankSpacing: 50
+---
+flowchart TD
+    %% Styling Classes
+    classDef subject fill:#2d3436,stroke:#dfe6e9,stroke-width:2px;
+    classDef rbac fill:#0984e3,stroke:#74b9ff,stroke-width:2px;
+    classDef abac fill:#6c5ce7,stroke:#a29bfe,stroke-width:2px;
+    classDef success fill:#00b894,stroke:#55efc4,stroke-width:3px;
+    classDef failure fill:#d63031,stroke:#ff7675,stroke-width:3px;
+    classDef bypass fill:#e17055,stroke:#fab1a0,stroke-width:2px;
+
+    %% Subjects
+    subgraph Subjects [Authorized Entities]
+        OP[Operator]:::subject
+        AI[AI Agent]:::subject
+        SUP[Supervisor]:::subject
+    end
+
+    %% RBAC Gate
+    subgraph RBAC_Gate [Gate 1: Identity & Role Verification]
+        CheckRole{Does Role have\nPermission?}:::rbac
+        Perm_OP[Read / Propose Intent]:::rbac
+        Perm_AI[Signed Proposed Intent]:::rbac
+        Perm_SUP[Full Execute / Overide]:::rbac
+    end
+
+    %% ABAC Gate
+    subgraph ABAC_Gate [Gate 2: Real-Time Safety Context]
+        CheckSafety{Is System State\nSafe?}:::abac
+        Z_Score[Z-Score < 5.0?]:::abac
+        Forbidden[Not in Forbidden\nRegister List?]:::abac
+    end
+
+    %% Flow Logic
+    OP --> Perm_OP --> CheckRole
+    AI --> Perm_AI --> CheckRole
+    SUP --> Perm_SUP --> CheckRole
+
+    CheckRole -- Authorized --> CheckSafety
+    CheckRole -- Unauthorized --> Lockout[Safety Lockout / Log Event]:::failure
+
+    CheckSafety -- State OK --> Z_Score
+    Z_Score -- Normal Flow --> Forbidden
+    Forbidden -- Valid --> PLC[PLC Execution]:::success
+
+    %% Failure Paths
+    CheckSafety -- Critical Anomaly --> Lockout
+    Z_Score -- High Variance --> Lockout
+    Forbidden -- Safety Violation --> Lockout
+
+    %% Emergency Bypass
+    ENG[Safety Engineer]:::subject -- Physical Key / Bypass --> PLC:::bypass
+
+    %% Links
+    linkStyle default stroke:#dfe6e9,stroke-width:1px;
+

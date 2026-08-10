@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OverSight ICS: RAG Knowledge Versioning Policy - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS: RAG Knowledge Versioning Policy";
+        var mkdocs_page_input_path = "RAG_knowledge_versioning.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS: RAG Knowledge Versioning Policy</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-rag-knowledge-versioning-policy">OverSight ICS: RAG Knowledge Versioning Policy<a class="headerlink" href="#oversight-ics-rag-knowledge-versioning-policy" title="Permanent link"></a></h1>
+<p><strong>Scope:</strong> Retrieval-Augmented Generation (RAG) and Manual Indexing</p>
+<h2 id="1-versioning-strategy">1. Versioning Strategy<a class="headerlink" href="#1-versioning-strategy" title="Permanent link"></a></h2>
+<p>To prevent &ldquo;RAG Collisions&rdquo; and &ldquo;Update Collisions,&rdquo; where the AI references an outdated manual during an active 
+incident, all grounded documentation must follow a strict versioning protocol.</p>
+<h3 id="11-semantic-index-versioning">1.1 Semantic Index Versioning<a class="headerlink" href="#11-semantic-index-versioning" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Manual IDs</strong>: Every asset manual (PDF/Markdown) is assigned a unique <code>Knowledge-ID</code> and <code>Semantic-Hash</code>.</li>
+<li><strong>Sync Requirement</strong>: The RAG vector database must match the current <code>Software_Revision</code> of the Field Asset.</li>
+<li><strong>Update Protocol</strong>: When a manual is updated, the old index is not deleted. It is archived as <code>N-1</code>. The AI will 
+  reference the manual version that was active at the time the incident was first detected.</li>
+</ul>
+<h2 id="2-data-poisoning-protection">2. Data Poisoning Protection<a class="headerlink" href="#2-data-poisoning-protection" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Instruction Injection Defense</strong>: All documents entering the RAG pipeline are scanned for &ldquo;Adversarial 
+  Instruction Injection&rdquo; (e.g., text hidden in white font designed to override AI safety constraints) [cite: 3.1].</li>
+<li><strong>Verification</strong>: Only manuals signed by the <strong>Safety Lead</strong> or <strong>Lead Software Engineer</strong> are permitted in the <code>/api/v1/rag/context</code> retrieval path [cite: 3.1].</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

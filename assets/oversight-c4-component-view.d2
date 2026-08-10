@@ -1,0 +1,72 @@
+# Oversight ICS - Level 3 Component Diagram (LangGraph Cognitive Agent)
+vars: {
+  d2-config: {
+    theme-id: 200
+    layout-engine: elk
+  }
+}
+*.style.font-size: 26
+
+direction: down
+
+title: |md
+  # Level 3 Component View
+  ### LangGraph Cognitive Agent
+
+| {near: top-center}
+
+# External Data Sources
+redis_hot_cache: Redis Hot State Cache {
+  shape: cylinder
+  style: { stroke-dash: 2 }
+}
+local_rag_db: pgvector Local Database {
+  shape: cylinder
+  style: { stroke-dash: 2 }
+}
+nats_cmd_queue: NATS Command Queue {
+  shape: queue
+  style: { stroke-dash: 2 }
+}
+
+# LangGraph Internal Components
+agent_sandbox: LangGraph Runtime Environment {
+
+  state_memory: Graph State Manager {
+    description: "Tracks thread context, current\n telemetry vectors, and\n unvetted execution state."
+  }
+
+  telemetry_poll_node: Telemetry Ingestor {
+    description: "Queries hot registers and\n maps data to state memory."
+  }
+
+  prompt_analyzer_node: Adversarial Prompt Shield {
+    description: "Audits inbound prompts/RAG contents\n against FAT-02 injection and context poisoning."
+  }
+
+  rag_resolver: RAG Knowledge Retriever {
+    description: "Queries pgvector database for asset\n data and operational safety limits."
+  }
+
+  anomaly_logic_engine: Predictive Anomaly Core {
+    description: "Runs statistical evaluations/Z-Score\n lookups to trigger failover logic."
+  }
+
+  proposal_compiler: Failover Proposal Builder {
+    description: "Assembles orchestration recipes into JSON payloads."
+  }
+}
+
+# Internal Data Flow
+redis_hot_cache -> agent_sandbox.telemetry_poll_node: "Polls active variables"
+agent_sandbox.telemetry_poll_node -> agent_sandbox.state_memory: "Pushes fresh state map"
+
+agent_sandbox.state_memory -> agent_sandbox.prompt_analyzer_node: "Passes payload for safety validation"
+agent_sandbox.prompt_analyzer_node -> agent_sandbox.rag_resolver: "Fowards cleared telemetry context"
+
+agent_sandbox.rag_resolver -> local_rag_db: "SQL / Vector Query"
+local_rag_db -> agent_sandbox.rag_resolver: "Returns safe\n operating bounds"
+
+agent_sandbox.rag_resolver -> agent_sandbox.anomaly_logic_engine: "Appends bounds parameters"
+agent_sandbox.anomaly_logic_engine -> agent_sandbox.proposal_compiler: "Triggers compilation on anomalies"
+agent_sandbox.proposal_compiler -> nats_cmd_queue: "Dispatches unsigned proposal"

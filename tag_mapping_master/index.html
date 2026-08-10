@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Oversight ICS: TAG MAPPING MASTER - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Oversight ICS: TAG MAPPING MASTER";
+        var mkdocs_page_input_path = "tag_mapping_master.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Oversight ICS: TAG MAPPING MASTER</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-tag-mapping-master">Oversight ICS: TAG MAPPING MASTER<a class="headerlink" href="#oversight-ics-tag-mapping-master" title="Permanent link"></a></h1>
+<p>This document defines the standardized data structure for mapping physical field asset registers to the Unified 
+Namespace (UNS).  This mapping is critical for the AI Reasoning Agent, so it can interpret the telemetry and issue 
+intents across hardware environments.</p>
+<h2 id="1-unified-namespace-uns-hierarchy">1. Unified Namespace (UNS) Hierarchy<a class="headerlink" href="#1-unified-namespace-uns-hierarchy" title="Permanent link"></a></h2>
+<p>All tags must be published to the MQTT broker (Sparkplug B) following the ISA-95 hierarchical structure. </p>
+<p><strong>Topic Structure:</strong> <code>Enterprise/Site/Area/Line/Cell/Tag_Category/Asset_Name</code></p>
+<p><strong>Example:</strong> <code>AcmeCorp/Longview/WaterTreatment/Filtration/Pump_01/Telemetry/Discharge_Pressure</code></p>
+<h2 id="2-tag-classification-matrix">2. Tag Classification Matrix<a class="headerlink" href="#2-tag-classification-matrix" title="Permanent link"></a></h2>
+<p>Tags are grouped into functional categories to enforce security and operational boundaries.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Telemetry</td>
+<td style="text-align: left;">Read-Only</td>
+<td style="text-align: left;">Real-Time process variables (Pressure, Flow, Temp)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Commands</td>
+<td style="text-align: left;">Write-Only</td>
+<td style="text-align: left;">AI-generated intents (Start, Stop, Setpoint, Change</td>
+</tr>
+<tr>
+<td style="text-align: left;">Status</td>
+<td style="text-align: left;">Read-Only</td>
+<td style="text-align: left;">Asset state (Running, Faulted, Local/Remote)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Safety (SIS)</td>
+<td style="text-align: left;">FORBIDDEN</td>
+<td style="text-align: left;">Hard-coded safety interlocks. The AI Agent is prohibited from writing here</td>
+</tr>
+<tr>
+<td style="text-align: left;">Diagnostics</td>
+<td style="text-align: left;">Read-Only</td>
+<td style="text-align: left;">System Health (CPU Temp, Network Latency, Heartbeat)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-mandatory-metadata-schema-json">3. Mandatory Metadata Schema (JSON)<a class="headerlink" href="#3-mandatory-metadata-schema-json" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;ISO-8601&quot;,
+  &quot;asset_id&quot;: &quot;PUMP_01&quot;,
+  &quot;metrics&quot;: [
+    {
+      &quot;name&quot;: &quot;discharge_pressure&quot;,
+      &quot;value&quot;: 48.5,
+      &quot;unit&quot;: &quot;PSI&quot;,
+      &quot;quality&quot;: 192,
+      &quot;eng_range&quot;: { &quot;min&quot;: 0, &quot;max&quot;: 100 }
+    }
+  ],
+  &quot;metadata&quot;: {
+    &quot;mode&quot;: &quot;auto&quot;,
+    &quot;loto_status&quot;: false
+  }
+}
+</code></pre>
+<h2 id="4-hardware-mapping-rules">4. Hardware Mapping Rules<a class="headerlink" href="#4-hardware-mapping-rules" title="Permanent link"></a></h2>
+<p>To maintain system integrity during commissioning, the following mapping rules are enforced:</p>
+<h3 id="41-quality-bit-validation">4.1 Quality Bit Validation<a class="headerlink" href="#41-quality-bit-validation" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Telemetry (Read)</strong>: The Anomaly Engine ingests only tags with a quality bit $\ge 192$ (Good).</li>
+<li><strong>Commands (Write)</strong>: The Southbound Driver must not consider a command &ldquo;SUCCESS&rdquo; based solely on the write operation.</li>
+<li><strong>Validation Logic</strong>: Every <code>WRITE_REGISTER</code> intent must be paired with a corresponding <code>WAIT_FOR_VALUE</code> or 
+  <code>STATUS_CHANGE</code>. If the feedback quality bit is $&lt; 192$ or the value does not update within the <code>timeout_ms</code> defined 
+  in the intent payload, the intent is marked as FAILED in the <code>intent_outbox</code>.</li>
+</ul>
+<h3 id="42-physical-isolation-dual-nic">4.2 Physical Isolation (Dual-NIC)<a class="headerlink" href="#42-physical-isolation-dual-nic" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Southbound (NIC 2)</strong>: All raw PLC registers are mapped exclusively to the Southbound Driver.</li>
+<li><strong>Northbound (NIC 1)</strong>: Only sanitized UNS topics are available to the Reasoning Agent and HMI.</li>
+</ul>
+<h3 id="43-maintenance-loto-logic">4.3 Maintenance &amp; LOTO Logic<a class="headerlink" href="#43-maintenance-loto-logic" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Hardware Interlock</strong>: Each asset mapping must include a Local_Hand_Switch bit.</li>
+<li><strong>Effect</strong>: If the physical switch at the cabinet is in &ldquo;Hand&rdquo; or &ldquo;Off,&rdquo; the Southbound Driver will return a <code>403 
+  FORBIDDEN_HARDWARE_LOTO</code> error for any incoming AI intents.</li>
+</ul>
+<h2 id="5-master-asset-registry-example">5. Master Asset Registry (Example)<a class="headerlink" href="#5-master-asset-registry-example" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Asset</th>
+<th style="text-align: left;">Tag Name</th>
+<th style="text-align: left;">UNS Path</th>
+<th style="text-align: left;">DataType</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">PUMP_01</td>
+<td style="text-align: left;">CMD_START</td>
+<td style="text-align: left;"><code>AcmeCorp/Longview/WaterTreatment/Filtration/Pump_01/Commands/CMD_START</code></td>
+<td style="text-align: left;">BOOLEAN</td>
+</tr>
+<tr>
+<td style="text-align: left;">PUMP_01</td>
+<td style="text-align: left;">Flow_Rate</td>
+<td style="text-align: left;"><code>AcmeCorp/Longview/WaterTreatment/Filtration/Pump_01/Telemetry/Flow_Rate</code></td>
+<td style="text-align: left;">REAL</td>
+</tr>
+<tr>
+<td style="text-align: left;">PUMP_01</td>
+<td style="text-align: left;">Position</td>
+<td style="text-align: left;"><code>AcmeCorp/Longview/WaterTreatment/Filtration/Pump_01/Telemetry/Position</code></td>
+<td style="text-align: left;">INT</td>
+</tr>
+<tr>
+<td style="text-align: left;">PUMP_01</td>
+<td style="text-align: left;">SIS_Trip</td>
+<td style="text-align: left;"><code>AcmeCorp/Longview/WaterTreatment/Filtration/Pump_01/Safety/SIS_Trip</code></td>
+<td style="text-align: left;">BOOLEAN</td>
+</tr>
+</tbody>
+</table>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Changes</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2024-06-01</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

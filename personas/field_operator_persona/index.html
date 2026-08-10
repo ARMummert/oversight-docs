@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Field Operator Persona - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Field Operator Persona";
+        var mkdocs_page_input_path = "personas/field_operator_persona.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Field Operator Persona</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="field-operator-persona">Field Operator Persona<a class="headerlink" href="#field-operator-persona" title="Permanent link"></a></h1>
+<h3 id="user-persona-alex-smith-field-operator-level-2">User Persona: Alex Smith, Field Operator Level 2<a class="headerlink" href="#user-persona-alex-smith-field-operator-level-2" title="Permanent link"></a></h3>
+<p><strong>Profile</strong>
+- <strong>Name:</strong> Alex Smith
+- <strong>Age:</strong> 32
+- <strong>Occupation:</strong> Field Operator Level 2
+- <strong>Experience:</strong> 8 years in field operations, specializing in equipment maintenance and troubleshooting.
+- <strong>Comfort Level</strong>: High with legacy DCS/SCADA systems, Moderate with new digital platforms, and Low with advanced 
+  analytics tools.</p>
+<h3 id="day-to-day-responsibilities">Day To Day Responsibilities<a class="headerlink" href="#day-to-day-responsibilities" title="Permanent link"></a></h3>
+<ol>
+<li>Monitors the physical processes via HMI/SCADA systems</li>
+<li>Acknowledges, diagnoses, and responds to process alarms</li>
+<li>Walks the plant floor to physically inspect assets</li>
+<li>Coordinates with maintenance for hardware replacement or repair when necessary</li>
+<li>Executes safe shift handovers by reviewing the maintenance logs and Master Alarm Database.</li>
+</ol>
+<h3 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link"></a></h3>
+<ol>
+<li>To Keep the plant running safely and efficiently.</li>
+<li>He Wants absolute certainty that any automated action won&rsquo;t override hardcoded safety interlocks (SIS) or
+   endanger personnel on the floor.</li>
+<li>He Wants to know <strong>WHY</strong> the system is failing before it actually breaks.</li>
+<li>He Needs the AI to act like a knowledgeable assistant, not an autonomous boss. He wants to see the &ldquo;math&rdquo; or reasoning 
+   behind any recommendation.</li>
+</ol>
+<h3 id="pain-points">Pain Points<a class="headerlink" href="#pain-points" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Alarm Fatigue:</strong> Alex is often bombarded with alarms, many of which are false positives or low-priority. This can 
+lead to alarm fatigue, making it difficult to identify critical issues.</li>
+<li><strong>Lack of Explanation</strong>: Alex hates that the system tells him that something is failing but not the why behind it.</li>
+<li><strong>Loss of Human Oversight</strong>: Alex is concerned about the </li>
+<li><strong>Loss of Control:</strong> Alex fears that AI systems taking autonomous control of critical infrastructure without human 
+   oversight or approval could cause catastrophic failures.  </li>
+<li><strong>Time-Sync Jitter:</strong> Alex gets easily annoying by false-positive alarms. </li>
+</ol>
+<h3 id="how-marcus-interacts-with-oversight-ics">How Marcus Interacts with Oversight ICS<a class="headerlink" href="#how-marcus-interacts-with-oversight-ics" title="Permanent link"></a></h3>
+<ol>
+<li><strong>The Human-in-the-Loop:</strong> Marcus monitors the system via the dashboard. When Oversight’s Bytewax stream processor 
+   detects a Z-score drift (e.g., a pump is about to fail), the LangGraph Agent proposes a failover. Marcus receives 
+   this via the Grey Scale Dashboard. He relies on the system&rsquo;s <strong>Pessimistic Confirmation</strong>. The system won&rsquo;t act 
+   without his JWT-authenticated approval.</li>
+<li><strong>Dual-Authorization:</strong> If a catastrophic failure requires a high-impact override, Marcus knows he must get secondary
+   approval. He uses his Primary Operator JWT, but relies on a Supervisor to provide the Secondary Authorization to 
+   unlock the system.</li>
+<li><strong>Root Cause Analysis (RAG):</strong> Instead of guessing what went wrong, Marcus reads the AI&rsquo;s generated reasoning trace. 
+   Because the AI is grounded via pgVector and RAG, it provides Marcus with the exact technical manual excerpt and 
+   intent justification hash for the proposed command.</li>
+<li><strong>HMI Visual Cues:</strong> Marcus is trained to look for Oversight&rsquo;s specific HMI states. If he attempts a manual override 
+   that the AI deems unsafe, he expects to hear the &ldquo;Single Beep-Low tone&rdquo; auditory feedback and see the 
+   <strong>Yellow Banner + Timer</strong> (Safety Delay Active) enforcing a throttle on his commands to prevent panicked, unsafe
+   actions.</li>
+</ol>
+<hr />
+<p><strong>Quote:</strong> <em>&ldquo;I don&rsquo;t need a computer to run the plant for me. I need it to tell me exactly what&rsquo;s failing, why it&rsquo;s 
+failing, and give me a safe plan to fix it before things go critical. If I can&rsquo;t audit its logic, I&rsquo;m not hitting 
+approve.&rdquo;</em></p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

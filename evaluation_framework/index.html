@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OverSight ICS Evaluation Framework - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS Evaluation Framework";
+        var mkdocs_page_input_path = "evaluation_framework.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS Evaluation Framework</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-evaluation-framework">OverSight ICS Evaluation Framework<a class="headerlink" href="#oversight-ics-evaluation-framework" title="Permanent link"></a></h1>
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link"></a></h2>
+<p>The purpose of this document is to define the formal evaluation framework used to measure the performance, 
+reliability, and accuracy of the Oversight ICS Cognitive Reliability Agent. By calculating the <strong>F1 Score</strong> of the 
+Oversight Agent, we can establish the <strong>Ground Truth</strong> for industrial intent generation and the criteria for binary 
+classification.</p>
+<p>All framework performance claims (e.g., F1 Score ≥ 0.92) are <strong>reproducible</strong>, <strong>auditable</strong>, and <strong>traceable</strong>.</p>
+<h2 id="2-scope">2. Scope<a class="headerlink" href="#2-scope" title="Permanent link"></a></h2>
+<p>This framework applies to AI-generated alarms, predictive failover intents, and anomaly detection outputs. 
+It does <strong>NOT</strong> apply to Safety Instrumented Systems (SIS) or Hardwired Interlocks.</p>
+<h2 id="3-prediction-objectives">3. Prediction Objectives<a class="headerlink" href="#3-prediction-objectives" title="Permanent link"></a></h2>
+<p>The OverSight system generates predictions in three categories:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Description</th>
+<th>Output Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Failure Prediction</td>
+<td>Impending asset failure or fault condition</td>
+<td>Failover Intent</td>
+</tr>
+<tr>
+<td>Degradation Detection</td>
+<td>Performance decline requiring intervention</td>
+<td>Advisory / Alarm</td>
+</tr>
+<tr>
+<td>Anomaly Detection</td>
+<td>Statistical deviation from baseline behavior</td>
+<td>Alarm</td>
+</tr>
+</tbody>
+</table>
+<p>Each prediction includes a<code>timestamp</code>, <code>asset_id</code>, <code>prediction_type</code>, <code>confidence_score</code> (SCC), and<code>trace_id</code>
+(for auditability).</p>
+<h2 id="4-ground-truth-definition">4. Ground Truth Definition<a class="headerlink" href="#4-ground-truth-definition" title="Permanent link"></a></h2>
+<p>Ground truth events are defined using <strong>Multi-Source Validation</strong>:</p>
+<h3 id="41-sources-of-ground-truth">4.1 Sources of Ground Truth<a class="headerlink" href="#41-sources-of-ground-truth" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Sources</strong>: CMMS(Central Management System) records, Historian data, FAT/SAT test events, and commissioning phase
+   observations</li>
+<li><strong>Synthetic Telemetry</strong>: Modeled after Brownian Noise (BN) or specific sensor jitter.</li>
+<li><strong>Adversarial Testing</strong>: RAG test documents containing poisoned instructions to test the AI-04 Alignment Gate.</li>
+<li><strong>Human-In-The-Loop</strong>: Historial <code>trace_id</code> logs with positive operator attribution.</li>
+</ol>
+<h3 id="42-event-structure">4.2 Event Structure<a class="headerlink" href="#42-event-structure" title="Permanent link"></a></h3>
+<p>Each ground truth event must include:</p>
+<ul>
+<li><code>event_id</code> and <code>asset_id</code></li>
+<li><code>event_type</code> (failure, degradation, anomaly)</li>
+<li><code>start_time</code> and <code>end_time</code></li>
+<li><code>validation_source</code></li>
+<li><code>confidence_level</code> (operator / automated / test)</li>
+</ul>
+<h2 id="5-classification-temporal-mapping">5. Classification &amp; Temporal Mapping<a class="headerlink" href="#5-classification-temporal-mapping" title="Permanent link"></a></h2>
+<h3 id="51-classification">5.1 Classification<a class="headerlink" href="#51-classification" title="Permanent link"></a></h3>
+<p>Predictions are evaluated as <strong>True Positive (TP)</strong>, <strong>False Positive (FP)</strong>, <strong>False Negative</strong> or <strong>True Negative (TN)</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Classification</th>
+<th>Definition</th>
+<th style="text-align: left;">Meaning in Oversight ICS</th>
+<th style="text-align: left;">System Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>True Positive (TP)</td>
+<td>Prediction occurs AND matching ground truth event exists within Δt (delta time)</td>
+<td style="text-align: left;">Agent Correctly identifies a $Z$-Score drift and suggests the pre-verified manual failover plan.</td>
+<td style="text-align: left;">Process Stabilized</td>
+</tr>
+<tr>
+<td>False Positive (FP)</td>
+<td>Prediction occurs BUT no matching ground truth event</td>
+<td style="text-align: left;">Agent suggests a failover plan for a nominal process ($Z &lt; 1.5$) or &ldquo;Hallucinates&rdquo; a fault.</td>
+<td style="text-align: left;">Nuisance Alarm / Unnecessary Wear</td>
+</tr>
+<tr>
+<td>False Negative (FN)</td>
+<td>Ground truth event occurs BUT no prediction</td>
+<td style="text-align: left;">Agent fails to draft an intent or cite RAG context during a valid $Z$ &gt; 3.0 event.</td>
+<td style="text-align: left;"><strong>CRITICAL FAILURE / SAFETY TRIP</strong></td>
+</tr>
+<tr>
+<td>True Negative (TN)</td>
+<td>No prediction AND no event</td>
+<td style="text-align: left;">Agent remains in <strong>background monitoring</strong> while the process is stable.</td>
+<td style="text-align: left;">Baseline Operation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-temporal-matching-window-t">5.2. Temporal Matching Window (Δt)<a class="headerlink" href="#52-temporal-matching-window-t" title="Permanent link"></a></h3>
+<p>A prediction is considered <strong>correct</strong> if:</p>
+<pre><code>prediction_time ∈ [event_start - Δt, event_start + Δt]
+</code></pre>
+<p>Where:</p>
+<ul>
+<li><strong>Default Δt</strong> = ±5 minutes</li>
+<li><strong>Detection Latency Target</strong>: $\le 120$ seconds for critical assets.</li>
+</ul>
+<h3 id="6-formal-requirements-schema-enforcement">6. Formal Requirements &amp; Schema Enforcement<a class="headerlink" href="#6-formal-requirements-schema-enforcement" title="Permanent link"></a></h3>
+<p>To maintain alignment with the Oversight ICS <a href="/docs/alarm_philosophy.md">Alarm Philosophy</a> the following requirements
+are strictly enforced:</p>
+<h3 id="61-global-reliability-constant">6.1 Global Reliability Constant<a class="headerlink" href="#61-global-reliability-constant" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Statistical Correlation Score (SCC)</strong>: Must be $\ge 85\%$ for an intent to be classified as high confidence. 
+  Verified as $1 - p\text{-value}$ of the $Z$-drift. </li>
+<li><strong>$Z$-Score Alarm Limit: $Z \le 3.0$</strong></li>
+<li><strong>$Z$-Score Hysteresis: $Z \le 2.0$</strong></li>
+<li><strong>Detection Latency Max</strong>: $&gt; 120$ seconds for critical assets.</li>
+</ul>
+<h3 id="62-alarm-management-suppression">6.2 Alarm Management &amp; Suppression<a class="headerlink" href="#62-alarm-management-suppression" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Max Shelf Life</strong>: Configuration files <strong>MUST</strong> include <code>MAX_SELF_DURATION_MINUTES: 240</code>.</li>
+<li><strong>Max Concurrency Shelves</strong>: The system limits the number of concurrent shelved alarms to 5. If the limit is reached,
+ a <code>SHELVED_ALARM_CAPACITY_EXCEEDED</code> advisory is issued.</li>
+<li><strong>Alarm Flooding</strong>: Events with $&gt; 10$ alarms in $10$ minutes are excluded from standard scoring and flagged for a 
+  mandatory Alarm Rationalization Review.</li>
+</ul>
+<h3 id="63-operational-locks-fmea-alignment">6.3 Operational Locks (FMEA Alignment)<a class="headerlink" href="#63-operational-locks-fmea-alignment" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Stability Lock</strong>: A 15-minute (900s) lock on new alarms for a specific tag following an autonomous threshold update
+  to prevent chattering.</li>
+<li><strong>I-term Reset Lock</strong>: A 120-second period for integral-term stabilization following a state change.</li>
+<li><strong>Pessimistic Timeout</strong>: A 5-second network handshake timeout for Southbound Driver confirmation.</li>
+</ul>
+<h3 id="64-kpi-distribution-monitoring">6.4 KPI &amp; Distribution Monitoring<a class="headerlink" href="#64-kpi-distribution-monitoring" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Critical Distribution Cap</strong>: If <strong>Critical</strong> alarms exceed 10% of the total distribution over any 4-hour period, the
+  system issues a <code>KPI_DISTRIBUTION_DEVIATION</code> advisory.</li>
+<li><strong>Alarm Flood Threshold</strong>: Triggers if &gt;10 alarms occur within 10 minutes.</li>
+<li><strong>Stale Alarm Threshold</strong>: Flagged for intervention if active beyound 24 hours.</li>
+</ul>
+<h2 id="data-set-requirements">Data Set Requirements<a class="headerlink" href="#data-set-requirements" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;dataset_version&quot;: &quot;2026.04.15&quot;,
+  &quot;plant_id&quot;: &quot;PLANT-001&quot;,
+  &quot;assets_included&quot;: 42,
+  &quot;time_range&quot;: &quot;30 days&quot;,
+  &quot;label_sources&quot;: [&quot;CMMS&quot;, &quot;Historian&quot;, &quot;Operator&quot;]
+}
+</code></pre>
+<h2 id="8-metrics">8. Metrics<a class="headerlink" href="#8-metrics" title="Permanent link"></a></h2>
+<h3 id="81-core-metrics">8.1 Core Metrics<a class="headerlink" href="#81-core-metrics" title="Permanent link"></a></h3>
+<p>Precision:</p>
+<pre><code>Precision = TP / (TP + FP)
+</code></pre>
+<p>Recall:</p>
+<pre><code>Recall = TP / (TP + FN)
+</code></pre>
+<p>F1 Score:</p>
+<pre><code>F1 = 2 × (Precision × Recall) / (Precision + Recall)
+</code></pre>
+<h3 id="82-additional-metrics">8.2 Additional Metrics<a class="headerlink" href="#82-additional-metrics" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Description</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>False Positive Rate</td>
+<td>FP / (FP + TN)</td>
+<td>≤ 5%</td>
+</tr>
+<tr>
+<td>Detection Latency</td>
+<td>Time to detect event</td>
+<td>≤ 120s</td>
+</tr>
+<tr>
+<td>Alarm Accuracy</td>
+<td>Correct alarms / total alarms</td>
+<td>≥ 90%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-acceptance-criteria">9. Acceptance Criteria<a class="headerlink" href="#9-acceptance-criteria" title="Permanent link"></a></h2>
+<p>The system is considered <strong>production-ready</strong> when:</p>
+<ul>
+<li>F1 Score ≥ <strong>0.92</strong></li>
+<li>False Positive Rate ≤ <strong>5%</strong></li>
+<li>Detection Latency ≤ <strong>120 seconds</strong></li>
+<li>No critical missed failures (FN) in validation dataset</li>
+</ul>
+<h2 id="10-evaluation-procedure">10. Evaluation Procedure<a class="headerlink" href="#10-evaluation-procedure" title="Permanent link"></a></h2>
+<h3 id="101-standard-evaluation-flow">10.1 Standard Evaluation Flow<a class="headerlink" href="#101-standard-evaluation-flow" title="Permanent link"></a></h3>
+<ol>
+<li>Load versioned dataset</li>
+<li>Run the system in <strong>Shadow Mode</strong> (no control authority)</li>
+<li>Capture predictions</li>
+<li>Match predictions to ground truth events</li>
+<li>Classify TP / FP / FN / TN</li>
+<li>Compute metrics</li>
+<li>Store results</li>
+</ol>
+<h3 id="102-shadow-mode-requirements">10.2 Shadow Mode Requirements<a class="headerlink" href="#102-shadow-mode-requirements" title="Permanent link"></a></h3>
+<ol>
+<li>No commands are issued to control systems</li>
+<li>Full reasoning pipeline active</li>
+<li>All predictions logged</li>
+</ol>
+<h3 id="103-output-storage">10.3 Output Storage<a class="headerlink" href="#103-output-storage" title="Permanent link"></a></h3>
+<p>Results must be stored in:</p>
+<ul>
+<li>Audit log system</li>
+<li>Evaluation report database</li>
+<li>Versioned evaluation artifacts</li>
+</ul>
+<h2 id="11-audit-traceability">11. Audit &amp; Traceability<a class="headerlink" href="#11-audit-traceability" title="Permanent link"></a></h2>
+<p>All evaluation runs must include:</p>
+<ul>
+<li><code>dataset_version</code></li>
+<li><code>model_version</code></li>
+<li><code>knowledge_version</code></li>
+<li><code>timestamp</code></li>
+<li><code>operator_id</code> (if manual)</li>
+</ul>
+<h3 id="111-traceability-requirement">11.1 Traceability Requirement<a class="headerlink" href="#111-traceability-requirement" title="Permanent link"></a></h3>
+<p>Each prediction must be traceable via:</p>
+<ul>
+<li><code>trace_id</code></li>
+<li>Associated reasoning logs</li>
+<li>Source telemetry data</li>
+</ul>
+<h2 id="12-evaluation-frequency">12. Evaluation Frequency<a class="headerlink" href="#12-evaluation-frequency" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commissioning</td>
+<td>Initial validation run</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Monthly</td>
+</tr>
+<tr>
+<td>After Model Update</td>
+<td>Mandatory re-evaluation</td>
+</tr>
+<tr>
+<td>After Dataset Update</td>
+<td>Mandatory re-evaluation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-model-drift-monitoring">13. Model Drift Monitoring<a class="headerlink" href="#13-model-drift-monitoring" title="Permanent link"></a></h2>
+<h3 id="131-drift-indicators">13.1 Drift Indicators<a class="headerlink" href="#131-drift-indicators" title="Permanent link"></a></h3>
+<ul>
+<li>F1 Score drop &gt; 5%</li>
+<li>Increase in False Positives</li>
+<li>Change in baseline Z-score distribution</li>
+</ul>
+<h3 id="132-drift-response">13.2 Drift Response<a class="headerlink" href="#132-drift-response" title="Permanent link"></a></h3>
+<ul>
+<li>Trigger investigation</li>
+<li>Re-run evaluation</li>
+<li>Rollback model if required</li>
+<li>Notify engineering team</li>
+</ul>
+<h2 id="14-limitations">14. Limitations<a class="headerlink" href="#14-limitations" title="Permanent link"></a></h2>
+<ul>
+<li>Performance depends on data quality</li>
+<li>Sensor failures may impact accuracy</li>
+<li>Rare events may be underrepresented</li>
+<li>Ground truth labeling may include human bias</li>
+</ul>
+<h2 id="15-related-documents">15. Related Documents<a class="headerlink" href="#15-related-documents" title="Permanent link"></a></h2>
+<ul>
+<li>README.md</li>
+<li>SOP-AI-01 RAG Ingestion</li>
+<li>FAT-03 Test Protocol</li>
+<li>TELEMETRY_DATABASE_SCHEMA.md</li>
+<li>AUDIT_LOGGING.md</li>
+<li>CHANGE_MANAGEMENT_LOG.md</li>
+</ul>
+<h2 id="16-final-statement">16. Final Statement<a class="headerlink" href="#16-final-statement" title="Permanent link"></a></h2>
+<blockquote>
+<p>All performance claims made by OverSight ICS must be derived from this framework.</p>
+</blockquote>
+<p>Unverified or non-reproducible metrics are <strong>not permitted</strong> in any customer-facing material.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

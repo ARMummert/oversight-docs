@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Oversight ICS Sofware Bill of Materials and Spares - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Oversight ICS Sofware Bill of Materials and Spares";
+        var mkdocs_page_input_path = "bill_of_materials_and_spares.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Oversight ICS Sofware Bill of Materials and Spares</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-sofware-bill-of-materials-and-spares">Oversight ICS Sofware Bill of Materials and Spares<a class="headerlink" href="#oversight-ics-sofware-bill-of-materials-and-spares" title="Permanent link"></a></h1>
+<h2 id="1-purpose-and-scope">1. Purpose and Scope<a class="headerlink" href="#1-purpose-and-scope" title="Permanent link"></a></h2>
+<p>This document tracks the verified software components, firmware versions, and approved physical hardware spares for 
+Oversight.  Any component not listed here is considered <strong>Untrusted</strong> and will be blocked by the <strong>Level 1.5 
+Arbitrator</strong> and <strong>TPM 2.0</strong> policies.</p>
+<h2 id="2-software-bill-of-materials-sbom">2. Software Bill of Materials (SBOM)<a class="headerlink" href="#2-software-bill-of-materials-sbom" title="Permanent link"></a></h2>
+<p>The following software stack is measured during the TPM 2.0 boot sequence (PCR Measurements).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Hash/Source</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>LangGraph Orchestrator</strong></td>
+<td style="text-align: left;">v0.1.0-alpha</td>
+<td style="text-align: left;">Custom (TBD)</td>
+<td style="text-align: left;">Cognitive Agent logic &amp; state management.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Semantic Gatekeeper</strong></td>
+<td style="text-align: left;">v0.1.0-alpha</td>
+<td style="text-align: left;">Custom (TBD)</td>
+<td style="text-align: left;">Deterministic boundary checking of AI intents.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Python Runtime</strong></td>
+<td style="text-align: left;">v3.11-slim</td>
+<td style="text-align: left;">Official Docker</td>
+<td style="text-align: left;">Base environment for Agent execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TPM2-TSS</strong></td>
+<td style="text-align: left;">v4.0.1</td>
+<td style="text-align: left;">OpenSource</td>
+<td style="text-align: left;">TCG software stack for TPM interaction.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TimescaleDB</strong></td>
+<td style="text-align: left;">v2.13.0</td>
+<td style="text-align: left;">TimescaleDB</td>
+<td style="text-align: left;">Telemetry historian and immutable audit log.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mosquitto MQTT</strong></td>
+<td style="text-align: left;">v2.0.18</td>
+<td style="text-align: left;">Eclipse</td>
+<td style="text-align: left;">Message broker for Level 1.5 - Level 3 comms.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-software-integrity-validation">2.1 Software Integrity Validation<a class="headerlink" href="#21-software-integrity-validation" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Measurement:</strong> During development, <code>TBD</code> hashes will be replaced with SHA-256 sums of the compiled binaries/scripts.</li>
+<li><strong>PCR Policy:</strong> PCR 10 will be used to store the measurement of the <code>Semantic Gatekeeper</code> to ensure it hasn&rsquo;t been 
+  tampered with before a Write-Access Token is issued.</li>
+</ul>
+<h2 id="3-approved-field-asset-spares-hardware">3. Approved Field Asset Spares (Hardware)<a class="headerlink" href="#3-approved-field-asset-spares-hardware" title="Permanent link"></a></h2>
+<p>Only the following Hardware IDs/Models are authorized to be integrated into the control loop.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Part Name</th>
+<th style="text-align: left;">Manufacturer</th>
+<th style="text-align: left;">Model Number</th>
+<th style="text-align: left;">Spec / Firmware</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Edge Gateway</strong></td>
+<td style="text-align: left;">Raspberry Pi / Advantech</td>
+<td style="text-align: left;">5 / UNO-2271G</td>
+<td style="text-align: left;">8GB RAM / TPM 2.0 via SPI</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Primary PLC</strong></td>
+<td style="text-align: left;">Opto 22 (Example)</td>
+<td style="text-align: left;">GRV-EPIC-PR1</td>
+<td style="text-align: left;">Firmware v3.5.x</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>VFD</strong></td>
+<td style="text-align: left;">Danfoss</td>
+<td style="text-align: left;">VLT-FC302</td>
+<td style="text-align: left;">Modbus TCP Interface</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Power Supply</strong></td>
+<td style="text-align: left;">Phoenix Contact</td>
+<td style="text-align: left;">QUINT4-PS</td>
+<td style="text-align: left;">24VDC / 10A</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-spares-replacement-policy">4. Spares &amp; Replacement Policy<a class="headerlink" href="#4-spares-replacement-policy" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Firmware Lock:</strong> Any replacement hardware must have its firmware flashed to the version listed in Section 3 
+  before commissioning.</li>
+<li><strong>Registration:</strong> New hardware must have its unique UUID/MAC address registered in the <code>Asset_Registry</code> table in 
+  TimescaleDB before the Arbitrator will acknowledge it.</li>
+</ul>
+<h2 id="5-maintenance-inventory">5. Maintenance &amp; Inventory<a class="headerlink" href="#5-maintenance-inventory" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Critical Spares:</strong> One (1) Primary PLC, one (1) Edge Gateway, and one (1) TPM SPI Module must be kept in anti-static 
+  storage on-site.</li>
+<li><strong>Audit Cycle:</strong> Software versions are to be reviewed quarterly. &ldquo;TBD&rdquo; versions must be finalized before the system 
+  moves from <code>COMMISSIONING_MODE</code> to <code>CONTROL_ENABLED</code>.</li>
+</ul>
+<h2 id="6-supply-chain-custody-anti-tamper-verification">6. Supply Chain Custody &amp; Anti-Tamper Verification<a class="headerlink" href="#6-supply-chain-custody-anti-tamper-verification" title="Permanent link"></a></h2>
+<p>To prevent hardware implants or firmware tampering during transit, all incoming replacement hardware must undergo 
+strict supply chain custody validation before being introduced to the Level 3.5 IDMZ or the OT network:</p>
+<ul>
+<li><strong>Visual &amp; Physical Inspection</strong>: </li>
+<li>Verify that all vendor tamper-evident seals on the shipping container and anti-static bags are intact.</li>
+<li>Any hardware arriving with broken seals must be quarantined and marked <code>UNTRUSTED</code>.</li>
+<li><strong>Hardware Root of Trust (TPM Verification)</strong>:</li>
+<li>For Edge Gateways, extract the TPM Endorsement Key (EK) certificate via an isolated, air-gapped terminal.</li>
+<li>Cryptographically verify the EK certificate against the hardware manufacturer&rsquo;s published root CA.</li>
+<li><strong>Firmware Cryptographic Hash Validation</strong>:</li>
+<li>Before provisioning a new PLC or VFD, dump the factory firmware and calculate its SHA-256 hash.</li>
+<li>Compare this hash strictly against the vendor&rsquo;s officially published manifest. If the hash does not match, the asset 
+    must not be connected to the Level 2 control loop.</li>
+<li><strong>Cold Room Provisioning</strong>: </li>
+<li>All hashing and verification must occur in an isolated staging environment (Level 1 cold loop) prior to live network 
+    registration.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

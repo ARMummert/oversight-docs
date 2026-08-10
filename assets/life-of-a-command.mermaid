@@ -1,0 +1,20 @@
+---
+title: "The Life of a Command"
+---
+sequenceDiagram
+    participant P as Primary Hardware (Level 1)
+    participant G as Edge Gateway (OPC-UA)
+    participant A as LangGraph Agent (Level 3.5)
+    participant DB as Postgres (Outbox/Timescale)
+    participant S as Southbound Driver
+
+    P->>G: Telemetry (Pressure/Heartbeat)
+    G->>A: MQTT Publish (UNS Path)
+    Note over A: Detects Logic Drift / Predictive Failure
+    A->>DB: INSERT Command (Status: PENDING)
+    DB-->>S: CDC Trigger (Listen)
+    S->>P: Execute Switchover Command
+    P-->>S: Hardware ACK (Success)
+    S->>DB: UPDATE Command (Status: COMPLETED)
+    DB-->>A: Notify Success
+    Note over A: Pessimistic Confirmation Received

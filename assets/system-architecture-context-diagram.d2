@@ -1,0 +1,58 @@
+direction: down
+title: |md
+  # System Context: Oversight Event-Driven Middleware
+| {near: top-center}
+
+vars: {
+  d2-config: {
+    theme-id: 1
+    layout-engine: elk
+  }
+}
+classes: {
+  system: {
+    style: {
+      fill: "#1168bd"
+      font-color: white
+      border-radius: 5
+    }
+  }
+  user: {
+    shape: c4-person
+    style: { fill: "#083f72"; font-color: white }
+  }
+  external: {
+    shape: rectangle
+    style: { fill: "#999999"; font-color: white }
+  }
+}
+
+# Actors
+operator: System Operator { class: user; description: "A Field Operator, Lead Safety Engineer,\n or Plant Manager operating the\n Oversight System." }
+
+# Core System (No Internet Egress)
+oversight: Oversight System{
+  class: system
+  description: "Allows operators to monitor telemetry, review AI-generated intents and reasoning traces, and approve or reject failover commands for industrial process assets."
+  }
+
+# External Systems
+hardware: Industrial Plant Control Assets & Sensors {
+  class: external
+  description: "Downstream local hardware streaming high-velocity telemetry\n and accepting deterministic state-change commands."
+}
+idp: Corporate Identity Provider (SSO) {
+  class: external
+  description: "Local OIDC provider for federated identity\n verification using RSA256-signed JWTs."
+}
+local_storage: Enterprise / On-Site Data Hub {
+  class: external
+  description: "Local storage for long-term historical time-series preservation."
+}
+
+operator -> oversight: "Monitors telemetry, authenticates, and authorizes\n failover intents using a secure dashboard"
+oversight -> idp: "Validates user RSA256-signed JWTs"
+hardware -> oversight: "Streams high-frequency telemetry"
+oversight -> hardware: "Executes hardware notarized failover intents"
+oversight -> local_storage: "Pushes performance logs and historical telemetry"
+local_storage -> oversight: "Supplies vendor manuals for the\n systems pgVector database."

@@ -1,0 +1,57 @@
+---
+title: "Oversight ICS: RBAC Identity Tree (Hierarchy of Intent)"
+config:
+  theme: dark
+  themeVariables:
+    fontSize: "14px"
+    fontFamily: "Monserrat"
+  flowchart:
+    nodeSpacing: 50
+    rankSpacing: 80
+---
+flowchart LR
+    %% Styling Classes
+    classDef root fill:#2d3436,stroke:#dfe6e9,stroke-width:2px;
+    classDef role fill:#0984e3,stroke:#74b9ff,stroke-width:2px;
+    classDef capability fill:#6c5ce7,stroke:#a29bfe,stroke-width:1px,stroke-dasharray: 5 5;
+    classDef restriction fill:#d63031,stroke:#ff7675,stroke-width:2px;
+    classDef hardware fill:#00b894,stroke:#55efc4,stroke-width:2px;
+
+    %% Root
+    Root((Oversight System Permissions)):::root
+
+    %% Roles
+    Root --> OP[Operator]:::role
+    Root --> AI[AI Agent / LangGraph]:::role
+    Root --> SUP[Supervisor]:::role
+    Root --> ENG[Safety Engineer]:::role
+
+    %% Operator Branch
+    OP --> OP_R[Read UNS Data]:::capability
+    OP --> OP_P[Propose Manual Intent]:::capability
+    OP --> OP_X[Limited Setpoint Adjustment]:::capability
+
+    %% AI Agent Branch
+    AI --> AI_R[Read All Telemetry]:::capability
+    AI --> AI_S[Sign Intent via TPM 2.0]:::capability
+    AI --> AI_P[Propose Logic Intent]:::capability
+    AI -- Restricted --> NO_X[CANNOT Directly Execute]:::restriction
+
+    %% Supervisor Branch
+    SUP --> SUP_R[Audit Logs / History]:::capability
+    SUP --> SUP_A[Approve AI Proposals]:::capability
+    SUP --> SUP_E[Execute Hardware Command]:::capability
+
+    %% Safety Engineer Branch
+    ENG --> ENG_K[Physical Key Access]:::hardware
+    ENG --> ENG_B[Bypass Semantic Gatekeeper]:::hardware
+    ENG --> ENG_M[Direct PLC Maintenance]:::hardware
+
+    %% Connectivity to Hardware
+    OP_P -.-> Gatekeeper{Semantic Gatekeeper}
+    AI_P -.-> Gatekeeper
+    SUP_E --> Gatekeeper
+    Gatekeeper --> PLC[(Field PLC)]:::hardware
+
+    %% Layout Tuning
+    linkStyle default stroke:#dfe6e9,stroke-width:1px;

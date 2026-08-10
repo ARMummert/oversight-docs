@@ -1,0 +1,86 @@
+vars: {
+  d2-config: {
+    theme-id: 1
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: |md
+  # Oversight Purdue Model Context View
+| {near: top-center}
+
+*.*.style.font-size: 28
+
+# Persona
+operator: System Operator {
+  description: "A Field Operator,\n Lead Safety Engineer,\n or Plant Manager\n operating the\n Oversight System."
+  shape: person
+  style: { fill: "#083f72"; font-color: white  }
+}
+operator.description.style: { font-size: 20; fill: transparent; stroke: transparent; font-color: white }
+
+# Oversight System
+oversight_system: Oversight ICS Middleware (Levels 4/3.5/1.5) {
+  shape: rectangle
+  description: "Cognitive Reliability and Predictive Failover Middleware for Industrial Control Processes running an asynchronous CQRS data pipeline within the IDMZ."
+  style: {
+    text-transform: uppercase;
+    stroke-width: 3
+    stroke-dash: 6
+    }
+}
+
+# External Systems
+cloud_erp: Enterprise Cloud Hub (Level 5) {
+  shape: rectangle
+  description: "Central corporate management system tracking fleet logistics, big-data summaries, and transactional metrics."
+  style: {text-transform: uppercase; stroke-width: 3}
+}
+
+site_operations: Site Operations (Level 3) {
+  shape: rectangle
+  description: "Existing SCADA, MES, and Operational Historians providing the foundational Operational Truth."
+  style: {text-transform: uppercase; stroke-width: 3}
+}
+
+field_assets: OT Physical Plane (Level 0-2) {
+  shape: rectangle
+  description: "Physical process components, I/O modules, and field actuators modulating real-world kinetics."
+  style: {text-transform: uppercase; stroke-width: 3}
+}
+
+safety_sis: Safety Instrumented System (SIS) {
+  shape: rectangle
+  description: "Independent safety system with hardwired logic, enforcing critical safety functions and emergency shutdowns."
+  style: {text-transform: uppercase; stroke-width: 3}
+}
+
+# Persona Connections
+operator -> oversight_system: "Monitors telemetry, authenticates,\n and authorizes execution intents using" {
+  style: {font-size: 28}
+}
+
+# System Connections
+site_operations -> oversight_system: "Provides baseline operational telemetry\n and operational truth." {
+  style: {font-size: 28}
+}
+
+field_assets -> oversight_system: "Streams real-time telemetry\n (OPC-UA / Modbus / EtherNet/IP)" {
+  style: {font-size: 28}
+}
+oversight_system -> field_assets: "Executes hardware-notarized control intents\n & maintains safety watchdog heartbeat" {
+  style: {font-size: 28}
+}
+oversight_system -> cloud_erp: "Pushes batched performance/logs\n& pulls documentation/manuals,\n Uses Corporate IdP for authentication" {
+  style: { font-size: 28 }
+}
+
+# SIS Connections
+safety_sis -> field_assets: "Hardwired Interlock Overrides\n (Absolute Priority)" {
+  style: {font-size: 28}
+}
+field_assets -> safety_sis: "Dedicated hardwired safety loop" {
+  style: {font-size: 28}
+}

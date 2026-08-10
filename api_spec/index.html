@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OverSight ICS: API &amp; Message Schema Specification (v1) - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OverSight ICS: API \u0026amp; Message Schema Specification (v1)";
+        var mkdocs_page_input_path = "api_spec.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OverSight ICS: API &amp; Message Schema Specification (v1)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-api-message-schema-specification-v1">OverSight ICS: API &amp; Message Schema Specification (v1)<a class="headerlink" href="#oversight-ics-api-message-schema-specification-v1" title="Permanent link"></a></h1>
+<p><strong>Security Level:</strong> <code>Level 3.5 IDMZ</code>
+<strong>Version</strong>: 1.3 (N-1 Deprecation Policy) See <a href="/docs/versioning_policy.md">Versioning Policy</a></p>
+<h2 id="1-authentication-authorization">1. Authentication &amp; Authorization<a class="headerlink" href="#1-authentication-authorization" title="Permanent link"></a></h2>
+<p>All API requests must be authenticated using RS256-signed JWTs.</p>
+<h3 id="11-mandatory-headers">1.1 Mandatory Headers<a class="headerlink" href="#11-mandatory-headers" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Header</th>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>X-Site-ID</code></td>
+<td style="text-align: left;"><code>UUID</code></td>
+<td style="text-align: left;">Identifies the physical plant location.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Authorization</code></td>
+<td style="text-align: left;"><code>Bearer &lt;JWT&gt;</code></td>
+<td style="text-align: left;"><strong>Primary Operator JWT</strong> (8-hour shift expiry).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>X-Secondary-Authorization</code></td>
+<td style="text-align: left;"><code>Bearer &lt;JWT&gt;</code></td>
+<td style="text-align: left;"><strong>Secondary Operator JWT</strong> required for High-Impact or Override.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-security-token-strategy">1.2 Security &amp; Token Strategy<a class="headerlink" href="#12-security-token-strategy" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Dual-Auth Enforcement</strong>: For <code>/orchestration/override</code>, the system verifies <code>primary_jwt.sub != secondary_jwt.sub</code>.</li>
+<li><strong>Role Requirements</strong>: The secondary token must contain a <code>Supervisor</code> or <code>Safety Lead</code> claim.</li>
+<li><strong>Grace Window</strong>: Expired tokens during high-impact events are cached for 60 seconds to allow for re-authentication 
+  without command loss.</li>
+</ul>
+<h3 id="13-jwt-validation-grace-period">1.3 JWT Validation &amp; Grace Period<a class="headerlink" href="#13-jwt-validation-grace-period" title="Permanent link"></a></h3>
+<p>The Gateway enforces the following logic to maintain cognitive reliability during failover operations:</p>
+<ul>
+<li><strong>Signature Verification</strong>: All tokens are validated using RS256 against the IdP&rsquo;s(Identity Provider) public key.</li>
+<li><strong>Claim Validation</strong>: The system strictly validates <code>exp</code> (expiry), <code>nbf</code> (not before), and <code>iss</code> (issuer) claims.</li>
+<li><strong>Refresh Strategy</strong>: Refresh tokens are <strong>disabled</strong> for Level 3.5 IDMZ. A session expiration requires fill
+  reauthentication.</li>
+<li><strong>Operational Persistence</strong>: If a token expires during an active <code>/api/v1/incidents/{id}/confirm</code> request, the
+  <strong>60-second grace window</strong> allows the handshake to complete, preventing a safety trip due to administrator timeout.</li>
+</ul>
+<h3 id="14-dual-authorization-two-key-protocol">1.4 Dual-Authorization (Two-Key Protocol)<a class="headerlink" href="#14-dual-authorization-two-key-protocol" title="Permanent link"></a></h3>
+<p>The <code>/orchestration/override</code> endpoint requires two distinct authorized users to be physically or logically present.</p>
+<ul>
+<li><strong>Secondary JWT Obtainment</strong>: The secondary JWT is generated via a separate HMI challenge-response process. This
+  requires a different set of credentials than the primary operator to guarantee true two-person integrity.</li>
+<li><strong>Anti-Self-Authorization</strong>: The Gateway cross-references the <code>sub</code> (subject) claims of both the primary and secondary
+  JWTs to prevent self-authorization. If <code>primary_jwt.sub == secondary_jwt.sub</code>, the request is rejected with a 
+  <code>401 ERROR_INVALID_DUAL_AUTH</code> error.</li>
+<li><strong>Role Separation</strong>: While the primary JWT requires a <code>Operator</code> role, the secondary JWT must contain a 
+  <code>Supervisor</code> or <code>Safety Lead</code> claim.</li>
+</ul>
+<h3 id="15-oauth2oidc-token-scope-mappings">1.5 OAuth2/OIDC Token Scope Mappings<a class="headerlink" href="#15-oauth2oidc-token-scope-mappings" title="Permanent link"></a></h3>
+<p>To enforce Least Privilege across the Enterprise, the Gateway validates specific OAuth2 scopes embedded within the JWT. </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint Family</th>
+<th style="text-align: left;">Required Scope</th>
+<th style="text-align: left;">Permitted Roles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/telemetry/*</code></td>
+<td style="text-align: left;"><code>telemetry:read</code></td>
+<td style="text-align: left;">Operator, Supervisor, Safety Lead</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/telemetry/ingest</code></td>
+<td style="text-align: left;"><code>telemetry:write</code></td>
+<td style="text-align: left;">Service_Account (Northbound Ingest)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/orchestration/intent-log</code></td>
+<td style="text-align: left;"><code>orchestration:read</code></td>
+<td style="text-align: left;">Operator, Supervisor, Safety Lead</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/orchestration/override</code></td>
+<td style="text-align: left;"><code>orchestration:execute</code></td>
+<td style="text-align: left;">Supervisor, Safety Lead (Dual-Auth Only)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/incidents/*/confirm</code></td>
+<td style="text-align: left;"><code>incident:confirm</code></td>
+<td style="text-align: left;">Operator, Supervisor</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/*/mode</code></td>
+<td style="text-align: left;"><code>asset:maintenance</code></td>
+<td style="text-align: left;">Supervisor, Safety Lead</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/alarms/*</code></td>
+<td style="text-align: left;"><code>alarms:acknowledge</code></td>
+<td style="text-align: left;">Operator, Supervisor, Safety Lead</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-api-endpoints">2. API Endpoints<a class="headerlink" href="#2-api-endpoints" title="Permanent link"></a></h2>
+<h3 id="21-asset-management">2.1 Asset Management<a class="headerlink" href="#21-asset-management" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieve all monitored assets and current Z-Scores.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/{id}</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Get health metrics, RAG-indexed manuals, and asset history.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/{id}/mode</code></td>
+<td style="text-align: left;"><code>PATCH</code></td>
+<td style="text-align: left;">Places an asset into Maintenance or Out of Service Mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/{id}/lockout</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Manually Tag-Out an asset to prevent AI-driven failover.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/{id}/lockout</code></td>
+<td style="text-align: left;"><code>DELETE</code></td>
+<td style="text-align: left;">Unlock / Reverse a manual tag-out state on an asset.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-telemetry-ingest-southbound">2.2 Telemetry Ingest (Southbound)<a class="headerlink" href="#22-telemetry-ingest-southbound" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Rate Limit</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/telemetry/ingest</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">1000 req/s</td>
+<td style="text-align: left;">Receive telemetry; strictly requires <strong>Integer</strong> Quality field.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/telemetry/query</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">100 req/s</td>
+<td style="text-align: left;">Retrieve telemetry data from WORM for a specific asset.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="telemetry-payload-schema">Telemetry Payload Schema<a class="headerlink" href="#telemetry-payload-schema" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;tag_id&quot;: &quot;PUMP_01_FLOW&quot;,
+  &quot;value&quot;: 45.2,
+  &quot;quality&quot;: 192, 
+  &quot;timestamp&quot;: &quot;2026-04-24T11:53:00Z&quot;
+}
+</code></pre>
+<h3 id="23-incident-orchestration-context">2.3 Incident Orchestration &amp; Context<a class="headerlink" href="#23-incident-orchestration-context" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Rate Limit</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/incidents/active</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">10 req/s</td>
+<td style="text-align: left;">List all open anomalies requiring operator attention.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/incidents/{id}/trace</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">10 req/s</td>
+<td style="text-align: left;">Retrieve the LangGraph reasoning trace for an incident.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/incidents/{id}/confirm</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><strong>1 req/2s</strong></td>
+<td style="text-align: left;">Execute <strong>Pessimistic Confirmation</strong> (Rate-limited).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/orchestration/override</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">10 req/s</td>
+<td style="text-align: left;"><strong>Two-Key Bypass</strong>. Requires secondary JWT for High Impact.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/orchestration/intent-log</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">10 req/s</td>
+<td style="text-align: left;">Retrieves the immutable reasoning trace before confirmation.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="orchestration-payload-schema-northbound">Orchestration Payload Schema (Northbound)<a class="headerlink" href="#orchestration-payload-schema-northbound" title="Permanent link"></a></h4>
+<p><code>/api/v1/incidents/{id}/confirm (POST)</code> </p>
+<pre><code class="language-json">{
+  &quot;operator_intent&quot;: &quot;CONFIRM_TRIP&quot;,
+  &quot;reasoning_trace_hash&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;,
+  &quot;comments&quot;: &quot;Confirmed anomalous vibration signature on secondary bearing.&quot;
+}
+</code></pre>
+<p><code>/api/v1/orchestration/override (POST)</code></p>
+<pre><code class="language-json">{
+  &quot;target_asset_id&quot;: &quot;PUMP_01&quot;,
+  &quot;override_action&quot;: &quot;MANUAL_RESTART&quot;,
+  &quot;justification&quot;: &quot;Cleared physical obstruction on Line 1. Ready for startup.&quot;,
+  &quot;secondary_token_present&quot;: true
+}
+</code></pre>
+<h3 id="24-system-health-integrity">2.4 System Health &amp; Integrity<a class="headerlink" href="#24-system-health-integrity" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/system/heartbeat</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Driver reports latency, PTP sync, and CPU usage.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/system/heartbeat</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Exposes PTP sync status and watchdog latency for the HMI and SIEM.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/audit/verify</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Initiates SHA-256 integrity check across WORM log blocks.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/system/compliance</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Returns current Continuous Compliance Monitoring metrics.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="system-heartbeat-payload-schema-get">System Heartbeat Payload Schema (<code>GET</code>)<a class="headerlink" href="#system-heartbeat-payload-schema-get" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;ptp_sync_status&quot;: &quot;LOCKED&quot;,
+  &quot;clock_drift_ns&quot;: 120,
+  &quot;watchdog_pet_latency_ms&quot;: 15
+}
+</code></pre>
+<h3 id="25-alarm-management">2.5 Alarm Management<a class="headerlink" href="#25-alarm-management" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/alarms/active</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">List all active alarms.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/alarms/{id}/acknowledge</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Acknowledge an alarm.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/alarms/{id}/shelve</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Shelve an alarm.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/alarms/{id}/unshelve</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Unshelve an alarm.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="alarm-management-payload-schemas">Alarm Management Payload Schemas<a class="headerlink" href="#alarm-management-payload-schemas" title="Permanent link"></a></h4>
+<p><code>/api/v1/alarms/{id}/acknowledge (POST)</code></p>
+<pre><code class="language-json">{
+  &quot;operator_comment&quot;: &quot;Validating sensor drift per SOP-01&quot;
+}
+</code></pre>
+<p><code>/api/v1/alarms/{id}/shelve (POST)</code></p>
+<pre><code class="language-json">{
+  &quot;max_shelf_duration_minutes&quot;: 240, 
+  &quot;reason_code&quot;: &quot;MAINTENANCE&quot;
+}
+</code></pre>
+<h3 id="26-agentic-cognitive-engine-langgraph-rag">2.6 Agentic &amp; Cognitive Engine (LangGraph / RAG)<a class="headerlink" href="#26-agentic-cognitive-engine-langgraph-rag" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/execute</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Execute an agentic task (e.g., RAG query, manual snippet retrieval). Payload must include <code>task_type</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/analyze</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Requests a reasoning trace and a RAG-proposed action from the AI based on a process deviation. Retrieves current snapshot from Redis.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/task-log</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieve the immutable log of agentic task executions, including inputs, outputs, and reasoning traces.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/forbidden-list</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieve the current list of forbidden registers or commands that the AI is not allowed to interact with.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/confidence</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieves the statistical correlation score. If &lt;85%, routes to Sensor Validation SOP.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/agent/test/adversarial</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Runs the LG-05 prompt injection FAT test to ensure the agent correctly neutralizes adversarial input.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="27-control-authority-autonomous-override">2.7 Control Authority &amp; Autonomous Override<a class="headerlink" href="#27-control-authority-autonomous-override" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/control/status</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieves the current control authority status. Possible values: <code>HUMAN</code>, <code>AI</code>, <code>LOCKED</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/control/override/safe-state</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Executed by the predictive failover agent when a critical alarm times out (&lt; 60 seconds). Initiates Emergency Trip/Halt.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/control/override/load-reduce</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Executed when a &lsquo;High&rsquo; alarm times out (&lt; 5 minutes). Agent safely reduces the system load to baseline parameters.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/control/authority</code></td>
+<td style="text-align: left;"><code>PUT</code></td>
+<td style="text-align: left;">Toggles the control authority between manual (human) and autonomous (agent) modes using <strong>Bumpless Transfer</strong>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="authority-payload-schema">Authority Payload Schema<a class="headerlink" href="#authority-payload-schema" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;requested_mode&quot;: &quot;AUTONOMOUS&quot;,
+  &quot;write_access_token_req&quot;: true
+}
+</code></pre>
+<h3 id="28-hardware-root-of-trust">2.8 Hardware Root of Trust<a class="headerlink" href="#28-hardware-root-of-trust" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/security/attest</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Retrieves the current PCR (Platform Configuration Register) values from the TPM 2.0 and the active SHA-256 hash of the Southbound Driver.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="hardware-root-of-trust-payload-schema">Hardware Root of Trust Payload Schema<a class="headerlink" href="#hardware-root-of-trust-payload-schema" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;tpm_pcr_measurements&quot;: { &quot;pcr0&quot;: &quot;...&quot;, &quot;pcr7&quot;: &quot;...&quot; },
+  &quot;southbound_driver_hash&quot;: &quot;4f8a2b9c3d1e7f6a5b0d8e9c2a1b3f4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b&quot;,
+  &quot;attestation_signature&quot;: &quot;&lt;tpm_signed_payload&gt;&quot;
+}
+</code></pre>
+<h3 id="29-rag-knowledge-integrity">2.9 RAG Knowledge Integrity<a class="headerlink" href="#29-rag-knowledge-integrity" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/rag/ingest</code></td>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;">Uploads the new SOP/Manual into the vector database.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/v1/rag/context</code></td>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;">Internal Endpoint for the LangGraph Agent to retrieve verified manual chunks.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="query-params">Query Params<a class="headerlink" href="#query-params" title="Permanent link"></a></h4>
+<p><code>?asset_id=PUMP_001&amp;semantic_hash=&lt;hash&gt;</code></p>
+<h4 id="rag-ingest-payload-schema">RAG Ingest Payload Schema<a class="headerlink" href="#rag-ingest-payload-schema" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;knowledge_id&quot;: &quot;MAN-PLC-01&quot;,
+  &quot;knowledge_type&quot;: &quot;MANUAL&quot;,
+  &quot;software_revision&quot;: &quot;v1.0.0&quot;,
+  &quot;document_payload&quot;: &quot;&lt;base64_encoded_pdf&gt;&quot;
+}
+</code></pre>
+<h3 id="210-uns-metadata-management">2.10 UNS Metadata Management<a class="headerlink" href="#210-uns-metadata-management" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/v1/assets/{id}/metadata</code></td>
+<td style="text-align: left;"><code>PATCH</code></td>
+<td style="text-align: left;">Updates the static asset metadata payload in the UNS.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="uns-metadata-payload-schema">UNS Metadata Payload Schema<a class="headerlink" href="#uns-metadata-payload-schema" title="Permanent link"></a></h4>
+<pre><code class="language-json">{
+  &quot;next_audit_due&quot;: &quot;2027-01-15&quot;,
+  &quot;service_manual_ref&quot;: &quot;VFD-AB-04-A&quot;,
+  &quot;owner&quot;: &quot;Lead_OT_Engineer&quot;
+}
+</code></pre>
+<h2 id="3-standard-error-responses-hmi-logic">3. Standard Error Responses &amp; HMI Logic<a class="headerlink" href="#3-standard-error-responses-hmi-logic" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Status Code</th>
+<th style="text-align: left;">Error Message</th>
+<th style="text-align: left;">Scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>400</code></td>
+<td style="text-align: left;"><code>ERROR_INVALID_PAYLOAD</code></td>
+<td style="text-align: left;">Payload is missing or malformed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>401</code></td>
+<td style="text-align: left;"><code>ERROR_INVALID_DUAL_AUTH</code></td>
+<td style="text-align: left;">Primary and Secondary operators are the same user.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>403</code></td>
+<td style="text-align: left;"><code>FORBIDDEN_HARDWARE_LOTO</code></td>
+<td style="text-align: left;">Command rejected; physical Local/Hand switch is active.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>403</code></td>
+<td style="text-align: left;"><code>FORBIDDEN_SOFTWARE_TAGOUT</code></td>
+<td style="text-align: left;">Command rejected; asset is logically tagged out.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>404</code></td>
+<td style="text-align: left;"><code>ASSET_NOT_FOUND</code></td>
+<td style="text-align: left;">Asset not found.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>408</code></td>
+<td style="text-align: left;"><code>TIMEOUT_PESSIMISTIC_CONFIRM</code></td>
+<td style="text-align: left;">Feedback not received within the 5s window.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>409</code></td>
+<td style="text-align: left;"><code>CONFLICT_ACTIVE_INCIDENT</code></td>
+<td style="text-align: left;">Action conflicts with current asset state (e.g., trying to override a system that is already halted</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>422</code></td>
+<td style="text-align: left;"><code>SCHEMA_TYPE_MISMATCH</code></td>
+<td style="text-align: left;">Quality bit is not an Integer.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>423</code></td>
+<td style="text-align: left;"><code>OPERATIONAL_LOCK</code></td>
+<td style="text-align: left;">15-minute stability lock after autonomous action. HMI renders the red &ldquo;locked&rdquo; icon.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>429</code></td>
+<td style="text-align: left;"><code>RATE_LIMIT_EXCEEDED</code></td>
+<td style="text-align: left;">Request throttled by safety rate-limiter.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>429</code></td>
+<td style="text-align: left;"><code>ERROR_SAFETY_DELAY_ACTIVE</code></td>
+<td style="text-align: left;">Too many requests on high-impact commands. HMI displays countdown timer and disables input.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>500</code></td>
+<td style="text-align: left;"><code>INTERNAL_SERVER_ERROR</code></td>
+<td style="text-align: left;">Internal server error.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>503</code></td>
+<td style="text-align: left;"><code>SERVICE_UNAVAILABLE</code></td>
+<td style="text-align: left;">Gateway WORM database or AI Agent offline. HMI must default to degraded manual control mode.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-traffic-management-rate-limiting">4. Traffic Management &amp; Rate Limiting<a class="headerlink" href="#4-traffic-management-rate-limiting" title="Permanent link"></a></h2>
+<p>To prevent command saturation and <strong>blind clicking</strong> during high-impact events, the Gateway enforces the following:</p>
+<ul>
+<li><strong>Safety Throttling</strong>: High-impact endpoints (e.g., <code>/incidents/{id}/confirm</code>, <code>/orchestration/override</code>) are rate-limited to one request per 2 seconds.</li>
+<li><strong>DDoS Protection</strong>: Northbound API endpoints are rate-limited per Site-ID to prevent resource exhaustion.</li>
+<li><strong>HMI Feedback</strong>: When a <code>429</code> (Rate-Limit Exceeded) error is triggered, the HMI must display a <strong>Safety Delay Active</strong> notification.</li>
+</ul>
+<h3 id="41-safety-delay-active-state">4.1 Safety Delay Active State<a class="headerlink" href="#41-safety-delay-active-state" title="Permanent link"></a></h3>
+<p>When a <code>429</code> status code is received, the HMI must immediately initiate the <strong>Safety Delay Active</strong> notification. This state enforces a mandatory pause to ensure the <strong>Pessimistic Confirmation</strong> window (5s) or the <strong>Safety Throttling limit</strong> (1 req/2s) is respected.</p>
+<p><strong>Behavioral Requirements:</strong>
+- <strong>State Trigger</strong>: Triggered immediately upon receiving a <code>429</code> error from high-impact endpoints.
+- <strong>Visual Notification</strong>: The HMI must display a <strong>Safety Delay Active</strong> overlay on the primary dashboard.
+- <strong>Command Lock</strong>: All orchestration and confirmation buttons must be programmatically disabled (greyed out) to prevent further command stack-up.
+- <strong>Countdown Timer</strong>: A visual countdown timer must be displayed, derived from the <code>Retry-After</code> header or the 2s throttling period.</p>
+<h3 id="42-countdown-timer">4.2 Countdown Timer<a class="headerlink" href="#42-countdown-timer" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Initialization</strong>: The timer starts the moment a <code>429</code> error is trapped by the HMI client.</li>
+<li><strong>Duration</strong>: Set to a minimum of 2 seconds for orchestration endpoints to match the Gateway&rsquo;s safety rate limit.</li>
+<li><strong>Resolution</strong>: Upon reaching 0.0s, the <strong>Safety Delay Active</strong> notification is dismissed and the command buttons are re-enabled for a single attempt.</li>
+</ul>
+<h3 id="43-operational-impact-during-failover">4.3 Operational Impact during Failover<a class="headerlink" href="#43-operational-impact-during-failover" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Command Buffering</th>
+<th style="text-align: center;">HMI Behavior</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Command Buffering</strong></td>
+<td style="text-align: center;"><strong>Rejected (No queueing)</strong></td>
+<td style="text-align: left;">Prevents delayed <strong>phantom</strong> commands from executing after a delay.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Auditory Feedback</strong></td>
+<td style="text-align: center;">Single <strong>Beep-Low</strong> tone</td>
+<td style="text-align: left;">Alerts the operator that the input was blocked by safety logic.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Status Retention</strong></td>
+<td style="text-align: center;">Maintain Trace View</td>
+<td style="text-align: left;">The LangGraph reasoning trace must remain visible during the delay.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-hmi-state-table">4.4 HMI State Table<a class="headerlink" href="#44-hmi-state-table" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">HMI State</th>
+<th style="text-align: left;">Visual Element</th>
+<th style="text-align: left;">Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Nominal</strong></td>
+<td style="text-align: left;"><strong>Grey Scale Dashboard</strong></td>
+<td style="text-align: left;">Standard monitoring per ISA-101</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Safety Delay Active</strong></td>
+<td style="text-align: left;"><strong>Yellow Banner + Timer</strong></td>
+<td style="text-align: left;">Enforces 2s throttling on high-impact commands</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Operational Lock</strong></td>
+<td style="text-align: left;"><strong>Red &ldquo;locked&rdquo; Icon</strong></td>
+<td style="text-align: left;">15-minute stability lock active after autonomous action.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-unified-namespace-uns-schema">5. Unified Namespace (UNS) Schema<a class="headerlink" href="#5-unified-namespace-uns-schema" title="Permanent link"></a></h2>
+<p>Data is expected in the following hierarchy: <code>Enterprise/Site/Area/Line/Asset/Tag</code>.</p>
+<p><strong>Example Telemetry Payload:</strong></p>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;2026-04-24T12:00:00Z&quot;,
+  &quot;asset_id&quot;: &quot;PUMP_001&quot;,
+  &quot;metrics&quot;: {
+    &quot;vibration_rms&quot;: 4.5,
+    &quot;current_draw&quot;: 12.2,
+    &quot;discharge_pressure&quot;: 48.5
+  },
+  &quot;metadata&quot;: {
+    &quot;units&quot;: &quot;SI&quot;,
+    &quot;quality&quot;: 192 
+  }
+}
+</code></pre>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-24</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Comprehensive baseline; corrected schema, auth, and rate limits.</td>
+<td style="text-align: left;">Lead Systems Engineer</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-04-27</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Added Security &amp; Token Strategy, Added detailed JWT validation and grace period, Added dual-auth (two-key protocol) and RBAC, and And implemented safety rate limiting.</td>
+<td style="text-align: left;">Lead Systems Engineer</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.4</td>
+<td style="text-align: left;">2026-05-14</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Realigned endpoints with FAT testing, fixed HTTP methods (POST agent/analyze), added missing schemas, and repaired structural document formatting.</td>
+<td style="text-align: left;">Lead Systems Engineer</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

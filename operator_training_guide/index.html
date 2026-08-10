@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>OPERATOR TRAINING GUIDE - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "OPERATOR TRAINING GUIDE";
+        var mkdocs_page_input_path = "operator_training_guide.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">OPERATOR TRAINING GUIDE</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="operator-training-guide">OPERATOR TRAINING GUIDE<a class="headerlink" href="#operator-training-guide" title="Permanent link"></a></h1>
+<h3 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h3>
+<p>This guide provides the necessary procedures to train human operators to safely interact with the Oversight ICS AI
+reliability layer. The focus is on the &ldquo;Human-In-The-Loop&rdquo; (HITL) model, which guarantees that while the AI provides 
+reasoning and setpoint suggestions, the human remains the ultimate authority for critical process changes.</p>
+<h3 id="2-operational-modes">2. Operational Modes<a class="headerlink" href="#2-operational-modes" title="Permanent link"></a></h3>
+<p>The system operates in two primary states. The current state is always visible in the top-right corner of the Operator
+Databoard.</p>
+<p><strong>Advisory Mode (Manual Commit)</strong>:
+ - The reasoning agent monitors telemetry and generates <strong>Intents</strong> in the <code>intent_outbox</code> with a <code>PENDING</code> status.
+ - The operator must review the <strong>Justification Hash</strong> and the linked technical manual citation before clicking COMMIT.
+ - This mode is mandatory for all high-stakes assets like primary effluent pumps.</p>
+<p><strong>Autonomous Mode (Supervised)</strong>:
+- The agent writes directly to the <code>intent_outbox</code> for execution by the Southbound Driver.
+- The operator acts as an auditor, observing real-time $Z$-Score trends to ensure the AI&rsquo;s actions are stablizing the 
+  process.</p>
+<h3 id="3-understanding-the-health-score-z-score">3. Understanding the Health Score ($Z$-Score)<a class="headerlink" href="#3-understanding-the-health-score-z-score" title="Permanent link"></a></h3>
+<p>The AI uses statistical deviation to identify <strong>Process Drift</strong> before an alarm occurs.
+- <strong>$\pm 0.0$ to $1.5\sigma$ (Green)</strong>: Process is stable; no action required.
+- <strong>$\pm 1.5$ to $2.5\sigma$ (Amber)</strong>: &ldquo;Drift Detected.&rdquo; The Reasoning Agent will begin a &ldquo;Trace&rdquo; to investigate 
+  manuals. Expect a suggested intent shortly.
+- <strong>$&gt; 3.0\sigma$ (Red)</strong>: &ldquo;Anomaly Detected.&rdquo; If in Advisory Mode, an emergency notification will trigger. If in 
+  Autonomous Mode, the system may initiate a pre-approved failover.</p>
+<h3 id="4-handling-a-security-lockout-p1-incident">4. Handling a Security Lockout (P1 Incident)<a class="headerlink" href="#4-handling-a-security-lockout-p1-incident" title="Permanent link"></a></h3>
+<p>If the Semantic Gatekeeper detects an &ldquo;Out-of-Bounds&rdquo; command or a loss of a heartbeat, the system enters <strong>LOCKOUT</strong>
+mode.</p>
+<ol>
+<li><strong>Identify</strong>: The dashboard will strobe <strong>RED</strong> to display <code>SECURITY_VIOLATION_LOCKOUT</code>.</li>
+<li><strong>Verify</strong>: Check the physical asset. It should have automatically transitioned to is <strong>Safe State</strong> 
+   (e.g., pump stopped, valve closed) within 500ms.</li>
+<li><strong>Recovery</strong>: Switch the physical equipment to <strong>Local/Hand</strong> mode at the MCC (Motor Control Center) before 
+   attempting to reboot the Edge Gateway.</li>
+</ol>
+<h3 id="5-training-checklist-certification">5. Training Checklist Certification<a class="headerlink" href="#5-training-checklist-certification" title="Permanent link"></a></h3>
+<ul>
+<li>[ ] Demonstrate ability to locate a <code>trace_id</code> in the <code>audit_log</code></li>
+<li>[ ] Sucessfully approve a pending intent in the <code>intent_outbox</code></li>
+<li>[ ] Correctly identify a <strong>Hallucination</strong> (e.g., if the AI suggests a setpoint that contradicts the RAG citation).</li>
+<li>[ ] Execute a manual <strong>AI LOCKOUT</strong> using the dashboard E-Stop button.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

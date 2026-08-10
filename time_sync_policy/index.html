@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Time Synchronization Policy - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Time Synchronization Policy";
+        var mkdocs_page_input_path = "time_sync_policy.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Time Synchronization Policy</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="time-synchronization-policy">Time Synchronization Policy<a class="headerlink" href="#time-synchronization-policy" title="Permanent link"></a></h1>
+<h2 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h2>
+<p>To ensure forensic alignment between AI reasoning and physical execution, OverSight ICS implements a tiered 
+time synchronization model. This allows for precise correlation between the Reasoning Agent intents, the Southbound
+Driver execution, and the field asset level telemetry.</p>
+<h2 id="2-synchronization-tiers">2. Synchronization Tiers<a class="headerlink" href="#2-synchronization-tiers" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Network Zone</th>
+<th style="text-align: left;">Protocol</th>
+<th style="text-align: left;">Accuracy</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Enterprise (L4)</strong></td>
+<td style="text-align: left;"><strong>NTP</strong></td>
+<td style="text-align: left;">±50ms</td>
+<td style="text-align: left;">Syncing the Next.js Dashboard and User logs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Industrial DMZ (L3)</strong></td>
+<td style="text-align: left;"><strong>NTP</strong></td>
+<td style="text-align: left;">±10ms</td>
+<td style="text-align: left;">Syncing the Edge Gateway to the Corporate Stratum 2 server.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Control Zone (L2)</strong></td>
+<td style="text-align: left;"><strong>PTP (IEEE 1588)</strong></td>
+<td style="text-align: left;"><strong>&lt;1μs</strong></td>
+<td style="text-align: left;">Syncing the Southbound Driver and Field assets for $Z$-Score telemetry.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-edge-gateway-as-a-time-bridge">The Edge Gateway as a Time Bridge<a class="headerlink" href="#the-edge-gateway-as-a-time-bridge" title="Permanent link"></a></h3>
+<p>The Edge Gateway acts as the <strong>PTP Grandmaster</strong> for the Southbound network (NIC 2).
+1. It pulls the wall clock time via <strong>NTP</strong> from the corporate network (NIC 1).
+2. It translates this to a high-precision <strong>PTP hardware clock</strong> on NIC 2.
+3. This makes certain that the Level 2 telemetry is timestamped at the NIC level before it even reaches the Southbound 
+   Driver&rsquo;s software.</p>
+<h3 id="ptp-redundancy-bmca">PTP Redundancy &amp; BMCA<a class="headerlink" href="#ptp-redundancy-bmca" title="Permanent link"></a></h3>
+<p>In the event of an Edge Gateway hardware failure, the Level 2 network must maintain synchronization to prevent telemetry 
+jitter during recovery.</p>
+<ul>
+<li><strong>BMCA (Best Master Clock Algorithm)</strong>: Oversight uses the standard IEEE 1588 BMCA to select the Grandmaster.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Device</th>
+<th style="text-align: left;">Priority 1 Value</th>
+<th style="text-align: left;">Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Edge Gateway (PTP Grandmaster)</td>
+<td style="text-align: left;">128</td>
+<td style="text-align: left;">Primary Master</td>
+</tr>
+<tr>
+<td style="text-align: left;">Primary Field Asset (Passive Master)</td>
+<td style="text-align: left;">255</td>
+<td style="text-align: left;">Secondary Master / Passive Master</td>
+</tr>
+</tbody>
+</table>
+<p><em>Per the IEEE 1588 standard, the BMCA selects the clock with the </em><em>lowest numerical value</em><em> as the preferred
+Grandmaster.</em></p>
+<ul>
+<li><strong>Configuration</strong>: The Edge Gateway (Priority 128) is numerically lower than the Primary Field Asset (Priority 255),
+  so it grants it higher priority.</li>
+<li><strong>Failure Logic</strong>: If the Edge Gateway (Priority 128) stops announcing sync messages for &gt;3 announce intervals, the 
+  Primary PLC will autonomously take over as the Grandmaster.</li>
+</ul>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">[User]</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">[Manager]</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

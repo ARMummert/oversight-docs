@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Comprehensive Agent Interaction Logging - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Comprehensive Agent Interaction Logging";
+        var mkdocs_page_input_path = "audit_logging.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Comprehensive Agent Interaction Logging</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="comprehensive-agent-interaction-logging">Comprehensive Agent Interaction Logging<a class="headerlink" href="#comprehensive-agent-interaction-logging" title="Permanent link"></a></h1>
+<p><strong>Security Level</strong>: <code>Level 3.5 IDMZ</code>
+<strong>Framework Alignment</strong>: NIST 800–82 AU / ISA-62443 / NERC CIP-007-6 / EPA 40 CFR Part 141 / SIP
+<strong>Version</strong>: 1.2</p>
+<p>To satisfy legal and regulatory requirements, Oversight ICS maintains an immutable, multi-layered 
+audit trail of every interaction between the AI, the human operator, and the physical hardware.</p>
+<h2 id="1-regulatory-retention-requirements">1. Regulatory Retention Requirements<a class="headerlink" href="#1-regulatory-retention-requirements" title="Permanent link"></a></h2>
+<p>To meet legal and regulatory requirements compliance across diverse industrial sectors, Oversight ICS enforces a
+<strong>3-year minimum retention policy</strong>.  This is mandated by the following frameworks:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Regulation / Framework</th>
+<th style="text-align: left;">Industry Focus</th>
+<th style="text-align: left;">Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>NIST 800-82 AU</strong></td>
+<td style="text-align: left;">All ICS Environments</td>
+<td style="text-align: left;">Mandatory multi-layered audit trails for Level 3.5 IDMZ security.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ISA-62443-2-1</strong></td>
+<td style="text-align: left;">General Industrial</td>
+<td style="text-align: left;">Supports forensic visibility across multiple calibration cycles.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>NERC CIP-007-6</strong></td>
+<td style="text-align: left;">Power / Utilities</td>
+<td style="text-align: left;">3-year evidence retention for cybersecurity incident response and recovery.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>EPA 40 CFR Part 141</strong></td>
+<td style="text-align: left;">Water / Wastewater</td>
+<td style="text-align: left;">3-year permit renewal cycles and sanitary survey documentation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SIP</strong></td>
+<td style="text-align: left;">All field asset owners</td>
+<td style="text-align: left;">Forensic horizon covering a minimum of three maintenance cycles.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-auditor-agent-fault-tolerance">2. Auditor Agent Fault Tolerance<a class="headerlink" href="#2-auditor-agent-fault-tolerance" title="Permanent link"></a></h2>
+<p>The <strong>Auditor Agent</strong> is self-monitoring and responsible for the SHA-256 hashing and background integrity scrubbing of
+<strong>WORM</strong>. To prevent silent failures, a <strong>Monitor-of-the-Monitor</strong> (MoM) architecture is enforced:</p>
+<ul>
+<li><strong>Self-Healing</strong>: The Auditor Agent is monitored by a <strong>Hardware Watchdog</strong> (<a href="/docs/commissioning.md">PVP-02</a>). It must <br />
+  interact with the watchdog independently of the primary Orchestration Agent.</li>
+<li><strong>Failure Response</strong>: If the Auditor Agent fails or stalls an integrity check, it triggers a hardware-isolated
+  <code>AUDIT_FAILURE</code> alarm (Blue Square Icon [ □ ]).</li>
+<li><strong>Process Redundancy</strong>: A secondary <strong>Shadow Auditor</strong> service runs in a separate cGroup to monitor the primary
+  auditor&rsquo;s PID and force a restart upon failure.</li>
+<li><strong>Heartbeat Mismatch</strong>: If the <strong>Shadow Auditor</strong> detects a heartbeat mismatch, it force restarts the primary
+  and triggers a hardware-isolated <code>AUDIT_CRITICAL_FAILURE</code> alarm.</li>
+</ul>
+<h2 id="3-actor-identity-ai-governance">3. Actor Identity &amp; AI Governance<a class="headerlink" href="#3-actor-identity-ai-governance" title="Permanent link"></a></h2>
+<p>All actions are logged with <code>actor_id</code> and <code>trace_id</code> to comply with the <strong>90-Day Access Review Schedule</strong>.</p>
+<ul>
+<li><strong>AI Service Accounts</strong>: Follow the naming convention <code>SVC_OS_[REGION]_[AGENT_TYPE]_[UUID]</code>.</li>
+<li><strong>Credential Rotation</strong>: RSA-4096 signing keys for AI Agents are rotated every 90 days via the secret manager.</li>
+<li><strong>Review Cycle</strong>: Every 90 days, a human Supervisor must review and sign-off all active AI Service Account 
+  permissions.</li>
+</ul>
+<h2 id="4-log-schema-forensic-clarity">4. Log Schema &amp; Forensic Clarity<a class="headerlink" href="#4-log-schema-forensic-clarity" title="Permanent link"></a></h2>
+<p>Every log entry must remove ambiguity for post-mortem analysis.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>baseline_deviation_limit</code></td>
+<td style="text-align: left;">Float</td>
+<td style="text-align: left;">The Standard Deviation ($\sigma$) limit defined in the Alarm Database.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>active_z_score</code></td>
+<td style="text-align: left;">Float</td>
+<td style="text-align: left;">The <strong>Real-time Standard Score</strong> that triggered the AI action.  It represents how many $\sigma$ the signal is from the mean.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sha256_hash</code></td>
+<td style="text-align: left;">String</td>
+<td style="text-align: left;">Cryptographic signature of the log block to ensure WORM integrity.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-the-unified-audit-schema">5. The Unified Audit Schema<a class="headerlink" href="#5-the-unified-audit-schema" title="Permanent link"></a></h2>
+<p>All logs are stored in a structured JSON format and replicated to a secure, write-once-read-many (WORM) storage volume.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>timestamp_utc</code></td>
+<td style="text-align: left;">High-precision ISO-8601 timestamp (Aligned to PTP Hardware Clock).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>actor_id</code></td>
+<td style="text-align: left;">Naming convention: SVC_OS_[REGION]<em>[AGENT_TYPE]</em>[UUID] (for AI) or Federated JWT (for humans).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trace_id</code></td>
+<td style="text-align: left;">A UUID linking the log entry to a specific LangGraph Reasoning Trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>context_ref</code></td>
+<td style="text-align: left;">JSON object containing <code>rag_source</code>, <code>baseline_deviation_limit</code>, and <code>active_z_score</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>action_type</code></td>
+<td style="text-align: left;">e.g., <code>INTENT_GENERATED</code>, <code>OPERATOR_VETO</code>, <code>SETPOINT_CHANGE</code>, <code>SECURITY_REJECTION</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>payload_hash</code></td>
+<td style="text-align: left;">A SHA-256 hash of the command payload to ensure non-repudiation.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>outcome</code></td>
+<td style="text-align: left;"><code>SUCCESS</code>, <code>FAIL</code>, or <code>INTERCEPTED</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-three-tier-log-architecture">6. Three-Tier Log Architecture<a class="headerlink" href="#6-three-tier-log-architecture" title="Permanent link"></a></h2>
+<ol>
+<li><strong>The Reasoning Log (L3/L4)</strong>: Records the internal <strong>Chain of Thought</strong> and RAG document citations. This is used for 
+  <strong>Explainable AI (XAI)</strong> audits.</li>
+<li><strong>The Interaction Log (L3)</strong>: Records every HMI action, including which operator viewed which Reasoning Trace.</li>
+<li><strong>The Execution Log (L2)</strong>: Records the raw bytes sent over the wire by the Southbound Driver and the physical 
+  acknowledgement received from the field asset.</li>
+</ol>
+<h3 id="61-log-integrity-lgtm-stack-forwarding">6.1 Log Integrity &amp; LGTM Stack Forwarding<a class="headerlink" href="#61-log-integrity-lgtm-stack-forwarding" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Cryptographic Signing</strong>: Every log block is digitally signed. A gap in the sequence numbers or a signature 
+  mismatch triggers a <code>SYSTEM_INTEGRITY_FAILURE</code> alarm.</li>
+<li><strong>Security Forwarding</strong>: High-criticality security events are forwarded via encrypted syslog to the plant&rsquo;s master SIEM.</li>
+<li><strong>Log Forwarding</strong>: Logs are streamed in real-time to the LGTM Stack for centralized observability.</li>
+<li><strong>Retention</strong>: In accordance with industrial compliance, logs are retained for a minimum of 3 years.</li>
+<li><strong>Verification Checkpointing</strong>: Every command generates a <code>checkpoint_id</code> (<code>GATE_02_SEMANTIC</code>) and logs <code>latency_ms</code> 
+  to monitor system determinism.</li>
+</ul>
+<h3 id="62-verification-checkpoint-logging">6.2 Verification Checkpoint Logging<a class="headerlink" href="#62-verification-checkpoint-logging" title="Permanent link"></a></h3>
+<p>Every time a command passes through a gateway, a <strong>Checkpoint Log</strong> is generated:</p>
+<ul>
+<li><strong><code>checkpoint_id</code></strong>: (e.g., <code>GATE_02_SEMANTIC</code>)</li>
+<li><strong><code>verification_status</code></strong>: <code>PASSED</code> | <code>FAILED</code> | <code>REDACTED</code></li>
+<li><strong><code>latency_ms</code></strong>: Time taken to verify. (Used to monitor system determinism).</li>
+</ul>
+<p>If a command fails <strong>Gate 2 (Semantic Check)</strong>, a <strong>Tamper Alarm</strong> is sent to the Security Information and Event
+Management (SIEM), as this indicates the AI agent attempted an action that violates the hard-coded safety bounds. The
+SIEM is the final destination for all <strong>Forensic Traceability</strong> data, and it acts as a &ldquo;black box&rdquo; recorder for the plant.</p>
+<h3 id="63-automated-signature-scheduling">6.3 Automated Signature Scheduling<a class="headerlink" href="#63-automated-signature-scheduling" title="Permanent link"></a></h3>
+<p>A background process, the <strong>Auditor Agent</strong>, continuously <strong>Scrubs</strong> the <strong>WORM</strong> storage:
+1. It re-calculates the SHA-256 <code>payload_hash</code> for every entry.
+2. It verifies the digital signature of each log block.
+3. If any discrepancy is found (indicating data tampering or storage corruption), it immediately triggers a 
+   <strong>Forensic Integrity Alarm</strong> in the SIEM.</p>
+<hr />
+<h2 id="7-disconnected-operations-siem-buffer-limits">7. Disconnected Operations &amp; SIEM Buffer Limits<a class="headerlink" href="#7-disconnected-operations-siem-buffer-limits" title="Permanent link"></a></h2>
+<p>Because the SIEM acts as the ultimate forensic &ldquo;black box,&rdquo; the Edge Gateway must handle scenarios where the connection 
+to the IT/Enterprise network is severed, preventing real-time log forwarding.</p>
+<h3 id="71-local-spooling-worm-buffer">7.1 Local Spooling (WORM Buffer)<a class="headerlink" href="#71-local-spooling-worm-buffer" title="Permanent link"></a></h3>
+<p>If the SIEM endpoint is temporarily unreachable, the Edge Gateway uses <strong>TimescaleDB</strong> on its encrypted NVMe drive as a
+local spooling buffer. 
+- All <code>actor_id</code> and <code>trace_id</code> records are cached locally with their cryptographic signatures intact.
+- The system automatically enters a <strong>Retry-Backoff</strong> state and attempts to reconnect to the SIEM every 30 seconds.</p>
+<h3 id="72-queue-exhaustion-safety-lockout-thresholds">7.2 Queue Exhaustion &amp; Safety Lockout Thresholds<a class="headerlink" href="#72-queue-exhaustion-safety-lockout-thresholds" title="Permanent link"></a></h3>
+<p>To prevent the Edge Gateway from overwriting critical forensic data or executing autonomous actions without an external 
+audit trail, strict queuing limits are enforced:
+- <strong>80% Disk Capacity (Warning)</strong>: Triggers a local HMI <code>AUDIT_SPOOL_WARNING</code>. The system remains in Auto mode.
+- <strong>95% Disk Capacity (Gateway Lockout)</strong>: If local WORM storage reaches 95% capacity (or an equivalent 72 hours of 
+  disconnected telemetry), the system triggers a <strong>Safety Lockout</strong>.
+  - <strong>Action</strong>: The Southbound Driver is immediately suspended. 
+  - <strong>State</strong>: The system enters <code>ORPHAN_MODE</code> (Safe State) and requires physical, Level 0 manual control to operate 
+    field assets. 
+  - <strong>Rationale</strong>: An AI agent is strictly forbidden from executing un-auditable actions. If it cannot securely log 
+    its reasoning, it cannot act.</p>
+<h3 id="73-recovery-replay-handshake">7.3 Recovery &amp; Replay Handshake<a class="headerlink" href="#73-recovery-replay-handshake" title="Permanent link"></a></h3>
+<p>Upon restoration of the SIEM connection:
+1. The Edge Gateway initiates a <strong>Replay Handshake</strong>.
+2. Buffered logs are forwarded in chronological order, verified by their PTP hardware timestamps.
+3. The system remains in <code>ORPHAN_MODE</code> until the spool utilization drops below the 80% threshold and the SIEM 
+   acknowledges the receipt of the missing sequence numbers.</p>
+<h2 id="8-role-based-log-access-rbac">8. Role-Based Log Access (RBAC)<a class="headerlink" href="#8-role-based-log-access-rbac" title="Permanent link"></a></h2>
+<p>Audit logs contain sensitive intellectual property (RAG vectors) and security data (network traces). Access to the local WORM database and the LGTM stack is strictly governed:
+- <strong>Safety Lead / Auditor</strong>: Read-Only access to the full Execution and Interaction Logs.
+- <strong>Operator</strong>: Read-Only access limited to the L3 Reasoning Trace for active incidents.
+- <strong>AI Agent</strong>: <strong>Write-Only</strong> access to the <code>intent_outbox</code>. The AI agent has no read permissions for historical execution logs to prevent contextual poisoning.</p>
+<h2 id="example-log-entry">Example Log Entry<a class="headerlink" href="#example-log-entry" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;timestamp_utc&quot;: &quot;2026-05-04T12:00:00.123456Z&quot;,
+  &quot;actor_id&quot;: &quot;agent_oversight_01&quot;,
+  &quot;trace_id&quot;: &quot;uuid-v4-link-to-langgraph&quot;,
+  &quot;context_ref&quot;: {
+    &quot;rag_source&quot;: &quot;pump_manual_v2.pdf#page=45&quot;,
+    &quot;active_z_score&quot;: 3.2,
+    &quot;baseline_deviation_limit&quot;: 3.0,
+    &quot;active_loto&quot;: false
+  },
+  &quot;payload_hash&quot;: &quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;,
+  &quot;verification_checkpoint&quot;: &quot;GATE_02_SEMANTIC&quot;,
+  &quot;outcome&quot;: &quot;SUCCESS&quot;
+}
+</code></pre>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-05-04</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Mapped 3-yr retention to NERC/EPA; Added Shadow Auditor Monitor-of-Monitor; Fixed Z-score nomenclature and LGTM Stack.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

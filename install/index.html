@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Install - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Install";
+        var mkdocs_page_input_path = "install.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Install</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="installation-system-setup">Installation &amp; System Setup<a class="headerlink" href="#installation-system-setup" title="Permanent link"></a></h2>
+<p>Oversight ICS is designed to operate as a Dual-Homed System (Edge Gateway + IDMZ). The Edge Gateway and IDMZ provide
+an air-gap between the OT Layer and the IT Layer.</p>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link"></a></h3>
+<p>The following prerequisites are required to run Oversight ICS:</p>
+<ul>
+<li><strong>Operating System</strong>: Linux (Debian/Ubuntu)</li>
+<li><strong>Docker</strong>: For container orchestration and virtual networking</li>
+<li><strong>Python 3.12+</strong>: Managed via uv for dependencies</li>
+<li><strong>Container Engine</strong>: Docker and Docker Compose for service isolation and virtual networking</li>
+<li><strong>Database &amp; Caching</strong>:</li>
+<li><strong>PostgreSQL</strong>: With TimescaleDB for telemetry and pgVector for local RAG extensions</li>
+<li><strong>Redis</strong>: For sub-second &ldquo;Hot&rdquo; UI Caching</li>
+<li><strong>Message Broker</strong>: RabbitMQ for asynchronous task queues and reliable messaging. Configured with Consistent Hashing
+  for ordered asset processing</li>
+</ul>
+<h3 id="field-installation-requirements">Field Installation Requirements<a class="headerlink" href="#field-installation-requirements" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Physical Infrastructure</strong></li>
+<li><strong>Industrial PC (IPC)</strong>: A fanless, DIN-rail mounted ruggedized server (e.g., OnLogic, Advantech, or Siemens)</li>
+<li><strong>Dual-NIC Requirement</strong>: The IPC must have at least two physical, independent network interface cards (NICs) 
+    to maintain the dual-homed system.<ul>
+<li><strong>NIC 1 (Southbound Driver)</strong>: Connected to isolated OT Network (Level 1, 2). No gateway no internet access.</li>
+<li><strong>NIC 2 (Northbound Driver)</strong>: Connected to the Plant Business Network (Level 4) for UI access and Level 5
+  LLM API calls.</li>
+</ul>
+</li>
+<li><strong>Hardware Watchdog</strong>: A physical relay that monitors a software &lsquo;heartbeat&rsquo; signal 
+     from the Edge Gateway. If the software service hangs, the relay physically opens, forcing the Control Hardware 
+     into a local-only &lsquo;Safe State.&rsquo;</li>
+<li><strong>Power Supply</strong>: A 24V DC industrial power input to match standard control cabinet rails.</li>
+</ul>
+<h3 id="connectors-protocols">Connectors &amp; Protocols<a class="headerlink" href="#connectors-protocols" title="Permanent link"></a></h3>
+<ul>
+<li><strong>OPC-UA (IEC 62541)</strong>: The primary ingest method for telemetry data from the process assets.</li>
+<li><strong>Modbus TCP (IEC 62468)</strong>: For legacy process assets, power meters, and older VFDs.</li>
+<li><strong>MQTT (Sparkplug B)</strong>: Used if the plant already has a Unified Namespace (UNS) for telemetry.</li>
+</ul>
+<h3 id="network-security-purdue-compliance">Network &amp; Security (Purdue Compliance)<a class="headerlink" href="#network-security-purdue-compliance" title="Permanent link"></a></h3>
+<p>The environment must be segmented to follow ISA-99/IEC 62443 standard for &ldquo;Zones and Conduits.&rdquo; </p>
+<ul>
+<li><strong>Level 1-2 (OT Subnet)</strong>: An isolated network where the field instrumentation and control hardware live, with no 
+  direct path to the internet.</li>
+<li><strong>Level 3 (Reasoning Cluster)</strong>: A configured LangGraph cluster to run the AI reasoning. This is a &ldquo;thick&rdquo; edge, 
+  ensuring that the system is highly available and resilient to failures.</li>
+<li><strong>Level 3.5 (IDMZ Subnet)</strong>: A configured Industrial DMZ (DMZ) to host the Southbound Driver and Nginx Proxy, 
+  preventing Level 5 Cloud traffic from reaching Level 1 hardware.</li>
+<li><strong>Level 4–5 (IT Subnet)</strong>: The network hosting the Next.js HMI/Dashboard and the Level 5 LLM API.</li>
+<li><strong>Firewall Rules</strong>: Strictly defined &ldquo;pull-only&rdquo; access for the Southbound Driver and mTLS for all encrypted
+  inter-container traffic.</li>
+<li><strong>SSL/TLS Certificates</strong>: Required for the Northbound Proxy to ensure operator credentials and telemetry are never 
+  sent in plaintext.</li>
+</ul>
+<h3 id="thick-edge">Thick Edge<a class="headerlink" href="#thick-edge" title="Permanent link"></a></h3>
+<p>The Thick Edge is used for Level 3 autonomy. All reasoning (LangGraph), the database (TimescaleDB), and RAG (pgVector) 
+all live on-site, ensuring that the system is highly available and resilient to failures.</p>
+<h3 id="security-multi-tenancy">Security &amp; Multi-Tenancy<a class="headerlink" href="#security-multi-tenancy" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Tunneling</strong>: Use mTLS (Mutual TLS) or a Reverse Proxy to secure the communication between the UI and the Edge 
+    Gateway. </li>
+<li><strong>Data Masking</strong>: Before telemetry leaves the plant for Level 5 (LLM API), Pydantic validators strip sensitive 
+    metadata, sending only normalized sensor values.</li>
+</ul>
+<h3 id="step-by-step-field-setup-guide">Step-By-Step Field Setup Guide<a class="headerlink" href="#step-by-step-field-setup-guide" title="Permanent link"></a></h3>
+<ol>
+<li>Phase 1: OT Integration<ul>
+<li><strong>Mounting</strong>: Install the IPC in the control cabinet, powered by the 24V DC rail.</li>
+<li><strong>Addressing</strong>: Assign NIC 1 a static IP on the process asset subnet (e.g., 192.168.1.100).</li>
+<li><strong>Tag Discovery</strong>: Use the ingest service to browse the OPC-UA tree and map tags (Pressure, Temp, VFD frequency)
+   to the Unified Namespace (UNS)</li>
+</ul>
+</li>
+<li>Phase 2: Configuration &amp; Ground Truth<ul>
+<li><strong>Manual Ingest</strong>: Upload PDF manuals for the process assets into the Local RAG.</li>
+<li><strong>Baseline Training</strong>: Run the system in Passive Monitor mode for 48-72 hours. This allows TimescaleDB to 
+   calculate the baseline Z-scores for &ldquo;Nominal&rdquo; operation.</li>
+<li><strong>Safety Whitelist</strong>: Hard-code the &ldquo;Safe Operating Envelopes&rdquo; into the Southbound Driver (e.g., &ldquo;AI can 
+   never command a pump to start if pressure is &gt; 100 PSI&rdquo;)</li>
+</ul>
+</li>
+<li>Phase 3: Commissioning the &ldquo;Closed Loop&rdquo;<ul>
+<li><strong>Validation</strong>: Perform a &ldquo;dry run&rdquo; where the AI triggers a failover, but the Southbound Driver is in 
+   &ldquo;simulation mode&rdquo; to verify the logic flow in the Pessimistic UI.</li>
+<li><strong>Live Handover</strong>: Switch the Southbound Driver to &ldquo;Active: Test the Physical Priority Arbitration&rdquo; by turning
+   the process assets physical switch to &ldquo;manual&rdquo; to ensure the AI &ldquo;sheds load&rdquo; immediately.</li>
+</ul>
+</li>
+</ol>
+<h3 id="virtual-setup">Virtual Setup<a class="headerlink" href="#virtual-setup" title="Permanent link"></a></h3>
+<p>For development and testing purposes, Oversight ICS can be run in a virtual environment using <strong>Docker&rsquo;s Network 
+Bridging</strong> to simulate a dual-homed system.</p>
+<h3 id="docker-container-segmentation">Docker Container Segmentation<a class="headerlink" href="#docker-container-segmentation" title="Permanent link"></a></h3>
+<p>OverSight ICS enforces network isolation through three distinct Docker bridges. This ensures that a compromise in the 
+UI (Level 4) cannot reach the field instrumentation and control hardware (PLCs, VFDs) (Level 1).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Zone</th>
+<th style="text-align: left;">Docker Bridge</th>
+<th style="text-align: left;">Purdue Level</th>
+<th style="text-align: left;">Services Included</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Field Zone (OT)</strong></td>
+<td style="text-align: left;"><code>ot_bridge</code></td>
+<td style="text-align: left;">1 &amp; 2</td>
+<td style="text-align: left;"><strong>Ingest Service, Hardware Simulators</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IDMZ (South)</strong></td>
+<td style="text-align: left;"><code>idmz_south</code></td>
+<td style="text-align: left;">3.5</td>
+<td style="text-align: left;"><strong>Southbound Driver</strong> (The only bridge to OT)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Edge Gateway</strong></td>
+<td style="text-align: left;"><code>edge_internal</code></td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;"><strong>LangGraph, TimescaleDB, RabbitMQ, FastAPI</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IDMZ (North)</strong></td>
+<td style="text-align: left;"><code>idmz_north</code></td>
+<td style="text-align: left;">3.5</td>
+<td style="text-align: left;"><strong>Nginx Proxy</strong> (The only bridge to IT)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Operations Zone (IT - External LLM, UI)</strong></td>
+<td style="text-align: left;"><code>it_bridge</code></td>
+<td style="text-align: left;">4 &amp; 5</td>
+<td style="text-align: left;"><strong>Next.js Dashboard</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="installation-creating-the-segmented-infrastructure"><strong>Installation: Creating the Segmented Infrastructure</strong><a class="headerlink" href="#installation-creating-the-segmented-infrastructure" title="Permanent link"></a></h3>
+<p>To deploy with full IDMZ isolation, run the following commands to initialize the virtual hardware layers:</p>
+<pre><code class="language-bash"># Create the isolated OT and IT bridges
+docker network create --subnet=192.168.1.0/24 ot_bridge
+docker network create --subnet=10.5.0.0/24 it_bridge
+
+# Create the internal reasoning and IDMZ bridges
+docker network create --internal edge_internal
+docker network create idmz_north
+docker network create idmz_south
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

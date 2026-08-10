@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Requirements Traceability Matrix (RTM) - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Requirements Traceability Matrix (RTM)";
+        var mkdocs_page_input_path = "requirements_traceability_matrix.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Requirements Traceability Matrix (RTM)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="requirements-traceability-matrix-rtm">Requirements Traceability Matrix (RTM)<a class="headerlink" href="#requirements-traceability-matrix-rtm" title="Permanent link"></a></h1>
+<h3 id="project-oversight-ics-version-12-status-audit-ready">Project: OverSight ICS | Version: 1.2 | Status: Audit-Ready<a class="headerlink" href="#project-oversight-ics-version-12-status-audit-ready" title="Permanent link"></a></h3>
+<p><strong>Linking Documents:</strong> FAT-01 (HW), FAT-02 (FT/LG/DT), FAT-03 (ST/LG)</p>
+<hr />
+<h3 id="1-hardware-infrastructure-fat-01">1. Hardware &amp; Infrastructure (FAT-01)<a class="headerlink" href="#1-hardware-infrastructure-fat-01" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Req ID</th>
+<th style="text-align: left;">Requirement Description</th>
+<th style="text-align: left;">Validation Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>REQ-01</strong></td>
+<td style="text-align: left;"><strong>Network Isolation</strong>: Network ports must be restricted to mission-critical traffic only.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-01</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-02</strong></td>
+<td style="text-align: left;">System must maintain sub-microsecond clock jitter for PTP sync.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-02</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-03</strong></td>
+<td style="text-align: left;">Ingest engine must handle high-velocity tag data without loss.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-03</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-04</strong></td>
+<td style="text-align: left;">Southbound link failures must be detected in under 2 seconds.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-04</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-05</strong></td>
+<td style="text-align: left;">Northbound connections must require valid TLS certificates.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-05</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-06</strong></td>
+<td style="text-align: left;">A hardware watchdog must trigger a Safe State on process hang.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-06</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-07</strong></td>
+<td style="text-align: left;">Hardware must reboot into a Safe State after a total power loss.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-07</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-08</strong></td>
+<td style="text-align: left;">Northbound (IT) traffic must be physically isolated from OT control.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-08</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-09</strong></td>
+<td style="text-align: left;">System must maintain PTP stability under 100% CPU thermal load.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-09</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-10</strong></td>
+<td style="text-align: left;">Storage media must meet industrial write-endurance standards.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-10</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-11</strong></td>
+<td style="text-align: left;">Chassis must be grounded to prevent EMI-induced signal noise.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-11</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-12</strong></td>
+<td style="text-align: left;">Redundant NICs must provide failover pathing (if applicable).</td>
+<td style="text-align: left;"><strong>FAT-01: HW-12</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-13</strong></td>
+<td style="text-align: left;">LED indicators must provide physical status of the control loop.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-13</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-14</strong></td>
+<td style="text-align: left;">DIN-rail mounting must withstand specified vibration tolerances.</td>
+<td style="text-align: left;"><strong>FAT-01: HW-14</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-functional-logic-fat-02">2. Functional &amp; Logic (FAT-02)<a class="headerlink" href="#2-functional-logic-fat-02" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Req ID</th>
+<th style="text-align: left;">Requirement Description</th>
+<th style="text-align: left;">Validation Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-01</strong></td>
+<td style="text-align: left;">AI must utilize $Z$-Score drift for anomaly detection.</td>
+<td style="text-align: left;"><strong>FAT-02: FT-01</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-02</strong></td>
+<td style="text-align: left;">All AI troubleshooting must be cited from approved manuals.</td>
+<td style="text-align: left;"><strong>FAT-02: FT-02</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-03</strong></td>
+<td style="text-align: left;">AI must state &ldquo;No Information&rdquo; for assets outside the RAG scope.</td>
+<td style="text-align: left;"><strong>FAT-02: FT-03</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-04</strong></td>
+<td style="text-align: left;">Every control intent must be cryptographically signed (Hash).</td>
+<td style="text-align: left;"><strong>FAT-02: FT-04</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-05</strong></td>
+<td style="text-align: left;">Commands require physical feedback confirmation before clearing.</td>
+<td style="text-align: left;"><strong>FAT-02: FT-05</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-06</strong></td>
+<td style="text-align: left;">LangGraph must persist and recover state after a hard crash.</td>
+<td style="text-align: left;"><strong>FAT-02: LG-01</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-07</strong></td>
+<td style="text-align: left;">Physical sensor values must override &ldquo;Expected&rdquo; software states.</td>
+<td style="text-align: left;"><strong>FAT-02: LG-02</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-08</strong></td>
+<td style="text-align: left;">Reasoning Agent must provide a logic audit for every &ldquo;Stop&rdquo;.</td>
+<td style="text-align: left;"><strong>FAT-02: LG-03</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-09</strong></td>
+<td style="text-align: left;">Graph nodes must execute in a deterministic, linear sequence.</td>
+<td style="text-align: left;"><strong>FAT-02: LG-04</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-10</strong></td>
+<td style="text-align: left;">Database queries must return telemetry results in &lt;500ms.</td>
+<td style="text-align: left;"><strong>FAT-02: DT-01</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-LG-11</strong></td>
+<td style="text-align: left;">AI must timeout and trigger an error if reasoning takes &gt;30s.</td>
+<td style="text-align: left;"><strong>FAT-02: DT-03</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-safety-security-fat-03">3. Safety &amp; Security (FAT-03)<a class="headerlink" href="#3-safety-security-fat-03" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Req ID</th>
+<th style="text-align: left;">Requirement Description</th>
+<th style="text-align: left;">Validation Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>REQ-01</strong></td>
+<td style="text-align: left;">Semantic Gatekeeper must block writes to forbidden registers.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-01</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-02</strong></td>
+<td style="text-align: left;">System must prioritize critical alarms over HMI &ldquo;Silent&rdquo; modes.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-03</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-03</strong></td>
+<td style="text-align: left;">Sensitive strings (passwords) must be redacted from AI prompts.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-04</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-04</strong></td>
+<td style="text-align: left;">Loss of Agent-Gatekeeper heartbeat must trigger Orphan Mode.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-05</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-05</strong></td>
+<td style="text-align: left;">All orchestration requires Multi-Factor Dual-Authentication.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-06/07</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-06</strong></td>
+<td style="text-align: left;">Unauthorized OPC-UA/CIP write attempts must be logged/blocked.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-08/09</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-07</strong></td>
+<td style="text-align: left;">Control commands must be immune to Replay Attacks via Nonce.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-10</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-08</strong></td>
+<td style="text-align: left;">AI Agent must be resource-jailed to 40% CPU max.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-11</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-09</strong></td>
+<td style="text-align: left;">Semantic layer must neutralize prompt-injection attempts.</td>
+<td style="text-align: left;"><strong>FAT-03: ST-12</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-10</strong></td>
+<td style="text-align: left;">VFD and Pump assets must respect hard-coded range limits.</td>
+<td style="text-align: left;"><strong>FAT-03: LG-05</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-11</strong></td>
+<td style="text-align: left;">System must enforce a 60s motor &ldquo;Cool Down&rdquo; interlock.</td>
+<td style="text-align: left;"><strong>FAT-03: LG-06</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>REQ-12</strong></td>
+<td style="text-align: left;">PTP Signal loss must force the Southbound Driver into Safe State.</td>
+<td style="text-align: left;"><strong>FAT-03: LG-07</strong></td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

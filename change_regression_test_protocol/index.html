@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Change Regression Test Protocol - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Change Regression Test Protocol";
+        var mkdocs_page_input_path = "change_regression_test_protocol.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Change Regression Test Protocol</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="change-regression-test-protocol">Change Regression Test Protocol<a class="headerlink" href="#change-regression-test-protocol" title="Permanent link"></a></h1>
+<p><strong>Version 1.2</strong> | <strong>Date:</strong> 2026-05-14 | <strong>Author:</strong> armummert</p>
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link"></a></h2>
+<p>The <strong>Change Regression Test Protocol (CRT)</strong> is a mandatory post-production validation suite for the Oversight ICS 
+environment. These tests are designed to be executed against the live Edge Gateway (in <code>MAINTENANCE_MODE</code>)
+to validate the functionality of the Edge Gateway. These tests prevent software updates, configuration changes, or RAG 
+ingestions from degrading system determinism or violating safety boundaries.</p>
+<h2 id="2-execution-triggers">2. Execution Triggers<a class="headerlink" href="#2-execution-triggers" title="Permanent link"></a></h2>
+<p>CRTs are not meant to be run daily. They must be executed under the following conditions:
+* <strong>Major/Minor Version Updates</strong>: Any updates to the LangGraph Agent, Southbound Driver, or Semantic Gatekeeper.
+* <strong>RAG Database Updates</strong>: Following the ingestion of new technical manuals or vendor specs.
+* <strong>Infrastructure Patches</strong>: OS-level patching, Docker engine updates, or TimescaleDB migrations.
+* <strong>Post-Incident</strong>: After recovering from an <code>ORPHAN_MODE</code> or <code>SAFETY_LOCKOUT</code> event.</p>
+<h2 id="3-regression-testing-matrix">3. Regression Testing Matrix<a class="headerlink" href="#3-regression-testing-matrix" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Protocol</th>
+<th style="text-align: left;">Scope</th>
+<th style="text-align: left;">Focus Area</th>
+<th style="text-align: left;">Verification Logic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">CRT-01</td>
+<td style="text-align: left;">Safety and Determinism</td>
+<td style="text-align: left;">Semantic Gateway, Forbidden Registers.</td>
+<td style="text-align: left;">Attempt unauthorized register writes; verify instant rejection by Gatekeeper.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-02</td>
+<td style="text-align: left;">Cognitive &amp; RAG</td>
+<td style="text-align: left;">Vector DB, Reasoning Traces, $Z$-Score Accuracy.</td>
+<td style="text-align: left;">Validate RAG citation accuracy; verify $Z$-score calculation against mock telemetry.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-03</td>
+<td style="text-align: left;">Security &amp; Audit</td>
+<td style="text-align: left;">JWT, Service Accounts, LGTM Stack, WORM Integrity.</td>
+<td style="text-align: left;">Rotate RSA-4096 keys; verify SHA-256 hash consistency between Shadow Auditor and SIEM.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-04</td>
+<td style="text-align: left;">Hardware &amp; Driver</td>
+<td style="text-align: left;">Southbound Driver, PVP-02 Watchdog, Physical I/O.</td>
+<td style="text-align: left;">Trigger forced heartbeat failure; verify safe-state transition and watchdog reset.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-05</td>
+<td style="text-align: left;">Traffic Control</td>
+<td style="text-align: left;">Level 3.5 IDMZ Gateway, API Rate Limits, DDoS.</td>
+<td style="text-align: left;">Execute <code>429</code> rate limit test; verify HMI transitions to <strong>SAFETY DELAY ACTIVE</strong> state.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-06</td>
+<td style="text-align: left;">Disaster Recovery</td>
+<td style="text-align: left;">State Persistence, Cold Boot, Backup Restore.</td>
+<td style="text-align: left;">Restore from 24hr-old snapshot; verify zero loss of WORM logs.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-07</td>
+<td style="text-align: left;">Human-In-The-Loop</td>
+<td style="text-align: left;">Operator Veto, HMI interlock, Dual-Auth Flow.</td>
+<td style="text-align: left;">Force an AI intent that requires human sign-off. Verify Secondary Auth prompt.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-08</td>
+<td style="text-align: left;">Semantic Drift</td>
+<td style="text-align: left;">AI Model Versioning, Prompt Template, Stability.</td>
+<td style="text-align: left;">Compare AI output for identical inputs across version updates for LLM consistency.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-09</td>
+<td style="text-align: left;">Data Aging</td>
+<td style="text-align: left;">Retention Policies, TimescaleDB Compression.</td>
+<td style="text-align: left;">Verify 3-year data accessibility and test automatic pruning of lowest priority logs.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-10</td>
+<td style="text-align: left;">Fail-to-Wire</td>
+<td style="text-align: left;">Network Partition, Southbound Timeout.</td>
+<td style="text-align: left;">Sever Level 3.5 connection and verify edge agent maintains local safety logic.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CRT-11</td>
+<td style="text-align: left;">Time Synchronization</td>
+<td style="text-align: left;">PTP Grandmaster Failover, Rubidium Oscillator Holdover.</td>
+<td style="text-align: left;">Sever connection to primary Grandmaster; verify seamless failover to local oscillator with drift $&lt; 1\mu s$ and no loss of system heartbeat.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-sign-off-and-authorization">4. Sign-off and Authorization<a class="headerlink" href="#4-sign-off-and-authorization" title="Permanent link"></a></h2>
+<p>Upon completion of a CRT run, a formal sign-off must be generated and appended to the 
+<a href="/docs/change_management_log.md"><strong>Change Management Log</strong></a>.</p>
+<p><strong>Lead Engineer Signature:</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ <strong>Date:</strong> </strong><strong><em>_</em></strong><strong><em>_</em>_<br />
+<strong>Safety Lead Signature:</strong> </strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em>_ <strong>Date:</strong> </strong><strong><em>_</em></strong>______  </p>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-14</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-05-14</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Added CRT-11 (Time Sync Recovery), Execution Triggers, Sign-off block, and history.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>SOP-AI-02: Threshold Adaptation Review and Commitment - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SOP-AI-02: Threshold Adaptation Review and Commitment";
+        var mkdocs_page_input_path = "sop/SOP-AI-003_Threshold_Adaptation_Review_and_Commitment.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SOP-AI-02: Threshold Adaptation Review and Commitment</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="sop-ai-02-threshold-adaptation-review-and-commitment">SOP-AI-02: Threshold Adaptation Review and Commitment<a class="headerlink" href="#sop-ai-02-threshold-adaptation-review-and-commitment" title="Permanent link"></a></h1>
+<p>Document ID: SOP-AI-02
+Version: 1.0
+Associated Components: Semantic Gatekeeper &amp; Consciousness Node</p>
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link"></a></h2>
+<p>The purpose of this SOP is to define the mandatory procedure for reviewing, approving, and committing changes to 
+$Z$-Score anomaly thresholds proposed by the Consciousness Node. This guarantees that <strong>logic drift</strong> is governed by 
+human oversight to prevent the masking of mechanical failures.</p>
+<h2 id="2-scope">2. Scope<a class="headerlink" href="#2-scope" title="Permanent link"></a></h2>
+<p>This SOP applies to all $Z$-Score anomaly thresholds proposed by the Consciousness Node. It covers the review and 
+approval process for threshold adjustments, including the roles and responsibilities of operators, lead engineers, and 
+safety leads/managers. The SOP also outlines the criteria for different levels of impact based on the percentage change 
+in thresholds and the presence of restricted tags.</p>
+<h2 id="3-roles-responsibilities">3. Roles &amp; Responsibilities<a class="headerlink" href="#3-roles-responsibilities" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Operator</strong>: Reviews low-level and medium impact proposals and provides first-line validation of RAG justifications.</li>
+<li><strong>Lead Engineer</strong>: Authorizes Medium impact proposals (5-15% delta).</li>
+<li><strong>Safety Lead / Manager</strong>: Authorizes high impact proposals (&gt;15% delta or restricted tags).</li>
+<li><strong>Consciousness Node</strong>: Generates proposals based on intervention quality and cannot commit changes &gt;5% delta 
+    without a valid <code>operator_id</code>.</li>
+</ul>
+<h2 id="4-procedural-steps">4. Procedural Steps<a class="headerlink" href="#4-procedural-steps" title="Permanent link"></a></h2>
+<h3 id="step-1">Step 1<a class="headerlink" href="#step-1" title="Permanent link"></a></h3>
+<p><strong>Proposal Triage</strong>: When a new proposal is generated the HMI will flag an <strong>Advisory</strong> or <strong>Action Required</strong> alert.
+The operator must open the <strong>Threshold Adaptation Console</strong> and review the proposal.</p>
+<h3 id="step-2">Step 2<a class="headerlink" href="#step-2" title="Permanent link"></a></h3>
+<p><strong>Justification Review</strong>: The operator must verify the <strong>RAG reasoning trace</strong> for every proposal.
+  - Check the linked telemetry event (e.g., &ldquo;frequent false positives during pump restart&rdquo;).
+  - Verify that the proposed change does not conclift with manufacturer operating limits found in the attached 
+    documentation citations.</p>
+<h3 id="step-3">Step 3<a class="headerlink" href="#step-3" title="Permanent link"></a></h3>
+<p><strong>Approval Workflow</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Proposal Impact</th>
+<th style="text-align: left;">Delta ($\Delta$)</th>
+<th style="text-align: left;">Action Required</th>
+<th style="text-align: left;">System Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">$\le 5\%$</td>
+<td style="text-align: left;">None (Acknowledge only)</td>
+<td style="text-align: left;">Auto-patched by Gatekeeper; Logged to Audit Trail.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Medium</td>
+<td style="text-align: left;">5% – 15%</td>
+<td style="text-align: left;">Single-Key Approval</td>
+<td style="text-align: left;">Operator enters ID; Gatekeeper promotes status to ACTIVE.</td>
+</tr>
+<tr>
+<td style="text-align: left;">High</td>
+<td style="text-align: left;">$&gt; 15\%$</td>
+<td style="text-align: left;">Two-Key Override</td>
+<td style="text-align: left;">Requires Engineering CR-Form + Supervisor Bypass.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-4">Step 4<a class="headerlink" href="#step-4" title="Permanent link"></a></h3>
+<p><strong>Expiration &amp; Purge</strong>: All proposals have a <strong>24-Hour Time-to-Live</strong> (TTL). If a medium or high proposal is not acted 
+upon within 24 hours, it is automatically purged from the <code>intent_outbox</code> to prevent <strong>Stale Approvals</strong>.</p>
+<h2 id="5-critical-safety-guardrails">5. Critical Safety Guardrails<a class="headerlink" href="#5-critical-safety-guardrails" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Desensitization Freeze</strong>: If the system has issued more than three desensitization proposals (raising thresholds) in a 
+  7-day period for the same asset, the Consciousness Node is locked out of making any further proposals until a 
+  mandatory <strong>Root-Cause Analysis</strong> is performed.</li>
+<li><strong>Forbidden Tags</strong>: Any proposal that contains a forbidden tag in the <code>forbidden_register_list</code> (SIS tags) must be
+  rejected by the Semantic Gatekeeper, regardless of the delta percentage.</li>
+</ul>
+<h2 id="6-audit-records">6. Audit &amp; Records<a class="headerlink" href="#6-audit-records" title="Permanent link"></a></h2>
+<p>Every adaptation is logged in the <code>threshold_history</code> table. The following fields are mandatory:
+- <code>timestamp</code>
+- <code>old_value</code> vs. <code>new_value</code>
+- <code>operator_id</code>(for changes &gt;5% delta)
+- <code>justification_uuid</code>(RAG trace)</p>
+<h2 id="7-emergency-contacts">7. Emergency Contacts<a class="headerlink" href="#7-emergency-contacts" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Primary</strong>: OT LEAD ENGINEER</li>
+<li><strong>Secondary</strong>: SAFETY MANAGER</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

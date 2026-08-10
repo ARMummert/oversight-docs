@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Change Management Log - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Change Management Log";
+        var mkdocs_page_input_path = "change_management_log.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Change Management Log</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="change-management-log">Change Management Log<a class="headerlink" href="#change-management-log" title="Permanent link"></a></h1>
+<h3 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h3>
+<p>This log serves as the official audit for all modifications to the Oversight ICS production environment. Every change
+(software patch, a RAG context update, security update, or a modification to the <strong>Semantic Gateway</strong>) is documented, 
+authorized, and reversible. This is required to maintain safety-dominance of the system and prevent unauthorized logic 
+drift.</p>
+<h3 id="2-governance-approval-matrix">2. Governance &amp; Approval Matrix<a class="headerlink" href="#2-governance-approval-matrix" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Change Risk</th>
+<th>Threshold / Type of Modification</th>
+<th>Required Approval</th>
+<th>Required Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Low</td>
+<td>$\Delta \le 5\%$; Documentation; Metadata; UI Changes</td>
+<td>System Auto-Authorized</td>
+<td><code>trace_id</code> is logged in the audit logs + HMI Advisory notification.</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>$\Delta$ 5% – 15%; RAG Ingest (New Manuals); DB Policies.</td>
+<td>Lead Engineer</td>
+<td>Manual &ldquo;commit&rdquo; on HMI; <a href="/docs/sop/SOP-SYS-002_Post-Production-Integration.md">SAT-04: Post-Production Integration</a>.</td>
+</tr>
+<tr>
+<td>High</td>
+<td>$\Delta &gt; 15\%$; Forbidden Register List; Core Driver.</td>
+<td>Two-Key (Engineer + Manager)</td>
+<td><a href="/docs/sop/SOP-SEC-001_Safety-Regression-Testing.md">SAT-05 Security &amp; Safety Regression</a></td>
+</tr>
+<tr>
+<td>High</td>
+<td><strong>Forbidden Register List</strong>; Edit</td>
+<td>Safety Lead</td>
+<td>FMEA Revision Review; Witness of <a href="/docs/fat/FAT-03-safety_and_security_protocol.md">FAT-03</a></td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><strong>RAG Ingest</strong> (New Tech Manuals)</td>
+<td>Lead Engineer</td>
+<td>Semantic check of citations in HMI.</td>
+</tr>
+<tr>
+<td>High</td>
+<td><strong>Hardware/Power Configuration</strong></td>
+<td>Two-Key (Safety Lead + Manager)</td>
+<td>Redundancy Failover Test; Witness of <a href="/docs/change_regression_test_protocol.md">Change Regression Test Protocol</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-change-request-cr-protocol">3. Change Request (CR) Protocol<a class="headerlink" href="#3-change-request-cr-protocol" title="Permanent link"></a></h3>
+<ol>
+<li><strong>Submission</strong>: Submit CR with a description and a verified Docker image hash or database snapshot.</li>
+<li><strong>Assessment</strong>: Evaluate impact on deterministic timing, PTP synchronization, and FMEA Alignment.</li>
+<li><strong>Approval</strong>: Authorization obtained based on the Matrix in Section 2.</li>
+<li><strong>Implementation</strong>: Change applied to the Edge Gateway.</li>
+<li><strong>Validation (PIR)</strong>: Post-implementation Review (PIR) to guarantee no unintended $Z$-Score drift or Heartbeat loss.</li>
+<li><strong>Rollback (SOP-03: Rollback Procedure)</strong>: If PIR fails, the system is reverted via 
+   <a href="/docs/sop/SOP-SYS-001_Backup-Rollback.md">SOP-03: Rollback Procedure</a> using the pre-verified Docker image hash or 
+   database snapshot.</li>
+</ol>
+<h3 id="4-change-request-cr-protocol-pre-requisite-checklist">4. Change Request (CR) Protocol Pre-Requisite Checklist<a class="headerlink" href="#4-change-request-cr-protocol-pre-requisite-checklist" title="Permanent link"></a></h3>
+<p>Before any entry is made to the log below, the following criteria must be met:</p>
+<ul>
+<li>[ ] <strong>Risk Assessment</strong>: Changes to the <strong>Forbidden Register List</strong> are classified as <strong>High Risk</strong> and require a
+      500ms <strong>Safe State</strong> validation.</li>
+<li>[ ] <strong>FMEA Update</strong>: High-risk changes to asset limits (e.g., VFD speed-lock) must be documented in the FMEA
+      (Failure Mode and Effects Analysis Log).</li>
+<li>[ ] <strong>SAT Mapping</strong>: Identify the specific Site Acceptance Test (SAT) required for verification.</li>
+<li>[ ] <strong>Rollback Plan</strong>: Verify Docker image hash or database snapshot is available in the local respository.</li>
+<li>[ ] <strong>Impact Analysis</strong>: Evaluate if the change affects the <strong>Southbound Driver&rsquo;s</strong> deterministic timing or PTP
+      synchronization.</li>
+</ul>
+<h3 id="5-example-change-management-log-table">5. Example Change Management Log Table<a class="headerlink" href="#5-example-change-management-log-table" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>CR ID</th>
+<th>Description of Change</th>
+<th>Risk Level</th>
+<th style="text-align: left;">Verification Status and CRT</th>
+<th style="text-align: left;">PIR Complete</th>
+<th style="text-align: left;">PIR Signoff Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-04-14</td>
+<td>CR-001</td>
+<td>Patching FastAPI to v0.109.1 (Security)</td>
+<td>Low</td>
+<td style="text-align: left;"><strong>PASS</strong> (CRT-03)</td>
+<td style="text-align: left;">YES</td>
+<td style="text-align: left;">2026-04-14</td>
+</tr>
+<tr>
+<td>2026-04-16</td>
+<td>CR-002</td>
+<td>Updated <code>forbidden_list</code> for new VFD speed-lock</td>
+<td>High</td>
+<td style="text-align: left;"><strong>PASS</strong> (CRT-01)</td>
+<td style="text-align: left;">YES</td>
+<td style="text-align: left;">2026-04-15</td>
+</tr>
+<tr>
+<td>2026-04-20</td>
+<td>CR-003</td>
+<td>Ingested <code>PUMP_01</code> manual into RAG vector space</td>
+<td>Medium</td>
+<td style="text-align: left;"><strong>PASS</strong> (CRT-02)</td>
+<td style="text-align: left;">YES</td>
+<td style="text-align: left;">2026-04-17</td>
+</tr>
+<tr>
+<td>2026-04-22</td>
+<td>CR-004</td>
+<td>Adjusted TimescaleDB retention to 120 days</td>
+<td>Low</td>
+<td style="text-align: left;"><strong>PASS</strong> (CRT-09)</td>
+<td style="text-align: left;">YES</td>
+<td style="text-align: left;">2026-04-20</td>
+</tr>
+<tr>
+<td>2026-04-23</td>
+<td>CR-005</td>
+<td>Threshold Adaptation: Adjusted <code>PUMP_01_DISCHARGE</code> $Z$-Score from 1.5 to 1.65 (+10%)</td>
+<td>Medium</td>
+<td style="text-align: left;"><strong>PASS</strong> (CRT-02)</td>
+<td style="text-align: left;">YES</td>
+<td style="text-align: left;">2026-04-21</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-emergency-change-procedure">6. Emergency Change Procedure<a class="headerlink" href="#6-emergency-change-procedure" title="Permanent link"></a></h3>
+<p>In the event of a P1 Incident (Security Breach or Logic Failure) as defined in the Incident Response Plan, an emergency 
+rollback to the &ldquo;Last Known Good&rdquo; state can be performed via 
+<a href="/docs/sop/SOP-SYS-001_Backup-Rollback.md">SOP-03: Rollback Procedure</a>. An Emergency CR must be filed within 4 hours of 
+the action to document the recovery and maintain the audit trail.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

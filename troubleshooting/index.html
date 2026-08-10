@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Oversight ICS Troubleshooting Guide - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Oversight ICS Troubleshooting Guide";
+        var mkdocs_page_input_path = "troubleshooting.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Oversight ICS Troubleshooting Guide</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-troubleshooting-guide">Oversight ICS Troubleshooting Guide<a class="headerlink" href="#oversight-ics-troubleshooting-guide" title="Permanent link"></a></h1>
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link"></a></h2>
+<p>This document provides <strong>step-by-step troubleshooting procedures</strong> for diagnosing and resolving failures within the 
+OverSight ICS system across:</p>
+<ul>
+<li>AI Reasoning Layer</li>
+<li>Southbound Control Interface</li>
+<li>Telemetry Ingestion Pipeline</li>
+<li>Network &amp; Time Synchronization</li>
+<li>Safety &amp; Watchdog Systems</li>
+</ul>
+<p>Intended for:</p>
+<ul>
+<li>Control Engineers</li>
+<li>OT Engineers</li>
+<li>System Integrators</li>
+<li>On-call Support Personnel</li>
+</ul>
+<hr />
+<h2 id="2-safety-notice-mandatory">2. Safety Notice (MANDATORY)<a class="headerlink" href="#2-safety-notice-mandatory" title="Permanent link"></a></h2>
+<p><strong>Before ANY action:</strong></p>
+<ol>
+<li>Confirm system is in a <strong>safe operational state</strong></li>
+<li>
+<p>Verify:</p>
+</li>
+<li>
+<p>No active failover is in progress</p>
+</li>
+<li>No critical alarms are unacknowledged</li>
+<li>
+<p>If unsure:</p>
+</li>
+<li>
+<p>Switch to <strong>MONITOR-ONLY MODE</strong></p>
+</li>
+<li>OR initiate <strong>AI LOCKOUT (see SOP-03)</strong></li>
+</ol>
+<p><strong>NEVER:</strong></p>
+<ul>
+<li>Override safety interlocks</li>
+<li>Bypass LOTO protections</li>
+<li>Force-write to forbidden registers</li>
+</ul>
+<p><strong>DO NOT restart services if:</strong></p>
+<ul>
+<li>Active failover is in progress</li>
+<li>System is in <strong>CONTROL_ENABLED</strong> with live actuation</li>
+<li>Watchdog instability is present</li>
+</ul>
+<p>Switch to <strong>MONITOR-ONLY</strong> before restarting any control-related service.</p>
+<hr />
+<h1 id="3-system-health-quick-check-mandatory-first-step">3. System Health Quick Check (MANDATORY FIRST STEP)<a class="headerlink" href="#3-system-health-quick-check-mandatory-first-step" title="Permanent link"></a></h1>
+<h2 id="31-container-service-health">3.1 Container &amp; Service Health<a class="headerlink" href="#31-container-service-health" title="Permanent link"></a></h2>
+<pre><code class="language-bash">docker ps
+docker stats --no-stream
+</code></pre>
+<p>Verify:</p>
+<ul>
+<li>All containers are <strong>UP</strong></li>
+<li>CPU &lt; 80%, Memory &lt; 85%</li>
+</ul>
+<pre><code class="language-bash">curl http://localhost:8000/health
+</code></pre>
+<p>Expected:</p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;healthy&quot;,
+  &quot;services&quot;: {
+    &quot;ingest&quot;: &quot;up&quot;,
+    &quot;reasoning&quot;: &quot;up&quot;,
+    &quot;southbound&quot;: &quot;up&quot;,
+    &quot;database&quot;: &quot;up&quot;,
+    &quot;cache&quot;: &quot;up&quot;
+  }
+}
+</code></pre>
+<hr />
+<h2 id="32-system-mode-verification-critical">3.2 System Mode Verification (CRITICAL)<a class="headerlink" href="#32-system-mode-verification-critical" title="Permanent link"></a></h2>
+<pre><code class="language-bash">curl http://localhost:8000/system/mode
+</code></pre>
+<p>Possible values:</p>
+<ul>
+<li><code>CONTROL_ENABLED</code></li>
+<li><code>ADVISORY_MODE</code></li>
+<li><code>MONITOR_ONLY</code></li>
+<li><code>AI_LOCKOUT</code></li>
+</ul>
+<p><strong>Always verify mode before taking action</strong></p>
+<hr />
+<h2 id="33-hmi-quick-indicators">3.3 HMI Quick Indicators<a class="headerlink" href="#33-hmi-quick-indicators" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Meaning</th>
+<th>Immediate Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red Strobe</td>
+<td>SECURITY_VIOLATION_LOCKOUT</td>
+<td>Check Gatekeeper logs + verify LOTO</td>
+</tr>
+<tr>
+<td>Amber Pulse</td>
+<td>AGENT_STALL</td>
+<td>Restart reasoning agent (if safe)</td>
+</tr>
+<tr>
+<td>Grey Overlay</td>
+<td>DATA_STALE</td>
+<td>Check Southbound NIC + time sync</td>
+</tr>
+<tr>
+<td>Blue Border</td>
+<td>ADVISORY_MODE</td>
+<td>Manual confirmation required</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="34-critical-error-codes">3.4 Critical Error Codes<a class="headerlink" href="#34-critical-error-codes" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>403_LOTO</td>
+<td>Hardware lock active</td>
+<td>Set HOA switch to AUTO</td>
+</tr>
+<tr>
+<td>408_PESSIMISTIC</td>
+<td>No feedback</td>
+<td>Verify power + mapping</td>
+</tr>
+<tr>
+<td>503_TPM_ERR</td>
+<td>Signature failure</td>
+<td>Check TPM + rotate keys</td>
+</tr>
+<tr>
+<td>Z_SCORE_NAN</td>
+<td>No baseline</td>
+<td>Wait for Observation Phase</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="4-common-issues-resolutions">4. Common Issues &amp; Resolutions<a class="headerlink" href="#4-common-issues-resolutions" title="Permanent link"></a></h1>
+<hr />
+<h2 id="41-no-telemetry-data">4.1 No Telemetry Data<a class="headerlink" href="#41-no-telemetry-data" title="Permanent link"></a></h2>
+<p>Diagnostics:</p>
+<pre><code class="language-bash">docker logs mqtt-broker
+docker logs ingest-service
+</code></pre>
+<pre><code class="language-sql">SELECT * FROM telemetry ORDER BY ts DESC LIMIT 10;
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Restart ingest service (if safe)</li>
+<li>Verify PLC connectivity</li>
+<li>Validate tag mapping</li>
+<li>Check firewall ports</li>
+</ul>
+<hr />
+<h2 id="42-ai-not-producing-decisions">4.2 AI Not Producing Decisions<a class="headerlink" href="#42-ai-not-producing-decisions" title="Permanent link"></a></h2>
+<p>Look for:</p>
+<ul>
+<li>STATE_OF_GRACE_ACTIVE</li>
+<li>NO_ANOMALY_DETECTED</li>
+<li>RAG_QUERY_FAILED</li>
+</ul>
+<p>Resolution:</p>
+<ul>
+<li>Wait for <strong>Observation Phase (≤600s)</strong></li>
+<li>Restart reasoning agent (if safe)</li>
+<li>Verify telemetry + RAG ingestion</li>
+</ul>
+<hr />
+<h2 id="43-failover-not-executing">4.3 Failover Not Executing<a class="headerlink" href="#43-failover-not-executing" title="Permanent link"></a></h2>
+<p>Check:</p>
+<pre><code class="language-sql">SELECT * FROM intent_outbox WHERE status='PENDING';
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Complete Two-Key confirmation</li>
+<li>Reissue command if TTL expired (&gt;2s)</li>
+<li>Check safety rejection logs</li>
+</ul>
+<hr />
+<h2 id="44-alarm-flood">4.4 Alarm Flood<a class="headerlink" href="#44-alarm-flood" title="Permanent link"></a></h2>
+<p>Diagnostics:</p>
+<pre><code class="language-sql">SELECT priority, COUNT(*) FROM alarms GROUP BY priority;
+</code></pre>
+<pre><code class="language-sql">SELECT * FROM telemetry WHERE quality &lt; 192;
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Switch to MONITOR-ONLY</li>
+<li>Check sensors</li>
+<li>Recalculate baseline (SOP-09)</li>
+<li>Review recent changes</li>
+</ul>
+<hr />
+<h2 id="45-time-sync-failure">4.5 Time Sync Failure<a class="headerlink" href="#45-time-sync-failure" title="Permanent link"></a></h2>
+<pre><code class="language-bash">ptp4l -m
+phc2sys -m
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Restart PTP</li>
+<li>Verify Grandmaster</li>
+<li>If unstable → MONITOR-ONLY</li>
+</ul>
+<hr />
+<h2 id="46-database-performance">4.6 Database Performance<a class="headerlink" href="#46-database-performance" title="Permanent link"></a></h2>
+<pre><code class="language-sql">EXPLAIN ANALYZE SELECT * FROM intent_outbox WHERE status='PENDING';
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Ensure index on <code>status</code></li>
+<li>Run VACUUM ANALYZE</li>
+<li>Archive old data</li>
+</ul>
+<hr />
+<h2 id="47-redis-failure">4.7 Redis Failure<a class="headerlink" href="#47-redis-failure" title="Permanent link"></a></h2>
+<pre><code class="language-bash">docker logs redis
+</code></pre>
+<p>Resolution:</p>
+<ul>
+<li>Restart Redis</li>
+<li>UI will degrade (system still safe)</li>
+</ul>
+<hr />
+<h2 id="48-watchdog-trip">4.8 Watchdog Trip<a class="headerlink" href="#48-watchdog-trip" title="Permanent link"></a></h2>
+<h3 id="thresholds">Thresholds<a class="headerlink" href="#thresholds" title="Permanent link"></a></h3>
+<ul>
+<li>Soft fault: &gt;3s heartbeat loss</li>
+<li>Hard trip: &gt;1500ms loss (3 cycles)</li>
+<li>Critical: &gt;60s no recovery</li>
+</ul>
+<p>Resolution:</p>
+<ol>
+<li>Confirm plant stable</li>
+<li>Restart southbound service</li>
+<li>Re-establish heartbeat</li>
+<li>Follow recovery sequence</li>
+</ol>
+<hr />
+<h2 id="49-auth-failures">4.9 Auth Failures<a class="headerlink" href="#49-auth-failures" title="Permanent link"></a></h2>
+<ul>
+<li>Re-authenticate</li>
+<li>Verify RBAC</li>
+<li>Ensure distinct second JWT</li>
+</ul>
+<hr />
+<h2 id="410-rag-issues">4.10 RAG Issues<a class="headerlink" href="#410-rag-issues" title="Permanent link"></a></h2>
+<p>Resolution:</p>
+<ul>
+<li>Re-run SOP-AI-01</li>
+<li>Validate metadata</li>
+<li>Rollback knowledge version</li>
+</ul>
+<hr />
+<h2 id="411-heartbeat-flatlining">4.11 Heartbeat Flatlining<a class="headerlink" href="#411-heartbeat-flatlining" title="Permanent link"></a></h2>
+<p>Diagnostics:</p>
+<ul>
+<li>Check NIC link</li>
+<li>Verify PTP</li>
+<li>Monitor CPU starvation</li>
+</ul>
+<p>Resolution:</p>
+<ul>
+<li>Verify subnet config</li>
+<li>Check clock quality</li>
+<li>Enforce CPU limits (≤40%)</li>
+</ul>
+<hr />
+<h2 id="412-ai-hallucination-stall">4.12 AI Hallucination / Stall<a class="headerlink" href="#412-ai-hallucination-stall" title="Permanent link"></a></h2>
+<p>Diagnostics:</p>
+<ul>
+<li>Check vector DB</li>
+<li>Check recursion depth</li>
+<li>Inspect the forbidden list</li>
+</ul>
+<p>Resolution:</p>
+<ul>
+<li>Rebuild vector index</li>
+<li>Analyze trace logs</li>
+</ul>
+<p><strong>If &gt;3 rejected intents:</strong></p>
+<ul>
+<li>Force system to <strong>ADVISORY_MODE</strong></li>
+<li>Require operator intervention</li>
+</ul>
+<hr />
+<h1 id="5-degraded-mode-behavior">5. Degraded Mode Behavior<a class="headerlink" href="#5-degraded-mode-behavior" title="Permanent link"></a></h1>
+<table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redis</td>
+<td>UI degraded only</td>
+</tr>
+<tr>
+<td>RAG</td>
+<td>AI loses context (advisory only)</td>
+</tr>
+<tr>
+<td>Reasoning Agent</td>
+<td>Passive monitoring</td>
+</tr>
+</tbody>
+</table>
+<p>System MUST NOT issue control actions in degraded mode</p>
+<hr />
+<h1 id="6-standard-recovery-sequence">6. Standard Recovery Sequence<a class="headerlink" href="#6-standard-recovery-sequence" title="Permanent link"></a></h1>
+<ol>
+<li>Verify plant stability</li>
+<li>Switch to MONITOR-ONLY</li>
+<li>Restart the failed component</li>
+<li>Validate telemetry</li>
+<li>Enable ADVISORY_MODE</li>
+<li>Require manual confirmation before CONTROL_ENABLED</li>
+</ol>
+<hr />
+<h1 id="7-log-priority-order">7. Log Priority Order<a class="headerlink" href="#7-log-priority-order" title="Permanent link"></a></h1>
+<ol>
+<li>Southbound Driver (execution truth)</li>
+<li>Reasoning Agent (decision trace)</li>
+<li>Audit Logs (compliance)</li>
+<li>Database (historical)</li>
+</ol>
+<hr />
+<h1 id="8-escalation-matrix">8. Escalation Matrix<a class="headerlink" href="#8-escalation-matrix" title="Permanent link"></a></h1>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>AI Lockout + notify plant manager</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>Monitor mode + notify engineer</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>Log + schedule fix</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>Monitor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="81-escalation-path">8.1 Escalation Path<a class="headerlink" href="#81-escalation-path" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1</td>
+<td>Operator checks alarms</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>OT Engineer reviews mapping</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Systems Engineer debugging</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>Vendor support</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="9-log-locations">9. Log Locations<a class="headerlink" href="#9-log-locations" title="Permanent link"></a></h1>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ingest</td>
+<td>docker logs ingest-service</td>
+</tr>
+<tr>
+<td>Reasoning</td>
+<td>docker logs reasoning-agent</td>
+</tr>
+<tr>
+<td>Southbound</td>
+<td>docker logs southbound-driver</td>
+</tr>
+<tr>
+<td>DB</td>
+<td>docker logs postgres</td>
+</tr>
+<tr>
+<td>Cache</td>
+<td>docker logs redis</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="10-when-to-stop">10. When to STOP<a class="headerlink" href="#10-when-to-stop" title="Permanent link"></a></h1>
+<p>STOP if:</p>
+<ul>
+<li>Safety cannot be guaranteed</li>
+<li>Safety systems involved</li>
+<li>Repeated watchdog trips</li>
+<li>AI behavior unstable</li>
+</ul>
+<hr />
+<h1 id="11-related-documents">11. Related Documents<a class="headerlink" href="#11-related-documents" title="Permanent link"></a></h1>
+<ul>
+<li>SOP-02 Alarm Response</li>
+<li>SOP-03 AI Lockout</li>
+<li>SOP-04 Rollback</li>
+<li>SOP-05 Watchdog Test</li>
+<li>SOP-AI-01 RAG Ingestion</li>
+<li>INCIDENT_RESPONSE_PLAN.md</li>
+<li>SAFETY_INTERFACE.md</li>
+</ul>
+<hr />
+<h1 id="12-final-rule">12. Final Rule<a class="headerlink" href="#12-final-rule" title="Permanent link"></a></h1>
+<blockquote>
+<p>If troubleshooting requires bypassing safety — you are solving the wrong problem.</p>
+</blockquote>
+<p>Always preserve:</p>
+<ul>
+<li>Safety</li>
+<li>Determinism</li>
+<li>Auditability</li>
+</ul>
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

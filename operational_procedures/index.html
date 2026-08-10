@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Operational Security Procedures - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Operational Security Procedures";
+        var mkdocs_page_input_path = "operational_procedures.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Operational Security Procedures</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="operational-security-procedures">Operational Security Procedures<a class="headerlink" href="#operational-security-procedures" title="Permanent link"></a></h1>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">[User]</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">[Manager]</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-access-review-schedule-iso-27001-a9">1. Access Review Schedule (ISO 27001 A.9)<a class="headerlink" href="#1-access-review-schedule-iso-27001-a9" title="Permanent link"></a></h2>
+<p>To prevent &ldquo;Permission Creep,&rdquo; all service accounts and human access tokens are subject to periodic validation.
+- <strong>Cycle</strong>: Every 90 days (Quarterly).
+- <strong>Procedure</strong>: 
+    1. Generate a report of all active JWT Service Accounts from the OIDC provider.
+    2. Review the <code>trace_id</code> history in the <strong>Audit Logs</strong> to verify the account has performed work in the last 30 days.
+    3. Revoke any accounts associated with decommissioned agents or inactive personnel.
+- <strong>Automation</strong>: The <code>compliance_watcher.py</code> script triggers a <code>REVIEW_REQUIRED</code> flag in the SIEM if an account 
+  remains active without an associated audit entry for &gt;45 days.</p>
+<h2 id="2-information-asset-register-iso-27001-a8">2. Information Asset Register (ISO 27001 A.8)<a class="headerlink" href="#2-information-asset-register-iso-27001-a8" title="Permanent link"></a></h2>
+<p>This register maps technical assets to business owners and data classifications defined in the CSMP.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Asset ID</th>
+<th style="text-align: left;">Physical Location</th>
+<th style="text-align: left;">Data Owner</th>
+<th style="text-align: left;">Classification</th>
+<th style="text-align: left;">Impact of Loss</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Edge Gateway 01</strong></td>
+<td style="text-align: left;">Main Control Room</td>
+<td style="text-align: left;">OT Manager</td>
+<td style="text-align: left;">Restricted</td>
+<td style="text-align: left;">High (System Down)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Southbound Driver</strong></td>
+<td style="text-align: left;">Cabinet A-12</td>
+<td style="text-align: left;">Lead Engineer</td>
+<td style="text-align: left;">Critical</td>
+<td style="text-align: left;">Very High (Safety)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>RAG Vector DB</strong></td>
+<td style="text-align: left;">IDMZ Volume 1</td>
+<td style="text-align: left;">Data Architect</td>
+<td style="text-align: left;">Internal</td>
+<td style="text-align: left;">Medium (Logic Drift)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Audit Log Volume</strong></td>
+<td style="text-align: left;">WORM Storage</td>
+<td style="text-align: left;">Security Officer</td>
+<td style="text-align: left;">Critical</td>
+<td style="text-align: left;">High (Compliance)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-physical-security-tamper-monitoring">3. Physical Security &amp; Tamper Monitoring<a class="headerlink" href="#3-physical-security-tamper-monitoring" title="Permanent link"></a></h2>
+<p>Physical access to the Edge Gateway and Control Cabinets is monitored via telemetry.
+- <strong>Cabinet Tamper Switch</strong>: All OverSight-enabled cabinets must be equipped with a physical limit switch connected to 
+  the PLC.
+- <strong>Telemetry Tag</strong>: <code>Enterprise/Site/Area/Line/Cell/Safety/Cabinet_Door_Open</code>.
+- <strong>Logic</strong>: If the cabinet door is opened without a scheduled &ldquo;Maintenance Mode&rdquo; bit active, the AI Agent must log a 
+  `PHYSICAL_SEC</p>
+<ul>
+<li>
+<h2 id="4-ai-risk-assessment-impact-policy-iso-42001-nist-ai-rmf">4. AI Risk Assessment &amp; Impact Policy (ISO 42001 / NIST AI RMF)<a class="headerlink" href="#4-ai-risk-assessment-impact-policy-iso-42001-nist-ai-rmf" title="Permanent link"></a></h2>
+This section defines the risk profile for the Agentic Reasoning layer and the controls used to mitigate physical-world 
+consequences.</li>
+</ul>
+<h3 id="41-risk-categorization">4.1 Risk Categorization<a class="headerlink" href="#41-risk-categorization" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Risk Type</th>
+<th style="text-align: left;">Industrial Impact</th>
+<th style="text-align: left;">Mitigation Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Hallucination</strong></td>
+<td style="text-align: left;">AI proposes a setpoint that exceeds physical equipment design.</td>
+<td style="text-align: left;"><strong>$Z$-Score Grounding</strong>: The Semantic Gatekeeper rejects any value &gt;3 standard deviations from the baseline.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Prompt Injection</strong></td>
+<td style="text-align: left;">Malicious actor manipulates RAG sources to trigger a shutdown.</td>
+<td style="text-align: left;"><strong>Signed RAG Sources</strong>: Only PDF manuals with a verified SHA-256 hash are ingested into the Vector DB.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Logic Drift</strong></td>
+<td style="text-align: left;">AI fails to recognize a sensor failure, treating it as a process change.</td>
+<td style="text-align: left;"><strong>Sensor Fusion</strong>: The agent must correlate at least two telemetry points (e.g., Amps + Flow) before initiating a failover.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Latency/Jitter</strong></td>
+<td style="text-align: left;">AI reasoning takes too long, missing a critical failover window.</td>
+<td style="text-align: left;"><strong>Cgroup Isolation</strong>: Python process is locked to 40% CPU to ensure the Watchdog Heartbeat is never starved.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-impact-assessment-the-pessimistic-confirmation-rule">4.2 Impact Assessment (The &ldquo;Pessimistic Confirmation&rdquo; Rule)<a class="headerlink" href="#42-impact-assessment-the-pessimistic-confirmation-rule" title="Permanent link"></a></h3>
+<p>Any AI intent that results in a <strong>Level 2 (Physical Change)</strong> must follow the impact-based authorization workflow:</p>
+<ol>
+<li><strong>Low Impact (Advisory)</strong>: AI suggests a maintenance task. → <em>Auto-log in Maintenance Management System.</em></li>
+<li><strong>Medium Impact (Parameter Change)</strong>: AI suggests adjusting a setpoint by &lt;10%. → <em>Requires Operator &ldquo;Confirm&rdquo; on 
+   HMI.</em></li>
+<li><strong>High Impact (Asset Failover)</strong>: AI suggests stopping a Primary Pump and starting a Standby. → 
+   <em>Requires &ldquo;Two-Key&rdquo; verification: AI Reasoning Trace + Human Operator Credentials + Semantic Gatekeeper Validation.</em></li>
+</ol>
+<h3 id="43-bias-fairness-monitoring">4.3 Bias &amp; Fairness Monitoring<a class="headerlink" href="#43-bias-fairness-monitoring" title="Permanent link"></a></h3>
+<p>The AI Agent must monitor the &ldquo;Bias&rdquo; of the system. 
+In an ICS context, &ldquo;Bias&rdquo; refers to the model favoring certain operating modes (e.g., favoring Pump A over Pump B 
+regardless of wear). 
+- <strong>Control</strong>: The system logs &ldquo;Selection Frequency.&rdquo; If the AI selects one asset 20% more than its twin without a 
+  $Z$-score justification, a <strong>Logic Drift Alarm</strong> is triggered for engineering review.</p>
+<h2 id="5-change-management-continuity-iso-27001">5. Change Management &amp; Continuity (ISO 27001)<a class="headerlink" href="#5-change-management-continuity-iso-27001" title="Permanent link"></a></h2>
+<h3 id="51-software-change-control">5.1 Software Change Control<a class="headerlink" href="#51-software-change-control" title="Permanent link"></a></h3>
+<p>All changes to the <strong>Southbound Driver</strong> or <strong>Semantic Gatekeeper</strong> must follow the <strong>Three-Tier Deployment</strong> process:
+1. <strong>Virtual Twin</strong>: Verify $Z$-score logic against simulated process noise.
+2. <strong>Staging</strong>: Deploy to a non-critical asset with a 24-hour <strong>Monitor Only</strong> window.
+3. <strong>Production</strong>: Deploy during a scheduled maintenance window with Lead OT Engineer approval.</p>
+<h3 id="52-disaster-recovery-dr">5.2 Disaster Recovery (DR)<a class="headerlink" href="#52-disaster-recovery-dr" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Recovery Time Objective (RTO)</strong>: 4 Hours.</li>
+<li><strong>Procedure</strong>: In the event of Edge Gateway hardware failure, the system falls back to <strong>Local/Manual</strong> control. A 
+  pre-imaged cold-standby IPC is kept on-site in Cabinet A-12 for immediate swap.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

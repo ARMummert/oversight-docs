@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Cybersecurity Management Plan (CSMP) - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Cybersecurity Management Plan (CSMP)";
+        var mkdocs_page_input_path = "cybersecurity_management.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Cybersecurity Management Plan (CSMP)</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cybersecurity-management-plan-csmp">Cybersecurity Management Plan (CSMP)<a class="headerlink" href="#cybersecurity-management-plan-csmp" title="Permanent link"></a></h1>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h2>
+<ul>
+<li><a href="#1-security-philosophy">1. Security Philosophy</a></li>
+<li><a href="#2-network-segmentation-zones--conduits">2. Network Segmentation</a></li>
+<li><a href="#21-dual-nic-isolation">2.1 Dual-NIC Isolation</a></li>
+<li><a href="#22-data-loss-prevention-dlp">2.2 Data Loss Prevention (DLP)</a></li>
+<li><a href="#3-the-semantic-gatekeeper">3. The Semantic Gatekeeper</a></li>
+<li><a href="#4-least-privilege--access-control">4. Least Privilege &amp; Access Control</a></li>
+<li><a href="#41-identity--access-management-iam">4.1 Identity &amp; Access Management (IAM)</a></li>
+<li><a href="#5-incident-response">5. Incident Response</a></li>
+<li><a href="#6-data-governance--classification">6. Data Governance &amp; Classification</a></li>
+<li><a href="#61-data-sensitivity-levels">6.1 Data Sensitivity Levels</a></li>
+<li><a href="#62-cross-agent-handling-rules-data-downgrading">6.2 Cross-Agent Handling Rules (Data Downgrading)</a></li>
+<li><a href="#7-clock-synchronization--forensic-alignment">7. Clock Synchronization &amp; Forensic Alignment</a></li>
+<li><a href="#71-tiered-synchronization-strategy">7.1 Tiered Synchronization Strategy</a></li>
+<li><a href="#72-the-edge-gateway-as-time-bridge">7.2 The Edge Gateway as &ldquo;Time Bridge&rdquo;</a></li>
+<li><a href="#73-security--availability">7.3 Security &amp; Availability</a></li>
+</ul>
+<h2 id="1-security-philosophy">1. Security Philosophy<a class="headerlink" href="#1-security-philosophy" title="Permanent link"></a></h2>
+<p>OverSight ICS adopts a <strong>Zero-Trust Industrial Architecture</strong>. The system assumes that any network-connected component, 
+including the AI Reasoning Agent, could be compromised. It enforces strict access controls and data classification
+to prevent unauthorized access to sensitive data.</p>
+<h2 id="2-network-segmentation-zones-conduits">2. Network Segmentation (Zones &amp; Conduits)<a class="headerlink" href="#2-network-segmentation-zones-conduits" title="Permanent link"></a></h2>
+<p>In accordance with IEC 62443-3-3 for network segmentation, the architecture is divided into distinct <strong>Security Level</strong> 
+(SL) targets for each zone. </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Zone ID</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Target Security Level (SL)</th>
+<th style="text-align: left;">Primary Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Z1</strong></td>
+<td style="text-align: left;"><strong>Business (L4)</strong></td>
+<td style="text-align: left;">SL-1 (Baseline)</td>
+<td style="text-align: left;">Standard Firewall, DLP.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Z2</strong></td>
+<td style="text-align: left;"><strong>IDMZ (L3.5)</strong></td>
+<td style="text-align: left;"><strong>SL-3 (High)</strong></td>
+<td style="text-align: left;">Dual-NIC Isolation, Dual-Auth JWT, WORM Audit Logs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Z3</strong></td>
+<td style="text-align: left;"><strong>Control (L2)</strong></td>
+<td style="text-align: left;"><strong>SL-3 (High)</strong></td>
+<td style="text-align: left;">PTP Sync, Intent-Signing, Semantic Gatekeeper.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Z4</strong></td>
+<td style="text-align: left;"><strong>Process (L1)</strong></td>
+<td style="text-align: left;">SL-2 (Functional)</td>
+<td style="text-align: left;">Hardware Watchdog, Modbus Allow-listing.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="21-dual-nic-isolation">2.1 Dual-NIC Isolation<a class="headerlink" href="#21-dual-nic-isolation" title="Permanent link"></a></h3>
+<p>The Edge Gateway is equipped with two physical Network Interface Cards (NICs):
+- <strong>NIC 1 (Northbound)</strong>: Connected to the IDMZ for MQTT/Dashboard traffic.
+- <strong>NIC 2 (Southbound)</strong>: Connected to the Level 2 Control Network via a non-routable private subnet.
+- <strong>Routing</strong>: IP Forwarding is disabled at the OS level to prevent bridge-traffic between zones.</p>
+<h3 id="22-data-loss-prevention-dlp">2.2 Data Loss Prevention (DLP)<a class="headerlink" href="#22-data-loss-prevention-dlp" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Unidirectional Command Logic</strong>: The Southbound Driver is a &ldquo;Stateful Proxy.&rdquo; It only accepts valid &lsquo;Intents&rsquo; from 
+  the Edge Gateway and is physically incapable of initiating outbound requests to the Enterprise Zone.</li>
+<li><strong>Northbound Egress Filtering</strong>: The Northbound NIC is restricted via <code>iptables</code> to permit ONLY MQTTS (Port 8883) 
+  and HTTPS (Port 443). All other outbound traffic is dropped.</li>
+<li><strong>Southbound Inbound Filtering</strong>: The Southbound NIC permits only established industrial protocols from a hard-coded 
+  &ldquo;Allow-list&rdquo; of Level 2 Controller IP addresses.</li>
+<li><strong>Encryption in Transit</strong>: <ul>
+<li><strong>Northbound</strong>: All MQTT traffic uses MQTTS with TLS 1.3 certificates.</li>
+<li><strong>Southbound</strong>: Industrial traffic is encapsulated in a secure tunnel (e.g., WireGuard) to provide TLS 1.3 
+  equivalent protection for legacy protocols.</li>
+</ul>
+</li>
+<li><strong>Deep Packet Inspection (DPI)</strong>: The Southbound Driver validates the structure of the industrial packets, not just
+  the port numbers.</li>
+</ul>
+<h2 id="3-the-semantic-gatekeeper">3. The Semantic Gatekeeper<a class="headerlink" href="#3-the-semantic-gatekeeper" title="Permanent link"></a></h2>
+<p>The Southbound Driver enforces all write-commands against a hard-coded allowlist:</p>
+<ul>
+<li><strong>Logic Interlocking</strong>: The driver maintains a hard-coded &ldquo;Allowlist&rdquo; of Modbus/OPC-UA registers.</li>
+<li><strong>Validation Schema</strong>: Every intent is checked for Range and Rate-of-Change limits<ul>
+<li><strong>Range Checks</strong>: Is the value within the physical limits of the machine?</li>
+<li><strong>Rate-of-Change Checks</strong>: Is the AI trying to ramp a motor faster than the mechanical spec allows?</li>
+</ul>
+</li>
+<li><strong>Rejection Protocol</strong>: Any intent failing validation is dropped, logged as a &ldquo;Security Conflict,&rdquo; and triggers a 
+  Critical Alarm.</li>
+</ul>
+<h2 id="4-least-privilege-access-control">4. Least Privilege &amp; Access Control<a class="headerlink" href="#4-least-privilege-access-control" title="Permanent link"></a></h2>
+<ul>
+<li><strong>Service Accounts</strong>: The LangGraph Agent operates under a &ldquo;Read-Only&rdquo; service account for the Unified Namespace.</li>
+<li><strong>Write Authority</strong>: Write access is restricted to the Southbound Driver process, which requires a cryptographic 
+  handshake with the Edge Gateway.</li>
+<li><strong>OIDC/SSO</strong>: The dashboard is secured with OpenID Connect (OIDC) with MFA requirements.</li>
+<li><strong>MFA Requirements</strong>: MFA is mandatory for high-priority actions and must be verified.</li>
+</ul>
+<h3 id="41-identity-access-management-iam">4.1 Identity &amp; Access Management (IAM)<a class="headerlink" href="#41-identity-access-management-iam" title="Permanent link"></a></h3>
+<ul>
+<li><strong>OIDC</strong>: The dashboard is secured with OpenID Connect (OIDC) for federated identity with the plant&rsquo;s existing 
+  identity provider.</li>
+<li><strong>Single Sign-On (SSO)</strong>: Users authenticate via an SSO provider, which enforces MFA and role-based
+  access control. </li>
+<li>If a user leaves the company and their corporate account is deactivated, their access to the dashboard is 
+    automatically revoked.</li>
+<li><strong>Role-Based Access Control (RBAC)</strong>: </li>
+<li><strong>Viewer</strong>: Can see the $Z$-Score trends but cannot acknowledge alarms.</li>
+<li><strong>Operator</strong>: Can acknowledge alarms and validate AI failover intents.</li>
+<li><strong>Admin/Engineer</strong>: Can modify deadbands, delay times, and $Z$-Score thresholds.</li>
+<li><strong>Multi-Factor Authentication (MFA)</strong>: MFA is mandatory for all <strong>High-Risk</strong> actions (e.g., modifying the Forbidden 
+   Register List). </li>
+<li><strong>Requirement</strong>: MFA status is verified at <strong>Gate 1</strong> of the verification pipeline.<ul>
+<li><strong>Validation</strong>: This requirement must be formally verified during <strong>FAT-03 (ST-11/ST-12)</strong> to ensure no bypass 
+  exists.</li>
+</ul>
+</li>
+<li><strong>Audit Trail</strong>: All actions taken on the dashboard are logged for auditing purposes.</li>
+<li><strong>Security Alerts</strong>: Any suspicious activity is logged and triggers a Critical Alarm.</li>
+<li><strong>Security Incidents</strong>: Any detected breach or anomalous AI behavior is logged and triggers a Critical Alarm.</li>
+<li><strong>Security Notifications</strong>: All security-related events are sent to the user&rsquo;s email address.</li>
+<li><strong>Security Dashboard</strong>: The dashboard provides real-time insights into security-related events.</li>
+</ul>
+<h2 id="5-incident-response-air-gap-fallback">5. Incident Response &amp; Air-Gap Fallback<a class="headerlink" href="#5-incident-response-air-gap-fallback" title="Permanent link"></a></h2>
+<p>In the event of a detected breach or anomalous AI behavior:</p>
+<ol>
+<li><strong>Incident Protocol</strong>: System severs NIC 1 connection and reverts to local <strong>Safe-State</strong> logic.</li>
+<li><strong>Orphan Mode</strong>: If PTP sync is lost, the system enters <strong>Orphan Mode</strong>.</li>
+<li><strong>Notification</strong>: An HMI critical alarm must be issued immediately upon entering Orphan Mode.</li>
+<li><strong>Downgrade</strong>: If sync is not restored within 24 hours, the AI Agent downgrades to <strong><code>MONITOR_ONLY</code></strong> mode.</li>
+</ol>
+<h2 id="6-data-governance-classification">6. Data Governance &amp; Classification<a class="headerlink" href="#6-data-governance-classification" title="Permanent link"></a></h2>
+<p>To guarantee cross-agent data integrity and prevent information leakage across security zones, OverSight ICS enforces 
+a four-tier data classification model.</p>
+<h3 id="61-data-sensitivity-levels">6.1 Data Sensitivity Levels<a class="headerlink" href="#61-data-sensitivity-levels" title="Permanent link"></a></h3>
+<p>Every data point within the system is assigned a sensitivity level which dictates its storage, visibility, and 
+transmission rules.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Level</th>
+<th style="text-align: left;">Classification</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Access Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>L4</strong></td>
+<td style="text-align: left;"><strong>Restricted</strong></td>
+<td style="text-align: left;">PII, Credentials, API Keys, and raw manufacturer Intellectual Property (IP).</td>
+<td style="text-align: left;">Restricted to <strong>Agent Consciousness</strong> layer; never transmitted to UI or Southbound Driver.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L3</strong></td>
+<td style="text-align: left;"><strong>Confidential</strong></td>
+<td style="text-align: left;">Internal $Z$-Score logic, Reasoning Traces, and Alarm Rationalization logic.</td>
+<td style="text-align: left;">Accessible by authorized <strong>Operators</strong> via HMI; encrypted at rest.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L2</strong></td>
+<td style="text-align: left;"><strong>Internal</strong></td>
+<td style="text-align: left;">Real-time telemetry, asset health states, and UNS topics.</td>
+<td style="text-align: left;">Broadly available within the <strong>Industrial DMZ</strong> for monitoring and history.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L1</strong></td>
+<td style="text-align: left;"><strong>Public</strong></td>
+<td style="text-align: left;">System uptime and high-level dashboard heartbeat.</td>
+<td style="text-align: left;">Available for general system health status.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-cross-agent-handling-rules-data-downgrading">6.2 Cross-Agent Handling Rules (Data Downgrading)<a class="headerlink" href="#62-cross-agent-handling-rules-data-downgrading" title="Permanent link"></a></h3>
+<p>As data moves across security conduits, it must be &ldquo;downgraded&rdquo; to the lowest required classification for the target
+zone to maintain the <strong>Least Privilege</strong> principle.</p>
+<ul>
+<li><strong>Intent Filtering (L4 → L2)</strong>: When the Reasoning Agent sends an intent to the Southbound Driver, it must strip 
+  away all proprietary reasoning logic and L4 metadata. Only the raw register command (L2) is transmitted to the
+  Control Zone.</li>
+<li><strong>Trace Sanitization (L4/L3 → L3)</strong>: Before a Reasoning Trace is transmitted to the Next.js HMI, the system performs 
+  an automated sanitization pass. Any L4 data (such as specific database file paths, internal IP addresses, or 
+  system credentials) is redacted to ensure the operator only sees L3 clinical logic.</li>
+<li><strong>Encryption at Transit</strong>: All L3 and L4 data moving between agents must be encapsulated in TLS 1.3 or higher to 
+  prevent man-in-the-middle (MITM) sniffing within the IDMZ.</li>
+</ul>
+<h3 id="7-clock-synchronization-forensic-alignment">7. Clock Synchronization &amp; Forensic Alignment<a class="headerlink" href="#7-clock-synchronization-forensic-alignment" title="Permanent link"></a></h3>
+<p>The system uses the <strong>Precision Time Protocol</strong> to synchronize the clocks of all agents within the Industrial DMZ. This 
+guarantees that all logs, reasoning traces, and telemetry data are timestamped accurately for forensic analysis and 
+correlation during incident response. The Edge Gateway serves as the PTP Grandmaster clock. It provides a consistent 
+time source for the Southbound Driver and any connected Level 2 controllers to prevent <strong>Time-Shift</strong> attacks and 
+ensures non-repudiation (Denial of Service) of audit logs.</p>
+<h3 id="71-tiered-synchronization-strategy">7.1 Tiered Synchronization Strategy<a class="headerlink" href="#71-tiered-synchronization-strategy" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Network Zone</th>
+<th style="text-align: left;">Protocol</th>
+<th style="text-align: left;">Accuracy</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Enterprise (L4)</strong></td>
+<td style="text-align: left;"><strong>NTP</strong></td>
+<td style="text-align: left;">±50ms</td>
+<td style="text-align: left;">Global dashboard and user event alignment.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Industrial DMZ (L3)</strong></td>
+<td style="text-align: left;"><strong>NTP</strong></td>
+<td style="text-align: left;">±10ms</td>
+<td style="text-align: left;">Syncing the Edge Gateway to the Corporate Stratum 2/3 source.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Control Zone (L2)</strong></td>
+<td style="text-align: left;"><strong>PTP (IEEE 1588)</strong></td>
+<td style="text-align: left;"><strong>&lt;1μs</strong></td>
+<td style="text-align: left;">Microsecond-precision for Z-Score telemetry and hardware commands.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-the-edge-gateway-as-time-bridge">7.2 The Edge Gateway as &ldquo;Time Bridge&rdquo;<a class="headerlink" href="#72-the-edge-gateway-as-time-bridge" title="Permanent link"></a></h3>
+<p>The Edge Gateway is configured as a <strong>PTP Grandmaster</strong> for the Southbound network (NIC 2). 
+- It pulls UTC time from the Northbound NTP source and translates it to a high-precision hardware clock on the 
+  Southbound NIC.
+- <strong>Hardware Timestamping</strong>: Where supported by the NIC hardware, PTP packets are timestamped at the physical layer to 
+  eliminate OS-level jitter.</p>
+<h3 id="73-security-availability">7.3 Security &amp; Availability<a class="headerlink" href="#73-security-availability" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Time-Drift Monitoring</strong>: The system monitors the offset between the AI Reasoning Agent and the Southbound Driver. 
+  If the clock offset exceeds <strong>100 ms</strong>, the system triggers a <code>SECURITY_ALARM</code> and enters a 
+  &ldquo;Pessimistic Safety State,&rdquo; as forensic correlation can no longer be guaranteed.</li>
+<li><strong>Traffic Filtering</strong>: Firewalls are configured to permit only authenticated time traffic:<ul>
+<li><strong>NTP</strong>: UDP Port 123 (Inbound on NIC 1).</li>
+<li><strong>PTP</strong>: UDP Ports 319, 320 (Outbound on NIC 2).</li>
+</ul>
+</li>
+<li><strong>Air-Gap Fallback</strong>: In the event of a corporate network loss, the Edge Gateway maintains a local &ldquo;Orphan Clock&rdquo; to 
+  ensure internal plant consistency until the Stratum source is restored.</li>
+<li><strong>Maximum Allowable Drift</strong>: The system is permitted to run in Orphan Mode for a maximum of <strong>24 hours</strong>. </li>
+<li><strong>Degraded State</strong>: If the external Stratum source is not restored within 24 hours, the AI agent must automatically 
+    downgrade to <strong>&ldquo;Monitor Only&rdquo;</strong> mode. All active intents are suspended to prevent misalignment between the AI&rsquo;s 
+    logic and the field asset&rsquo;s execution.</li>
+</ul>
+<h3 id="74-air-gap-fallback-orphan-mode">7.4 Air-Gap Fallback (Orphan Mode)<a class="headerlink" href="#74-air-gap-fallback-orphan-mode" title="Permanent link"></a></h3>
+<p>In the event of a PTP source loss (Air-Gap), the system enters <strong>Orphan Mode</strong>.</p>
+<ul>
+<li><strong>Notification</strong>: Immediately upon entering Orphan Mode, the system triggers a <strong><code>CRITICAL ALARM: ORPHAN_MODE_ACTIVE</code></strong>
+  on the HMI and pushes a notification to the level 4 SIEM.</li>
+<li><strong>Degradation</strong>: After 24 hours in Orphan Mode without re-sync, the system automatically downgrades to <strong><code>MONITOR_ONLY</code></strong>
+  mode.</li>
+</ul>
+<h2 id="8-the-verification-pipeline">8. The Verification Pipeline<a class="headerlink" href="#8-the-verification-pipeline" title="Permanent link"></a></h2>
+<h3 id="81-inter-agent-compliance-verification">8.1 Inter-Agent Compliance Verification<a class="headerlink" href="#81-inter-agent-compliance-verification" title="Permanent link"></a></h3>
+<p>To prevent <strong>Agent Hallucination</strong> or <strong>Unauthorized Escalation</strong>, every message moving between agents must undergo a 
+<strong>Handshake Verification</strong>.</p>
+<ul>
+<li><strong>Protocol</strong>: Standardized on <strong>JSON over TLS 1.3</strong> for all inter-agent and API communication.</li>
+</ul>
+<p><em>To ensure consistency across the Edge Gateway, </em><em>JSON</em><em> is the mandated protocol for all internal and external message 
+exchanges.</em></p>
+<h3 id="82-multi-stage-verification-table">8.2 Multi-Stage Verification Table<a class="headerlink" href="#82-multi-stage-verification-table" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Stage</th>
+<th style="text-align: left;">Gate</th>
+<th style="text-align: left;">Verification Logic</th>
+<th style="text-align: left;">Success Response</th>
+<th style="text-align: left;">Error Code (Failure)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Gate 1</td>
+<td style="text-align: left;">Identity</td>
+<td style="text-align: left;">MFA Token &amp; Role-Based Access Control</td>
+<td style="text-align: left;"><code>200 OK</code></td>
+<td style="text-align: left;"><code>401 MFA_REQUIRED</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Gate 2</td>
+<td style="text-align: left;">Integrity</td>
+<td style="text-align: left;">TPM Signature &amp; Justification Hash</td>
+<td style="text-align: left;"><code>200 OK</code></td>
+<td style="text-align: left;"><code>401 SECURITY_TAMPER</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Gate 3</td>
+<td style="text-align: left;">Semantic</td>
+<td style="text-align: left;">Forbidden Register List Check</td>
+<td style="text-align: left;"><code>200 OK</code></td>
+<td style="text-align: left;"><code>403 FORBIDDEN_SAFETY_REGISTER</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-the-two-key-protocol">8.3 The &ldquo;Two-Key&rdquo; Protocol<a class="headerlink" href="#83-the-two-key-protocol" title="Permanent link"></a></h3>
+<p>For any critical command (Level 4 → Level 2), the system requires two independent signatures:
+1. <strong>The Proposer (Reasoning Agent)</strong>: Signs the intent with its Service Account JWT.
+2. <strong>The Validator (Semantic Gatekeeper)</strong>: Re-calculates the $Z$-Score independently. If the Gatekeeper&rsquo;s math does 
+   not match the Agent&rsquo;s math, the command is intercepted as an &ldquo;Incoherent Intent.&rdquo;</p>
+<h3 id="84-protocol-buffers-schema-enforcement">8.4 Protocol Buffers &amp; Schema Enforcement<a class="headerlink" href="#84-protocol-buffers-schema-enforcement" title="Permanent link"></a></h3>
+<p>Inter-agent communication is strictly enforced via <strong>Protobuf</strong>. 
+- Any messages containing fields not defined in <code>UNS_SCHEMA.md</code> are dropped immediately.
+- This prevents &ldquo;Payload Injection&rdquo; where an attacker might try to smuggle extra commands inside a valid-looking 
+  JSON block.</p>
+<h3 id="841-intent-verification-message">8.4.1 Intent Verification Message<a class="headerlink" href="#841-intent-verification-message" title="Permanent link"></a></h3>
+<p>The Intent Verification message is used to validate the AI-generated intents.</p>
+<pre><code class="language-protobuf">syntax = &quot;proto3&quot;;
+
+message IntentVerification {
+  string trace_id = 1;      // UUID from LangGraph
+  int32 asset_id = 2;       // Target PLC Register
+  float proposed_value = 3; // The Z-Score driven intent
+  bool sis_override = 4;    // Safety check bit
+}
+</code></pre>
+<h2 id="9-continuous-compliance-monitoring-ccm">9. Continuous Compliance Monitoring (CCM)<a class="headerlink" href="#9-continuous-compliance-monitoring-ccm" title="Permanent link"></a></h2>
+<p>Oversight ICS employs an automated <strong>Watcher</strong> pattern to make sure the system never drifts from its security and 
+performance baselines. </p>
+<h3 id="91-real-time-policy-testing">9.1 Real-Time Policy Testing<a class="headerlink" href="#91-real-time-policy-testing" title="Permanent link"></a></h3>
+<p>The system runs automated <strong>Synthetic Heartbeats</strong> every 60 seconds to test the following:
+- <strong>Latent Intent Test</strong>: The Watcher injects a non-executable <strong>Ping Intent</strong> to measure the round-trip time from the 
+  Reasoning Agent to the Southbound Driver. If RTT exceeds <strong>200 ms</strong>, a performance compliance alert is raised.
+- <strong>Clock Integrity Test</strong>: The Watcher compares the PTP Hardware Clock against the System OS Clock. 
+- <strong>Cgroup Enforcement</strong>: A background script verifies that the Docker <code>cpu_period</code> and <code>cpu_quota</code> remain locked at 
+  the defined 40% limit.</p>
+<h3 id="92-automated-regression-testing-the-chaos-agent">9.2 Automated Regression Testing (The &ldquo;Chaos Agent&rdquo;)<a class="headerlink" href="#92-automated-regression-testing-the-chaos-agent" title="Permanent link"></a></h3>
+<p>In the staging environment, a <strong>Chaos Agent</strong> periodically attempts to send <strong>Malformed Protobufs</strong> or 
+<strong>Out-of-Bounds Set Points</strong> to the Semantic Gatekeeper.
+- <strong>Compliance Goal</strong>: 100% rejection rate for non-compliant payloads.
+- <strong>Logging</strong>: Every rejection is logged in the SIEM to verify that the Inter-Agent Checkpoints are active and haven&rsquo;t 
+  been bypassed by a software update.</p>
+<h3 id="10-physical-personnel-security-iec-62443-2-1">10 Physical &amp; Personnel Security (IEC 62443-2-1)<a class="headerlink" href="#10-physical-personnel-security-iec-62443-2-1" title="Permanent link"></a></h3>
+<h3 id="101-physical-port-security">10.1 Physical Port Security<a class="headerlink" href="#101-physical-port-security" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Hardening</strong>: Unused physical ports (USB, RJ45, Serial) on the Edge Gateway IPC are physically disabled or locked.</li>
+<li><strong>Media Protection</strong>: The use of removable media (USB drives) for logic updates is strictly prohibited. All updates 
+  must flow through the IDMZ staging volume.</li>
+</ul>
+<h3 id="102-patch-update-management">10.2 Patch &amp; Update Management<a class="headerlink" href="#102-patch-update-management" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Security Patching</strong>: OS-level security patches are applied monthly after validation in the Virtual Twin environment.</li>
+<li><strong>AI Model Updates</strong>: Changes to model weights or RAG vector embeddings require a full &ldquo;Logic Drift Assessment&rdquo; before 
+  deployment.</li>
+<li><strong>Decommissioning</strong>: Failed hardware must be sanitized (7-pass wipe) before leaving the facility to protect 
+  proprietary RAG data and network topologies.</li>
+</ul>
+<h3 id="103-decommissioning-media-santization">10.3 Decommissioning &amp; Media Santization<a class="headerlink" href="#103-decommissioning-media-santization" title="Permanent link"></a></h3>
+<p>In accordance with <strong>NIST 800-88 Guidelines for Media Sanitization</strong>, all decommissioned hardware must undergo a 
+<strong>Cryptographic Erasure (CE)</strong> to remove all proprietary data followed by physical destruction if CE cannot be verified.
+Legacy <code>7-pass wipe</code> procedures are not permitted for SSD/Flash storage.</p>
+<h2 id="11-hardware-backed-intent-signing-tpm-20">11. Hardware-Backed Intent Signing (TPM 2.0)<a class="headerlink" href="#11-hardware-backed-intent-signing-tpm-20" title="Permanent link"></a></h2>
+<p>To prevent &ldquo;Man-in-the-Middle&rdquo; or &ldquo;Injection&rdquo; attacks at the Edge Gateway OS level, the system uses the hardware 
+<strong>Trusted Platform Module (TPM 2.0)</strong> to secure the <code>justification_hash</code>.</p>
+<ul>
+<li><strong>TPM 2.0</strong>: Private keys for signing intents are stored in the TPM chip.</li>
+<li><strong>Private Key Storage</strong>: The private key used to sign the <code>intent_outbox</code> entries never leaves the IPC’s TPM chip.</li>
+<li><strong>Key Versioning Grace Period</strong>: The Southbound Driver maintains the <em>previous</em> public key for 60 seconds to allow
+  pending intents in the <code>intent_outbox</code> to clear.</li>
+<li><strong>Verification</strong>: The Southbound Driver performs a <code>Signature_Verify</code> using the TPM public key before converting any 
+  JSON payload into a PLC command.</li>
+<li><strong>Key Rotation</strong>: Mandatory rotation every 180 days</li>
+<li><strong>SOP Requirement</strong>: All rotation procedures must follow 
+    <a href="/docs/sop/SOP-SEC-003_TPM-Key-Rotation.md">SOP-TPM-KEY-01: TPM Key Management &amp; Air-Gapped Rotation</a>, which defines the use of a physical &ldquo;Key Loading 
+    Device&rdquo; to maintain the air-gap.</li>
+<li><strong>Sanitization</strong>: All decommissioned hardware must undergo <strong>NIST 800-88 Cyptographic Erasure</strong>.</li>
+</ul>
+<h2 id="12-secret-rotation-policy">12. Secret Rotation Policy<a class="headerlink" href="#12-secret-rotation-policy" title="Permanent link"></a></h2>
+<p>TODO
+- <strong>Secret Rotation</strong>: All secrets (e.g., API Keys, Service Accounts) are rotated every 90 days.
+- <strong>Secret Rotation SOP</strong>: All secret rotation must follow 
+  <a href="/docs/sop/SOP-09-Secret-Rotation.md">SOP-SECRET-01: Secret Rotation &amp; Key Management</a>, which defines the use of a 
+  secure vault and audit logging for all rotation events.</p>
+<h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Author</th>
+<th style="text-align: left;">Description of Change</th>
+<th style="text-align: left;">Approved By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1.0</td>
+<td style="text-align: left;">2026-04-12</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Initial Baseline for Version 1.0 Release.</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+<tr>
+<td style="text-align: left;">1.1</td>
+<td style="text-align: left;">2026-04-27</td>
+<td style="text-align: left;">armummert</td>
+<td style="text-align: left;">Added SOP-TPM-KEY reference, SL&rsquo;s, SL table</td>
+<td style="text-align: left;">armummert</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

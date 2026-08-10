@@ -1,149 +1,201 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <meta name="author" content="Amy Mummert">
-        
-        <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>System Architecture - Oversight ICS</title>
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/fontawesome.min.css" rel="stylesheet">
-        <link href="../css/brands.min.css" rel="stylesheet">
-        <link href="../css/solid.min.css" rel="stylesheet">
-        <link href="../css/v4-font-face.min.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
-        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
-        <link href="../style.css" rel="stylesheet">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-        <script>hljs.highlightAll();</script> 
-    </head>
-
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="..">Oversight ICS</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="nav-item">
-                                <a href=".." class="nav-link">Home</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Documentation Suite</a>
-                                <ul class="dropdown-menu">
-                                    
-<li>
-    <a href="../glossary/" class="dropdown-item">Glossary</a>
-</li>
-                                    
-<li>
-    <a href="../oversight_ics_technical_deep_dive/" class="dropdown-item">Technical Deep Dive</a>
-</li>
-                                    
-<li>
-    <a href="./" class="dropdown-item active" aria-current="page">System Architecture</a>
-</li>
-                                    
-<li>
-    <a href="../network_topology/" class="dropdown-item">Network Topology</a>
-</li>
-                                    
-<li>
-    <a href="../alarm_philosophy/" class="dropdown-item">Alarm Management</a>
-</li>
-                                    
-<li>
-    <a href="../oversight-c4-context-view.svg" class="dropdown-item">Oversight Context View</a>
-</li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ms-md-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../oversight_ics_technical_deep_dive/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../network_topology/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://armummert.github.io/oversight-docs/" class="nav-link">Armummert</a>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
-
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>System Architecture - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-bs-level="1"><a href="#oversight-ics-technical-systems-design-architecture-report" class="nav-link">Oversight ICS: Technical Systems &amp; Design Architecture Report</a>
-              <ul class="nav flex-column">
-            <li class="nav-item" data-bs-level="2"><a href="#executive-summary" class="nav-link">Executive Summary</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#key-architectural-features" class="nav-link">Key Architectural Features</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#purdue-model-reference-architecture" class="nav-link">Purdue Model Reference Architecture</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#firewall-security-boundary-summary" class="nav-link">Firewall &amp; Security Boundary Summary</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#step-by-step-data-flow-execution" class="nav-link">Step-By-Step Data Flow Execution</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#architectural-tradeoffs-design-considerations-justifications" class="nav-link">Architectural Tradeoffs, Design Considerations, &amp; Justifications</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-            <li class="nav-item" data-bs-level="2"><a href="#evaluation-of-cognitive-frameworks-and-orchestration-engines" class="nav-link">Evaluation of Cognitive Frameworks and Orchestration Engines</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-              </ul>
-            </li>
-        </ul>
-    </div>
-</div></div>
-                    <div class="col-md-9" role="main">
+      <script>
+        // Current page data
+        var mkdocs_page_name = "System Architecture";
+        var mkdocs_page_input_path = "system-architecture-overview-and-tradeoffs.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
 
-<h1 id="oversight-ics-technical-systems-design-architecture-report">Oversight ICS: Technical Systems &amp; Design Architecture Report<a class="headerlink" href="#oversight-ics-technical-systems-design-architecture-report" title="Permanent link"></a></h1>
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">System Architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#executive-summary">Executive Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#key-architectural-features">Key Architectural Features</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#safety-first-predictive-failover-engine">Safety First Predictive Failover Engine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#multi-worker-scalability">Multi-Worker Scalability</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#split-brain-arbitration-strategy">Split Brain &amp; Arbitration Strategy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#closed-loop-intent-verification">Closed-Loop Intent Verification</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hardware-root-of-trust">Hardware Root of Trust</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#idmz-purdue-model-alignment">IDMZ Purdue Model Alignment</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#worm-forensic-logging">WORM Forensic Logging</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#local-rag-grounded-reasoning">Local RAG-Grounded Reasoning</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pessimistic-ui-state-machine">Pessimistic UI State Machine</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#purdue-model-reference-architecture">Purdue Model Reference Architecture</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#purdue-model-overview">Purdue Model Overview</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-0-physical-kinetics">Level 0: Physical Kinetics</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-1-local-control-automation">Level 1: Local Control &amp; Automation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-15-control-authority-model-the-arbitration-layer">Level 1.5: Control Authority Model (The Arbitration Layer)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-2-supervisory">Level 2: Supervisory</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-3-operational-site-core">Level 3: Operational Site Core</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-4-human-in-the-loop-secure-dashboard-workflow">Level 4: Human-in-the-Loop Secure Dashboard Workflow</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-by-step-operational-workflow">Step-By-Step Operational Workflow</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dashboard-capability-matrix-rbac">Dashboard Capability Matrix (RBAC)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#level-5-enterprise-cloud-hub">Level 5: Enterprise Cloud Hub</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#firewall-security-boundary-summary">Firewall &amp; Security Boundary Summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-by-step-data-flow-execution">Step-By-Step Data Flow Execution</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-inbound-ingestion-stream-read-path">The Inbound Ingestion Stream (Read Path)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-outbound-command-intercept-write-path">The Outbound Command Intercept (Write Path)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#architectural-tradeoffs-design-considerations-justifications">Architectural Tradeoffs, Design Considerations, &amp; Justifications</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap">Identity and Access Management (IAM): Federated OIDC vs. Local Active Directory (LDAP)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql">Time-Series Database: TimescaleDB vs. Alternate Time-Series Databases (InfluxDB, MongoDB, or standard PostgreSQL)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nginx-reverse-proxy-vs-dedicated-api-gateway">Nginx Reverse Proxy vs. Dedicated API Gateway</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#prometheus-vs-traditional-rdbms-for-system-health-monitoring">Prometheus vs. Traditional RDBMS for System Health Monitoring</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#redis-vs-memcached-for-hot-state-cache">Redis vs. Memcached for Hot State Cache</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc">Vector Database: pgVector vs. Dedicated Vector Database (Pinecone, Milvus, etc.)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#message-broker-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker: NATS JetStream vs. Kafka vs. RabbitMQ</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#evaluation-of-cognitive-frameworks-and-orchestration-engines">Evaluation of Cognitive Frameworks and Orchestration Engines</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cognitive-frameworks">Cognitive Frameworks</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#gemini-35-flash-cloud-based-llm-api">Gemini 3.5 Flash (Cloud Based LLM API)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#open-source-high-throughput-third-party-llms-llama-3-falcon-40b-etc">Open-Source High-throughput Third Party LLMs (Llama 3, Falcon 40B, etc.)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#local-on-device-edge-compute-self-hosted-phi-4-gemma-3">Local On-Device Edge Compute (Self-hosted Phi-4 / Gemma 3)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents">Graph-Based Orchestration Engines vs. Linear Pipeline / Autonomous Agents</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ntp-vs-ptp-for-time-synchronization">NTP vs PTP for Time Synchronization</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight-c4-context-view.svg">Oversight Context View</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation Suite</li>
+      <li class="breadcrumb-item active">System Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="oversight-ics-technical-systems-design-architecture-report">Oversight ICS: Technical Systems &amp; Design Architecture Report<a class="headerlink" href="#oversight-ics-technical-systems-design-architecture-report" title="Permanent link"></a></h1>
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link"></a></h2>
 <p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
@@ -1138,82 +1190,56 @@ caused by network latency.</p>
 <p><strong>Justification</strong>: Oversight relies on highly sensitive microsecond rolling time windows in Bytewax. If the network
 uses NTP, standard packet jitter will artificially warp the timestamp of a sensor reading. The AI will interpret this as
 a process drift, triggering a false positive anomaly. Using PTP guarantees sub-microsecond rolling time windows in 
-Bytewax. </p></div>
+Bytewax. </p>
+              
             </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script src="../js/bootstrap.bundle.min.js"></script>
-        <script>
-            var base_url = "..",
-                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
-        </script>
-        <script src="../js/base.js"></script>
-        <script src="../search/main.js"></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../oversight_ics_technical_deep_dive/" class="btn btn-neutral float-left" title="Technical Deep Dive"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../network_topology/" class="btn btn-neutral float-right" title="Network Topology">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
         </div>
-    </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+      <span><a href="../oversight_ics_technical_deep_dive/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../network_topology/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
 
-    </body>
+</body>
 </html>

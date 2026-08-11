@@ -430,11 +430,13 @@ Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.</p>
     integrity of the command before it can affect physical hardware. The TPM 2.0 then passes the hardware-notarized 
     block down to the Southbound Driver for execution.</p>
 </li>
-<li><strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
+<li>
+<p><strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
     orchestration boundaries. When an intervention or predictive failover request is flagged by the Level 3.5 AI Agent, 
     this component blocks immediate execution and triggers an immutable lock state. It requires <strong>Dual-Cryptographic</strong>
     signatures from two-independent RS256-signed JWT tokens. One token is from the primary field operator and the other
-    is from the safety supervisor or plant manager.</li>
+    is from the safety supervisor or plant manager.</p>
+</li>
 </ul>
 <p>Level 1.5 is a <strong>Zero-Trust Policy Enforcement Layer</strong>. At Level 1.5, Oversight applies an absolute zero-trust model 
 that says, <strong>Never trust an AI model with direct, unmediated write access to physical infrastructure</strong>. If a software 
@@ -460,68 +462,87 @@ network devices.</p>
 Cross-Domain Boundary Protection.</p>
 <p><strong>Components</strong>: Northbound Ingest Service, NATS Telemetry Stream, Bytewax Streaming Engine, TimescaleDB Historian, 
 Redis Hot Cache, LangGraph Agent, Local Vector Database (<code>pgvector</code>), NATS Command Queue, Nginx Reverse Proxy (Automated 
-Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Observability Stack.
-  - <strong>Northbound Ingest Service</strong>: Telemetry is streamed to the Northbound Ingest Service where protocol translation 
+Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Observability Stack.</p>
+<ul>
+<li>
+<p><strong>Northbound Ingest Service</strong>: Telemetry is streamed to the Northbound Ingest Service where protocol translation 
      (Modbus TCP, EtherNet/IP, OPC-UA) is performed and published. Normalized telemetry (Sparkplug B/MQTT) is published 
-     directly into the NATS Telemetry Stream (the UNS backbone).
-  - <strong>NATS JetStream (UNS Backbone)</strong>: NATS JetStream serves as the event-driven backbone for the entire system. It
+     directly into the NATS Telemetry Stream (the UNS backbone).</p>
+</li>
+<li>
+<p><strong>NATS JetStream (UNS Backbone)</strong>: NATS JetStream serves as the event-driven backbone for the entire system. It
     implements the systems Unified Namespace (UNS) using strict, text-indexed topic structures
     (e.g., <code>Enterprise/Site/Area/Line/Asset/Tag</code>). All telemetry from the Northbound Ingest is published to JetStream,
     and all downstream consumers (Bytewax, LangGraph Agent, etc.) subscribe to the relevant topics. Every normalized
     tag transformation is statefully committed to JetStream, creating an immutable, replayable, append-only log of all
     telemetry. This allows for message persistence, handles high-throughput with millisecond distribution windows, and 
     also allows independent consumer microservices to safely replay historical data states without affecting live 
-    equipment queues.
-  - <strong>Bytewax Stream Processing Framework</strong>: Bytewax operates as a real-time data streaming processor. It subscribes to
+    equipment queues.</p>
+</li>
+<li>
+<p><strong>Bytewax Stream Processing Framework</strong>: Bytewax operates as a real-time data streaming processor. It subscribes to
     the NATS JetStream topics and performs continuous windowed $Z$-Score analysis on the telemetry data. Bytewax uses
     microsecond rolling time windows to map statistical algorithms over live inputs, computing real-time metrics to 
-    instantly catch industrial process drift or unaligned control behavior.
-  - <strong>Redis In-Memory Hot State Cache &amp; TimescaleDB</strong>: This represents the systems strict <strong>CQRS (Command Query 
+    instantly catch industrial process drift or unaligned control behavior.</p>
+</li>
+<li>
+<p><strong>Redis In-Memory Hot State Cache &amp; TimescaleDB</strong>: This represents the systems strict <strong>CQRS (Command Query 
     Responsibility Segregation)</strong> read engine. Bytewax splits its output into two branches. Calculated $Z$-Scores, 
     anomalies, and the operational profile are pushed directly to the <strong>Redis Hot Cache</strong>, providing sub-millisecond
     key-value snapshots of the plant floor. The raw time-series measurements are sent to <strong>TimescaleDB</strong>, a time-series
     database acting as the localized plant historian to preserve an immutable record of all telemetry for long-term 
-    tracking and analysis.
-  - <strong>Local pgvector Database (Knowledge Grounding)</strong>: Stores high-dimensional vector embeddings of plant manuals, 
+    tracking and analysis.</p>
+</li>
+<li>
+<p><strong>Local pgvector Database (Knowledge Grounding)</strong>: Stores high-dimensional vector embeddings of plant manuals, 
     historical <strong>Root Cause Analysis (RCA)</strong>, piping and instrumentation diagrams (P&amp;IDs), and factory acceptance 
     testing rules. When the LangGraph Agent detects an anomaly or a logic deviation, it can query this local vector
-    database to retrieve relevant contextual information to ground its reasoning and generate a more informed response.
-  - <strong>LangGraph Agent</strong>: The LangGraph Agent represents the active thinking loop of the system. It is implemented as 
+    database to retrieve relevant contextual information to ground its reasoning and generate a more informed response.</p>
+</li>
+<li>
+<p><strong>LangGraph Agent</strong>: The LangGraph Agent represents the active thinking loop of the system. It is implemented as 
     a stateful, graph-based execution environment where nodes represent discrete reasoning steps and edges define 
     state-machine logic transitions. The LangGraph Agent continuously evaluates the live state of the plant by querying
     the Redis Hot Cache and TimescaleDB. If it detects an anomaly or a logic deviation, it can generate a predictive
     control directive or a safety patch. However, the agent does not have direct write access to the operational core.
-    Instead, it routes all control intents through the <strong>NATS Command Queue</strong>.
-  - <strong>NATS Command Queue</strong>: This critical message queue serves as the single source of truth for all control 
+    Instead, it routes all control intents through the <strong>NATS Command Queue</strong>.</p>
+</li>
+<li>
+<p><strong>NATS Command Queue</strong>: This critical message queue serves as the single source of truth for all control 
     intents generated by the LangGraph Agent or human operators. It is a strictly audited, append-only log that feeds
     into the <a href="#level-15-control-authority-model-the-arbitration-layer">Level 1.5 Arbitrator</a>. By routing all commands through this queue, every control intent is traceable,
     auditable, and subject to the same validation process. This prevents any command from bypassing the established
-    safety protocols.
-  - <strong>Semantic Gatekeeper</strong>: After the Level 1.5 Arbitrator validates the Multi-Factor Authentication signatures, the 
+    safety protocols.</p>
+</li>
+<li>
+<p><strong>Semantic Gatekeeper</strong>: After the Level 1.5 Arbitrator validates the Multi-Factor Authentication signatures, the 
     payload is pushed to the Semantic Gatekeeper, which is a critical safety component that audits all AI-proposed 
     intents, performs an SOP compliance audit, RBAC enforcement, and forensic checkpointing. It validates the 
     AI-proposed intents against hardcoded <strong>Forbidden Register List</strong> and physical constraints derived from the plant&rsquo;s 
     P&amp;ID diagrams. If any control directive violates these safety constraints it is blocked from proceeding back to 
     the Level 1.5 Arbitrator, preventing unsafe commands from reaching the physical assets. The payload is then destroyed
-    by the gatekeeper before it can be signed by the hardware TPM module. It enforces the following constraints:
-    - <strong>Safety Constraints</strong>: Cross-references $Z$-Scores from <strong>Bytewax</strong> to ensure commands don&rsquo;t violate physical
-      thresholds.
-    - <strong>SOP Compliance</strong>: Validates the proposed actions align with digitized SOPs.
-    - <strong>Role-Based Access Control (RBAC)</strong>: Only authorized users can execute approved actions and checks if the AI Agent
-      is authorized to interact with the specific process asset.
-    - <strong>Least Privilege Principles</strong>: To prevent <strong>Scope Creep</strong>, the AI Agent makes sure the Southbound Driver possesses 
-      the minimum required permissions to execute the intended action, and no more. An exploit in one area cannot compromise 
-      the entire system.</p>
-<pre><code>[!NOTE]: The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.
-</code></pre>
+    by the gatekeeper before it can be signed by the hardware TPM module. It enforces the following constraints:</p>
 <ul>
-<li><strong>Southbound Driver</strong>: The final egress for write access. The Southbound Driver consumes the hardware-notarized
+<li><strong>Safety Constraints</strong>: Cross-references $Z$-Scores from <strong>Bytewax</strong> to ensure commands don&rsquo;t violate physical
+  thresholds.</li>
+<li><strong>SOP Compliance</strong>: Validates the proposed actions align with digitized SOPs.</li>
+<li><strong>Role-Based Access Control (RBAC)</strong>: Only authorized users can execute approved actions and checks if the AI Agent
+  is authorized to interact with the specific process asset.</li>
+<li><strong>Least Privilege Principles</strong>: To prevent <strong>Scope Creep</strong>, the AI Agent makes sure the Southbound Driver possesses 
+  the minimum required permissions to execute the intended action, and no more. An exploit in one area cannot compromise 
+  the entire system.</li>
+</ul>
+<p>[!NOTE]: The Semantic Gatekeeper is a critical safety layer and does not execute any commands itself.</p>
+</li>
+<li>
+<p><strong>Southbound Driver</strong>: The final egress for write access. The Southbound Driver consumes the hardware-notarized
     block from the TPM module and the pushes the block through the Southbound Firewall, via Deep Packet Inspection for 
     safe writes. If the command exceeds safe operating limits, the firewall blocks it and triggers an alert. Once the 
     command is sent to the field asset, the Southbound Driver enters a <strong>Pessimistic Confirmation Loop</strong>. It then 
     subscribes to the NATS JetStream backbone and waits for the Northbound Ingest to publish a state change. The state 
     change confirms that the field asset has acknowledged the command. Only after the Northbound Ingest reports 
-    the state change from the PLC does the system update the <strong>Redis Hot Cache</strong>. It handles the following tasks:<ul>
+    the state change from the PLC does the system update the <strong>Redis Hot Cache</strong>. It handles the following tasks:</p>
+<ul>
 <li><strong>Protocol Translation</strong>: Converts AI-generated intents into hardware-specific register writes (e.g., PLC coil sets 
   or VFD speed references).</li>
 <li><strong>Reliable Delivery</strong>: Manages retries, acknowledgments, and state-verification loops to ensure the process asset 
@@ -530,12 +551,16 @@ Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Ob
   transparency.</li>
 </ul>
 </li>
-<li><strong>Stateless API Gateway &amp; Nginx Reverse Proxy</strong>: This component serves as the secure entry point for IT traffic. 
+<li>
+<p><strong>Stateless API Gateway &amp; Nginx Reverse Proxy</strong>: This component serves as the secure entry point for IT traffic. 
     The Nginx Reverse Proxy terminates TLS, enforces rate-limiting, and drops malformed frames at the perimeter. It acts
     as an <strong>Automated Threat Prompt Mitigation</strong> layer, scanning inbound API requests and RAG manual uploads for 
     adversarial injections. It enforces zero-trust, RS256-signed JWT authentication before any operational interaction 
-    is allowed into the Level 3.5 IDMZ.</li>
-<li><strong>Observability Stack (Prometheus &amp; Grafana)</strong>: <ul>
+    is allowed into the Level 3.5 IDMZ.</p>
+</li>
+<li>
+<p><strong>Observability Stack (Prometheus &amp; Grafana)</strong>: </p>
+<ul>
 <li><strong>Prometheus</strong>: Acts as the infrastructure collector within the Level 3.5 IDMZ. It scrapes high-frequency 
   technical metrics (CPU/RAM usage, NATS queue depth, container health, and Southbound Driver latency) from all 
   local services.</li>

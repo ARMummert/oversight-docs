@@ -48,8 +48,6 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Technical Deep Dive</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#table-of-contents">Table of Contents</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#executive-summary">Executive Summary</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#the-problem-the-intelligence-gap-in-legacy-operational-technology">The Problem: The Intelligence Gap in Legacy Operational Technology</a>
@@ -460,15 +458,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
                   </li>
               </ul>
       </div>
@@ -498,67 +496,26 @@
                 <h1 id="oversight-ics-technical-deep-dive">Oversight ICS: Technical Deep Dive<a class="headerlink" href="#oversight-ics-technical-deep-dive" title="Permanent link"></a></h1>
 <p>This document provides a technical deep dive into the Oversight ICS architecture, agent design, and control logic. It 
 is a low-level analysis of the algorithms, state machines, and distributed system patterns that ensures Oversights ICS 
-is a reliable, scalable, and safety first system. </p>
-<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h2>
-<ul>
-<li><a href="#executive-summary">Executive Summary</a></li>
-<li><a href="#introduction--scope">Introduction &amp; Scope</a></li>
-<li><a href="#target-environment">Target Environment</a></li>
-<li><a href="#overview--core-principles">Overview &amp; Core Principles</a></li>
-<li><a href="#primary-objectives">Primary Objectives</a></li>
-<li><a href="#industrial-safety-protocol">Industrial Safety Protocol</a></li>
-<li><a href="#safety--regulatory-governance">Safety &amp; Regulatory Governance</a></li>
-<li><a href="#system-resilience--safety">System Resilience &amp; Safety</a></li>
-<li><a href="#agent-architecture">Agent Architecture</a></li>
-<li><a href="#agent-persona--cognitive-guardrails">Agent Persona &amp; Cognitive Guardrails</a></li>
-<li><a href="#learning--adaptation-governed">Learning &amp; Adaptation (Governed)</a></li>
-<li><a href="#control-loop-integration-otit-handshake">Control Loop Integration</a></li>
-<li><a href="#mathematical-foundation-windowed-z-score">Mathematical Foundation</a></li>
-<li><a href="#fmea-failure-mode-and-effects-analysis--deterministic-fail-safe-matrix">FMEA &amp; Deterministic Fail-Safe Matrix</a></li>
-<li><a href="#governance--standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</a></li>
-<li><a href="#architecture-governance--standards">Architecture Governance &amp; Standards</a></li>
-<li><a href="#standards-compliance--industrial-alignment">Standards Compliance &amp; Industrial Alignment</a></li>
-<li><a href="#predictive-failure--cognitive-reliability-engineering">Predictive Failure &amp; Cognitive Reliability Engineering</a></li>
-<li><a href="#proactive-failover--control-mechanisms">Proactive Failover &amp; Control Mechanisms</a></li>
-<li><a href="#evaluation-framework--success-metrics">Evaluation Framework &amp; Success Metrics</a></li>
-<li><a href="#key-performance-indicators-kpis">Key Performance Indicators (KPIs)</a></li>
-<li><a href="#performance-benchmarks-kpi-targets">Performance Benchmarks</a></li>
-<li><a href="#operational-reliability--safety-guardrails">Operational Reliability &amp; Safety Guardrails</a></li>
-<li><a href="#risk-mitigation--failover-strategy">Risk Mitigation &amp; Failover Strategy</a></li>
-<li><a href="#observability--post-mortem-traceability">Observability &amp; Post-Mortem Traceability</a></li>
-<li><a href="#data-engineering-observability--telemetry">Data Engineering, Observability &amp; Telemetry</a></li>
-<li><a href="#implementation-validation--simulation">Implementation, Validation, &amp; Simulation</a></li>
-<li><a href="#implementation--data-engineering">Implementation &amp; Data Engineering</a></li>
-<li><a href="#the-event-driven-command-spine">The Event-Driven Command Spine</a></li>
-<li><a href="#operational-technology-ot-safety-logic">Operational Technology (OT) Safety Logic</a></li>
-<li><a href="#store-and-forward-contextual-edges">Store &amp; Forware Contextual Edges</a></li>
-<li><a href="#twelve-factor-methodology-at-the-edge">12 Factor Methodology at the Edge</a></li>
-<li><a href="#data-storage">Data Storage</a></li>
-<li><a href="#database-compaction--tiered-retention">Database Compaction &amp; Tiered Retention</a></li>
-<li><a href="#worm-storage--worm-spooling-">WORM Storage &amp; Worm Spooling</a></li>
-<li><a href="#data-management--retention">Data Management &amp; Retention</a></li>
-<li><a href="#deployment-operations--maintenance">Deployment Operations &amp; Maintenance</a></li>
-<li><a href="#audit-log-retention--forensics">Audit Log Retention &amp; Forensics</a></li>
-<li><a href="#scaling-strategy-">Scaling Strategy</a></li>
-<li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#stakeholder-faqs">Stakeholder FAQs</a></li>
-<li><a href="#documentation-index">Documentation Index</a></li>
-</ul>
+is a reliable, scalable, and safety-first system. </p>
+<p>This document is intended for system architects to understand the architecture and control logic of Oversights ICS,
+as well as to provide guidance to system operators and stakeholders. It is not intended to be a comprehensive guide to 
+the Oversights ICS architecture or system design.</p>
 <h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link"></a></h2>
-<p>Oversight ICS is a scalable, real-time, and event-driven distributed system that leverages AI to orchestrate complex 
+<p>Oversight ICS is a scalable, real-time, event-driven distributed system that uses AI to orchestrate complex 
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
-Reliability Layer for <strong>Distributed Control Systems (DCS), Programmable Logic Controllers (PLCs), Remote Terminal Units 
-(RTUs), and Rotating Equipment.</strong> The system doesn&rsquo;t replace the primary control hardware, it just supervises it. It 
-maintains a <strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through 
-<strong>NATS JetStream</strong> and <strong>Bytewax</strong>.  By streaming asset telemetry through the message broker and stream processor,
-Oversight has continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger 
-automated failovers before physical hardware fails.</p>
+Reliability Layer for <strong>Programmable Logic Controllers (PLCs), Remote Terminal Units(RTUs), and Rotating Equipment.</strong> 
+The Oversight system doesn&rsquo;t replace the primary control hardware, it just supervises it. It maintains a 
+<strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through <strong>NATS JetStream</strong> and
+<strong>Bytewax</strong>. By streaming asset telemetry through the message broker and stream processor, Oversight maintains 
+continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger automated 
+failovers before physical hardware fails.</p>
 <p>Oversight implements strict decoupling from <strong>Safety Instrumented Systems (SIS)</strong> to guarantee that AI-driven 
-reliability interventions never compromise hard-coded safety interlocks. By using an <strong>CQRS Command Query Responsibility 
-Segregation</strong> pipeline powered by a Sparkplug B Unified Namespace (UNS) and NATS JetStream, Oversight guarantees
-that every AI decision is auditable, traceable, and reproducible, with sub-second latency while meeting the highest 
-standards of industrial governance and safety. This architecture provides operators with a <strong>Pessimistic Confirmation 
-of Success</strong> only after the standby hardware has acknowledged the state change from the physical feedback loop.</p>
+reliability interventions never compromise hard-coded safety interlocks. The Oversight system relies on a <strong>Command Query 
+Responsibility Segregation</strong> streaming architecture that uses a single instance of NATS JetStream with Bytewax for 
+stream processing. Oversight guarantees that every AI decision is auditable, traceable, and reproducible, with 
+sub-second latency while meeting the highest standards of industrial governance and safety. This architecture provides 
+operators with a <strong>Pessimistic Confirmation of Success</strong> only after the standby hardware has acknowledged the state 
+change from the physical feedback loop.</p>
 <h3 id="the-problem-the-intelligence-gap-in-legacy-operational-technology">The Problem: The Intelligence Gap in Legacy Operational Technology<a class="headerlink" href="#the-problem-the-intelligence-gap-in-legacy-operational-technology" title="Permanent link"></a></h3>
 <p>Industrial Control Systems (ICS) heavily rely on process assets to manage critical processes. When hardware fails, it 
 can lead to costly downtime and safety risks. In legacy Operational Technology (OT), traditional failover is reactive 
@@ -577,30 +534,31 @@ hardware failure occurs, even in air-gapped environments. </p>
 <h3 id="the-value">The Value<a class="headerlink" href="#the-value" title="Permanent link"></a></h3>
 <p>By moving from reactive to predictive reliability, Oversight changes how a plant manages critical infrastructure, 
 reduces downtime, and prevents catastrophic equipment failure. It provides a bridge connecting legacy hardware with 
-modern AI, allowing plants to use their existing equipment while gaining a <strong>Digital Twin</strong> for predictive insights
-and control. The result is increased operational confidence, enhanced safety, reduced load on operators, an auditable 
-path to resolution, and a significant reduction in unplanned downtime.</p>
+modern AI, allowing plants to use their existing equipment while gaining a <strong>Cognitive Digital Twin</strong> for predictive. 
+The result is increased operational confidence, enhanced safety, reduced load on operators, an auditable path to 
+resolution, and a significant reduction in unplanned downtime.</p>
 <h2 id="introduction-scope">Introduction &amp; Scope<a class="headerlink" href="#introduction-scope" title="Permanent link"></a></h2>
-<p>Oversight ICS is an industrial middleware system engineered to serve as a Cognitive Reliability and Predictive Failover 
-Agent. Its primary goal is to bridge Operational Technology (OT) safety standards and modern AI-driven reliability 
-strategies. Oversight ICS provides a supervisory layer that enhances the resilience of industrial control systems while 
-adhering to strict safety protocols.</p>
+<p>The project scope strictly follows the <strong>ISA/IEC 62443 Purdue Model</strong> for network segmentation, spanning from the 
+Physical &amp; Deterministic Control Layers (Levels 0–2) up through the Operations and the Business Logistics Layers (Levels
+3–4), and finally reaches up to the Enterprise Cloud Layer (Level 5). </p>
+<p>The Industrial Demilitarized Zone (Level 3.5 IDMZ) acts as the boundary and security checkpoint, where the Northbound 
+Ingest Service and Streaming Engine sanitize and normalize OT data before it reaches the Agent. This is also
+where the Nginx Perimeter Gateway intercepts enterprise data (e.g., cryptographically signed OEM manuals pushed from
+Level 5 for RAG ingestion) and sanitizes it before it reaches the Agent.</p>
 <p>To maintain a clear boundary of responsibility and strictly enforce safety protocols, Oversight operates within a 
 defined control authority. The system is designed to maximize data visibility for the entire facility while capping
 its control authority at the Level 3.5 IDMZ.</p>
 <p>It is critical to distinguish between the system&rsquo;s <em>Data Visibility</em> and its <em>Control Authority</em>:</p>
 <ul>
 <li><strong>Data Ingestion &amp; Observability (Levels 0–5):</strong> The system&rsquo;s read-path spans the entire facility. It ingests 
-  telemetry from the Physical &amp; Deterministic Control Layers (Levels 0-2), pulls historical baselines from 
+  telemetry from the Physical &amp; Deterministic Control Layers (Levels 0–2), pulls historical baselines from 
   Operations (Level 3), pushes reporting to Business Logistics (Level 4), and securely pulls RAG vendor 
   manual updates from the Enterprise Cloud Layer (Level 5).</li>
 <li><strong>Control Authority Boundary (Level 3.5):</strong> The system’s reasoning and physical intervention capabilities are 
   strictly capped at the Level 3.5 IDMZ.</li>
 </ul>
 <p>To maintain a strict <strong>Zero Trust &amp; Safety Dominant</strong> architecture, <strong>no control or write command path exists from the 
-Enterprise Cloud (Level 5) or Business Logistics (Level 4) to the Field Assets (Levels 0-2)</strong>. All threshold 
-adaptations and predictive failover intents are generated locally within the Level 3.5 IDMZ and are issued as
-verify-then-suggest proposals subject to local human authorization and Semantic Gatekeeper bounds checking.</p>
+Enterprise Cloud (Level 5) or Business Logistics (Level 4) to the Field Assets (Levels 0–2)</strong>. </p>
 <h3 id="in-scope">In-Scope<a class="headerlink" href="#in-scope" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
@@ -621,7 +579,7 @@ verify-then-suggest proposals subject to local human authorization and Semantic 
     Queue</strong> and <strong>Bytewax Streaming Engine</strong> execution path is sub-100 ms, it is designed to operate within a 
     500 ms supervisory safety watchdog window and does not replace Level 1 deterministic control loops.</li>
 <li><strong>Direct Cloud Control</strong>: No control or write command path exists from the Cloud (Level 5) to the Field (Level 0-2). 
-    All commands must be validated, authenticated and executed locally at the IDMZ/Edge (Level 3.5).</li>
+    All commands must be validated, authenticated, and executed locally at the IDMZ/Edge (Level 3.5).</li>
 <li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
     autonomous system modifications</li>
 </ul>
@@ -723,7 +681,7 @@ Segregation (CQRS) pattern to make the read and write paths decoupled, allowing 
 </ul>
 <h3 id="pessimistic-ui-confirmation">Pessimistic UI Confirmation<a class="headerlink" href="#pessimistic-ui-confirmation" title="Permanent link"></a></h3>
 <ul>
-<li>Ensure operators only receive <strong><code>SUCCESS</code></strong> confirmations after the Southbound Driver receives a physical 
+<li>Ensure operators only receive <strong><code>SUCCESS</code></strong> confirmations after the Southbound Driver receives physical 
   register-level verification from the standby process asset, verifying physical compliance before notifying the 
   operator.</li>
 </ul>
@@ -754,133 +712,14 @@ those safety limits from ever being reached.</p>
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p><strong>Logic Integrity Guardrail</strong>: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or function blocks. It is limited to writing to a predefined <strong>Command Global Data</strong> block. In this instance, the AI Agent can only request state changes that have been pre-approved and hard-coded by the site&rsquo;s control engineers. </p>
+<p><strong>Logic Integrity Guardrail</strong>: The Southbound Driver is strictly prohibited from modifying PLC ladder logic or 
+function blocks. It is limited to writing to a predefined <strong>Command Global Data</strong> block. In this instance, the 
+AI Agent can only request state changes that have been pre-approved and hard-coded by the site&rsquo;s control engineers. </p>
 </div>
 <h2 id="safety-regulatory-governance">Safety &amp; Regulatory Governance<a class="headerlink" href="#safety-regulatory-governance" title="Permanent link"></a></h2>
 <p>OverSight ICS is a <strong>Cognitive Reliability Layer</strong> (Level 3.5), not a primary safety system. It adheres to the following 
 industrial governance principles:</p>
 <h3 id="controls-engineering-standards-matrix">Controls Engineering Standards Matrix<a class="headerlink" href="#controls-engineering-standards-matrix" title="Permanent link"></a></h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Standard</th>
-<th style="text-align: left;">Focus Area</th>
-<th style="text-align: left;">OverSight Implementation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>ISA-95</strong></td>
-<td style="text-align: left;">Purdue Model</td>
-<td style="text-align: left;">Establishes the Level 3.5 IDMZ and uses a multi-broker UNS to logically separate Level 3 AI logic from Level 2 field asset control.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEC 62443</strong></td>
-<td style="text-align: left;">Cybersecurity</td>
-<td style="text-align: left;">Implements Zones &amp; Conduits via Dual-NIC hardware isolation; Northbound Ingest enforces protocol termination at the IDMZ boundary.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEC 62443-2-4</strong></td>
-<td style="text-align: left;">Service Providers</td>
-<td style="text-align: left;">Mandatory for managed service deployments. Defines integration requirements between Oversight ICS and site-specific security policies.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEC 62443-4-1</strong></td>
-<td style="text-align: left;">Secure Lifecycle</td>
-<td style="text-align: left;">Implemented via GitHub Actions CI/CD. Uses <code>trivy</code> for dependency scanning and <code>semgrep</code> for SAST. See <a href="/docs/cicd_pipeline.md">CI/CD Pipeline</a></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEC 61511</strong></td>
-<td style="text-align: left;">Functional Safety</td>
-<td style="text-align: left;">Maintains strict <strong>SIS Decoupling</strong>; AI reliability logic is physically and logically independent of safety logic solvers.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEC 61508</strong></td>
-<td style="text-align: left;">System Integrity</td>
-<td style="text-align: left;">Enforces <strong>Cgroup Resource Isolation</strong> and binary schemas to prevent software systematic failures in the IDMZ gateway.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISA-18.2</strong></td>
-<td style="text-align: left;">Alarm Management</td>
-<td style="text-align: left;">Uses <strong>Bytewax</strong> for real-time windowed $Z$-Score Rationalization, suppressing nuisance alerts by identifying &ldquo;Logic Drift&rdquo; before they trigger high-priority alarms.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISA-101</strong></td>
-<td style="text-align: left;">HMI Philosophy</td>
-<td style="text-align: left;">Uses a High-Performance (Gray Scale) Dashboard to maximize situational awareness during AI-orchestrated failovers.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 13849 / IEC 62061</strong></td>
-<td style="text-align: left;">Machinery Safety</td>
-<td style="text-align: left;">Ensures PIL/SIL levels are maintained during AI-Assisted failovers of rotating equipment.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 23247</strong></td>
-<td style="text-align: left;">Digital Twins</td>
-<td style="text-align: left;">Uses a Unified Namespace (UNS) across Kafka (History) and MQTT (State) to decouple AI reasoning from specific register addresses.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 42001</strong></td>
-<td style="text-align: left;">AI Management</td>
-<td style="text-align: left;">Governed by Inter-Agent Verification Checkpoints and RAG-grounded logs to ensure transparency in LLM-based RCA.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 27001</strong></td>
-<td style="text-align: left;">Information Security</td>
-<td style="text-align: left;">Implements <strong>90-Day Access Reviews</strong> and <strong>WORM-based Audit Logging</strong> for forensic integrity.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 13374</strong></td>
-<td style="text-align: left;">Condition Monitoring</td>
-<td style="text-align: left;">Follows standard processing blocks: Northbound Ingest for Data Acquisition, Flink for State Detection, and LangGraph for Advisory Generation.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO 9001</strong></td>
-<td style="text-align: left;">Quality Management</td>
-<td style="text-align: left;">Governed by <a href="/docs/quality_management_system.md">Quality Management System</a>. Defines documented procedures for <strong>Change Control</strong>, <strong>Incident Response</strong>, and <strong>Management Reviews</strong></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>NIST 800-82</strong></td>
-<td style="text-align: left;">OT Security</td>
-<td style="text-align: left;">Enforces <strong>Least Privilege</strong> via a <strong>Semantic Gatekeeper</strong> that validates RabbitMQ command intents against the current Sparkplug B reported state.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>NIST AI RMF</strong></td>
-<td style="text-align: left;">AI Trustworthiness</td>
-<td style="text-align: left;">Employs $Z$-Score Grounding via Flink and RAG-sourced citations to mitigate hallucinations in diagnostics.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEEE 7000</strong></td>
-<td style="text-align: left;">Ethical Design</td>
-<td style="text-align: left;">Guarantees <strong>Algorithmic Transparency</strong> by logging full LangGraph reasoning traces for every action.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>NERC CIP</strong></td>
-<td style="text-align: left;">Utilities Grid</td>
-<td style="text-align: left;">Meets CIP-007 (Ports/Services) and CIP-010 (Configuration Change Management) via the lockdown of the IDMZ Edge Gateway.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>GDPR / CCPA</strong></td>
-<td style="text-align: left;">Data Privacy</td>
-<td style="text-align: left;">Minimizes PII processing. Operator ID data is pseudonymized in audit logs. Authoritative OIDC records remain with the Corporate Identity Provider.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>EPA 40 CFR</strong></td>
-<td style="text-align: left;">Environmental Standards</td>
-<td style="text-align: left;">Prevents discharge violations by correlating real-time effluent telemetry in Kafka with hardware interlocks on field asset valves.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>IEEE 2600</strong></td>
-<td style="text-align: left;">Message Broker</td>
-<td style="text-align: left;">Allows for reliable interoperability between the Northbound (Kafka) and Southbound (RabbitMQ) layers of the UNS.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>ISO/IEC 20922</strong></td>
-<td style="text-align: left;">MQTT Protocol</td>
-<td style="text-align: left;">Ensures reliable state management using <strong>Sparkplug B</strong> payloads for hardware-agnostic interoperability across the UNS.</td>
-</tr>
-</tbody>
-</table>
 <p>See <a href="docs/standards.md">STANDARDS.md</a> for detailed descriptions of each standard and how Oversight ICS implements them.</p>
 <h2 id="system-resilience-safety">System Resilience &amp; Safety<a class="headerlink" href="#system-resilience-safety" title="Permanent link"></a></h2>
 <p>Oversight uses a <strong>Pessimistic Safety Model</strong>. It assumes that any intervention could potentially fail unless physically
@@ -893,7 +732,7 @@ a process trip due to computational latency or <strong>token storms</strong> in 
 Oversight implements a tiered heartbeat and watchdog strategy:</p>
 <ol>
 <li><strong>Heartbeat Interval ($T_{hb}$ | Heartbeat Time Period)</strong></li>
-<li>Fixed time interval which the LangGraph AI Agent pulses its signal to the driver.</li>
+<li>Fixed time interval that the Southbound Driver toggles the alive bit in the PLC.</li>
 <li>Aligned to <strong>100 ms</strong> to match command path latency.</li>
 <li><strong>Process Watchdog ($T_{plc}$ | Field Asset Watchdog Time)</strong></li>
 <li>Absolute maximum time the field asset will wait for a signal before it assumes the software is dead.</li>

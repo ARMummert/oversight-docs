@@ -406,28 +406,36 @@ Power Generation Turbine Control, etc.</p>
 <p><strong>Real-World Application</strong>: Safety Intercept Checkpoints, Cryptographic Signature Enforcement Gates, Multi-Factor
 Command Validation points, AI-to-PLC Write-Access Token Arbitration, etc.</p>
 <p><strong>Components</strong>: Oversight Arbitrator, Hardware TPM 2.0 Notary Chip, Multi-Factor Authentication (MFA) Token 
-Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.
-  - <strong>Level 1.5 Arbitrator</strong>: Responsible for managing the <strong>Write-Access Token</strong>, enforcing the <strong>Bumpless Transfer 
+Validation, Cryptographic Notary Buffers, Hardware enforced safety policies.</p>
+<ul>
+<li>
+<p><strong>Level 1.5 Arbitrator</strong>: Responsible for managing the <strong>Write-Access Token</strong>, enforcing the <strong>Bumpless Transfer 
     Protocol</strong>, and arbitrating command authority between the AI Agent and Human Operators. It contains zero
     dependencies on neural networks, large language models, or dynamic cloud runtimes. The Arbitrator sits directly on
     the boundary between the asynchronous message streaming layer (Level 3.5 IDMZ) and the deterministic control layer 
     (Level 1). Its only responsibility is to act as a stateless gatekeeper that inspects every single downward payload
-    before it can reach the physical memory maps.
-  - <strong>Cryptographic Notary Buffers</strong>: This component manages the processing and state-checking of cryptographic keys.
+    before it can reach the physical memory maps.</p>
+</li>
+<li>
+<p><strong>Cryptographic Notary Buffers</strong>: This component manages the processing and state-checking of cryptographic keys.
     It interacts with the local endpoint&rsquo;s TPM 2.0 (Trusted Platform Module) to decode asymmetric cryptographic 
     payloads. This buffer drops any transaction frame whose public-key signature does not explicitly match a trusted
-    identity profile or that has been modified or corrupted in transit.
-  - <strong>TPM 2.0 Hardware Notary Module</strong>: Before any control directive can be executed, it must be signed by the TPM 2.0 
+    identity profile or that has been modified or corrupted in transit.</p>
+</li>
+<li>
+<p><strong>TPM 2.0 Hardware Notary Module</strong>: Before any control directive can be executed, it must be signed by the TPM 2.0 
     hardware module. This provides a hardware root of trust showing that the command has not been tampered with in 
     transit and that it originates from a verified source. The Notary Buffer requests a signature from the TPM and 
     appends it to the payload. This signature is a critical part of the safety architecture because it guarantees the 
     integrity of the command before it can affect physical hardware. The TPM 2.0 then passes the hardware-notarized 
-    block down to the Southbound Driver for execution.
-  - <strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
+    block down to the Southbound Driver for execution.</p>
+</li>
+<li><strong>Two-Key Protocol Dual-Auth Validation Registers</strong>: Is a stateful register layer that handles high-impact command
     orchestration boundaries. When an intervention or predictive failover request is flagged by the Level 3.5 AI Agent, 
     this component blocks immediate execution and triggers an immutable lock state. It requires <strong>Dual-Cryptographic</strong>
     signatures from two-independent RS256-signed JWT tokens. One token is from the primary field operator and the other
-    is from the safety supervisor or plant manager.</p>
+    is from the safety supervisor or plant manager.</li>
+</ul>
 <p>Level 1.5 is a <strong>Zero-Trust Policy Enforcement Layer</strong>. At Level 1.5, Oversight applies an absolute zero-trust model 
 that says, <strong>Never trust an AI model with direct, unmediated write access to physical infrastructure</strong>. If a software 
 engineer connects a cognitive agent directly to industrial registers, a person exploiting an adversarial prompt 

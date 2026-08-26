@@ -2409,7 +2409,7 @@ before reaching the Reasoning Engine:</p>
 <li><strong>Outlier Suppression</strong>: A rolling-window <strong>Median Filter</strong> and <strong>Bytewax</strong> suppression is applied to 
   high-vibration sensor data to prevent transient electrical noise or spikes from triggering false-positive $Z$-score 
   anomalies.</li>
-<li><strong>Windowed $Z$-Score Grounding</strong>: <strong>Apache Flink</strong> performs real-time statistical grounding on the live stream, calculating
+<li><strong>Windowed $Z$-Score Grounding</strong>: <strong>NATS/Bytewax</strong> performs real-time statistical grounding on the live stream, calculating
   the $Z$-Score of each field asset to identify logic drift or mechanical wear before data is committed to the 
   database.</li>
 <li><strong>Historian Tiering</strong>: Data is automatically partitioned into &ldquo;Hot&rdquo; (Redis – 1 min), &ldquo;Warm&rdquo; (TimescaleDB – 90 days),

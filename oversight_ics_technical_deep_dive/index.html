@@ -452,8 +452,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#stakeholder-faqs">Stakeholder FAQs</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#documentation-index">Documentation Index</a>
-    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
@@ -2427,7 +2425,7 @@ before reaching the Reasoning Engine:</p>
 </ul>
 <h2 id="the-event-driven-command-spine">The Event-Driven Command Spine<a class="headerlink" href="#the-event-driven-command-spine" title="Permanent link"></a></h2>
 <p>To bridge high-level AI reasoning with low-level industrial protocols, OverSight uses an 
-<strong>Event-Driven Command Spine</strong> (RabbitMQ) coupled with a <strong>Stream-Processing Layer</strong> (Apache Flink). This replaces 
+<strong>Event-Driven Command Spine</strong> (NATS Jetstream) coupled with a <strong>Stream-Processing Layer</strong> (Bytewax). This replaces 
 traditional database polling with a real-time, low-latency push model.</p>
 <h3 id="read-write-separation">Read / Write Separation<a class="headerlink" href="#read-write-separation" title="Permanent link"></a></h3>
 <ul>
@@ -2454,7 +2452,7 @@ traditional database polling with a real-time, low-latency push model.</p>
 </li>
 </ul>
 <h3 id="io-fencing-determinism">I/O Fencing &amp; Determinism<a class="headerlink" href="#io-fencing-determinism" title="Permanent link"></a></h3>
-<p>To prevent the system from acting on outdated or hallucinated information, we implement three layers of fencing:</p>
+<p>To prevent the system from acting on outdated or hallucinated information, we implement three layers of fencihttps://www.linkedin.com/in/armummert/ng:</p>
 <ol>
 <li><strong>TTL (Time-To-Live) Envelopes</strong>: Every intent published to the NATS Command Spine is tagged with a 
     <code>message-ttl</code> of 2000ms. If the Southbound Driver consumes a message older than this window, it is automatically 
@@ -2532,7 +2530,7 @@ be a &ldquo;Universal&rdquo; reliability system that can be used at multiple ind
 the friction of vendor-specific silos.</p>
 <ul>
 <li><strong>ISA-95 Semantic Mapping</strong>: All field asset telemetry, state changes, and AI interfaces are mapped to a 
-  standardized, hierarchical namespace (e.g., <code>Site/Area/Process_line/Asset/Attribute</code>).</li>
+  standardized, hierarchical namespace (e.g., <code>Enterprise/Site/Area/Line/Asset/Attribute</code>).</li>
 <li><strong>Local Hardware Abstraction</strong>: The UNS acts as an extraction layer, allowing the reasoning cluster to interact with
   asset health or operational efficiency nodes without needing to manage specific register addresses or proprietary 
   protocol drivers for field assets.</li>
@@ -2760,7 +2758,6 @@ safely and efficiently. By implementing this system, we can ensure that the plan
 reliable but also more resilient to unexpected events, ultimately leading to safer working conditions and improved 
 productivity.</p>
 <h2 id="stakeholder-faqs">Stakeholder FAQs<a class="headerlink" href="#stakeholder-faqs" title="Permanent link"></a></h2>
-<h2 id="documentation-index">Documentation Index<a class="headerlink" href="#documentation-index" title="Permanent link"></a></h2>
               
             </div>
           </div><footer>

@@ -539,7 +539,7 @@ Threat Mitigation), Semantic Gatekeeper, the Southbound Write Driver, and the Ob
 </li>
 <li>
 <p><strong>Southbound Driver</strong>: The final egress for write access. The Southbound Driver consumes the hardware-notarized
-    block from the TPM module and the pushes the block through the Southbound Firewall, via Deep Packet Inspection for 
+    block from the TPM module and pushes the block through the Southbound Firewall, via Deep Packet Inspection for 
     safe writes. If the command exceeds safe operating limits, the firewall blocks it and triggers an alert. Once the 
     command is sent to the field asset, the Southbound Driver enters a <strong>Pessimistic Confirmation Loop</strong>. It then 
     subscribes to the NATS JetStream backbone and waits for the Northbound Ingest to publish a state change. The state 

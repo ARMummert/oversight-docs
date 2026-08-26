@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RFC-001 - Unified Namespace &amp; Messaging Architecture - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RFC-001 - Unified Namespace \u0026amp; Messaging Architecture";
+        var mkdocs_page_input_path = "RFC-ADR/RFC-001.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-container-diagram.png">System Architecture Container View</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">RFC-001 - Unified Namespace &amp; Messaging Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rfc-001-unified-namespace-messaging-architecture">RFC-001 - Unified Namespace &amp; Messaging Architecture<a class="headerlink" href="#rfc-001-unified-namespace-messaging-architecture" title="Permanent link"></a></h1>
+<p><strong>Author</strong>: Amy Mummert</p>
+<p><strong>Status</strong>: Proposed</p>
+<h2 id="abstract">Abstract<a class="headerlink" href="#abstract" title="Permanent link"></a></h2>
+<p>This RFC outlines the proposed creation of a unified namespace and messaging architecture combined with MQTT/Sparkplub B
+normalization. This system must decouple high-level AI reasoning and UI Dashboards from hardcoded physical register 
+addresses without compromising plant safety.</p>
+<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link"></a></h2>
+<h3 id="in-scope">In-Scope<a class="headerlink" href="#in-scope" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
+<li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into a Sparkplug B-enabled Unified 
+    Namespace (UNS) via NATS JetStream.</li>
+<li><strong>Autonomous Reliability</strong>: Executes <strong>warm standby</strong> transitions when the primary hardware health degrades</li>
+<li><strong>Root Cause Analysis</strong>: Using <strong>RAG (Retrieval-Augmented Generation)</strong> to compare real-time anomalies against 
+    technical manuals and historical incident logs.</li>
+<li><strong>Air Gapped Reasoning</strong>: Maintaining a <strong>local-first</strong> architecture that ensures Level 3.5 IDMZ operational 
+    autonomy even during loss of internet connectivity.</li>
+</ul>
+<h3 id="out-of-scope">Out-of-Scope<a class="headerlink" href="#out-of-scope" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Primary Safety (SIS)</strong>: Oversight operates under strict safety boundaries to prevent unauthorized interventions.
+    Oversight does <strong><em>NOT</em></strong> manage Emergency Stops or high-pressure relief interlocks. These
+    remain hard-wired at Level 1.</li>
+<li><strong>Hard Real-Time Control (&lt;10 ms)</strong>: The system is a supervisory reliability layer. While the <strong>NATS Command 
+    Queue</strong> and <strong>Bytewax Streaming Engine</strong> execution path is sub-100 ms, it is designed to operate within a 
+    500 ms supervisory safety watchdog window and does not replace Level 1 deterministic control loops.</li>
+<li><strong>Direct Cloud Control</strong>: No control or write command path exists from the Cloud (Level 5) to the Field (Level 0-2). 
+    All commands must be validated, authenticated, and executed locally at the IDMZ/Edge (Level 3.5).</li>
+<li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
+    autonomous system modifications</li>
+</ul>
+<h2 id="proposed-design-data-flow">Proposed Design &amp; Data Flow<a class="headerlink" href="#proposed-design-data-flow" title="Permanent link"></a></h2>
+<p>Oversight is designed with a strict <strong>CQRS (Command Query Responsibility Segregation)</strong> architecture. The system is 
+divided into two primary data flows:</p>
+<h3 id="the-read-path">The Read Path<a class="headerlink" href="#the-read-path" title="Permanent link"></a></h3>
+<p>Raw industrial protocols are ingested and normalized by the Northbound Ingest Service into Sparkplug B JSON payloads. 
+These payloads contain standard metadata and integer quality bits. These normalized payloads are then published to the
+NATS JetStream message bus and are consumed by the Bytewax Streaming Engine. </p>
+<h3 id="the-write-path">The Write Path<a class="headerlink" href="#the-write-path" title="Permanent link"></a></h3>
+<p>Control intents and manual overrides are published to the NATS Command Queue (<code>oversight.commands.proposed</code>). These 
+commands are sent for validation by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer.</p>
+<h3 id="iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure<a class="headerlink" href="#iec-62264-hierarchical-topic-structure" title="Permanent link"></a></h3>
+<p>Oversight strictly follows the IEC 62264 enterprise standard for topic structure.</p>
+<p><strong>Example</strong>: <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
+<p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
+standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
+that is appropriate for the high-velocity telemetry data in an OT environment. NATS JetStream offers lightweight
+connectivity, low latency, and built-in support for message persistence and replay. These are all critical for the 
+real-time monitoring and control requirements of the system. </p>
+<p><strong>Tradeoff</strong>: NATS JetStream does not offer the same level of features or ecosystem support as message brokers 
+like RabbitMQ or Kafka. RabbitMQ offers a wide range of plugins and integrations, while Kafka is designed for 
+high-throughput, distributed log processing. I found that RabbitMQ or Kafka might be more suitable choices for larger, 
+more complex systems with more messaging requirements. However, for this specific use case, the simplicity and 
+performance of NATS JetStream make it the best fit for the telemetry and command messaging needs of the system.</p>
+<p>I specifically chose not to use Kafka / Flink because as a solo developer building a complex system, I wanted to 
+minimize the complexity of the architecture. Kafka and Flink are powerful tools, but they require more setup, 
+maintenance, and operational expertise compared to NATS JetStream. NATS JetStream provides me a simpler, more 
+lightweight solution that still meets the performance and reliability requirements of the Oversight system without 
+introducing unnecessary complexity.</p>
+<p><strong>Justification</strong>: The CQRS architecture of the Oversight system requires a message broker that can handle 
+high-throughout and low-latency telemetry, but also must provide strong message persistence and replay capabilities 
+for the command queue. While MQTT is used to ingest telemetry <em>upward</em> to the gateway, the internal command spine 
+requires an immutable, replayable, append-only log. RabbitMQ is a traditional message queue and messages are deleted 
+once consumed. NATS JetStream acts as a distributed log that guarantees WORM (Write Once, Read Many) compliance. 
+If the Southbound Driver crashes, it can reboot and request the exact stream sequence number it missed, ensuring 
+zero command loss. WORM compliance is critical for the command queue because every control intent must be traceable,
+auditable, and replayable for safety and compliance reasons. NATS JetStream provides this capability, while RabbitMQ
+and MQTT do not. Kafka does provide a distributed log, but it is designed for big data pipelines and may introduce 
+unnecessary complexity for this use case. </p>
+<h2 id="detailed-design-technical-specifications">Detailed Design &amp; Technical Specifications<a class="headerlink" href="#detailed-design-technical-specifications" title="Permanent link"></a></h2>
+<ol>
+<li>Broker Configuration: NATS with JetStream enabled with disk-backed storage and consumer offset tracking.  This is for
+   at-least-once processing of messages.</li>
+<li>NATS Subjects:<ul>
+<li>Telemetry: <code>oversight.telemetry.&gt;</code> </li>
+<li>Commands: <code>oversight.commands.proposed</code>, <code>oversight.commands.validated</code>, <code>oversight.commands.executed</code>, 
+  <code>oversight.commands.failed</code></li>
+<li>Events &amp; Audits: <code>oversight.events.failover</code>, <code>oversight.audit.&gt;</code></li>
+</ul>
+</li>
+<li>Payload Standards: Sparkplug B JSON with standard metadata and integer quality bits (e.g., <code>192</code> for good)</li>
+<li>Failure Modes:<ul>
+<li>If downstream consumer latency or backpressure is too high and exceeds safe execution limits, NATS will manage
+  buffer saturation with consumer pull-models and Linux Cgroups. Stream silence means the system will trigger the 
+  Zero-Tolerance Watchdog to inhibit AI writes.</li>
+</ul>
+</li>
+</ol>
+<h2 id="risks-security-considerations">Risks &amp; Security Considerations<a class="headerlink" href="#risks-security-considerations" title="Permanent link"></a></h2>
+<ol>
+<li><strong>Security</strong>: The system is designed to operate within a Level 3.5 IDMZ/Edge environment. All data is encrypted at 
+   rest and in transit. The system uses TPM 2.0 for hardware-based key storage and signing of commands. All commands 
+   are validated and authenticated before execution.</li>
+<li><strong>Risks</strong>: </li>
+<li><strong>Single Point of Failure</strong>: The NATS JetStream broker is a critical component. If it fails, telemetry and 
+     command messaging will be disrupted. Mitigation: Use a clustered NATS deployment with failover.</li>
+<li><strong>Latency</strong>: High latency in the command queue could lead to delayed execution of control intents. Mitigation: 
+     Monitor latency and implement backpressure handling.</li>
+<li><strong>Data Loss</strong>: In the event of a crash, there is a risk of losing unprocessed messages. Mitigation: Use 
+     persistent storage and replay capabilities of NATS JetStream.</li>
+</ol>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link"></a></h2>
+<p>By choosing NATS JetStream as the message broker, I have achieved the following:</p>
+<ul>
+<li>Fulfills the strict CQRS architecture requirements</li>
+<li>Provides hardware abstraction by keeping the AI Agent from knowing the physical register addresses. This also allows
+  for the system to be hardware-agnostic.</li>
+<li>NATS JetStream is lightweight and provides an immutable, append-only distributed log. This allows for every 
+  telemetry frame and proposed command to be traceable and forensically auditable.</li>
+<li>The Level 3.5 IDMZ/Edge maintains full autonomy and safe-state control even during loss of internet connectivity. </li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

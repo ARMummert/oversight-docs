@@ -4,22 +4,22 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>RFC-001 - Oversight ICS</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RFC-001: Unified Namespace & Messaging Architecture - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
-        <link href="../style.css" rel="stylesheet" />
+        <link href="../../style.css" rel="stylesheet" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "RFC-001";
-        var mkdocs_page_input_path = "RFC-001.md";
+        var mkdocs_page_name = "RFC-001: Unified Namespace \u0026 Messaging Architecture";
+        var mkdocs_page_input_path = "RFC/RFC-001.md";
         var mkdocs_page_url = null;
       </script>
     
     <!--[if lt IE 9]>
-      <script src="../js/html5shiv.min.js"></script>
+      <script src="../../js/html5shiv.min.js"></script>
     <![endif]-->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
       <script>hljs.highlightAll();</script> 
@@ -31,9 +31,9 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> Oversight ICS
+          <a href="../.." class="icon icon-home"> Oversight ICS
         </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
@@ -41,74 +41,78 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-context-diagram.svg">System Architecture Context View</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../system-architecture-container-diagram.png">System Architecture Container View</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../audit_logging/">Audit Logging</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">RFC-001</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >RFCs</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#background-context">Background / Context</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">RFC-001: Unified Namespace & Messaging Architecture</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#background-context">Background / Context</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#problem-statement">Problem Statement</a>
+    <li class="toctree-l3"><a class="reference internal" href="#problem-statement">Problem Statement</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
+    <li class="toctree-l3"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-write-path">The Write Path</a>
+    <li class="toctree-l4"><a class="reference internal" href="#the-write-path">The Write Path</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure</a>
+    <li class="toctree-l4"><a class="reference internal" href="#iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#nats-subject-contracts">NATS Subject Contracts</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nats-subject-contracts">NATS Subject Contracts</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
+    <li class="toctree-l3"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#tradeoff">Tradeoff</a>
+    <li class="toctree-l4"><a class="reference internal" href="#tradeoff">Tradeoff</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#justification">Justification</a>
+    <li class="toctree-l4"><a class="reference internal" href="#justification">Justification</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#implementation-plan">Implementation Plan</a>
+    <li class="toctree-l3"><a class="reference internal" href="#implementation-plan">Implementation Plan</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#risks-security-considerations">Risks &amp; Security Considerations</a>
+    <li class="toctree-l3"><a class="reference internal" href="#risks-security-considerations">Risks &amp; Security Considerations</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#impact-and-benefits">Impact and Benefits</a>
+    <li class="toctree-l3"><a class="reference internal" href="#impact-and-benefits">Impact and Benefits</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a>
+    <li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
     </li>
     </ul>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
                   </li>
               </ul>
       </div>
@@ -118,15 +122,16 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">Oversight ICS</a>
+          <a href="../..">Oversight ICS</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation Suite</li>
-      <li class="breadcrumb-item active">RFC-001</li>
+          <li class="breadcrumb-item">RFCs</li>
+      <li class="breadcrumb-item active">RFC-001: Unified Namespace & Messaging Architecture</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -395,8 +400,8 @@ does not. Kafka does provide a distributed log, but it is not cost effective for
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../audit_logging/" class="btn btn-neutral float-left" title="Audit Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../glossary/" class="btn btn-neutral float-right" title="Glossary">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../audit_logging/" class="btn btn-neutral float-left" title="Audit Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../glossary/" class="btn btn-neutral float-right" title="Glossary">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -423,18 +428,18 @@ does not. Kafka does provide a distributed log, but it is not cost effective for
         </span>
     
     
-      <span><a href="../audit_logging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../../audit_logging/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "..";</script>
-    <script src="../js/theme_extra.js"></script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/main.js"></script>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
     <script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);

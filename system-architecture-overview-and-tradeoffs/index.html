@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>System Architecture - Oversight ICS</title>
+    <title>System Architecture Overview - Oversight ICS</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "System Architecture";
+        var mkdocs_page_name = "System Architecture Overview";
         var mkdocs_page_input_path = "system-architecture-overview-and-tradeoffs.md";
         var mkdocs_page_url = null;
       </script>
@@ -48,123 +48,119 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">System Architecture</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >System Architecture</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">System Architecture Overview</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#key-architectural-features">Key Architectural Features</a>
+    <li class="toctree-l3"><a class="reference internal" href="#key-architectural-features">Key Architectural Features</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#safety-first-predictive-failover-engine">Safety First Predictive Failover Engine</a>
+    <li class="toctree-l4"><a class="reference internal" href="#safety-first-predictive-failover-engine">Safety First Predictive Failover Engine</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture</a>
+    <li class="toctree-l4"><a class="reference internal" href="#command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics</a>
+    <li class="toctree-l4"><a class="reference internal" href="#remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#multi-worker-scalability">Multi-Worker Scalability</a>
+    <li class="toctree-l4"><a class="reference internal" href="#multi-worker-scalability">Multi-Worker Scalability</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#split-brain-arbitration-strategy">Split Brain &amp; Arbitration Strategy</a>
+    <li class="toctree-l4"><a class="reference internal" href="#split-brain-arbitration-strategy">Split Brain &amp; Arbitration Strategy</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#closed-loop-intent-verification">Closed-Loop Intent Verification</a>
+    <li class="toctree-l4"><a class="reference internal" href="#closed-loop-intent-verification">Closed-Loop Intent Verification</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#hardware-root-of-trust">Hardware Root of Trust</a>
+    <li class="toctree-l4"><a class="reference internal" href="#hardware-root-of-trust">Hardware Root of Trust</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper</a>
+    <li class="toctree-l4"><a class="reference internal" href="#zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#idmz-purdue-model-alignment">IDMZ Purdue Model Alignment</a>
+    <li class="toctree-l4"><a class="reference internal" href="#idmz-purdue-model-alignment">IDMZ Purdue Model Alignment</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#worm-forensic-logging">WORM Forensic Logging</a>
+    <li class="toctree-l4"><a class="reference internal" href="#worm-forensic-logging">WORM Forensic Logging</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#local-rag-grounded-reasoning">Local RAG-Grounded Reasoning</a>
+    <li class="toctree-l4"><a class="reference internal" href="#local-rag-grounded-reasoning">Local RAG-Grounded Reasoning</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pessimistic-ui-state-machine">Pessimistic UI State Machine</a>
+    <li class="toctree-l4"><a class="reference internal" href="#pessimistic-ui-state-machine">Pessimistic UI State Machine</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#the-purdue-model-for-cybersecurity-isaiec-62443">The Purdue Model for Cybersecurity (ISA/IEC 62443)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#the-purdue-model-for-cybersecurity-isaiec-62443">The Purdue Model for Cybersecurity (ISA/IEC 62443)</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#purdue-model-overview">Purdue Model Overview</a>
+    <li class="toctree-l4"><a class="reference internal" href="#purdue-model-overview">Purdue Model Overview</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-0-physical-kinetics">Level 0: Physical Kinetics</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-0-physical-kinetics">Level 0: Physical Kinetics</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-1-local-control-automation">Level 1: Local Control &amp; Automation</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-1-local-control-automation">Level 1: Local Control &amp; Automation</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-15-control-authority-model-the-arbitration-layer">Level 1.5: Control Authority Model (The Arbitration Layer)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-15-control-authority-model-the-arbitration-layer">Level 1.5: Control Authority Model (The Arbitration Layer)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-2-supervisory">Level 2: Supervisory</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-2-supervisory">Level 2: Supervisory</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-3-operational-site-core">Level 3: Operational Site Core</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-3-operational-site-core">Level 3: Operational Site Core</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-35-ai-idmz-zone">Level 3.5 AI &amp; IDMZ Zone</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-4-secure-dashboard-business-logistics-network">Level 4: Secure Dashboard &amp; Business Logistics Network</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-4-human-in-the-loop-secure-dashboard-workflow">Level 4: Human-in-the-Loop Secure Dashboard Workflow</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-4-human-in-the-loop-secure-dashboard-workflow">Level 4: Human-in-the-Loop Secure Dashboard Workflow</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-by-step-operational-workflow">Step-By-Step Operational Workflow</a>
+    <li class="toctree-l4"><a class="reference internal" href="#step-by-step-operational-workflow">Step-By-Step Operational Workflow</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#dashboard-capability-matrix-rbac">Dashboard Capability Matrix (RBAC)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#dashboard-capability-matrix-rbac">Dashboard Capability Matrix (RBAC)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-5-enterprise-cloud-hub">Level 5: Enterprise Cloud Hub</a>
+    <li class="toctree-l4"><a class="reference internal" href="#level-5-enterprise-cloud-hub">Level 5: Enterprise Cloud Hub</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#firewall-security-boundary-summary">Firewall &amp; Security Boundary Summary</a>
+    <li class="toctree-l3"><a class="reference internal" href="#firewall-security-boundary-summary">Firewall &amp; Security Boundary Summary</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-by-step-data-flow-execution">Step-By-Step Data Flow Execution</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-by-step-data-flow-execution">Step-By-Step Data Flow Execution</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-inbound-ingestion-stream-read-path">The Inbound Ingestion Stream (Read Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#the-inbound-ingestion-stream-read-path">The Inbound Ingestion Stream (Read Path)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-outbound-command-intercept-write-path">The Outbound Command Intercept (Write Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#the-outbound-command-intercept-write-path">The Outbound Command Intercept (Write Path)</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#architectural-tradeoffs-design-considerations-justifications">Architectural Tradeoffs, Design Considerations, &amp; Justifications</a>
+    <li class="toctree-l3"><a class="reference internal" href="#architectural-tradeoffs-design-considerations-justifications">Architectural Tradeoffs, Design Considerations, &amp; Justifications</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap">Identity and Access Management (IAM): Federated OIDC vs. Local Active Directory (LDAP)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#identity-and-access-management-iam-federated-oidc-vs-local-active-directory-ldap">Identity and Access Management (IAM): Federated OIDC vs. Local Active Directory (LDAP)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql">Time-Series Database: TimescaleDB vs. Alternate Time-Series Databases (InfluxDB, MongoDB, or standard PostgreSQL)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#time-series-database-timescaledb-vs-alternate-time-series-databases-influxdb-mongodb-or-standard-postgresql">Time-Series Database: TimescaleDB vs. Alternate Time-Series Databases (InfluxDB, MongoDB, or standard PostgreSQL)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#nginx-reverse-proxy-vs-dedicated-api-gateway">Nginx Reverse Proxy vs. Dedicated API Gateway</a>
+    <li class="toctree-l4"><a class="reference internal" href="#nginx-reverse-proxy-vs-dedicated-api-gateway">Nginx Reverse Proxy vs. Dedicated API Gateway</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#prometheus-vs-traditional-rdbms-for-system-health-monitoring">Prometheus vs. Traditional RDBMS for System Health Monitoring</a>
+    <li class="toctree-l4"><a class="reference internal" href="#prometheus-vs-traditional-rdbms-for-system-health-monitoring">Prometheus vs. Traditional RDBMS for System Health Monitoring</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#redis-vs-memcached-for-hot-state-cache">Redis vs. Memcached for Hot State Cache</a>
+    <li class="toctree-l4"><a class="reference internal" href="#redis-vs-memcached-for-hot-state-cache">Redis vs. Memcached for Hot State Cache</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc">Vector Database: pgVector vs. Dedicated Vector Database (Pinecone, Milvus, etc.)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#vector-database-pgvector-vs-dedicated-vector-database-pinecone-milvus-etc">Vector Database: pgVector vs. Dedicated Vector Database (Pinecone, Milvus, etc.)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#message-broker-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker: NATS JetStream vs. Kafka vs. RabbitMQ</a>
+    <li class="toctree-l4"><a class="reference internal" href="#message-broker-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker: NATS JetStream vs. Kafka vs. RabbitMQ</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#evaluation-of-cognitive-frameworks-and-orchestration-engines">Evaluation of Cognitive Frameworks and Orchestration Engines</a>
+    <li class="toctree-l3"><a class="reference internal" href="#evaluation-of-cognitive-frameworks-and-orchestration-engines">Evaluation of Cognitive Frameworks and Orchestration Engines</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#cognitive-frameworks">Cognitive Frameworks</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#gemini-35-flash-cloud-based-llm-api">Gemini 3.5 Flash (Cloud Based LLM API)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#cognitive-frameworks">Cognitive Frameworks</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#open-source-high-throughput-third-party-llms-llama-3-falcon-40b-etc">Open-Source High-throughput Third Party LLMs (Llama 3, Falcon 40B, etc.)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents">Graph-Based Orchestration Engines vs. Linear Pipeline / Autonomous Agents</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#local-on-device-edge-compute-self-hosted-phi-4-gemma-3">Local On-Device Edge Compute (Self-hosted Phi-4 / Gemma 3)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#graph-based-orchestration-engines-vs-linear-pipeline-autonomous-agents">Graph-Based Orchestration Engines vs. Linear Pipeline / Autonomous Agents</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#ntp-vs-ptp-for-time-synchronization">NTP vs PTP for Time Synchronization</a>
+    <li class="toctree-l4"><a class="reference internal" href="#ntp-vs-ptp-for-time-synchronization">NTP vs PTP for Time Synchronization</a>
     </li>
         </ul>
     </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
+                </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
                   </li>
@@ -196,7 +192,8 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Documentation Suite</li>
-      <li class="breadcrumb-item active">System Architecture</li>
+          <li class="breadcrumb-item">System Architecture</li>
+      <li class="breadcrumb-item active">System Architecture Overview</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>

@@ -466,6 +466,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../audit_logging/">Audit Logging</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RFC-001/">RFC-001</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
                   </li>
               </ul>
@@ -1042,8 +1044,8 @@ conditions). Resilience is enforced by three different watchdogs:</p>
   silence</strong> (no new telemetry packets arrive within a 10-second window) or if the Bytewax epoch/watermark stalls, a 
   dedicated NATS Watcher service publishes a <code>STALE_DATA</code> event to the high-priority Watchdog subject.</li>
 <li><strong>Action</strong>: The Reasoning Agent subscribes to this Watchdog subject. If a <code>STALE_DATA</code> event is detected, the Agent 
-  enters a <strong>Safe State</strong> and is strictly prohibited from generating or executing any new intents, ensuring the AI 
-  never acts on <strong>ghost</strong> or delayed telemetry. </li>
+  enters a <strong>Safe State</strong> and is strictly prohibited from generating or executing any new intents. This a crucial so
+  the AI never acts on <strong>ghost</strong> or delayed telemetry. </li>
 </ul>
 <h3 id="heartbeat-health-monitoring">Heartbeat &amp; Health Monitoring<a class="headerlink" href="#heartbeat-health-monitoring" title="Permanent link"></a></h3>
 <p>To ensure the Purdue gap doesn&rsquo;t become a black hole for data, OverSight ICS uses a multi-tiered heartbeat strategy.</p>

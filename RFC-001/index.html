@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>RFC-001 - Oversight ICS</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RFC-001";
+        var mkdocs_page_input_path = "RFC-001.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../system-architecture-container-diagram.png">System Architecture Container View</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../audit_logging/">Audit Logging</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">RFC-001</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#background-context">Background / Context</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problem-statement">Problem Statement</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-write-path">The Write Path</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#nats-subject-contracts">NATS Subject Contracts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tradeoff">Tradeoff</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#justification">Justification</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#implementation-plan">Implementation Plan</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#risks-security-considerations">Risks &amp; Security Considerations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#impact-and-benefits">Impact and Benefits</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Documentation Suite</li>
+      <li class="breadcrumb-item active">RFC-001</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rfc-001-unified-namespace-messaging-architecture">RFC-001 - Unified Namespace &amp; Messaging Architecture<a class="headerlink" href="#rfc-001-unified-namespace-messaging-architecture" title="Permanent link"></a></h1>
+<p><strong>Author</strong>: Amy Mummert</p>
+<p><strong>Status</strong>: Proposed</p>
+<h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
+<p>This RFC outlines the proposed creation of a unified namespace and messaging architecture combined with MQTT/Sparkplub B
+normalization. This system must decouple high-level AI reasoning and UI Dashboards from hardcoded physical register 
+addresses without compromising plant safety.</p>
+<h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
+<p>The Oversight system must be able to ingest high-throughput telemetry (often exceeding 10,000 points per second) from 
+the deterministic control layers (0–2). The high-throughput telemetry data must be normalized into a standard format so 
+that the AI Agent does not know the physical register addresses. If the system were to route raw telemetry to the AI 
+Agent, there becomes an unacceptable safety risk. To achieve predictive orchestration without violating the zero-trust 
+safety of the system, it must be able to securely send legacy protocols (e.g., Modbus, OPC_UA, Ethernet/IP) to the AI 
+Agent without exposing the physical register addresses. </p>
+<p>Legacy OT systems don&rsquo;t reason about their own health, they rely on hardware heartbeats to determine if the system is 
+healthy and only report raw data. If traditional synchronous polling is used, the system introduces network jitter. This
+results in the AI Agent misinterpreting the software lag as actual mechanical process drift. In this case, the system 
+will trigger false-positives failover commands. An unhandled software exception or latency spike within the cognitive
+layer can block deterministic scan loops, this would potentially lead to physical destruction or catastrophic safety 
+events.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The core problem is moving data without introducing artificial time-series jitter that would ruin the streaming 
+statistical algorithms.</p>
+<h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
+<p>The proposed solution is to use a <strong>Unified Namespace</strong> using NATS JetStream to standardize the telemetry into a 
+common format. The system will use MQTT/Sparkplug B to normalize the telemetry. This architecture will allow the AI
+Agent to reason about the system health and orchestrate failovers without knowing the physical register addresses.</p>
+<p>Oversight is designed with a strict <strong>CQRS (Command Query Responsibility Segregation)</strong> architecture. The system is 
+divided into two primary data flows within the Level 3.5 IDMZ:</p>
+<h3 id="the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)<a class="headerlink" href="#the-read-path-ingestion-observation" title="Permanent link"></a></h3>
+<p>Raw industrial protocols are ingested and normalized by the Northbound Ingest Service into Sparkplug B JSON payloads 
+containing metadata and integer quality bits (e.g., 192 for &ldquo;Good&rdquo;). They are strictly terminated by the Northbound 
+Ingest Service to prevent direct sessions with field assets. These normalized payloads are then published to the
+NATS JetStream message bus (<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. The Bytewax 
+Streaming Engine performs windowed Z-Score drift detection and publishes the results to the TimescaleDB telemetry 
+historian (for the 90-day warm tier) and the Redis Hot Cache (for sub-second lookups).</p>
+<h3 id="the-write-path">The Write Path<a class="headerlink" href="#the-write-path" title="Permanent link"></a></h3>
+<p>Control intents and manual overrides are published to the NATS Command Queue (<code>oversight.commands.proposed</code>). These 
+commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. 
+The fully notarized commands are then handed to the Southbound Driver (translates the payload into raw wire data) and 
+pushes it through the Southbound Firewall.</p>
+<h3 id="iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure<a class="headerlink" href="#iec-62264-hierarchical-topic-structure" title="Permanent link"></a></h3>
+<p>Oversight strictly follows the IEC 62264 enterprise standard for topic structure with NATS dot notation to route data.</p>
+<p><strong>Example</strong>: <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h2 id="nats-subject-contracts">NATS Subject Contracts<a class="headerlink" href="#nats-subject-contracts" title="Permanent link"></a></h2>
+<p>To enforce strict routing between the Read and Write paths, the broker will enforce the following contracts/namespaces:</p>
+<table>
+<thead>
+<tr>
+<th>Subject</th>
+<th>Description</th>
+<th style="text-align: left;">Processing Component</th>
+<th style="text-align: left;">Data Flow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>oversight.telemetry.&gt;</code></td>
+<td>Sparkplug B normalized sensor data</td>
+<td style="text-align: left;">Northbound Ingest</td>
+<td style="text-align: left;">Read Path</td>
+</tr>
+<tr>
+<td><code>oversight.commands.proposed</code></td>
+<td>AI or Operator intents awaiting validation</td>
+<td style="text-align: left;">Level 1.5 Arbitrator</td>
+<td style="text-align: left;">Write Path</td>
+</tr>
+<tr>
+<td><code>oversight.commands.validated</code></td>
+<td>Commands that passed the Semantic Gatekeeper &amp; TPM 2.0</td>
+<td style="text-align: left;">Semantic Gatekeeper &amp; TPM 2.0</td>
+<td style="text-align: left;">Write Path</td>
+</tr>
+<tr>
+<td><code>oversight.commands.executed</code></td>
+<td>Commands successfully written to field assets</td>
+<td style="text-align: left;">Southbound Driver</td>
+<td style="text-align: left;">Write Path</td>
+</tr>
+<tr>
+<td><code>oversight.commands.failed</code></td>
+<td>Rejected Intents, logged for forensic audit</td>
+<td style="text-align: left;">DLQ &amp; WORM</td>
+<td style="text-align: left;">Write Path</td>
+</tr>
+<tr>
+<td><code>oversight.events.failover</code></td>
+<td>System generated failover events</td>
+<td style="text-align: left;">LangGraph Agent &amp; Bytewax</td>
+<td style="text-align: left;">Events</td>
+</tr>
+<tr>
+<td><code>oversight.audit.&gt;</code></td>
+<td>WORM Compliant forensic auditing</td>
+<td style="text-align: left;">TimescaleDB &amp; LGTM Stack</td>
+<td style="text-align: left;">Audit</td>
+</tr>
+</tbody>
+</table>
+<h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
+<p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
+standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
+that is appropriate for the high-velocity telemetry data in an OT environment. NATS JetStream offers lightweight
+connectivity, low latency, and built-in support for message persistence and replay. These are all critical for the 
+real-time monitoring and control requirements of the system. </p>
+<h3 id="tradeoff">Tradeoff<a class="headerlink" href="#tradeoff" title="Permanent link"></a></h3>
+<p>For this specific use case, the simplicity and performance of NATS JetStream make it the best fit for the high-throughput 
+time-series telemetry and command messaging needs of the system.</p>
+<p>I also considered Kafka, RabbitMQ, and Mosquitto as potential message brokers, but found them to be too complex and/or 
+expensive for this use case. One thing I found with RabbitMQ was that it is not designed for high-throughput time-series
+data, which is a hard no for the Oversight system. It also deletes messages once consumed, which is not suitable for 
+the command queue and audiits. Kafka, on the other hand, does handle high-throughput time-series data very well. However,
+it would not be cost-effective as a solo developer to use it and requires more setup, maintenance, and expertise.</p>
+<p>NATS JetStream provides me a simpler, more lightweight solution that still meets the performance and reliability 
+requirements of the Oversight system without introducing unnecessary complexity and cost.</p>
+<h3 id="justification">Justification<a class="headerlink" href="#justification" title="Permanent link"></a></h3>
+<p>The CQRS architecture of the Oversight system requires a message broker that can handle high-throughout and low-latency
+telemetry, but also must provide strong message persistence and replay capabilities for the command queue. Even though
+MQTT is used to ingest telemetry <em>upward</em> to the gateway, the internal command spine requires an immutable, replayable, 
+append-only log. NATS JetStream acts as a distributed log that guarantees WORM (Write Once, Read Many) compliance. If 
+the Southbound Driver crashes, it can reboot and request the exact stream sequence number it missed, ensuring 
+zero command loss. WORM compliance is critical for the command queue because every control intent must be traceable,
+auditable, and replayable for safety and compliance reasons. NATS JetStream provides this capability, while RabbitMQ
+does not. Kafka does provide a distributed log, but it is not cost effective for the Oversight system.</p>
+<h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
+<h3 id="phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration<a class="headerlink" href="#phase-1-broker-nats-jetsream-configuration" title="Permanent link"></a></h3>
+<ol>
+<li>Establish a NATS JetStream cluster on the Level 3.5 IDMZ dual-homed IPC using disk-backed storage. This is for 
+   at-least-once processing of messages.</li>
+<li>NATS Subjects:<ul>
+<li>Telemetry: <code>oversight.telemetry.&gt;</code> </li>
+<li>Commands: <code>oversight.commands.proposed</code>, <code>oversight.commands.validated</code>, <code>oversight.commands.executed</code>, 
+  <code>oversight.commands.failed</code></li>
+<li>Events &amp; Audits: <code>oversight.events.failover</code>, <code>oversight.audit.&gt;</code></li>
+</ul>
+</li>
+<li>Payload Standards: Sparkplug B JSON with standard metadata and integer quality bits (e.g., <code>192</code> for good)</li>
+<li>Configure consumer offset tracking and Write Once Read Many (WORM) retention policies to enforce the at-least-once 
+   processing of messages.</li>
+<li>Failure Modes:<ul>
+<li>If downstream consumer latency or backpressure is too high and exceeds safe execution limits, NATS will manage
+  buffer saturation with consumer pull-models and Linux Cgroups. Stream silence means the system will trigger the 
+  Zero-Tolerance Watchdog to inhibit AI writes.</li>
+</ul>
+</li>
+</ol>
+<h3 id="phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping<a class="headerlink" href="#phase-2-northbound-ingest-service-uns-mapping" title="Permanent link"></a></h3>
+<ol>
+<li>Deploy the Northbound Ingest Service to normalize raw industrial protocols into Sparkplug B JSON payloads. This
+   terminates the raw session data at the Level 3.5 IDMZ.</li>
+<li>Map raw vendor registers to the ISA-95 / IEC 62264 UNS namespace. The topic structure will be 
+   <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code>. This occurs via tag dictionary 
+   lookup / uns mapping where raw data is translated into the Sparkplug B payloads needed for the system.</li>
+<li>Enforce Sparkplug B JSON payloads to be validated by the Northbound Ingest Service. This will ensure that the 
+   payloads are in the correct format and contain the necessary metadata, like integer quality bits (e.g., <code>192</code> for 
+   good) before publishing to <code>oversight.telemetry.&gt;</code>.</li>
+</ol>
+<h3 id="phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)<a class="headerlink" href="#phase-3-stream-consumer-integration-read-path" title="Permanent link"></a></h3>
+<ol>
+<li>Connect the Bytewax Streaming Engine to the NATS JetStream telemetry stream (<code>oversight.telemetry.&gt;</code>). The Bytewax
+   streaming engine is the consumer group subscribing to the telemetry topic. </li>
+<li>Route Bytewax outputs concurrently to the Redis Hot Cache and TimescaleDB telemetry historian.</li>
+</ol>
+<h3 id="phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)<a class="headerlink" href="#phase-4-command-queue-integration-write-path" title="Permanent link"></a></h3>
+<ol>
+<li>Connect the Level 1.5 Arbitrator to the NATS JetStream command queue (<code>oversight.commands.proposed</code>). The 
+   Arbitrator will enforce the Two-Key Multi-Factor Authentication (2-MFA) for the proposed commands.</li>
+<li>Connect the Level 1.5 Arbitrator to the Semantic Gatekeeper for physical bounds checking and the TPM 2.0 hardware 
+   signer for the signed commands. This routes the approved payloads to <code>oversight.commands.validated</code>.</li>
+<li>Connect the Southbound Driver to <code>oversight.commands.validated</code> for execution. The Southbound Driver publishes the
+   completion status to <code>oversight.commands.executed</code> or <code>oversight.commands.failed</code>.</li>
+</ol>
+<h3 id="phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing<a class="headerlink" href="#phase-5-validation-stress-and-fallback-testing" title="Permanent link"></a></h3>
+<ol>
+<li>Execute integration tests to verify that the stream publishes, the subscriber consumes the messages, and consumer
+   group rebalancing is tracked correctly.</li>
+<li>Simulate network partitions, stream silence, and sequence number skips to test the Zero-Tolerance Watchdog, which 
+   should inhibit AI writes and trigger safe-state logging.</li>
+<li>Conduct backpressure testing using Linux Cgroups and NATS pull-consumer models, which prevents stream saturation from
+   degrading Level 1 deterministic control loops.</li>
+</ol>
+<h2 id="risks-security-considerations">Risks &amp; Security Considerations<a class="headerlink" href="#risks-security-considerations" title="Permanent link"></a></h2>
+<ol>
+<li><strong>Security</strong>: The system is designed to operate within a Level 3.5 IDMZ/Edge environment. All data is encrypted at 
+   rest and in transit. The system uses TPM 2.0 for hardware-based key storage and signing of commands. All commands 
+   are validated and authenticated before execution.</li>
+<li><strong>Risks</strong>: </li>
+<li><strong>Single Point of Failure</strong>: The NATS JetStream broker is a critical component. If it fails, telemetry and 
+     command messaging will be disrupted. <ul>
+<li>To mitigate, use a clustered NATS deployment with failover.</li>
+</ul>
+</li>
+<li><strong>Latency</strong>: High latency in the command queue could lead to delayed execution of control intents.<ul>
+<li>To mitigate, monitor latency and implement backpressure handling.</li>
+</ul>
+</li>
+<li><strong>Data Loss</strong>: In the event of a crash, there is a risk of losing unprocessed messages. <ul>
+<li>To mitigate, use persistent storage and replay capabilities of NATS JetStream.</li>
+</ul>
+</li>
+</ol>
+<h2 id="impact-and-benefits">Impact and Benefits<a class="headerlink" href="#impact-and-benefits" title="Permanent link"></a></h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Impact</th>
+<th>Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardware Abstraction</td>
+<td>Decouples AI Agent and UI Dashboards from the Level 1 register addresses</td>
+<td>Allows the system to be hardware and vender-agnostic. It remains horizontally scalable across multiple-brand industrial plants without rewriting code.</td>
+</tr>
+<tr>
+<td>CQRS Isolation</td>
+<td>Strict separation of high-velocity telemetry (read path) from the command path (write path)</td>
+<td>Prevents compromising physical safety and deterministic timing of the Level 1 control loops.</td>
+</tr>
+<tr>
+<td>Forensic Traceability</td>
+<td>Provides and append-only, WORM-compliant log for every telemetry frame and command transition</td>
+<td>Full auditability and step-by-step reasoning replays of every command and telemetry frame for ISA 18.2, NERC CIP, and EPA regulatory compliance.</td>
+</tr>
+<tr>
+<td>Sub-50ms Latency Target</td>
+<td>Ingests and normalizes telemetry into the NATS UNS within a sub-50ms latency target</td>
+<td>Prevents network jitter or blocking cyclic scan loops during delivery of high-velocity telemetry processing.</td>
+</tr>
+<tr>
+<td>Edge Autonomy</td>
+<td>Broker, stream engine, and command queues are inside the Level 3.5 IDMZ/Edge.</td>
+<td>Maintains full autonomy and safe-state control even during the loss of internet connectivity.</td>
+</tr>
+<tr>
+<td>Zero Command Loss</td>
+<td>Stream sequence offsets are replaceable to allow the recovery of drivers to reboot and request missed messages.</td>
+<td>Prevents command dropping during unexpected service outages or IPC power cycles.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link"></a></h2>
+<p>By choosing NATS JetStream as the message broker, I have achieved the following:</p>
+<ul>
+<li>Fulfills the strict CQRS architecture requirements</li>
+<li>Provides hardware abstraction by keeping the AI Agent from knowing the physical register addresses. This also allows
+  for the system to be hardware-agnostic.</li>
+<li>NATS JetStream is lightweight and provides an immutable, append-only distributed log. This allows for every 
+  telemetry frame and proposed command to be traceable and forensically auditable.</li>
+<li>The Level 3.5 IDMZ/Edge maintains full autonomy and safe-state control even during loss of internet connectivity. </li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../audit_logging/" class="btn btn-neutral float-left" title="Audit Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../glossary/" class="btn btn-neutral float-right" title="Glossary">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+      <span><a href="../audit_logging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

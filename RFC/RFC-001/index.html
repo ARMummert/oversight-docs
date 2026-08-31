@@ -416,20 +416,24 @@ pushes it through the Southbound Firewall.</p>
 </ol>
 <h3 id="command-subject-contract">Command Subject Contract<a class="headerlink" href="#command-subject-contract" title="Permanent link"></a></h3>
 <p><code>oversight.commands.&gt;</code> is the subject for all proposed commands.</p>
-<p><strong>Examples</strong>:
-1. <code>oversight.commands.proposed</code>
-2. <code>oversight.commands.validated</code>
-3. <code>oversight.commands.executed</code>
-4. <code>oversight.commands.failed</code>
-5. <code>oversight.commands.rejected</code></p>
+<p><strong>Examples</strong>:</p>
+<ol>
+<li><code>oversight.commands.proposed</code></li>
+<li><code>oversight.commands.validated</code></li>
+<li><code>oversight.commands.executed</code></li>
+<li><code>oversight.commands.failed</code></li>
+<li><code>oversight.commands.rejected</code></li>
+</ol>
 <h3 id="audit-subject-contract">Audit Subject Contract<a class="headerlink" href="#audit-subject-contract" title="Permanent link"></a></h3>
 <p><code>oversight.audit.&gt;</code> is the subject for all telemetry and command history.</p>
-<p><strong>Examples</strong>:
-1. <code>oversight.audit.telemetry</code>
-2. <code>oversight.audit.commands</code>
-3. <code>oversight.audit.events</code>
-4. <code>oversight.audit.failover</code>
-5. <code>oversight.audit.manual_override</code></p>
+<p><strong>Examples</strong>:</p>
+<ol>
+<li><code>oversight.audit.telemetry</code></li>
+<li><code>oversight.audit.commands</code></li>
+<li><code>oversight.audit.events</code></li>
+<li><code>oversight.audit.failover</code></li>
+<li><code>oversight.audit.manual_override</code></li>
+</ol>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 

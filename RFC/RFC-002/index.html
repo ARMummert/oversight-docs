@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RFC-002 - Control Authority Model &amp; Level 1.5 Arbitration - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RFC-002 - Control Authority Model \u0026amp; Level 1.5 Arbitration";
+        var mkdocs_page_input_path = "RFC/RFC-002.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture Overview</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-container-diagram.png">System Architecture Container View</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >RFCs</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../RFC-001/">RFC-001: Unified Namespace & Messaging Architecture</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">RFC-002 - Control Authority Model &amp; Level 1.5 Arbitration</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rfc-002-control-authority-model-level-15-arbitration">RFC-002 - Control Authority Model &amp; Level 1.5 Arbitration<a class="headerlink" href="#rfc-002-control-authority-model-level-15-arbitration" title="Permanent link"></a></h1>
+<p><strong>Author</strong>: Amy Mummert</p>
+<p><strong>Status</strong>: Proposed</p>
+<p><strong>Components</strong>: Level 1.5 Arbitrator, Semantic Gatekeeper, TPM 2.0 Hardware Signer, Two-Key Protocol, Global Manual Hold</p>
+<h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
+<p>This RFC outlines the control authority model and level 1.5 arbitrator service. The system must be able to support 
+multiple levels of control authority. This layer is a zero-trust policy enforcement layer. It sits between the messaging
+layer (Level 3.5 IDMZ) and the deterministic control layer (Level 1). The arbitrator prevents unvalidated, out-of-bounds,
+or unauthorized write commands from reaching the physical plant assets.</p>
+<h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
+<p>The physical plant floor requires strict determinism even though the agent and the stream processor operate 
+asynchronously. If we were to let the agent or an unverified client write access directly to the physical plant 
+floor, we could create a catastrophic failure. These include adversarial prompt injection, RAG poisoning, or runtime 
+model hallucinations.</p>
+<p>In addition, high-impact interventions require multi-person approval to prevent operator error under pressure. The 
+system handles this by enforcing the Control Authority Model, which decouples the physical command execution from the 
+AI reasoning execution.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The core security problem here is not letting any software anomaly or model hallucination to ever bypass the MFA 
+human authorization or the hardware cryptographic validation before touching the physical plant hardware.</p>
+</div>
+<h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
+<p>The proposed solution is to implement a Level 1.5 Arbitrator service as a zero-trust policy enforcement layer that sits
+between the messaging layer (Level 3.5 IDMZ) and the deterministic control layer (Level 1). This architecture implements
+safe-state isolation buffers, dual-auth cryptographic validation, semantic range checking, and hardware-rooted TPM 2.0
+signatures.</p>
+<h3 id="control-authority-model">Control Authority Model<a class="headerlink" href="#control-authority-model" title="Permanent link"></a></h3>
+<ol>
+<li>The Level 1.5 Arbitrator receives a commmand from the NATS command queue (<code>oversight.commands.proposed</code>) it consumes
+   the proposal and places it in an isolated stateful memory buffer. It then pauses execution and waits for validation.</li>
+<li>For high-impact changes, the arbitrator enforces the Two-Key Protocol. This protocol requires two distinct approvals 
+   (e.g., Operator and Plant Manager) before the command is executed. <ul>
+<li>The primary token validates the active field operator&rsquo;s 8-hour shift RS256-signed JWT.</li>
+<li>The secondary token validates the plant manager&rsquo;s 8-hour shift RS256-signed JWT. This requires an independent
+  <code>X-Secondary-Authorization</code> header containing a supervisor or safety lead claim.</li>
+<li>The gateway will verify that <code>primary_jwt.sub != secondary_jwt.sub</code> to prove two-person integrity.</li>
+</ul>
+</li>
+</ol>
+<h3 id="semantic-gatekeeper">Semantic Gatekeeper<a class="headerlink" href="#semantic-gatekeeper" title="Permanent link"></a></h3>
+<p>When the control authority model is authenticated, the payload is sent to the semantic gatekeeper. This component audits
+the intent against the following:
+- The Forbidden Register Lists 
+- Physical Constraints such as P&amp;ID operating limits and active interlock states.</p>
+<h3 id="hardware-root-of-trust-tpm-20">Hardware Root of Trust (TPM 2.0)<a class="headerlink" href="#hardware-root-of-trust-tpm-20" title="Permanent link"></a></h3>
+<p>If the semantic gatekeeper passes, the payload is handed to the Cryptographic Notary Buffers, which then invoke the 
+local TPM 2.0 hardware to sign the payload with a root-of-trust signature. If a payload is modified or lacks this
+signature, it is immediately destroyed.</p>
+<h2 id="tradeoffs-and-alternatives-considered">Tradeoffs and Alternatives Considered<a class="headerlink" href="#tradeoffs-and-alternatives-considered" title="Permanent link"></a></h2>
+<p>I chose to use the Level 1.5 Arbitrator service because of its zero-trust nature. </p>
+<h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
+<h3 id="phase-1-arbitrator-state-buffer-queue-integration">Phase 1: Arbitrator State Buffer &amp; Queue Integration<a class="headerlink" href="#phase-1-arbitrator-state-buffer-queue-integration" title="Permanent link"></a></h3>
+<ol>
+<li>Create the Level 1.5 Arbitrator service as a stateless microservice that consumes the <code>oversight.commands.proposed</code> NATS queue. 
+   This should be established within the Level 3.5 IDMZ.
+2.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

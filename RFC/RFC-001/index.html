@@ -72,13 +72,31 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#problem-statement">Problem Statement</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#architectural-design">Architectural Design</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#responsibility-boundary">Responsibility Boundary</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#the-write-path">The Write Path</a>
     </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model</a>
+        <ul>
     <li class="toctree-l4"><a class="reference internal" href="#iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#format">Format</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#uns-elements-should">UNS elements should:</a>
     </li>
         </ul>
     </li>
@@ -87,8 +105,6 @@
     <li class="toctree-l3"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#tradeoff">Tradeoff</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#justification">Justification</a>
     </li>
         </ul>
     </li>
@@ -111,6 +127,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#impact-and-benefits">Impact and Benefits</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#references">References</a>
     </li>
     </ul>
                 </li>
@@ -147,34 +165,151 @@
                 <h1 id="rfc-001-unified-namespace-messaging-architecture">RFC-001 - Unified Namespace &amp; Messaging Architecture<a class="headerlink" href="#rfc-001-unified-namespace-messaging-architecture" title="Permanent link"></a></h1>
 <p><strong>Author</strong>: Amy Mummert</p>
 <p><strong>Status</strong>: Proposed</p>
+<p><strong>Date</strong>: 2026-08-31</p>
+<p><strong>Target Components</strong>: NATS JetStream &amp; Unified Namespace</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
-<p>This RFC outlines the proposed creation of a unified namespace and messaging architecture combined with MQTT/Sparkplub B
-normalization. This system must decouple high-level AI reasoning and UI Dashboards from hardcoded physical register 
-addresses without compromising plant safety.</p>
+<p>This RFC outlines the proposed creation of a unified namespace and messaging architecture for Oversight ICS. 
+The Unified Namespace (UNS) provides event-driven communication that connects telemetry to AI Agent orchestration, 
+streaming analytics, safety validation services, and the Southbound Driver and uses NATS JetStream as the core message 
+broker.</p>
+<p>The UNS provides a single source of truth and an event layer connecting Telemetry producers, streaming analytics, 
+cognitive reasoning, safety validation, and the Southbound Driver. It also provides hardware abstraction by providing 
+downstream services with semantic telemetry data that is not tied to any specific register addresses. It connects the
+data from the control assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one
+standardized event stream. A UNS can also speed up Industrial Internet of Things (IIoT) and edge systems, by providing
+a single source of truth for telemetry and commands, leading to a more efficient and effective system.</p>
+<p>The system bridges deterministic OT systems with modern AI reasoning and event-driven analytics while maintaining
+zero-trust safety by implementing strict separation between the following:</p>
+<ol>
+<li>Telemetry Ingestion </li>
+<li>Telemetry Normalization</li>
+<li>Telemetry Transport</li>
+<li>Streaming Analytics</li>
+<li>Cognitive Reasoning</li>
+<li>Safety Validation</li>
+<li>Physical Execution</li>
+</ol>
+<p>The Northbound Ingest Service terminates and normalizes the raw industrial protocols, while the Southbound Driver
+is the only component authorized to communicate with control assets. The UNS therefore provides an event layer 
+between these components.</p>
+<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into Sparkplug B JSON payloads and 
+extracts raw source data.
+<strong>UNS Normalization</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
+<strong>NATS JetStream</strong>: Transports, persists, routes, and replays telemetry and commands.
+<strong>Downstream Consumers</strong>: Processes the events without needing to know the original protocol or physical register 
+addresses.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
+<p>Industrial Control Systems (ICS) expose data through several protocols, including Modbus, OPC_UA, and Ethernet/IP. 
+These protocols are often vendor-specific and expose physical register addresses.</p>
 <p>The Oversight system must be able to ingest high-throughput telemetry (often exceeding 10,000 points per second) from 
-the deterministic control layers (0–2). The high-throughput telemetry data must be normalized into a standard format so 
-that the AI Agent does not know the physical register addresses. If the system were to route raw telemetry to the AI 
-Agent, there becomes an unacceptable safety risk. To achieve predictive orchestration without violating the zero-trust 
-safety of the system, it must be able to securely send legacy protocols (e.g., Modbus, OPC_UA, Ethernet/IP) to the AI 
-Agent without exposing the physical register addresses. </p>
-<p>Legacy OT systems don&rsquo;t reason about their own health, they rely on hardware heartbeats to determine if the system is 
-healthy and only report raw data. If traditional synchronous polling is used, the system introduces network jitter. This
-results in the AI Agent misinterpreting the software lag as actual mechanical process drift. In this case, the system 
-will trigger false-positives failover commands. An unhandled software exception or latency spike within the cognitive
-layer can block deterministic scan loops, this would potentially lead to physical destruction or catastrophic safety 
-events.</p>
+the deterministic control layers (0–2). If downstream consumers knew the specific physical register addresses or 
+vendor-specific protocols, it would create several problems:</p>
+<ul>
+<li>Vendor-specific dependencies</li>
+<li>Physical Register Address Exposure</li>
+<li>Challenging Horizontal Scaling</li>
+<li>Tight Coupling Between AI Agent and Level 1 Control Loops</li>
+<li>Increased Safety Risk</li>
+<li>Difficult Replay and Forensic Auditing</li>
+<li>Increased Sensitivity to Network Latency and Polling Jitter</li>
+</ul>
+<p>Oversight requires a messaging architecture that supports the following:</p>
+<ol>
+<li>High-throughput telemetry (10,000 points per second)</li>
+<li>Low-latency telemetry ingestion and normalization (sub-50ms)</li>
+<li>Durable event storage</li>
+<li>Replayable telemetry and command history</li>
+<li>Subject-Based Routing</li>
+<li>Hardware Abstraction</li>
+<li>Schema Versioning</li>
+<li>Traceability and Forensic Auditing</li>
+<li>Zero-Command Loss</li>
+<li>Controlled access to event subjects</li>
+</ol>
+<p>To achieve this, Oversight uses the Unified Namespace (UNS) to abstract the physical register addresses and 
+vendor-specific protocols. </p>
+<h2 id="architectural-design">Architectural Design<a class="headerlink" href="#architectural-design" title="Permanent link"></a></h2>
+<p>Oversight will use NATS JetStream as the messaging component for the Unified Namespace. The data flow is as follows:</p>
+<pre><code class="language-text">Source Protocol → Northbound Ingest → UNS Normalization → NATS JetStream → Downstream Consumers
+</code></pre>
+<h3 id="responsibility-boundary">Responsibility Boundary<a class="headerlink" href="#responsibility-boundary" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th>Responsibility</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Define semantic hierarchy</td>
+<td>UNS</td>
+</tr>
+<tr>
+<td>Define event structure</td>
+<td>UNS</td>
+</tr>
+<tr>
+<td>Define subject naming conventions</td>
+<td>UNS</td>
+</tr>
+<tr>
+<td>Define schema/version contracts</td>
+<td>UNS</td>
+</tr>
+<tr>
+<td>Map source information to meaning</td>
+<td>UNS normalization contract</td>
+</tr>
+<tr>
+<td>Transport events</td>
+<td>NATS JetStream</td>
+</tr>
+<tr>
+<td>Route events by subject</td>
+<td>NATS JetStream</td>
+</tr>
+<tr>
+<td>Persist configured streams</td>
+<td>NATS JetStream</td>
+</tr>
+<tr>
+<td>Acknowledge messages</td>
+<td>NATS JetStream consumers</td>
+</tr>
+<tr>
+<td>Redeliver unacknowledged messages</td>
+<td>NATS JetStream</td>
+</tr>
+<tr>
+<td>Replay retained events</td>
+<td>NATS JetStream</td>
+</tr>
+<tr>
+<td>Maintain consumer state</td>
+<td>NATS JetStream</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>
-<p>The core problem is moving data without introducing artificial time-series jitter that would ruin the streaming 
-statistical algorithms.</p>
+<p>The core problem is ingesting telemetry without exposing the physical register addresses to the AI Agent. Even though
+the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS defines what the 
+data means and NATS transports that data.</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
-<p>The proposed solution is to use a <strong>Unified Namespace</strong> using NATS JetStream to standardize the telemetry into a 
-common format. The system will use MQTT/Sparkplug B to normalize the telemetry. This architecture will allow the AI
-Agent to reason about the system health and orchestrate failovers without knowing the physical register addresses.</p>
-<p>Oversight is designed with a strict <strong>CQRS (Command Query Responsibility Segregation)</strong> architecture. The system is 
-divided into two primary data flows within the Level 3.5 IDMZ:</p>
+<p>The proposed solution is to use NATS JetStream as the internal messaging component for the Unified Namespace.
+The benefits of this approach are:</p>
+<ol>
+<li>Easy lookups and routing by subject.</li>
+<li>Naming conventions and hierarchical subjects are easy to integrate with data across different devices and vendors.</li>
+<li>Using tools like MQTT and Sparkplug B to make data ingestion and normalization easier.</li>
+<li>Do not need to know the physical register addresses or vendor-specific protocols.</li>
+<li>A single source of truth for telemetry and commands.</li>
+<li>Provides a WORM-compliant, append-only log for every telemetry frame and command transition.</li>
+<li>Reduced Complexity and Cost.</li>
+</ol>
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <h3 id="the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)<a class="headerlink" href="#the-read-path-ingestion-observation" title="Permanent link"></a></h3>
 <p>Raw industrial protocols are ingested and normalized by the Northbound Ingest Service into Sparkplug B JSON payloads 
 containing metadata and integer quality bits (e.g., 192 for &ldquo;Good&rdquo;). They are strictly terminated by the Northbound 
@@ -187,9 +322,28 @@ historian (for the 90-day warm tier) and the Redis Hot Cache (for sub-second loo
 commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. 
 The fully notarized commands are then handed to the Southbound Driver (translates the payload into raw wire data) and 
 pushes it through the Southbound Firewall.</p>
+<h2 id="unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model<a class="headerlink" href="#unified-namespace-uns-information-model" title="Permanent link"></a></h2>
 <h3 id="iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure<a class="headerlink" href="#iec-62264-hierarchical-topic-structure" title="Permanent link"></a></h3>
 <p>Oversight strictly follows the IEC 62264 enterprise standard for topic structure with NATS dot notation to route data.</p>
-<p><strong>Example</strong>: <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h3 id="format">Format<a class="headerlink" href="#format" title="Permanent link"></a></h3>
+<p><code>Enterprise.Site.Area.Line.Tag</code></p>
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link"></a></h3>
+<p><code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h3 id="uns-elements-should">UNS elements should:<a class="headerlink" href="#uns-elements-should" title="Permanent link"></a></h3>
+<ul>
+<li>Be deterministic</li>
+<li>Be unique within their hierarchy</li>
+<li>Use consistent naming conventions</li>
+<li>Avoid physical protocol addresses or vendor-specific protocols</li>
+<li>Be versioned and schema-compliant</li>
+<li>Be traceable and auditable</li>
+<li>Be immutable and replayable</li>
+<li>Be hardware-agnostic</li>
+<li>Be horizontally scalable</li>
+<li>Be resilient to network partitions, service address, network jitter, network latency, polling jitter, packet loss, 
+  and blocking cyclic scan loops</li>
+<li>Remain stable when the source protocol changes</li>
+</ul>
 <h2 id="nats-subject-contracts">NATS Subject Contracts<a class="headerlink" href="#nats-subject-contracts" title="Permanent link"></a></h2>
 <p>To enforce strict routing between the Read and Write paths, the broker will enforce the following contracts/namespaces:</p>
 <table>
@@ -204,13 +358,13 @@ pushes it through the Southbound Firewall.</p>
 <tbody>
 <tr>
 <td><code>oversight.telemetry.&gt;</code></td>
-<td>Sparkplug B normalized sensor data</td>
-<td style="text-align: left;">Northbound Ingest</td>
+<td>UNS telemetry events normalized from various sources</td>
+<td style="text-align: left;">Northbound Ingest / UNS</td>
 <td style="text-align: left;">Read Path</td>
 </tr>
 <tr>
 <td><code>oversight.commands.proposed</code></td>
-<td>AI or Operator intents awaiting validation</td>
+<td>AI or Operator intents awaiting safety validation</td>
 <td style="text-align: left;">Level 1.5 Arbitrator</td>
 <td style="text-align: left;">Write Path</td>
 </tr>
@@ -222,14 +376,14 @@ pushes it through the Southbound Firewall.</p>
 </tr>
 <tr>
 <td><code>oversight.commands.executed</code></td>
-<td>Commands successfully written to field assets</td>
+<td>Commands executed by the Southbound Driver</td>
 <td style="text-align: left;">Southbound Driver</td>
 <td style="text-align: left;">Write Path</td>
 </tr>
 <tr>
 <td><code>oversight.commands.failed</code></td>
 <td>Rejected Intents, logged for forensic audit</td>
-<td style="text-align: left;">DLQ &amp; WORM</td>
+<td style="text-align: left;">DLQ &amp; WORM &amp; Southbound failure handling</td>
 <td style="text-align: left;">Write Path</td>
 </tr>
 <tr>
@@ -243,6 +397,12 @@ pushes it through the Southbound Firewall.</p>
 <td>WORM Compliant forensic auditing</td>
 <td style="text-align: left;">TimescaleDB &amp; LGTM Stack</td>
 <td style="text-align: left;">Audit</td>
+</tr>
+<tr>
+<td><code>oversight.health.&gt;</code></td>
+<td>Health and operational status events for Oversight services</td>
+<td style="text-align: left;">Platform Service Monitoring</td>
+<td style="text-align: left;">Health</td>
 </tr>
 </tbody>
 </table>
@@ -262,15 +422,6 @@ the command queue and audiits. Kafka, on the other hand, does handle high-throug
 it would not be cost-effective as a solo developer to use it and requires more setup, maintenance, and expertise.</p>
 <p>NATS JetStream provides me a simpler, more lightweight solution that still meets the performance and reliability 
 requirements of the Oversight system without introducing unnecessary complexity and cost.</p>
-<h3 id="justification">Justification<a class="headerlink" href="#justification" title="Permanent link"></a></h3>
-<p>The CQRS architecture of the Oversight system requires a message broker that can handle high-throughout and low-latency
-telemetry, but also must provide strong message persistence and replay capabilities for the command queue. Even though
-MQTT is used to ingest telemetry <em>upward</em> to the gateway, the internal command spine requires an immutable, replayable, 
-append-only log. NATS JetStream acts as a distributed log that guarantees WORM (Write Once, Read Many) compliance. If 
-the Southbound Driver crashes, it can reboot and request the exact stream sequence number it missed, ensuring 
-zero command loss. WORM compliance is critical for the command queue because every control intent must be traceable,
-auditable, and replayable for safety and compliance reasons. NATS JetStream provides this capability, while RabbitMQ
-does not. Kafka does provide a distributed log, but it is not cost effective for the Oversight system.</p>
 <h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
 <h3 id="phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration<a class="headerlink" href="#phase-1-broker-nats-jetsream-configuration" title="Permanent link"></a></h3>
 <ol>
@@ -400,6 +551,11 @@ does not. Kafka does provide a distributed log, but it is not cost effective for
   telemetry frame and proposed command to be traceable and forensically auditable.</li>
 <li>The Level 3.5 IDMZ/Edge maintains full autonomy and safe-state control even during loss of internet connectivity. </li>
 </ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
+<p><a href="https://www.synadia.com/blog/nats-and-kafka-compared">NATS and Kafka Compared</a></p>
+<p><a href="https://www.nozominetworks.com/compliance/isa-iec-62443-standards?qgad=797086865745&amp;qgterm=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_term=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_campaign=SEM_GGL_AMER_NOZOMI_NB_COMPLIANCE&amp;utm_source=google&amp;utm_medium=cpc&amp;hsa_acc=2658488350&amp;hsa_cam=23556465977&amp;hsa_grp=193779575672&amp;hsa_ad=797086865745&amp;hsa_src=g&amp;hsa_tgt=kwd-323614820138&amp;hsa_kw=security%20for%20industrial%20automation%20and%20control%20systems&amp;hsa_mt=p&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gad_source=1&amp;gad_campaignid=23556465977&amp;gbraid=0AAAAAo_WPzj_41QdOJMyn3wGXF51H8AcC&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWpR3uEKLzgEUnxXJVJi5IOPsydtNZA3qL2cje1qbhEIzf_kvCZDaXxoC9IoQAvD_BwE">Applying the ISA/IEC 62443 Standards for IACS Security</a></p>
+<p><a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS</a></p>
+<p><a href="https://kalypso.com/viewpoints/entry/unified-namespace-and-data-management">Unified Namespace and Data Management</a></p>
               
             </div>
           </div><footer>

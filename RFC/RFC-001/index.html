@@ -101,6 +101,16 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-subject-contracts">NATS Subject Contracts</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#telemetry-subject-contract">Telemetry Subject Contract</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#event-subject-contract">Event Subject Contract</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#command-subject-contract">Command Subject Contract</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#audit-subject-contract">Audit Subject Contract</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
         <ul>
@@ -358,37 +368,19 @@ pushes it through the Southbound Firewall.</p>
 <tbody>
 <tr>
 <td><code>oversight.telemetry.&gt;</code></td>
-<td>UNS telemetry events normalized from various sources</td>
+<td>UNS telemetry events</td>
 <td style="text-align: left;">Northbound Ingest / UNS</td>
 <td style="text-align: left;">Read Path</td>
 </tr>
 <tr>
-<td><code>oversight.commands.proposed</code></td>
-<td>AI or Operator intents awaiting safety validation</td>
+<td><code>oversight.commands.&gt;</code></td>
+<td>Command events</td>
 <td style="text-align: left;">Level 1.5 Arbitrator</td>
 <td style="text-align: left;">Write Path</td>
 </tr>
 <tr>
-<td><code>oversight.commands.validated</code></td>
-<td>Commands that passed the Semantic Gatekeeper &amp; TPM 2.0</td>
-<td style="text-align: left;">Semantic Gatekeeper &amp; TPM 2.0</td>
-<td style="text-align: left;">Write Path</td>
-</tr>
-<tr>
-<td><code>oversight.commands.executed</code></td>
-<td>Commands executed by the Southbound Driver</td>
-<td style="text-align: left;">Southbound Driver</td>
-<td style="text-align: left;">Write Path</td>
-</tr>
-<tr>
-<td><code>oversight.commands.failed</code></td>
-<td>Rejected Intents, logged for forensic audit</td>
-<td style="text-align: left;">DLQ &amp; WORM &amp; Southbound failure handling</td>
-<td style="text-align: left;">Write Path</td>
-</tr>
-<tr>
-<td><code>oversight.events.failover</code></td>
-<td>System generated failover events</td>
+<td><code>oversight.events.&gt;</code></td>
+<td>System generated events</td>
 <td style="text-align: left;">LangGraph Agent &amp; Bytewax</td>
 <td style="text-align: left;">Events</td>
 </tr>
@@ -406,6 +398,38 @@ pushes it through the Southbound Firewall.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="telemetry-subject-contract">Telemetry Subject Contract<a class="headerlink" href="#telemetry-subject-contract" title="Permanent link"></a></h3>
+<p><code>oversight.telemetry.&gt;</code> is the subject for all telemetry events.</p>
+<p><strong>Wildcard</strong>: <code>oversight.telemetry.AcmeCorp.Longview_Plant</code>, <code>oversight.telemetry.AcmeCorp.Longview_Plant.WaterTreatment</code></p>
+<p><strong>The subject must not contain physical register addresses or vendor-specific protocols.</strong> </p>
+<h3 id="event-subject-contract">Event Subject Contract<a class="headerlink" href="#event-subject-contract" title="Permanent link"></a></h3>
+<p><code>oversight.events.&gt;</code> is the subject for all system-generated events.</p>
+<p><strong>Examples</strong>: </p>
+<ol>
+<li><code>oversight.events.failover</code></li>
+<li><code>oversight.events.alarm</code></li>
+<li><code>oversight.events.status</code></li>
+<li><code>oversight.events.drift</code></li>
+<li><code>oversight.events.loss_of_signal</code></li>
+<li><code>oversight.events.state_change</code></li>
+<li><code>oversight.events.manual_override</code></li>
+</ol>
+<h3 id="command-subject-contract">Command Subject Contract<a class="headerlink" href="#command-subject-contract" title="Permanent link"></a></h3>
+<p><code>oversight.commands.&gt;</code> is the subject for all proposed commands.</p>
+<p><strong>Examples</strong>:
+1. <code>oversight.commands.proposed</code>
+2. <code>oversight.commands.validated</code>
+3. <code>oversight.commands.executed</code>
+4. <code>oversight.commands.failed</code>
+5. <code>oversight.commands.rejected</code></p>
+<h3 id="audit-subject-contract">Audit Subject Contract<a class="headerlink" href="#audit-subject-contract" title="Permanent link"></a></h3>
+<p><code>oversight.audit.&gt;</code> is the subject for all telemetry and command history.</p>
+<p><strong>Examples</strong>:
+1. <code>oversight.audit.telemetry</code>
+2. <code>oversight.audit.commands</code>
+3. <code>oversight.audit.events</code>
+4. <code>oversight.audit.failover</code>
+5. <code>oversight.audit.manual_override</code></p>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 

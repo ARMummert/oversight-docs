@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>RFC-002 - Northbound Ingest Service &amp; Protocol Normalization - Oversight ICS</title>
+    <title>RFC-005 - Control Authority Model &amp; Level 1.5 Arbitration - Oversight ICS</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "RFC-002 - Northbound Ingest Service \u0026amp; Protocol Normalization";
-        var mkdocs_page_input_path = "RFC/RFC-002.md";
+        var mkdocs_page_name = "RFC-005 - Control Authority Model \u0026amp; Level 1.5 Arbitration";
+        var mkdocs_page_input_path = "RFC/RFC-005.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -85,7 +85,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">RFC-002 - Northbound Ingest Service &amp; Protocol Normalization</li>
+      <li class="breadcrumb-item active">RFC-005 - Control Authority Model &amp; Level 1.5 Arbitration</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -94,75 +94,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="rfc-002-northbound-ingest-service-protocol-normalization">RFC-002 - Northbound Ingest Service &amp; Protocol Normalization<a class="headerlink" href="#rfc-002-northbound-ingest-service-protocol-normalization" title="Permanent link"></a></h1>
+                <h1 id="rfc-005-control-authority-model-level-15-arbitration">RFC-005 - Control Authority Model &amp; Level 1.5 Arbitration<a class="headerlink" href="#rfc-005-control-authority-model-level-15-arbitration" title="Permanent link"></a></h1>
 <p><strong>Author</strong>: Amy Mummert</p>
 <p><strong>Status</strong>: Proposed</p>
-<p><strong>Date</strong>: 2026-08-31</p>
-<p><strong>Target Components</strong>: Northbound Ingest Service, Protocol Normalization</p>
+<p><strong>Components</strong>: Level 1.5 Arbitrator, Semantic Gatekeeper, TPM 2.0 Hardware Signer, Two-Key Protocol, Global Manual Hold</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
-<p>The Oversight ICS architecture relies on strict separation of the physical control layer (Levels 0-2) and the Level 3.5 
-demilitarized zone (Level 3.5). With this in mind, this RFC proposes a Northbound Ingest Service (NIS) with protocol
-normalization for secure protocol termination and semantic normalization.  </p>
-<p>Industrial protocols such as Modbus, OPC-UA, and Ethernet/IP expose raw memory addresses and data values. If downstream
-engines (like Bytewax) or cognitive services (like the LangGraph Agent) were allowed to consume this data directly, the
-system would become tightly coupled with specific hardware vendors and introduce a severe safety risk. </p>
-<p>This RFC defines the design and operation of the Northbound Ingest Service (NIS) and the protocol normalization layer.</p>
+<p>This RFC outlines the control authority model and level 1.5 arbitrator service. The system must be able to support 
+multiple levels of control authority. This layer is a zero-trust policy enforcement layer. It sits between the messaging
+layer (Level 3.5 IDMZ) and the deterministic control layer (Level 1). The arbitrator prevents unvalidated, out-of-bounds,
+or unauthorized write commands from reaching the physical plant assets.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
-<p>Oversight ICS is designed to ingest high-throughput telemetry exceeding 10,000 points per second from the 
-deterministic control layers. If Oversight directly ingested the raw industrial protocol data, it would create several
-critical safety risks/failures.</p>
-<ol>
-<li>Address Exposure – Risk of exposing raw memory addresses to downstream systems.</li>
-<li>Protocol Dissimilarity – Vendors may not support the same protocols. </li>
-<li>Direct Session Security Risk – Allowing continuous open polling sessions directly against field PLCs introduces 
-   network jitter, possible denial of service, and violations of IEC 62264 zone segregation.</li>
-</ol>
+<p>The physical plant floor requires strict determinism even though the agent and the stream processor operate 
+asynchronously. If we were to let the agent or an unverified client write access directly to the physical plant 
+floor, we could create a catastrophic failure. These include adversarial prompt injection, RAG poisoning, or runtime 
+model hallucinations.</p>
+<p>In addition, high-impact interventions require multi-person approval to prevent operator error under pressure. The 
+system handles this by enforcing the Control Authority Model, which decouples the physical command execution from the 
+AI reasoning execution.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The core security problem here is not letting any software anomaly or model hallucination to ever bypass the MFA 
+human authorization or the hardware cryptographic validation before touching the physical plant hardware.</p>
+</div>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
-<p>The proposed solution is to implement a Northbound Ingest Service (NIS) that ingests raw industrial protocol data, 
-normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetStream Unified Namespace (UNS).</p>
-<h2 id="data-flow-pipeline">Data Flow Pipeline<a class="headerlink" href="#data-flow-pipeline" title="Permanent link"></a></h2>
-<p><img alt="Northbound Ingest Data Flow" src="../../assets/northbound-ingest-data-flow.png" /></p>
-<h2 id="supported-protocols">Supported Protocols<a class="headerlink" href="#supported-protocols" title="Permanent link"></a></h2>
-<table>
-<thead>
-<tr>
-<th>Protocol</th>
-<th>Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Modbus TCP</td>
-<td>PLC/RTU Telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA TCP</td>
-<td>Industrial Telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA Pub/Sub</td>
-<td>Publish/Subscribe telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA Client/Server</td>
-<td>Request/Response telemetry</td>
-</tr>
-<tr>
-<td>Ethernet/IP</td>
-<td>Industrial Telemetry</td>
-</tr>
-<tr>
-<td>MQTT / Sparkplug-B</td>
-<td>Industrial MQTT Telemetry</td>
-</tr>
-</tbody>
-</table>
-<h2 id="protocol-adaptor-architecture">Protocol Adaptor Architecture<a class="headerlink" href="#protocol-adaptor-architecture" title="Permanent link"></a></h2>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
-<p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>
-<p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>
-<p><a href="https://corsosystems.com/posts/mqtt-and-sparkplug-b-simplified">MQTT &amp; Sparkplug B Simplified</a></p>
-<p><a href="https://industrialmonitordirect.com/blogs/knowledgebase/mqtt-sparkplug-b-industrial-protocol-implementation-guide?srsltid=AfmBOop21wGGJiYp_qelA8yivo-C-rEMWKF1mOpZXfg0NgeJvrmqQzJd">MQTT Sparkplug B Industrial Protocol Implementation Guide</a></p>
+<p>The proposed solution is to implement a Level 1.5 Arbitrator service as a zero-trust policy enforcement layer that sits
+between the messaging layer (Level 3.5 IDMZ) and the deterministic control layer (Level 1). This architecture implements
+safe-state isolation buffers, dual-auth cryptographic validation, semantic range checking, and hardware-rooted TPM 2.0
+signatures.</p>
+<h3 id="control-authority-model">Control Authority Model<a class="headerlink" href="#control-authority-model" title="Permanent link"></a></h3>
+<ol>
+<li>The Level 1.5 Arbitrator receives a commmand from the NATS command queue (<code>oversight.commands.proposed</code>) it consumes
+   the proposal and places it in an isolated stateful memory buffer. It then pauses execution and waits for validation.</li>
+<li>For high-impact changes, the arbitrator enforces the Two-Key Protocol. This protocol requires two distinct approvals 
+   (e.g., Operator and Plant Manager) before the command is executed. <ul>
+<li>The primary token validates the active field operator&rsquo;s 8-hour shift RS256-signed JWT.</li>
+<li>The secondary token validates the plant manager&rsquo;s 8-hour shift RS256-signed JWT. This requires an independent
+  <code>X-Secondary-Authorization</code> header containing a supervisor or safety lead claim.</li>
+<li>The gateway will verify that <code>primary_jwt.sub != secondary_jwt.sub</code> to prove two-person integrity.</li>
+</ul>
+</li>
+</ol>
+<h3 id="semantic-gatekeeper">Semantic Gatekeeper<a class="headerlink" href="#semantic-gatekeeper" title="Permanent link"></a></h3>
+<p>When the control authority model is authenticated, the payload is sent to the semantic gatekeeper. This component audits
+the intent against the following:
+- The Forbidden Register Lists 
+- Physical Constraints such as P&amp;ID operating limits and active interlock states.</p>
+<h3 id="hardware-root-of-trust-tpm-20">Hardware Root of Trust (TPM 2.0)<a class="headerlink" href="#hardware-root-of-trust-tpm-20" title="Permanent link"></a></h3>
+<p>If the semantic gatekeeper passes, the payload is handed to the Cryptographic Notary Buffers, which then invoke the 
+local TPM 2.0 hardware to sign the payload with a root-of-trust signature. If a payload is modified or lacks this
+signature, it is immediately destroyed.</p>
+<h2 id="tradeoffs-and-alternatives-considered">Tradeoffs and Alternatives Considered<a class="headerlink" href="#tradeoffs-and-alternatives-considered" title="Permanent link"></a></h2>
+<p>I chose to use the Level 1.5 Arbitrator service because of its zero-trust nature. </p>
+<h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
+<h3 id="phase-1-arbitrator-state-buffer-queue-integration">Phase 1: Arbitrator State Buffer &amp; Queue Integration<a class="headerlink" href="#phase-1-arbitrator-state-buffer-queue-integration" title="Permanent link"></a></h3>
+<ol>
+<li>Create the Level 1.5 Arbitrator service as a stateless microservice that consumes the <code>oversight.commands.proposed</code> NATS queue. 
+   This should be established within the Level 3.5 IDMZ.
+2.</li>
+</ol>
               
             </div>
           </div><footer>

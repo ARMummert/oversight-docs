@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Technical Deep Dive - Oversight ICS</title>
+    <title>Oversight ICS: Technical Deep Dive - Oversight ICS</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Technical Deep Dive";
+        var mkdocs_page_name = "Oversight ICS: Technical Deep Dive";
         var mkdocs_page_input_path = "oversight_ics_technical_deep_dive.md";
         var mkdocs_page_url = null;
       </script>
@@ -45,415 +45,7 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Technical Deep Dive</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#executive-summary">Executive Summary</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-problem-the-intelligence-gap-in-legacy-operational-technology">The Problem: The Intelligence Gap in Legacy Operational Technology</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-solution">The Solution</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-value">The Value</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#introduction-scope">Introduction &amp; Scope</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#in-scope">In-Scope</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#out-of-scope">Out-of-Scope</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#target-environment">Target Environment</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#overview-core-principles">Overview &amp; Core Principles</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#oversight-ics-is-built-on-these-non-negotiable-principles">Oversight ICS is built on these non-negotiable principles:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#safety-first">Safety-First</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#human-authority">Human Authority</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-execution">Deterministic Execution</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#full-auditability">Full Auditability</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#separation-of-readwrite-paths-cqrs">Separation of Read/Write Paths (CQRS)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#explainable-ai-xai">Explainable AI (XAI)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#primary-objectives">Primary Objectives</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#autonomous-supervision">Autonomous Supervision</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#predictive-intervention">Predictive Intervention</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#predictive-failover-engine">Predictive Failover Engine</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#event-driven-orchestration-via-cqrs">Event-Driven Orchestration via CQRS</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#reliability-vs-safety-decoupling">Reliability vs. Safety Decoupling</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#intelligent-recovery-local-first-rag">Intelligent Recovery &amp; Local First RAG</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-latency-gates">Deterministic Latency Gates</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#idempotent-command-enforcement">Idempotent Command Enforcement</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#first-out-sequence-detection">First-Out Sequence Detection</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#power-aware-diagnostics">Power Aware Diagnostics</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#physical-priority-arbitration">Physical Priority Arbitration</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#unified-namespace-architecture">Unified Namespace Architecture</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pessimistic-ui-confirmation">Pessimistic UI Confirmation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#eliminate-unplanned-downtime">Eliminate Unplanned Downtime</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#bridging-legacy-cognitive-architectures">Bridging Legacy &amp; Cognitive Architectures</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#enhance-operator-awareness">Enhance Operator Awareness</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#governed-learning">Governed Learning</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#industrial-safety-protocol">Industrial Safety Protocol</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#safety-regulatory-governance">Safety &amp; Regulatory Governance</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#controls-engineering-standards-matrix">Controls Engineering Standards Matrix</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#system-resilience-safety">System Resilience &amp; Safety</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-safety-buffers-pre-emptive-heartbeat">Deterministic Safety Buffers: Pre-emptive Heartbeat</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-safety-buffers">Deterministic Safety Buffers</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#sis-decoupling">SIS Decoupling</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#forensic-traceability-audit-linking">Forensic Traceability &amp; Audit Linking</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#control-integrity-hardwaresoftware-watchdog">Control Integrity: Hardware/Software Watchdog</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#localremote-bit-monitoring-mcc-priority">Local/Remote Bit Monitoring (MCC Priority)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#stateful-transitions-bumpless-transfer-logic">Stateful Transitions: Bumpless Transfer Logic</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-deadman-switch-ttl-logic">The Deadman Switch &amp; TTL Logic</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#oversight-ics-air-gap">Oversight ICS Air Gap</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-semantic-gatekeeper">The Semantic Gatekeeper</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fault-recovery-resiliency">Fault Recovery &amp; Resiliency</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fault-recovery-operator-safety-isa-182">Fault Recovery &amp; Operator Safety (ISA 18.2)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cold-start-integrity-state-reconstruction">Cold-Start Integrity &amp; State Reconstruction</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-cold-start-baseline-warm-up-period">The Cold-Start Baseline (Warm-up Period)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#operator-safety-cognitive-load-management">Operator Safety &amp; Cognitive Load Management</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#post-mortem-observability-explainable-ai">Post-Mortem Observability (Explainable AI)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pessimistic-confirmation-logic-closed-loop-ui">Pessimistic Confirmation Logic (Closed-Loop UI)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-failover-agentic-thought-deterministic-action">Deterministic Failover (Agentic Thought, Deterministic Action)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#system-latency-benchmarks-performance-metrics">System Latency Benchmarks (Performance Metrics)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#clock-synchronization-precision">Clock Synchronization &amp; Precision</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#scaling-via-subject-based-partitioning">Scaling via Subject-Based Partitioning</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#signal-conditioning-noise-reduction">Signal Conditioning &amp; Noise Reduction</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#resource-prioritization-determinism">Resource Prioritization &amp; Determinism</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#resource-governance-docker-cgroups">Resource Governance (Docker Cgroups)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#data-sovereignty-semantic-scrubbing">Data Sovereignty &amp; Semantic Scrubbing</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#state-persistence">State Persistence</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#dual-path-streaming-observation-execution">Dual-Path Streaming: Observation &amp; Execution</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#distributed-consistency-cp">Distributed Consistency (CP)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#example-the-industrial-mandate">Example: The Industrial Mandate:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#health-watchdogs">Health &amp; Watchdogs</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#heartbeat-health-monitoring">Heartbeat &amp; Health Monitoring</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#recursive-watchdog-strategy">Recursive Watchdog Strategy</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#the-bidirectional-heartbeat">The Bidirectional Heartbeat</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#technical-implementation-fail-to-deterministic">Technical Implementation: Fail-to-Deterministic</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#safety-buffer-logic">Safety Buffer Logic</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#decoupled-architecture-io-vs-reasoning">Decoupled Architecture (IO vs. Reasoning)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#failure-response-safe-state-trigger">Failure Response &amp; Safe-State Trigger</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#agent-architecture">Agent Architecture</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#architectural-mapping">Architectural Mapping</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#type-2-procedural">Type 2: Procedural</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#type-3-agentic">Type 3: Agentic</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#agent-persona-cognitive-guardrails">Agent Persona &amp; Cognitive Guardrails</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#system-prompt">System Prompt</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#agent-thought-process-logic-trace-example">Agent Thought Process (Logic Trace Example)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#1-pessimistic-validation">1. Pessimistic Validation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#conflict-resolution-the-truth-check-protocol">Conflict Resolution (The Truth-Check Protocol)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-voting-logic">The Voting Logic</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#2-risk-mitigation">2. Risk Mitigation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#3-procedural-adherence-local-first-rag-architecture">3. Procedural Adherence (Local First RAG Architecture)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#4-semantic-gatekeeping-hardware-notarization">4. Semantic Gatekeeping &amp; Hardware Notarization</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#architectural-alignment-the-6c-industrial-ai-framework">Architectural Alignment: The 6C Industrial AI Framework</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cognitive-orchestration-agentic-reasoning">Cognitive Orchestration (Agentic Reasoning):</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#agentic-reasoning-state-orchestration">Agentic Reasoning &amp; State Orchestration</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#learning-adaptation-governed">Learning &amp; Adaptation (Governed)</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#consciousness-loop">Consciousness Loop</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-consciousness-loop-self-reflective-learning">The Consciousness Loop: Self-Reflective Learning</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#control-loop-integration-otit-handshake">Control Loop Integration (OT/IT Handshake)</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#level-35-implementation-protocol-termination">Level 3.5 Implementation: Protocol Termination</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#race-condition-mitigation-field-priority-logic">Race Condition Mitigation: Field-Priority Logic</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#mathematical-foundation-windowed-z-score">Mathematical Foundation: Windowed $Z$-Score</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#z-score-algorithm">$Z$-score Algorithm:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#predictive-model-architecture-the-anomaly-engine">Predictive Model Architecture (The Anomaly Engine)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#threshold-logic">Threshold Logic:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#bytewax-state-recovery">Bytewax State Recovery:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#fmea-failure-mode-and-effects-analysis-deterministic-fail-safe-matrix">FMEA (Failure Mode and Effects Analysis) &amp; Deterministic Fail-Safe Matrix</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#fmea-matrix">FMEA Matrix</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-fail-safe-matrix">Deterministic Fail-Safe Matrix</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#governance-standard-operating-procedures-sops">Governance &amp; Standard Operating Procedures (SOPs)</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#governance-control">Governance &amp; Control</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#approval-requirements">Approval Requirements</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#safety-constraints">Safety Constraints</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#architecture-governance-standards">Architecture Governance &amp; Standards</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#standards-compliance-industrial-alignment">Standards, Compliance &amp; Industrial Alignment</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#controls-engineering-standards-matrix_1">Controls Engineering Standards Matrix</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#software-engineering-standards">Software Engineering Standards</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#predictive-failure-cognitive-reliability-engineering">Predictive Failure &amp; Cognitive Reliability Engineering</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#cognitive-stability-kpis-key-performance-indicators">Cognitive Stability KPIs (Key Performance Indicators)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#behavior-modeling-the-cognitive-digital-twin">Behavior Modeling (The Cognitive Digital Twin)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#anomaly-detection-statistical-vs-semantic">Anomaly Detection (Statistical vs. Semantic)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#model-trust-explainable-ai-xai">Model Trust &amp; Explainable AI (XAI)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#proactive-failover-control-mechanisms">Proactive Failover &amp; Control Mechanisms</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#complex-event-processing-cep-sensor-fusion">Complex Event Processing (CEP) &amp; Sensor Fusion</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#automated-response-mechanisms">Automated Response Mechanisms</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#control-theoretic-adaptation">Control-Theoretic Adaptation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#safety-critical-constraints">Safety-Critical Constraints</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#evaluation-framework-success-metrics">Evaluation Framework &amp; Success Metrics</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#proof-of-value-and-performance-benchmarking">Proof of Value and Performance Benchmarking</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#target-performance">Target Performance</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#key-performance-indicators-kpis">Key Performance Indicators (KPIs)</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#mttr-a-mean-time-to-recover-agent">MTTR-A (Mean Time to Recover – Agent)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#nrr-normalized-recovery-ratio">NRR (Normalized Recovery Ratio)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pei-planning-efficiency-index">PEI (Planning Efficiency Index)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#prediction-precision-recall-cognitive-confusion-matrix">Prediction Precision &amp; Recall (Cognitive Confusion Matrix)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#performance-benchmarks-kpi-targets">Performance Benchmarks (KPI Targets)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#operational-reliability-safety-guardrails">Operational Reliability &amp; Safety Guardrails</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#io-fencing-split-brain-prevention">I/O Fencing &amp; Split Brain Prevention</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fault-tolerance-message-integrity">Fault Tolerance &amp; Message Integrity</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#key-security-protocols">Key Security Protocols:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#risk-mitigation-failover-strategy">Risk Mitigation &amp; Failover Strategy</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#observability-post-mortem-traceability">Observability &amp; Post-Mortem Traceability</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#data-engineering-observability-telemetry">Data Engineering, Observability, &amp; Telemetry</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#data-reliability-stack">Data Reliability Stack</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#observability-pipeline-the-black-box-recorder">Observability Pipeline (The &ldquo;Black Box&rdquo; Recorder)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#context-injection-the-rag-engine">Context Injection (The RAG Engine)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#implementation-validation-simulation">Implementation, Validation, &amp; Simulation</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#chaos-testing-resiliency-field-stress-test">Chaos Testing &amp; Resiliency (Field Stress Test)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#evaluation-frameworks-oversight-ai-reporting">Evaluation Frameworks (Oversight AI Reporting)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#monte-carlo-simulation-rul-what-if">Monte Carlo Simulation (RUL &amp; What-If)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#implementation-data-engineering">Implementation &amp; Data Engineering</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#the-event-driven-command-spine">The Event-Driven Command Spine</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#read-write-separation">Read / Write Separation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#io-fencing-determinism">I/O Fencing &amp; Determinism</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#implementing-a-digital-twin-simulation-environment">Implementing a Digital Twin Simulation Environment</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#competing-consumer-pattern">Competing Consumer Pattern</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#event-driven-architecture-reactive-design">Event-Driven Architecture &amp; Reactive Design</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#unidirectional-data-flow">Unidirectional Data Flow</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#retrieval-augmented-generation-rag">Retrieval-Augmented Generation (RAG)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#unified-namespace-uns-architecture">Unified Namespace (UNS) Architecture</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#architecture-benefits">Architecture Benefits</a>
-    </li>
-        </ul>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#operational-technology-ot-safety-logic">Operational Technology (OT) Safety Logic</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#store-and-forward-contextual-edges">Store-and-Forward Contextual Edges</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#twelve-factor-methodology-at-the-edge">Twelve-Factor Methodology at the Edge</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#data-source-mapping">Data Source Mapping:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#data-storage">Data Storage</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#database-compaction-tiered-retention">Database Compaction &amp; Tiered Retention</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#worm-storage-worm-spooling">WORM Storage &amp; WORM Spooling</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#worm-spooling-capacity-thresholds">WORM Spooling Capacity Thresholds</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#data-management-retention">Data Management &amp; Retention</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#deployment-operations-maintenance">Deployment, Operations, &amp; Maintenance</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#llmops-cicd-for-cognitive-reliability">LLMOps: CI/CD for Cognitive Reliability</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#state-management-rehydration">State Management &amp; Rehydration</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#edge-hardware-lifecycle">Edge Hardware &amp; Lifecycle</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#scaling-strategy">Scaling Strategy</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#scalable-reasoning">Scalable Reasoning</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#stakeholder-faqs">Stakeholder FAQs</a>
-    </li>
-    </ul>
-                  </li>
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../system-architecture-overview-and-tradeoffs/">System Architecture Overview</a>
@@ -493,8 +85,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation Suite</li>
-      <li class="breadcrumb-item active">Technical Deep Dive</li>
+      <li class="breadcrumb-item active">Oversight ICS: Technical Deep Dive</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -515,7 +106,7 @@ the Oversights ICS architecture or system design.</p>
 human-in-the-loop failover scenarios. It is implemented as a <strong>Safety-First, Human Governed</strong> AI-Driven Cognitive 
 Reliability Layer for <strong>Programmable Logic Controllers (PLCs), Remote Terminal Units(RTUs), and Rotating Equipment.</strong> 
 The Oversight system doesn&rsquo;t replace the primary control hardware, it just supervises it. It maintains a 
-<strong>Cognitive Digital Twin</strong> to monitor critical metrics, by streaming asset telemetry through <strong>NATS JetStream</strong> and
+<strong>Cognitive Digital Twin</strong> to monitor critical metrics by streaming asset telemetry through <strong>NATS JetStream</strong> and
 <strong>Bytewax</strong>. By streaming asset telemetry through the message broker and stream processor, Oversight maintains 
 continuous windowed $Z$-score drift analysis to detect logic deviations before they occur and trigger automated 
 failovers before physical hardware fails.</p>
@@ -572,8 +163,7 @@ Enterprise Cloud (Level 5) or Business Logistics (Level 4) to the Field Assets (
 <h3 id="in-scope">In-Scope<a class="headerlink" href="#in-scope" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
-<li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into a Sparkplug B-enabled Unified 
-    Namespace (UNS) via NATS JetStream.</li>
+<li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into Sparkplug B JSON payloads</li>
 <li><strong>Autonomous Reliability</strong>: Executes <strong>warm standby</strong> transitions when the primary hardware health degrades</li>
 <li><strong>Root Cause Analysis</strong>: Using <strong>RAG (Retrieval-Augmented Generation)</strong> to compare real-time anomalies against 
     technical manuals and historical incident logs.</li>
@@ -661,8 +251,8 @@ Segregation (CQRS) pattern to make the read and write paths decoupled, allowing 
 </ul>
 <h3 id="idempotent-command-enforcement">Idempotent Command Enforcement<a class="headerlink" href="#idempotent-command-enforcement" title="Permanent link"></a></h3>
 <ul>
-<li>Exactly-Once command execution using <strong>NATS JetStream</strong> consumer stream acknowledgements and unique transaction
-  tokens to prevent duplicate register writes or accidental command loops.</li>
+<li>At-Least-Once command delivery using <strong>NATS JetStream</strong> consumer stream acknowledgements and unique transaction ids
+  and idempotency controls to prevent duplicate register writes or accidental command loops.</li>
 </ul>
 <h3 id="first-out-sequence-detection">First-Out Sequence Detection<a class="headerlink" href="#first-out-sequence-detection" title="Permanent link"></a></h3>
 <ul>
@@ -681,11 +271,10 @@ Segregation (CQRS) pattern to make the read and write paths decoupled, allowing 
   will immediately <strong>Shed Load</strong> (stop all AI commands) the instant a physical human override is detected.</li>
 </ul>
 <h3 id="unified-namespace-architecture">Unified Namespace Architecture<a class="headerlink" href="#unified-namespace-architecture" title="Permanent link"></a></h3>
-<p>Implements a unified namespace (UNS) in a strict topic hierarchy (<code>Enterprise / Site / Area / Line / Asset / Tag</code>): </p>
+<p>Implements a unified namespace (UNS) in a strict topic hierarchy (<code>Enterprise.Site.Area.Line.Asset.Tag</code>): </p>
 <ul>
-<li><strong>NATS JetStream (UNS Backbone)</strong>: Acts as an append-only, <strong>WORM</strong> compliant telemetry stream and low-latency
-  southbound command pipeline. Normalized Sparkplug B payloads are published to the UNS for real-time monitoring and 
-  AI reasoning. </li>
+<li><strong>NATS JetStream (UNS Backbone)</strong>: Provides a distributed log that is WORM compliant. Normalized Sparkplug B payloads 
+  are published to the UNS for real-time monitoring and cognitive reasoning. </li>
 <li><strong>Bytewax Streaming Engine</strong>: Consumes the Sparkplug B normalized streams directly from the UNS, performing
   rolling windowed $Z$-score calculations to identify logic drift and mechanical wear patterns.</li>
 </ul>
@@ -738,7 +327,7 @@ verified by the process hardware.</p>
 <p>OverSight implements a <strong>Pre-emptive Heartbeat</strong> protocol to ensure the Southbound Driver never inadvertently triggers 
 a process trip due to computational latency or <strong>token storms</strong> in the Reasoning Agent.</p>
 <h3 id="deterministic-safety-buffers">Deterministic Safety Buffers<a class="headerlink" href="#deterministic-safety-buffers" title="Permanent link"></a></h3>
-<p>To resolve latency discrepancies between the <strong>NATS Command Spine (100 ms)</strong> and the <strong>Reasoning Agent (Variable)</strong>, 
+<p>To resolve latency discrepancies between the <strong>NATS Command Queue (100 ms)</strong> and the <strong>Reasoning Agent (Variable)</strong>, 
 Oversight implements a tiered heartbeat and watchdog strategy:</p>
 <ol>
 <li><strong>Heartbeat Interval ($T_{hb}$ | Heartbeat Time Period)</strong></li>
@@ -758,7 +347,7 @@ failovers, but it is physically and logically separated from the <strong>Safety 
 <p>Every intent generated by the LangGraph agent is assigned a unique <code>trace_id</code> (UUIDv4) that acts as the systems
 thread of truth. </p>
 <ul>
-<li><strong>Distributed Propagation</strong>: This ID is injected into the NATS JetStream message headers of the Command Spine and the
+<li><strong>Distributed Propagation</strong>: This ID is injected into the NATS JetStream message headers of the Command Queue and the
   Southbound Driver&rsquo;s execution payload (a live traveling metadata tag).</li>
 <li><strong>Audit Linking</strong>: The <code>trace_id</code> serves as the primary key across the 3-tier event system, allowing an investigator 
   to join a physical hardware command directly back to the AI&rsquo;s internal reasoning, Bytewax windowed 
@@ -775,7 +364,7 @@ hangs but the driver remains active.</p>
   Southbound Driver every 500ms. If the gap exceeds 1500 ms (3 missed cycles), the Driver assumes an Agent crash or 
   non-deterministic &ldquo;hang&rdquo; and triggers <strong>Fail-Safe</strong> mode. The Southbound Driver doesn&rsquo;t stop the Agent, but it
   inhibits AI writes.</li>
-<li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Spine 
+<li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Queue 
   and issues a <code>WATCHDOG_TRIP</code> signal to the Level 2 controller.</li>
 <li><strong>Hardware Watchdog</strong>: The Southbound Driver maintains a toggling bit in a physical PLC register. If the Driver
   itself fails, the field asset detects the static bit and automatically reverts to <strong>Local-Manual</strong> logic.</li>
@@ -803,7 +392,7 @@ failovers:</p>
 <h3 id="the-deadman-switch-ttl-logic">The Deadman Switch &amp; TTL Logic<a class="headerlink" href="#the-deadman-switch-ttl-logic" title="Permanent link"></a></h3>
 <p>To prevent the physical layer from being left in an intermediate or &ldquo;zombie&rdquo; state during a network partition:</p>
 <ul>
-<li><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Spine carries a strict 
+<li><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Queue carries a strict 
   <code>per-message-ttl</code> (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
    than executing a stale action seconds later.</li>
 </ul>
@@ -924,7 +513,7 @@ loop prevents the operator from assuming the command was successful until the AI
 <h3 id="deterministic-failover-agentic-thought-deterministic-action">Deterministic Failover (Agentic Thought, Deterministic Action)<a class="headerlink" href="#deterministic-failover-agentic-thought-deterministic-action" title="Permanent link"></a></h3>
 <p>To maintain predictability, we separate the <strong>reasoning</strong> from the <strong>execution</strong>:</p>
 <ul>
-<li><strong>Path Predictability</strong>: Once the Agent publishes a failover intent to the <strong>NATS JetStream Command Spine</strong>, 
+<li><strong>Path Predictability</strong>: Once the Agent publishes a failover intent to the <strong>NATS JetStream Command Queue</strong>, 
   the system must pass through strict authorization and validation checks before the Southbound Driver executes the 
   command.</li>
 <li><strong>Outcome</strong>: The AI’s path to a decision is agentic and flexible. The actual physical handover is repeatable, 
@@ -943,13 +532,6 @@ loop prevents the operator from assuming the command was successful until the AI
 <p>To prevent &ldquo;time-smearing&rdquo; in the anomaly engine, the system uses <strong>Precision Time Protocol (PTP)</strong> or NTP to 
 synchronize the Edge Gateway with field instrumentation. This ensures that the timestamp on the sensor tag exactly 
 matches the timestamp in the <strong>TimescaleDB</strong> historian, allowing for accurate sub-second $Z$-score calculations.</p>
-<h3 id="scaling-via-subject-based-partitioning">Scaling via Subject-Based Partitioning<a class="headerlink" href="#scaling-via-subject-based-partitioning" title="Permanent link"></a></h3>
-<p>To handle large-scale plant deployments, OverSight uses <strong>NATS JetStream Subject-Based Partitioning</strong> to distribute<br />
-field assets across multiple LangGraph worker containers.</p>
-<ul>
-<li><strong>Resilience</strong>: If a worker node fails, messages are seamlessly rebalanced to healthy nodes. This prevents a 
-  &ldquo;Thundering Herd&rdquo; effect on the UNS during system recovery while maintaining strict message ordering per asset.</li>
-</ul>
 <h3 id="signal-conditioning-noise-reduction">Signal Conditioning &amp; Noise Reduction<a class="headerlink" href="#signal-conditioning-noise-reduction" title="Permanent link"></a></h3>
 <p>The <strong>Northbound Ingest Service</strong> performs automated signal conditioning before data reaches the Bytewax engine:</p>
 <ul>
@@ -994,9 +576,9 @@ its state from the database upon reboot and resumes the troubleshooting graph fr
 control.</p>
 <ul>
 <li><strong>Observation Path</strong>: Telemetry flows from the field assets through the Northbound Ingest Service, where it is 
-  normalized into Sparkplug B format and published to the NATS JetStream UNS. The Bytewax streaming engine consumes this
-  telemetry for real-time $Z$-score drift analysis, which is then published back to the UNS for AI reasoning and 
-  operator monitoring.</li>
+  normalized into Sparkplug B JSON payloads and published to the NATS JetStream UNS. The Bytewax streaming engine
+  consumes this telemetry for real-time $Z$-score drift analysis, which is then published back to the UNS for AI 
+  reasoning and operator monitoring.</li>
 <li><strong>Execution Path</strong>: Control intents generated by the AI Agent are published to a separate NATS Command Queue. These 
   intents are first sent to the Level 1.5 Arbitrator for MFA verification, then to the Semantic Gatekeeper for safety
   validation, then back to the cryptographic notary buffers and TPM 2.0 module for hardware signing, before finally
@@ -1194,7 +776,7 @@ uses a reasoning loop that prioritizes <strong>Physical Integrity</strong> over 
 <li><strong>RAG Lookup</strong>: Agent retrieves the manufacturer PDF and identifies that the 3.4Z correlates to a &ldquo;high vibration&rdquo; 
    maintenance procedure.</li>
 <li><strong>Proposal</strong>: Agent formulates a <strong>Bumpless Transfer</strong> intent to <code>PUMP_02</code> (Standby) and publishes the payload to 
-   the <strong>NATS JetStream Command Spine</strong>.</li>
+   the <strong>NATS JetStream Command Queue</strong>.</li>
 <li><strong>Arbitration (Level 1.5)</strong>: The Level 1.5 Arbitrator intercepts the message and initiates the Two-Key Protocol to 
    verify human Multi-Factor Authentication (MFA).</li>
 <li><strong>Validation (Level 3.5)</strong>: The Semantic Gatekeeper checks the authorized intent against the hard-coded Forbidden 
@@ -1293,7 +875,7 @@ monitoring to self-aware reliability:</p>
 Each troubleshooting step is a stateful node in a directed acyclic graph (DAG).</p>
 <ul>
 <li><strong>Non-Blocking Execution</strong>: The LLM reasoning cycle is asynchronous. It observes the UNS (Unified Namespace) and 
-  publishes intents to the <em>NATS Command Spine</em>*.</li>
+  publishes intents to the <em>NATS Command Queue</em>*.</li>
 <li><strong>State Rehydration</strong>: Reasoning traces are indexed by <code>trace_id</code>. If a worker node fails, a new worker can resume 
   the graph state by querying the recent event history from the <strong>NATS JetStream</strong> event store.</li>
 </ul>
@@ -1305,14 +887,14 @@ Each troubleshooting step is a stateful node in a directed acyclic graph (DAG).<
    the <code>asset_id</code>.</li>
 <li><strong>Bumpless Planning</strong>: The LLM calculates the necessary ramp-up parameters (e.g., VFDs) to ensure a smooth transition.</li>
 <li><strong>Reliable Proposal</strong>: The Agent attaches a unique <code>correlation_id</code> to the intent and publishes it to the NATS
-   Command Spine with a 2000ms TTL.</li>
+   Command Queue with a 2000ms TTL.</li>
 <li><strong>Arbitration &amp; Signing</strong>: The intent passes through the Level 1.5 Arbitrator for dual-auth validation and then
    through the Semantic Gatekeeper for bounds checking. Then the Cryptographic Notary Buffers and TPM 2.0 module
    attach a hardware root-of-trust signature.</li>
 <li>** Execution &amp; Feedback**: The Southbound Driver executes the verified command and monitors the physical asset for 
    confirmation of the intended effect (e.g., flow increase, pressure stabilization). The Agent receives telemetry 
    feedback to confirm success or detect anomalies.</li>
-<li><strong>Pessimistic Verification</strong>: The graph remains in a <strong>PENDING</strong> state until the NATS stream confirms the physical
+<li><strong>Pessimistic Verification</strong>: The graph remains in a <strong>PENDING</strong> state until the NATS Command Queue confirms the physical
    telemetry change (e.g., Standby Flow &gt; 0). Only then does the Agent mark the task as <strong>SUCCESS</strong>.</li>
 </ol>
 <h2 id="learning-adaptation-governed">Learning &amp; Adaptation (Governed)<a class="headerlink" href="#learning-adaptation-governed" title="Permanent link"></a></h2>
@@ -1378,8 +960,8 @@ MAX_PENDING_PROPOSALS = 3
 <ol>
 <li><strong>Ingest</strong>: The Northbound Ingest Service terminates the field protocol (Modbus/OPC-UA/EtherNet/IP).</li>
 <li><strong>Translation</strong>: Data is converted into a Sparkplug B / JSON payload.</li>
-<li><strong>Egress</strong>: The NATS JetStream messaging backbone republishes the message within the IDMZ, guaranteeing no direct 
-   session exists between the field asset and the Reasoning Agent.</li>
+<li><strong>Egress</strong>: The NATS JetStream Command Queue messaging backbone republishes the message within the IDMZ, guaranteeing 
+   no direct session exists between the field asset and the Reasoning Agent.</li>
 </ol>
 <h3 id="race-condition-mitigation-field-priority-logic">Race Condition Mitigation: Field-Priority Logic<a class="headerlink" href="#race-condition-mitigation-field-priority-logic" title="Permanent link"></a></h3>
 <p>In distributed ICS, <strong>State Collisions</strong> occur when the AI Agent and a local human operator attempt to toggle the same 
@@ -2233,7 +1815,7 @@ principles and safety guardrails:</p>
 <ul>
 <li><strong>Stale Write Protection</strong>: The Southbound Driver rejects any command intent that exceeds a 2-second safety window.
     This prevents commands from being executed that do not have the current process reality. </li>
-<li><strong>Distributed Locking</strong>: Uses NATS JetStream consumer groups to implement exactly-once processing. This guarantees 
+<li><strong>Distributed Locking</strong>: Uses NATS JetStream consumer groups to implement at-least-once delivery. This guarantees 
     only one worker owns the decision-making for a specific field asset at any given time, preventing conflicting 
     failover commands.</li>
 <li><strong>Fencing Logic</strong>: The Semantic Gatekeeper prevents hallucinations or unauthorized setpoints that might occur if 
@@ -2773,10 +2355,6 @@ productivity.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../system-architecture-overview-and-tradeoffs/" class="btn btn-neutral float-right" title="System Architecture Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -2802,10 +2380,6 @@ productivity.</p>
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../system-architecture-overview-and-tradeoffs/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

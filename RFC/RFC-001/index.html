@@ -46,8 +46,6 @@
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../../oversight_ics_technical_deep_dive/">Technical Deep Dive</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture Overview</a>
@@ -69,18 +67,24 @@
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">RFC-001: Unified Namespace & Messaging Architecture</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#background-context">Background / Context</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#component-responsibilities">Component Responsibilities</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#problem-statement">Problem Statement</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design">Architectural Design</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#design-principles">Design Principles</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#architectural-goal">Architectural Goal</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#responsibility-boundary">Responsibility Boundary</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
     </li>
@@ -98,19 +102,25 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#uns-elements-should">UNS elements should:</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#message-payload">Message Payload</a>
+    </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#nats-subject-contracts">NATS Subject Contracts</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#telemetry-subject-contract">Telemetry Subject Contract</a>
+    <li class="toctree-l4"><a class="reference internal" href="#telemetry-subjects">Telemetry Subjects</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#event-subject-contract">Event Subject Contract</a>
+    <li class="toctree-l4"><a class="reference internal" href="#event-subjects">Event Subjects</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#command-subject-contract">Command Subject Contract</a>
+    <li class="toctree-l4"><a class="reference internal" href="#command-subjects">Command Subjects</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#audit-subject-contract">Audit Subject Contract</a>
+    <li class="toctree-l4"><a class="reference internal" href="#audit-subjects">Audit Subjects</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#health-subjects">Health Subjects</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#testing-configuration">Testing Configuration</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ</a>
         <ul>
@@ -122,11 +132,11 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-2-uns-contract">Phase 2: UNS Contract</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-3-stream-configuration">Phase 3: Stream Configuration</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-4-security-operational-configuration">Phase 4: Security &amp; Operational Configuration</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing</a>
     </li>
@@ -179,15 +189,14 @@
 <p><strong>Target Components</strong>: NATS JetStream &amp; Unified Namespace</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
 <p>This RFC outlines the proposed creation of a unified namespace and messaging architecture for Oversight ICS. 
-The Unified Namespace (UNS) provides event-driven communication that connects telemetry to AI Agent orchestration, 
+The Unified Namespace (UNS) provides event-driven communication layer that connects telemetry producers, 
 streaming analytics, safety validation services, and the Southbound Driver and uses NATS JetStream as the core message 
 broker.</p>
-<p>The UNS provides a single source of truth and an event layer connecting Telemetry producers, streaming analytics, 
-cognitive reasoning, safety validation, and the Southbound Driver. It also provides hardware abstraction by providing 
-downstream services with semantic telemetry data that is not tied to any specific register addresses. It connects the
-data from the control assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one
-standardized event stream. A UNS can also speed up Industrial Internet of Things (IIoT) and edge systems, by providing
-a single source of truth for telemetry and commands, leading to a more efficient and effective system.</p>
+<p>The UNS provides a single source of truth and provides hardware abstraction by providing downstream services with 
+semantic telemetry data that is not tied to any specific register addresses. It connects the data from the control 
+assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one standardized event 
+stream. A UNS can also speed up Industrial Internet of Things (IIoT) and edge systems, by providing a single source of
+truth for telemetry and commands, leading to a more efficient and effective system.</p>
 <p>The system bridges deterministic OT systems with modern AI reasoning and event-driven analytics while maintaining
 zero-trust safety by implementing strict separation between the following:</p>
 <ol>
@@ -199,9 +208,7 @@ zero-trust safety by implementing strict separation between the following:</p>
 <li>Safety Validation</li>
 <li>Physical Execution</li>
 </ol>
-<p>The Northbound Ingest Service terminates and normalizes the raw industrial protocols, while the Southbound Driver
-is the only component authorized to communicate with control assets. The UNS therefore provides an event layer 
-between these components.</p>
+<h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
 <p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into Sparkplug B JSON payloads and 
 extracts raw source data.
 <strong>UNS Normalization</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
@@ -210,20 +217,20 @@ extracts raw source data.
 addresses.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
 <p>Industrial Control Systems (ICS) expose data through several protocols, including Modbus, OPC_UA, and Ethernet/IP. 
-These protocols are often vendor-specific and expose physical register addresses.</p>
-<p>The Oversight system must be able to ingest high-throughput telemetry (often exceeding 10,000 points per second) from 
-the deterministic control layers (0–2). If downstream consumers knew the specific physical register addresses or 
-vendor-specific protocols, it would create several problems:</p>
-<ul>
+These protocols may expose vendor-specific addressing, device-specific naming, data types, units, and quality bits.</p>
+<p>If downstream consumers knew this information, Oversight would become tightly coupled to individual control systems
+and this would create several problems:</p>
+<ol>
 <li>Vendor-specific dependencies</li>
 <li>Physical Register Address Exposure</li>
 <li>Challenging Horizontal Scaling</li>
-<li>Tight Coupling Between AI Agent and Level 1 Control Loops</li>
+<li>Tight Coupling Between Cognitive Services and OT</li>
 <li>Increased Safety Risk</li>
+<li>Challenging Portability Between Plants</li>
 <li>Difficult Replay and Forensic Auditing</li>
 <li>Increased Sensitivity to Network Latency and Polling Jitter</li>
-</ul>
-<p>Oversight requires a messaging architecture that supports the following:</p>
+</ol>
+<p>Oversight therefore requires a messaging architecture that supports the following:</p>
 <ol>
 <li>High-throughput telemetry (10,000 points per second)</li>
 <li>Low-latency telemetry ingestion and normalization (sub-50ms)</li>
@@ -233,110 +240,142 @@ vendor-specific protocols, it would create several problems:</p>
 <li>Hardware Abstraction</li>
 <li>Schema Versioning</li>
 <li>Traceability and Forensic Auditing</li>
-<li>Zero-Command Loss</li>
 <li>Controlled access to event subjects</li>
 </ol>
 <p>To achieve this, Oversight uses the Unified Namespace (UNS) to abstract the physical register addresses and 
-vendor-specific protocols. </p>
+vendor-specific protocols.</p>
 <h2 id="architectural-design">Architectural Design<a class="headerlink" href="#architectural-design" title="Permanent link"></a></h2>
-<p>Oversight will use NATS JetStream as the messaging component for the Unified Namespace. The data flow is as follows:</p>
-<pre><code class="language-text">Source Protocol → Northbound Ingest → UNS Normalization → NATS JetStream → Downstream Consumers
+<p>Oversight will use NATS JetStream as the internal messaging component for the Unified Namespace. </p>
+<p>The UNS is a combination of the following:</p>
+<ol>
+<li>Semantic Information Model </li>
+<li>A Hierarchical Topic Structure</li>
+<li>Versioned Event Contracts</li>
+<li>NATS JetStream Streams and Consumers</li>
+</ol>
+<h2 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link"></a></h2>
+<ol>
+<li><strong>Semantic Independence</strong>: Downstream consumers should not know the physical register addresses or vendor-specific 
+   protocols.</li>
+<li>Modbus register addresses</li>
+<li>OPC_UA node identifiers</li>
+<li>Ethernet/IP object addresses</li>
+<li>Vendor-specific device naming</li>
+<li><strong>Transport Independence</strong>: The event contract must remain isolated and independent of NATS JetStream implementation 
+   details</li>
+<li><strong>Idempotent Command Enforcement</strong>:</li>
+<li><strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> consumer stream acknowledgements with unique transaction 
+   ids and idempotency controls to prevent duplicate register writes or accidental command loops.</li>
+<li><strong>Distributed Propagation/Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
+   into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
+   traveling metadata tag).</li>
+<li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Queue 
+   and issues a <code>WATCHDOG_TRIP</code> signal to the Level 2 controller.</li>
+<li><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Queue carries a strict 
+  <code>per-message-ttl</code> (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
+   than executing a stale action seconds later.</li>
+<li><strong>Message Durability</strong>: Using NATS JetStream&rsquo;s immutable streams and consumer offset tracking, the system guarantees 
+  it will not lose any intents or telemetry packets, even during a hard power failure. Unacknowledged commands are 
+  re-queued upon system restart.</li>
+<li><strong>Pessimistic Confirmation</strong>: The HMI remains in a <strong>Pending/In-Progress</strong> state until the <strong>NATS JetStream (UNS)</strong> 
+   receives independent sensor feedback (e.g., flow meter increase, motor amperage rise) that confirms the intent had 
+   the intended physical effect. </li>
+<li><strong>Latency Targest</strong></li>
+<li><strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms</li>
+<li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms</li>
+<li></li>
+</ol>
+<h3 id="architectural-goal">Architectural Goal<a class="headerlink" href="#architectural-goal" title="Permanent link"></a></h3>
+<pre><code class="language-text">Protocols: Modbus, OPC_UA, Ethernet/IP
+      |
+---------------------
+Northbound Ingest   |
+- protocol decoding |
+- source extraction |
+- validation        | --------------------------
+- normalization with Sparkplug B JSON payloads |
+------------------------------------------------
+      |
+-------------------
+UNS Normalization |
+- asset mapping   |
+- tag mapping     |
+- source data     |
+- data types      |
+- units           |
+- quality bits    |
+- timestamps      |
+- schema version  |
+- semantic model  |
+-------------------
+      |
+      event
+      |
+----------------
+NATS JetStream |
+- transport    |
+- routing      |
+- persistence  |
+- replay       |
+----------------
+      |
+   Bytewax, Historian, Redis, Cognitive Reasoning
 </code></pre>
 <h3 id="responsibility-boundary">Responsibility Boundary<a class="headerlink" href="#responsibility-boundary" title="Permanent link"></a></h3>
 <table>
 <thead>
 <tr>
+<th>Component</th>
 <th>Responsibility</th>
-<th>Owner</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Define semantic hierarchy</td>
+<td>OT Source</td>
+<td>Provides source telemetry</td>
+</tr>
+<tr>
+<td>Northbound Ingest</td>
+<td>Terminates source protocols and normalizes into Sparkplug B JSON payloads</td>
+</tr>
+<tr>
 <td>UNS</td>
+<td>Maps source data into a semantic model</td>
 </tr>
 <tr>
-<td>Define event structure</td>
-<td>UNS</td>
-</tr>
-<tr>
-<td>Define subject naming conventions</td>
-<td>UNS</td>
-</tr>
-<tr>
-<td>Define schema/version contracts</td>
-<td>UNS</td>
-</tr>
-<tr>
-<td>Map source information to meaning</td>
-<td>UNS normalization contract</td>
-</tr>
-<tr>
-<td>Transport events</td>
 <td>NATS JetStream</td>
-</tr>
-<tr>
-<td>Route events by subject</td>
-<td>NATS JetStream</td>
-</tr>
-<tr>
-<td>Persist configured streams</td>
-<td>NATS JetStream</td>
-</tr>
-<tr>
-<td>Acknowledge messages</td>
-<td>NATS JetStream consumers</td>
-</tr>
-<tr>
-<td>Redeliver unacknowledged messages</td>
-<td>NATS JetStream</td>
-</tr>
-<tr>
-<td>Replay retained events</td>
-<td>NATS JetStream</td>
-</tr>
-<tr>
-<td>Maintain consumer state</td>
-<td>NATS JetStream</td>
+<td>Transports, routes, persists, and replays events</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>
-<p>The core problem is ingesting telemetry without exposing the physical register addresses to the AI Agent. Even though
-the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS defines what the 
-data means and NATS transports that data.</p>
+<p>The core problem is ingesting telemetry without exposing the physical register addresses to the cognitive reasoning 
+layer. Even though the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS 
+defines what the data means and NATS transports that data.</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
-<p>The proposed solution is to use NATS JetStream as the internal messaging component for the Unified Namespace.
-The benefits of this approach are:</p>
-<ol>
-<li>Easy lookups and routing by subject.</li>
-<li>Naming conventions and hierarchical subjects are easy to integrate with data across different devices and vendors.</li>
-<li>Using tools like MQTT and Sparkplug B to make data ingestion and normalization easier.</li>
-<li>Do not need to know the physical register addresses or vendor-specific protocols.</li>
-<li>A single source of truth for telemetry and commands.</li>
-<li>Provides a WORM-compliant, append-only log for every telemetry frame and command transition.</li>
-<li>Reduced Complexity and Cost.</li>
-</ol>
-<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
+<p>The proposed solution is to use NATS JetStream as the core messaging component for the Unified Namespace to enforce
+strict Command Query Responsibility Segregation (CQRS) allowing high-velocity telemetry to remain separate from 
+control intent execution.</p>
 <h3 id="the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)<a class="headerlink" href="#the-read-path-ingestion-observation" title="Permanent link"></a></h3>
-<p>Raw industrial protocols are ingested and normalized by the Northbound Ingest Service into Sparkplug B JSON payloads 
-containing metadata and integer quality bits (e.g., 192 for &ldquo;Good&rdquo;). They are strictly terminated by the Northbound 
-Ingest Service to prevent direct sessions with field assets. These normalized payloads are then published to the
-NATS JetStream message bus (<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. The Bytewax 
-Streaming Engine performs windowed Z-Score drift detection and publishes the results to the TimescaleDB telemetry 
-historian (for the 90-day warm tier) and the Redis Hot Cache (for sub-second lookups).</p>
+<p>Raw industrial protocols are ingested and strictly terminated by the Northbound Ingest Service preventing direct 
+sessions with the field assets. They are then normalized into Sparkplug B JSON payloads containing metadata and integer 
+quality bits (e.g., 192 for &ldquo;Good&rdquo;). These normalized payloads are then published to the NATS JetStream message bus 
+(<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. The Bytewax Streaming Engine performs 
+windowed Z-Score drift detection and concerrently publishes the results to the TimescaleDB telemetry historian (for the 
+90-day warm tier) and the Redis Hot Cache (for sub-second lookups).</p>
 <h3 id="the-write-path">The Write Path<a class="headerlink" href="#the-write-path" title="Permanent link"></a></h3>
-<p>Control intents and manual overrides are published to the NATS Command Queue (<code>oversight.commands.proposed</code>). These 
-commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. 
-The fully notarized commands are then handed to the Southbound Driver (translates the payload into raw wire data) and 
-pushes it through the Southbound Firewall.</p>
+<p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
+commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
+the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and persisted to the WORM audit log.
+The fully notarized commands are then handed to the Southbound Driver for execution, which then publishes the results to
+<code>oversight.commands.executed</code>.</p>
 <h2 id="unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model<a class="headerlink" href="#unified-namespace-uns-information-model" title="Permanent link"></a></h2>
 <h3 id="iec-62264-hierarchical-topic-structure">IEC 62264 Hierarchical Topic Structure<a class="headerlink" href="#iec-62264-hierarchical-topic-structure" title="Permanent link"></a></h3>
 <p>Oversight strictly follows the IEC 62264 enterprise standard for topic structure with NATS dot notation to route data.</p>
 <h3 id="format">Format<a class="headerlink" href="#format" title="Permanent link"></a></h3>
-<p><code>Enterprise.Site.Area.Line.Tag</code></p>
+<p><code>Enterprise.Site.Area.Line.Asset.Tag</code></p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link"></a></h3>
 <p><code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
 <h3 id="uns-elements-should">UNS elements should:<a class="headerlink" href="#uns-elements-should" title="Permanent link"></a></h3>
@@ -346,15 +385,39 @@ pushes it through the Southbound Firewall.</p>
 <li>Use consistent naming conventions</li>
 <li>Avoid physical protocol addresses or vendor-specific protocols</li>
 <li>Be versioned and schema-compliant</li>
-<li>Be traceable and auditable</li>
-<li>Be immutable and replayable</li>
+<li>Be traceable, auditable, immutable, and replayable</li>
 <li>Be hardware-agnostic</li>
 <li>Be horizontally scalable</li>
 <li>Be resilient to network partitions, service address, network jitter, network latency, polling jitter, packet loss, 
   and blocking cyclic scan loops</li>
 <li>Remain stable when the source protocol changes</li>
 </ul>
-<h2 id="nats-subject-contracts">NATS Subject Contracts<a class="headerlink" href="#nats-subject-contracts" title="Permanent link"></a></h2>
+<h3 id="message-payload">Message Payload<a class="headerlink" href="#message-payload" title="Permanent link"></a></h3>
+<p><strong>Example</strong>:</p>
+<pre><code class="language-text">{
+  &quot;message_id&quot;: &quot;uuid&quot;,
+  &quot;trace_id&quot;: &quot;uuid&quot;,
+  &quot;correlation_id&quot;: &quot;uuid&quot;,
+  &quot;timestamp&quot;: &quot;2026-08-31T18:00:00Z&quot;,
+  &quot;source&quot;: &quot;northbound-ingest&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;asset&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+  &quot;value&quot;: 120.5,
+  &quot;unit&quot;: &quot;psi&quot;,
+  &quot;quality&quot;: 192,
+  &quot;payload&quot;: {}
+}
+
+
+</code></pre>
+<h2 id="nats-jetstream-subject-routing">NATS JetStream Subject Routing<a class="headerlink" href="#nats-jetstream-subject-routing" title="Permanent link"></a></h2>
 <p>To enforce strict routing between the Read and Write paths, the broker will enforce the following contracts/namespaces:</p>
 <table>
 <thead>
@@ -386,7 +449,7 @@ pushes it through the Southbound Firewall.</p>
 </tr>
 <tr>
 <td><code>oversight.audit.&gt;</code></td>
-<td>WORM Compliant forensic auditing</td>
+<td>Immutable WORM retention</td>
 <td style="text-align: left;">TimescaleDB &amp; LGTM Stack</td>
 <td style="text-align: left;">Audit</td>
 </tr>
@@ -398,11 +461,11 @@ pushes it through the Southbound Firewall.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="telemetry-subject-contract">Telemetry Subject Contract<a class="headerlink" href="#telemetry-subject-contract" title="Permanent link"></a></h3>
+<h3 id="telemetry-subjects">Telemetry Subjects<a class="headerlink" href="#telemetry-subjects" title="Permanent link"></a></h3>
 <p><code>oversight.telemetry.&gt;</code> is the subject for all telemetry events.</p>
 <p><strong>Wildcard</strong>: <code>oversight.telemetry.AcmeCorp.Longview_Plant</code>, <code>oversight.telemetry.AcmeCorp.Longview_Plant.WaterTreatment</code></p>
 <p><strong>The subject must not contain physical register addresses or vendor-specific protocols.</strong> </p>
-<h3 id="event-subject-contract">Event Subject Contract<a class="headerlink" href="#event-subject-contract" title="Permanent link"></a></h3>
+<h3 id="event-subjects">Event Subjects<a class="headerlink" href="#event-subjects" title="Permanent link"></a></h3>
 <p><code>oversight.events.&gt;</code> is the subject for all system-generated events.</p>
 <p><strong>Examples</strong>: </p>
 <ol>
@@ -414,7 +477,7 @@ pushes it through the Southbound Firewall.</p>
 <li><code>oversight.events.state_change</code></li>
 <li><code>oversight.events.manual_override</code></li>
 </ol>
-<h3 id="command-subject-contract">Command Subject Contract<a class="headerlink" href="#command-subject-contract" title="Permanent link"></a></h3>
+<h3 id="command-subjects">Command Subjects<a class="headerlink" href="#command-subjects" title="Permanent link"></a></h3>
 <p><code>oversight.commands.&gt;</code> is the subject for all proposed commands.</p>
 <p><strong>Examples</strong>:</p>
 <ol>
@@ -424,7 +487,7 @@ pushes it through the Southbound Firewall.</p>
 <li><code>oversight.commands.failed</code></li>
 <li><code>oversight.commands.rejected</code></li>
 </ol>
-<h3 id="audit-subject-contract">Audit Subject Contract<a class="headerlink" href="#audit-subject-contract" title="Permanent link"></a></h3>
+<h3 id="audit-subjects">Audit Subjects<a class="headerlink" href="#audit-subjects" title="Permanent link"></a></h3>
 <p><code>oversight.audit.&gt;</code> is the subject for all telemetry and command history.</p>
 <p><strong>Examples</strong>:</p>
 <ol>
@@ -434,6 +497,50 @@ pushes it through the Southbound Firewall.</p>
 <li><code>oversight.audit.failover</code></li>
 <li><code>oversight.audit.manual_override</code></li>
 </ol>
+<h3 id="health-subjects">Health Subjects<a class="headerlink" href="#health-subjects" title="Permanent link"></a></h3>
+<p><code>oversight.health.&gt;</code> is the subject for all health and watchdog pulses.</p>
+<p><strong>Examples</strong>:</p>
+<ol>
+<li><code>oversight.health.service_up</code></li>
+<li><code>oversight.health.service_down</code></li>
+<li><code>oversight.health.watchdog_pulse</code></li>
+</ol>
+<h2 id="testing-configuration">Testing Configuration<a class="headerlink" href="#testing-configuration" title="Permanent link"></a></h2>
+<p>The following testing configuration is used for testing NATS JetStream:</p>
+<pre><code class="language-text">tests/
+├── infrastructure/
+│   └── nats/
+│       ├── test_nats_connectivity.py
+│       ├── test_nats_jetstream_enabled.py
+│       ├── test_nats_stream_configuration.py
+│       ├── test_nats_consumer_configuration.py
+│       ├── test_nats_authentication.py
+│       ├── test_nats_permissions.py
+│       └── test_nats_tls.py
+│
+├── integration/
+│   └── nats/
+│       ├── test_nats_telemetry_subjects.py
+│       ├── test_nats_event_subjects.py
+│       ├── test_nats_command_subjects.py
+│       ├── test_nats_ack.py
+│       ├── test_nats_redelivery.py
+│       ├── test_nats_replay.py
+│       ├── test_nats_dlq.py
+│       ├── test_nats_schema_validation.py
+│       └── test_nats_trace_propagation.py
+│
+└── reliability/
+    └── nats/
+        ├── test_nats_broker_restart.py
+        ├── test_nats_consumer_restart.py
+        ├── test_nats_duplicate_command.py
+        ├── test_nats_command_expiration.py
+        ├── test_nats_network_partition.py
+        ├── test_nats_backpressure.py
+        ├── test_nats_replay_safety.py
+        └── test_nats_fail_closed.py
+</code></pre>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
@@ -453,50 +560,56 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
 <h3 id="phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration<a class="headerlink" href="#phase-1-broker-nats-jetsream-configuration" title="Permanent link"></a></h3>
 <ol>
-<li>Establish a NATS JetStream cluster on the Level 3.5 IDMZ dual-homed IPC using disk-backed storage. This is for 
-   at-least-once processing of messages.</li>
-<li>NATS Subjects:<ul>
-<li>Telemetry: <code>oversight.telemetry.&gt;</code> </li>
-<li>Commands: <code>oversight.commands.proposed</code>, <code>oversight.commands.validated</code>, <code>oversight.commands.executed</code>, 
-  <code>oversight.commands.failed</code></li>
-<li>Events &amp; Audits: <code>oversight.events.failover</code>, <code>oversight.audit.&gt;</code></li>
-</ul>
-</li>
-<li>Payload Standards: Sparkplug B JSON with standard metadata and integer quality bits (e.g., <code>192</code> for good)</li>
+<li>Deploy NATS JetStream on the Level 3.5 IDMZ. </li>
+<li>Enable JetStream</li>
+<li>Configure persistent storage for the telemetry and command queues.</li>
+<li>Configure Authentication &amp; Authorization.</li>
+<li>Establish Health Monitoring.</li>
+<li>Configure NATS JetStream consumer groups and DLQ.</li>
 <li>Configure consumer offset tracking and Write Once Read Many (WORM) retention policies to enforce the at-least-once 
    processing of messages.</li>
-<li>Failure Modes:<ul>
+<li>Implement Failure Modes:<ul>
 <li>If downstream consumer latency or backpressure is too high and exceeds safe execution limits, NATS will manage
   buffer saturation with consumer pull-models and Linux Cgroups. Stream silence means the system will trigger the 
   Zero-Tolerance Watchdog to inhibit AI writes.</li>
 </ul>
 </li>
 </ol>
-<h3 id="phase-2-northbound-ingest-service-uns-mapping">Phase 2: Northbound Ingest Service &amp; UNS Mapping<a class="headerlink" href="#phase-2-northbound-ingest-service-uns-mapping" title="Permanent link"></a></h3>
+<h3 id="phase-2-uns-contract">Phase 2: UNS Contract<a class="headerlink" href="#phase-2-uns-contract" title="Permanent link"></a></h3>
 <ol>
-<li>Deploy the Northbound Ingest Service to normalize raw industrial protocols into Sparkplug B JSON payloads. This
-   terminates the raw session data at the Level 3.5 IDMZ.</li>
+<li>Define the semantic hierarchy of the UNS.</li>
+<li>Define Telemetry, Event, and Command Subjects.</li>
+<li>Define schema versioning.</li>
+<li>Define UNS rules <ul>
+<li><strong>Rule 1</strong>: No physical register addresses or vendor-specific protocols in the UNS.</li>
+<li><strong>Rule 2</strong>: All telemetry and command events must be traceable, auditable, immutable, and replayable.</li>
+<li><strong>Rule 3</strong>: Protocol changes must not change the semantic identity.</li>
+<li><strong>Rule 4</strong>: Namespace names are deterministic and unique.</li>
+<li><strong>Rule 5</strong>: Mappings are version-controlled and schema-compliant.</li>
+</ul>
+</li>
 <li>Map raw vendor registers to the ISA-95 / IEC 62264 UNS namespace. The topic structure will be 
    <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code>. This occurs via tag dictionary 
    lookup / uns mapping where raw data is translated into the Sparkplug B payloads needed for the system.</li>
-<li>Enforce Sparkplug B JSON payloads to be validated by the Northbound Ingest Service. This will ensure that the 
-   payloads are in the correct format and contain the necessary metadata, like integer quality bits (e.g., <code>192</code> for 
-   good) before publishing to <code>oversight.telemetry.&gt;</code>.</li>
 </ol>
-<h3 id="phase-3-stream-consumer-integration-read-path">Phase 3: Stream Consumer Integration (Read Path)<a class="headerlink" href="#phase-3-stream-consumer-integration-read-path" title="Permanent link"></a></h3>
+<h3 id="phase-3-stream-configuration">Phase 3: Stream Configuration<a class="headerlink" href="#phase-3-stream-configuration" title="Permanent link"></a></h3>
 <ol>
-<li>Connect the Bytewax Streaming Engine to the NATS JetStream telemetry stream (<code>oversight.telemetry.&gt;</code>). The Bytewax
-   streaming engine is the consumer group subscribing to the telemetry topic. </li>
-<li>Route Bytewax outputs concurrently to the Redis Hot Cache and TimescaleDB telemetry historian.</li>
+<li>Create stream configuration (telemetry, event, command, and audit) in NATS JetStream</li>
+<li>Configure command expiration</li>
+<li>Configure consumer groups and DLQ</li>
+<li>Configure consumer offset tracking and WORM retention policies</li>
+<li>Implement pull consumers where necessary to handle backpressure.</li>
+<li>Implement consumer group rebalancing.</li>
+<li>Configure acknowledgement behavior.</li>
+<li>Configure consumers</li>
+<li>Implement idempotency</li>
 </ol>
-<h3 id="phase-4-command-queue-integration-write-path">Phase 4: Command Queue Integration (Write Path)<a class="headerlink" href="#phase-4-command-queue-integration-write-path" title="Permanent link"></a></h3>
+<h3 id="phase-4-security-operational-configuration">Phase 4: Security &amp; Operational Configuration<a class="headerlink" href="#phase-4-security-operational-configuration" title="Permanent link"></a></h3>
 <ol>
-<li>Connect the Level 1.5 Arbitrator to the NATS JetStream command queue (<code>oversight.commands.proposed</code>). The 
-   Arbitrator will enforce the Two-Key Multi-Factor Authentication (2-MFA) for the proposed commands.</li>
-<li>Connect the Level 1.5 Arbitrator to the Semantic Gatekeeper for physical bounds checking and the TPM 2.0 hardware 
-   signer for the signed commands. This routes the approved payloads to <code>oversight.commands.validated</code>.</li>
-<li>Connect the Southbound Driver to <code>oversight.commands.validated</code> for execution. The Southbound Driver publishes the
-   completion status to <code>oversight.commands.executed</code> or <code>oversight.commands.failed</code>.</li>
+<li>Create NATS identities</li>
+<li>Apply least-privilege access control to the NATS identities</li>
+<li>Enable authentication and authorization</li>
+<li>Enable TLS</li>
 </ol>
 <h3 id="phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing<a class="headerlink" href="#phase-5-validation-stress-and-fallback-testing" title="Permanent link"></a></h3>
 <ol>
@@ -562,20 +675,15 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <td>Broker, stream engine, and command queues are inside the Level 3.5 IDMZ/Edge.</td>
 <td>Maintains full autonomy and safe-state control even during the loss of internet connectivity.</td>
 </tr>
-<tr>
-<td>Zero Command Loss</td>
-<td>Stream sequence offsets are replaceable to allow the recovery of drivers to reboot and request missed messages.</td>
-<td>Prevents command dropping during unexpected service outages or IPC power cycles.</td>
-</tr>
 </tbody>
 </table>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link"></a></h2>
 <p>By choosing NATS JetStream as the message broker, I have achieved the following:</p>
 <ul>
 <li>Fulfills the strict CQRS architecture requirements</li>
-<li>Provides hardware abstraction by keeping the AI Agent from knowing the physical register addresses. This also allows
-  for the system to be hardware-agnostic.</li>
-<li>NATS JetStream is lightweight and provides an immutable, append-only distributed log. This allows for every 
+<li>Provides hardware abstraction by keeping the cognitive reasoning layer from knowing the physical register addresses. 
+  This also allows for the system to be hardware-agnostic.</li>
+<li>NATS JetStream is lightweight and provides a distributed log that is WORM compliant. This allows for every 
   telemetry frame and proposed command to be traceable and forensically auditable.</li>
 <li>The Level 3.5 IDMZ/Edge maintains full autonomy and safe-state control even during loss of internet connectivity. </li>
 </ul>

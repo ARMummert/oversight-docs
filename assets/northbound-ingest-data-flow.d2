@@ -1,0 +1,38 @@
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+direction: down
+
+field_assets: Field Assets\nModbus / OPC-UA / EtherNet/IP {
+  shape: cylinder
+}
+
+nis: Northbound Ingest Service {
+  step_1: 1. Async Driver
+  step_2: 2. Tag Dict Lookup
+  step_3: 3. Signal Scrub
+  step_4: 4. Sparkplug B
+
+  step_1 -> step_2
+  step_2 -> step_3
+  step_3 -> step_4
+}
+
+nats: NATS JetStream\noversight.telemetry.> {
+  shape: queue
+}
+
+field_assets -> nis.step_1: Async Driver Polling / Subscriptions {
+  style: {
+    stroke-width: 2
+  }
+}
+
+nis.step_4 -> nats: Sparkplug B JSON Payload {
+  style: {
+    stroke-width: 2
+  }
+}

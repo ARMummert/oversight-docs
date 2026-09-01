@@ -1600,7 +1600,7 @@ file to manage the Python packages and their versions.</li>
 reality. The system tracks three primary KPIs:</p>
 <ul>
 <li><strong>Reasoning Latency (RL)</strong>: The delta between Bytewax anomaly detection ($T_0$) and the publication of a validated 
-  intent to the NATS JetStream Command Spine ($T_n$). <strong>Target: &lt;5 s</strong> for Level 3.5 cognitive tasks.</li>
+  intent to the NATS JetStream Command Queue ($T_n$). <strong>Target: &lt;5 s</strong> for Level 3.5 cognitive tasks.</li>
 <li><strong>Inference Variance</strong>: A metric measuring the stability of the LLM’s reasoning for identical telemetry patterns. 
   High variance across similar events triggers a <strong>Model Trust</strong> alert.</li>
 <li><strong>Handshake Success Rate</strong>: The percentage of AI-initiated intents successfully acknowledged and executed by the 
@@ -1637,7 +1637,7 @@ principles:</p>
 <li><strong>Traceable Intent</strong>: Every failover intent is stored with an immutable <code>trace_id</code> and specific <strong>Source Citations</strong> 
   (e.g., Manual URI, Page, and Paragraph) to justify the intervention.</li>
 <li><strong>Shadow Mode Commissioning</strong>: During the initial deployment phase, the system operates in observation only. The 
-  AI suggests failovers but does not publish to the NATS Command Spine, allowing operators to verify the model&rsquo;s 
+  AI suggests failovers but does not publish to the NATS Command Queue, allowing operators to verify the model&rsquo;s 
   accuracy against real-world process outcomes.</li>
 <li><strong>Sparkplug B Interoperability</strong>: All system health data and AI intents are egressed via <strong>Sparkplug B</strong> into the 
   Unified Namespace. This ensures OverSight’s cognitive state can be consumed by any Ignition SCADA, ERP, or CMMS 
@@ -1910,7 +1910,7 @@ referenced during the decision.</li>
 <p>OverSight ICS treats data as a physical asset. The system uses a <strong>Pessimistic Data Pipeline</strong> to make sure that the AI 
 never makes a decision based on stale telemetry.</p>
 <ul>
-<li><strong>Unified Namespace (UNS)</strong>: By utilizing <strong>NATS JetStream</strong> as the central nervous system, state changes 
+<li><strong>Unified Namespace (UNS)</strong>: By using <strong>NATS JetStream</strong> as the central nervous system, state changes 
   in the Cognitive Digital Twin and telemetry from the field are globally synchronized. This replaces traditional 
   database polling with a real-time, event-driven state authority.</li>
 <li><strong>Idempotency &amp; Fencing</strong>: Every telemetry packet and agent intent is tagged with a unique <strong>UUID and Fencing Token</strong>. 
@@ -2017,10 +2017,10 @@ before reaching the Reasoning Engine:</p>
     forward once the connection is restored, allowing for a retrospective Root Cause Analysis (RCA) even after a 
     disruption.</li>
 </ul>
-<h2 id="the-event-driven-command-spine">The Event-Driven Command Spine<a class="headerlink" href="#the-event-driven-command-spine" title="Permanent link"></a></h2>
-<p>To bridge high-level AI reasoning with low-level industrial protocols, OverSight uses an 
-<strong>Event-Driven Command Spine</strong> (NATS Jetstream) coupled with a <strong>Stream-Processing Layer</strong> (Bytewax). This replaces 
-traditional database polling with a real-time, low-latency push model.</p>
+<h2 id="the-event-driven-command-queue">The Event-Driven Command Queue<a class="headerlink" href="#the-event-driven-command-queue" title="Permanent link"></a></h2>
+<p>To bridge high-level cognitive reasoning with low-level industrial protocols, OverSight uses an <strong>Event-Driven Command
+Queue</strong> (NATS Jetstream) coupled with a <strong>Stream-Processing Layer</strong> (Bytewax). This replaces traditional database 
+polling with a real-time, low-latency push model.</p>
 <h3 id="read-write-separation">Read / Write Separation<a class="headerlink" href="#read-write-separation" title="Permanent link"></a></h3>
 <ul>
 <li><strong>Read Path</strong>: Telemetry flows unidirectionally up from the field level through the Northbound Ingest and into the 
@@ -2072,7 +2072,7 @@ traditional database polling with a real-time, low-latency push model.</p>
   commissioning (SAT-04) to ensure the AI&rsquo;s thought translates to safe physical movement.</li>
 </ul>
 <h3 id="competing-consumer-pattern">Competing Consumer Pattern<a class="headerlink" href="#competing-consumer-pattern" title="Permanent link"></a></h3>
-<p>NATS JetStream is utilized as the <strong>Command Spine</strong>, allowing horizontally scalable LangGraph workers to process plant 
+<p>NATS JetStream is utilized as the <strong>Command Queue</strong>, allowing horizontally scalable LangGraph workers to process plant 
 intents.</p>
 <ul>
 <li><strong>Horizontal Scalability</strong>: As plant complexity or the number of field assets grows, additional worker containers can 
@@ -2165,8 +2165,8 @@ mechanism with <strong>Contextual Edge</strong> prioritization.</p>
   consumers lag, Bytewax applies backpressure to the ingest layer, slowing processing to match capacity without losing a 
   single event.</li>
 <li><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
-  uses <strong>NATSa</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
-  Spine</strong> from being overwhelmed.</li>
+  uses <strong>NATS</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
+  Queue</strong> from being overwhelmed.</li>
 <li><strong>Prioritized Context Edges</strong>: If network bandwidth is saturated, the Gateway prioritizes <strong>Control-Critical Tags</strong> 
   (Alarms, E-Stops, Motor States) over <strong>Diagnostic-Critical Tags</strong> (Vibration, Temperature). This ensures the AI 
   maintains safety-critical situational awareness during a surge.</li>
@@ -2292,7 +2292,7 @@ or control hardware (PLCs, VFDs) using a 4-tier architecture. </p>
   prompt must be versioned in Git and pass the <strong>Evaluation Framework</strong> tests before deployment.</li>
 <li><strong>Shadow Mode (A/B Testing)</strong>: New reasoning agents are deployed in &ldquo;Shadow Mode&rdquo; to process live telemetry from 
    the NATS UNS. Their intents are recorded and compared against the production agent, but they are physically 
-   inhibited from publishing to the NATS Command Spine.</li>
+   inhibited from publishing to the NATS Command Queue.</li>
 <li><strong>Semantic Drift Alarms</strong>: If the system detects a variance in reasoning confidence for similar telemetry patterns, 
    it flags the incident for human review to retrain local RAG embeddings and prevent model decay.</li>
 </ul>

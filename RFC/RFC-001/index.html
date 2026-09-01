@@ -78,6 +78,10 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#design-principles">Design Principles</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#deterministic-fail-safe">Deterministic Fail Safe</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#architectural-goal">Architectural Goal</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#responsibility-boundary">Responsibility Boundary</a>
@@ -266,7 +270,7 @@ vendor-specific protocols.</p>
 <li><strong>Idempotent Command Enforcement</strong>:</li>
 <li><strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> consumer stream acknowledgements with unique transaction 
    ids and idempotency controls to prevent duplicate register writes or accidental command loops.</li>
-<li><strong>Distributed Propagation/Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
+<li><strong>Distributed Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
    into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
    traveling metadata tag).</li>
 <li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Queue 
@@ -280,11 +284,93 @@ vendor-specific protocols.</p>
 <li><strong>Pessimistic Confirmation</strong>: The HMI remains in a <strong>Pending/In-Progress</strong> state until the <strong>NATS JetStream (UNS)</strong> 
    receives independent sensor feedback (e.g., flow meter increase, motor amperage rise) that confirms the intent had 
    the intended physical effect. </li>
-<li><strong>Latency Targest</strong></li>
+<li><strong>Latency Targets</strong></li>
 <li><strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms</li>
 <li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms</li>
-<li></li>
+<li><strong>Dead Letter Queue (DLQ)</strong>: Any telemetry tasks that fail validation or cause a reasoning timeout are moved to a 
+  dedicated NATS DLQ. This prevents non-validated tasks from clogging the primary pipeline while preserving them for 
+  developer forensics.</li>
+<li><strong>Consumer Fetch (Backpressure Management)</strong>: By using NATS consumer pull-model flow control, the system prevents
+  the Agent from being overwhelmed by telemetry bursts. This lets the Broker buffer the load while the reasoning engine
+  completes its inference cycle.</li>
+<li><strong>System Cold-Boot Protocol (UNS Hydration)</strong>: Upon power-on, the Agent enters a 60-second <strong>Passive-Synchronization</strong>
+  state. The system reconciles the Cognitive Digital Twin by reading current hardware registers (via NATS UNS) and
+  before resuming orchestration. Autonomous interventions are strictly inhibited until the system achieves 
+  <strong>State Sync</strong> to prevent interventions based on stale telemetry.</li>
+<li><strong>Health Metrics</strong>: Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers 
+  a <strong>System Health</strong> alert before telemetry data is dropped.</li>
+<li><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
+  uses <strong>NATS</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
+  Queue</strong> from being overwhelmed.</li>
+<li><strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
+  sensors across multiple Edge Gateway nodes.</li>
 </ol>
+<h3 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Failure Mode</th>
+<th style="text-align: left;">Local Effect</th>
+<th style="text-align: left;">End Effect</th>
+<th style="text-align: center;">S</th>
+<th style="text-align: center;">O</th>
+<th style="text-align: center;">D</th>
+<th style="text-align: left;">RPN</th>
+<th style="text-align: left;">Mitigation / Control</th>
+<th style="text-align: left;">Detection Method</th>
+<th style="text-align: center;">Revised RPN</th>
+<th style="text-align: left;">SOP Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Infrastructure</strong></td>
+<td style="text-align: left;">NATS Command TTL Expiry</td>
+<td style="text-align: left;">Command discarded by Broker due to lag or partition.</td>
+<td style="text-align: left;"><strong>Intent fails</strong>: physical state remains unchanged.</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">16</td>
+<td style="text-align: left;"><strong>Auto-Revert</strong>: Southbound Driver(SBD) inhibits AI writes; triggers <strong>Incomplete Transition</strong> alarm.</td>
+<td style="text-align: left;">NATS Nak / SBD Logs</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">SOP-SYS-027</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Infrastructure</strong></td>
+<td style="text-align: left;">NATS JetStream UNS Blackout</td>
+<td style="text-align: left;">Agent loses real-time telemetry from UNS.</td>
+<td style="text-align: left;"><strong>AI is Blind</strong>: cannot validate state before action.</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;"><strong>Inhibit Mode</strong>: Immediate severance of write-access; fallback to Manual-Only.</td>
+<td style="text-align: left;">Heartbeat / NATS Consumer Timeout</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">SOP-OPS-014</td>
+</tr>
+</tbody>
+</table>
+<h3 id="deterministic-fail-safe">Deterministic Fail Safe<a class="headerlink" href="#deterministic-fail-safe" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Failure Scenario</th>
+<th style="text-align: left;">System Response</th>
+<th style="text-align: left;">Recovery Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Message Broker Latency (Backpressure)</strong></td>
+<td style="text-align: left;"><strong>Execution Inhibit</strong>: If NATS JetStream latency exceeds 500ms, the system autonomously revokes the Agent&rsquo;s write permissions to Bytewax to prevent dangerous late-action commands.</td>
+<td style="text-align: left;"><strong>Buffer Clearance</strong>: Once the broker lag drops below the 500ms threshold, write permissions are automatically restored.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="architectural-goal">Architectural Goal<a class="headerlink" href="#architectural-goal" title="Permanent link"></a></h3>
 <pre><code class="language-text">Protocols: Modbus, OPC_UA, Ethernet/IP
       |
@@ -696,6 +782,13 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <p><a href="https://tier0.app/product/tier0-platform/uns?gad_source=1&amp;gad_campaignid=24171182373&amp;gbraid=0AAAABD-TtuWFqQTktJeJL8c3AdFA-SP10&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWkEVaGgi03pLIbslXraRtVyjLGsI9ATBt73klZGBki19ChO5zQx2bBoCO9kQAvD_BwE">What is a Unified Namespace</a></p>
 <p><a href="https://docs.nats.io/">NATS JetStream</a></p>
 <p><a href="https://oneuptime.com/blog/post/2026-02-02-nats-python/view">NATS Python</a></p>
+<p><a href="https://docs.nats.io/concepts/intro">NATS Documentation</a></p>
+<p><a href="http://en.wikipedia.org/wiki/Idempotence">Idempotence</a></p>
+<p><a href="https://www.splunk.com/en_us/blog/learn/idempotent-design.html">Idempotent Design</a></p>
+<p><a href="https://aws.amazon.com/what-is/distributed-tracing/">Distributed Tracing</a></p>
+<p><a href="https://streamtrace.io/articles/nats-jetstream-dead-letter-queue-implementation/">NATS JetStream Dead Letter Queue</a></p>
+<p><a href="https://docs.nats.io/learn/jetstream/pull-consumers">Pull Consumers In Depth</a></p>
+<p><a href="http://thinkmicroservices.com/blog/2021/nats/nats.html">NATS Paper</a></p>
               
             </div>
           </div><footer>

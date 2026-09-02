@@ -223,7 +223,7 @@ Segregation (CQRS) pattern to make the read and write paths decoupled, allowing 
 </ul>
 <h3 id="predictive-failover-engine">Predictive Failover Engine<a class="headerlink" href="#predictive-failover-engine" title="Permanent link"></a></h3>
 <ul>
-<li>Implement a <strong>Bumpless Transfer</strong> strategy between the primary and secondary standby controllers prior to switching
+<li>Implement a <strong>Bumpless Transfer</strong> strategy between the primary and secondary standby controllers before switching
   authority. This allows the system to synchronize memory registers, internal timers, PID loop setpoints, and VFD 
   frequency parameters, which eliminates process surges, mechanical shock, and water hammer effects during a handover.</li>
 </ul>
@@ -273,7 +273,7 @@ Segregation (CQRS) pattern to make the read and write paths decoupled, allowing 
 <h3 id="unified-namespace-architecture">Unified Namespace Architecture<a class="headerlink" href="#unified-namespace-architecture" title="Permanent link"></a></h3>
 <p>Implements a unified namespace (UNS) in a strict topic hierarchy (<code>Enterprise.Site.Area.Line.Asset.Tag</code>): </p>
 <ul>
-<li><strong>NATS JetStream (UNS Backbone)</strong>: Provides a distributed log that is WORM compliant. Normalized Sparkplug B payloads 
+<li><strong>NATS JetStream (UNS)</strong>: Provides a distributed log that is WORM compliant. Normalized Sparkplug B payloads 
   are published to the UNS for real-time monitoring and cognitive reasoning. </li>
 <li><strong>Bytewax Streaming Engine</strong>: Consumes the Sparkplug B normalized streams directly from the UNS, performing
   rolling windowed $Z$-score calculations to identify logic drift and mechanical wear patterns.</li>
@@ -421,8 +421,7 @@ safety constraints, Standard Operating Procedures (SOPs), and Role-Based Access 
 <ul>
 <li><strong>Least Privilege</strong>: The Semantic Gatekeeper is designed to enforce the principle of <strong>Least Privilege</strong> by 
     restricting access to only the necessary resources. <ul>
-<li>The Agent possesses only the necessary permission to interact
-  with specific field assets.</li>
+<li>The Agent possesses only the necessary permission to interact with specific field assets.</li>
 </ul>
 </li>
 <li><strong>Constraint Enforcement</strong>: The Semantic Gatekeeper evaluates whether actions comply with system rules, safety

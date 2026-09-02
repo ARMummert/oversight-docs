@@ -98,6 +98,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
@@ -376,8 +378,14 @@ The fully notarized commands are then handed to the Southbound Driver for execut
     prevent the cognitive reasoning engine from acting on stale telemetry.</p>
 </li>
 </ol>
+<h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
+<ol>
+<li><strong>NATS JetStream UNS Blackout</strong>:</li>
+<li><strong>Message Broker Latency</strong>:</li>
+<li><strong>NATS Command TTL Expiry</strong>:</li>
+</ol>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
-<p><img alt="NATS Data Flow" src="/docs/NATS-Data-Flow.png" /></p>
+<p><img alt="NATS Data Flow" src="NATS-Data-Flow.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>

@@ -98,10 +98,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#deterministic-fail-safe-matrix">Deterministic Fail Safe Matrix</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
@@ -380,72 +376,6 @@ The fully notarized commands are then handed to the Southbound Driver for execut
     prevent the cognitive reasoning engine from acting on stale telemetry.</p>
 </li>
 </ol>
-<h2 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Component</th>
-<th style="text-align: left;">Failure Mode</th>
-<th style="text-align: left;">Local Effect</th>
-<th style="text-align: left;">End Effect</th>
-<th style="text-align: center;">S</th>
-<th style="text-align: center;">O</th>
-<th style="text-align: center;">D</th>
-<th style="text-align: left;">RPN</th>
-<th style="text-align: left;">Mitigation / Control</th>
-<th style="text-align: left;">Detection Method</th>
-<th style="text-align: center;">Revised RPN</th>
-<th style="text-align: left;">SOP Reference</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>Infrastructure</strong></td>
-<td style="text-align: left;">NATS Command TTL Expiry</td>
-<td style="text-align: left;">Command discarded by Broker due to lag or partition.</td>
-<td style="text-align: left;"><strong>Intent fails</strong>: physical state remains unchanged.</td>
-<td style="text-align: center;">4</td>
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">2</td>
-<td style="text-align: left;">16</td>
-<td style="text-align: left;"><strong>Auto-Revert</strong>: Southbound Driver(SBD) inhibits AI writes; triggers <strong>Incomplete Transition</strong> alarm.</td>
-<td style="text-align: left;">NATS Nak / SBD Logs</td>
-<td style="text-align: center;">4</td>
-<td style="text-align: left;">SOP-SYS-027</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Infrastructure</strong></td>
-<td style="text-align: left;">NATS JetStream UNS Blackout</td>
-<td style="text-align: left;">Agent loses real-time telemetry from UNS.</td>
-<td style="text-align: left;"><strong>AI is Blind</strong>: cannot validate state before action.</td>
-<td style="text-align: center;">5</td>
-<td style="text-align: center;">2</td>
-<td style="text-align: center;">1</td>
-<td style="text-align: left;">10</td>
-<td style="text-align: left;"><strong>Inhibit Mode</strong>: Immediate severance of write-access; fallback to Manual-Only.</td>
-<td style="text-align: left;">Heartbeat / NATS Consumer Timeout</td>
-<td style="text-align: center;">5</td>
-<td style="text-align: left;">SOP-OPS-014</td>
-</tr>
-</tbody>
-</table>
-<h2 id="deterministic-fail-safe-matrix">Deterministic Fail Safe Matrix<a class="headerlink" href="#deterministic-fail-safe-matrix" title="Permanent link"></a></h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Failure Scenario</th>
-<th style="text-align: left;">System Response</th>
-<th style="text-align: left;">Recovery Path</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>Message Broker Latency (Backpressure)</strong></td>
-<td style="text-align: left;">If NATS JetStream latency exceeds 500ms, the system autonomously revokes the Agent&rsquo;s write permissions to Bytewax to prevent dangerous late-action commands.</td>
-<td style="text-align: left;">Once the broker lag drops below the 500ms threshold, write permissions are automatically restored.</td>
-</tr>
-</tbody>
-</table>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <p><img alt="NATS Data Flow" src="/docs/NATS-Data-Flow.png" /></p>
 <div class="admonition note">

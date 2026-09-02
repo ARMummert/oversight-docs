@@ -103,7 +103,7 @@
 <p>The Oversight ICS architecture relies on strict separation of between deterministic OT control systems and the Level 3.5 
 demilitarized zone (Level 3.5). With this in mind, this RFC proposes a Northbound Ingest Service (NIS) with protocol
 normalization for secure protocol termination and semantic normalization.  </p>
-<p>Industrial control assets expose telemetry to through source protocols such as Modbus, OPC-UA, and Ethernet/IP. These
+<p>Industrial control assets expose telemetry through protocols such as Modbus, OPC-UA, and Ethernet/IP. These
 protocols expose raw memory addresses, vendor-specific addressing, data types, device metadata, timestamps, and quality
 bits. If downstream components were allowed to consume this data directly, the system would become tightly coupled with 
 specific hardware vendors and introduce a severe safety risk. </p>
@@ -111,7 +111,8 @@ specific hardware vendors and introduce a severe safety risk. </p>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
 <p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into Sparkplug B JSON payloads and 
 extracts raw source data. It is a <strong>read-only</strong> service.  It has no authority to issue control commands to physical 
-assets.</p>
+assets.
+<strong>Protocol Normalization</strong>: Normalizes raw industrial protocols into Sparkplug B JSON payloads.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
 <p>Oversight ICS is designed to ingest high-throughput telemetry exceeding 10,000 points per second from the 
 deterministic control layers. If Oversight directly ingested the raw industrial protocol data, it would create several
@@ -163,7 +164,10 @@ normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetSt
 </tr>
 </tbody>
 </table>
-<h2 id="protocol-adaptor-architecture">Protocol Adaptor Architecture<a class="headerlink" href="#protocol-adaptor-architecture" title="Permanent link"></a></h2>
+<h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
+<ol>
+<li></li>
+</ol>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>
 <p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>

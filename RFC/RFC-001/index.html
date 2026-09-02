@@ -307,52 +307,43 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </code></pre>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
 <ol>
-<li><strong>Semantic Independence</strong>: Downstream consumers should not know the physical register addresses or vendor-specific 
-   protocols.</li>
-<li>Modbus register addresses</li>
-<li>OPC_UA node identifiers</li>
-<li>Ethernet/IP object addresses</li>
-<li>Vendor-specific device naming</li>
-<li><strong>Transport Independence</strong>: The event contract must remain isolated and independent of NATS JetStream implementation 
-   details</li>
-<li><strong>Idempotent Command Enforcement</strong>:</li>
-<li><strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> consumer stream acknowledgements with unique transaction 
-   ids and idempotency controls to prevent duplicate register writes or accidental command loops.</li>
-<li><strong>Distributed Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
-   into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
-   traveling metadata tag).</li>
-<li><strong>Fail-Safe &ldquo;Hold&rdquo; Mode</strong>: Upon heartbeat failure, the Driver purges all pending intents in the NATS Command Queue 
-   and issues a <code>WATCHDOG_TRIP</code> signal to the Level 2 controller.</li>
-<li><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Queue carries a strict 
-  <code>per-message-ttl</code> (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather 
-   than executing a stale action seconds later.</li>
-<li><strong>Message Durability</strong>: Using NATS JetStream&rsquo;s immutable streams and consumer offset tracking, the system guarantees 
-  it will not lose any intents or telemetry packets, even during a hard power failure. Unacknowledged commands are 
-  re-queued upon system restart.</li>
-<li><strong>Pessimistic Confirmation</strong>: The HMI remains in a <strong>Pending/In-Progress</strong> state until the <strong>NATS JetStream (UNS)</strong> 
-   receives independent sensor feedback (e.g., flow meter increase, motor amperage rise) that confirms the intent had 
-   the intended physical effect. </li>
-<li><strong>Latency Targets</strong></li>
-<li><strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms</li>
-<li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms</li>
-<li><strong>Dead Letter Queue (DLQ)</strong>: Any telemetry tasks that fail validation or cause a reasoning timeout are moved to a 
-  dedicated NATS DLQ. This prevents non-validated tasks from clogging the primary pipeline while preserving them for 
-  developer forensics.</li>
-<li><strong>Consumer Fetch (Backpressure Management)</strong>: By using NATS consumer pull-model flow control, the system prevents
-  the Agent from being overwhelmed by telemetry bursts. This lets the Broker buffer the load while the reasoning engine
-  completes its inference cycle.</li>
-<li><strong>System Cold-Boot Protocol (UNS Hydration)</strong>: Upon power-on, the Agent enters a 60-second <strong>Passive-Synchronization</strong>
-  state. The system reconciles the Cognitive Digital Twin by reading current hardware registers (via NATS UNS) and
-  before resuming orchestration. Autonomous interventions are strictly inhibited until the system achieves 
-  <strong>State Sync</strong> to prevent interventions based on stale telemetry.</li>
-<li><strong>Health Metrics</strong>: Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers 
-  a <strong>System Health</strong> alert before telemetry data is dropped.</li>
-<li><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
-  uses <strong>NATS</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
-  Queue</strong> from being overwhelmed.</li>
-<li><strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
-  sensors across multiple Edge Gateway nodes.</li>
+<li><strong>Semantic Independence</strong>: Downstream consumers must not know the physical register addresses or vendor-specific protocols. Instead, the UNS
+   provides a semantic namespace that abstracts the physical register addresses and vendor-specific protocols. </li>
 </ol>
+<p><strong>Examples</strong>:
+   - Modbus register addresses
+   - OPC_UA node identifiers
+   - Ethernet/IP object addresses
+   - Vendor-specific device naming
+2. <strong>Transport Independence</strong>: The event contract must remain decoupled from the NATS JetStream implementation details
+3. <strong>At-Least-Once Command Delivery and Idempotency</strong>:
+   - Oversight uses <strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> durable consumers and acknowledgements. 
+   - Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.
+4. <strong>Distributed Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
+   into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
+   traveling metadata tag).
+5. <strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Queue carries a strict command ttl 
+   (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather than executing a 
+   stale action seconds later.
+6. <strong>Message Durability</strong>: Using NATS JetStream&rsquo;s immutable streams and consumer offset tracking, the system guarantees 
+  it will not lose any intents or telemetry packets, even during a hard power failure. Unacknowledged commands are 
+  re-queued upon system restart.
+7. <strong>Latency Targets</strong>
+   - <strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms
+   - <strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms
+8. <strong>Dead Letter Queue (DLQ)</strong>: Any telemetry tasks that fail validation or cause a reasoning timeout are moved to a 
+  dedicated NATS DLQ. This prevents non-validated tasks from clogging the primary pipeline while preserving them for 
+  developer forensics.
+9. <strong>Consumer Fetch (Backpressure Management)</strong>: By using NATS consumer pull-model flow control, the system prevents
+  the Agent from being overwhelmed by telemetry bursts. This lets the Broker buffer the load while the reasoning engine
+  completes its inference cycle.
+10. <strong>Health Metrics</strong>: Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers 
+  a <strong>System Health</strong> alert before telemetry data is dropped.
+11. <strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
+  uses <strong>NATS</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
+  Queue</strong> from being overwhelmed.
+12. <strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
+  sensors across multiple Edge Gateway nodes.</p>
 <h2 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h2>
 <table>
 <thead>

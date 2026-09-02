@@ -307,16 +307,14 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </code></pre>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
 <ol>
-<li><strong>Semantic Independence</strong>: Downstream consumers must not know the physical register addresses or vendor-specific protocols. Instead, the UNS
-   provides a semantic namespace that abstracts the physical register addresses and vendor-specific protocols. </li>
-</ol>
-<p><strong>Examples</strong>:</p>
-<ul>
-<li>Modbus register addresses</li>
-<li>OPC_UA node identifiers</li>
-<li>Ethernet/IP object addresses</li>
 <li>
-<p>Vendor-specific device naming</p>
+<p><strong>Semantic Independence</strong>: Downstream consumers must not know the physical register addresses or vendor-specific protocols. Instead, the UNS
+   provides a semantic namespace that abstracts the physical register addresses and vendor-specific protocols. </p>
+<p><strong>Examples</strong>:
+   - Modbus register addresses
+   - OPC_UA node identifiers
+   - Ethernet/IP object addresses
+   - Vendor-specific device naming</p>
 </li>
 <li>
 <p><strong>Transport Independence</strong>: The event contract must remain decoupled from the NATS JetStream implementation details</p>
@@ -373,7 +371,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <p><strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
   sensors across multiple Edge Gateway nodes.</p>
 </li>
-</ul>
+</ol>
 <h2 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h2>
 <table>
 <thead>

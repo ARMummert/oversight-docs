@@ -380,16 +380,17 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </ol>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <ol>
-<li><strong>NATS JetStream UNS Blackout</strong>:</li>
+<li><strong>NATS Outage</strong>:</li>
 <li><strong>Message Broker Latency</strong>:</li>
 <li><strong>NATS Command TTL Expiry</strong>:</li>
 </ol>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <p><img alt="NATS Data Flow" src="../NATS-Data-Flow.png" /></p>
-<div class="admonition note the core problem is ingesting telemetry without exposing the physical register addresses to the cognitive reasoning">
+<div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>
-<p>layer. Even though the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS 
+<p>The core problem is ingesting telemetry without exposing the physical register addresses to the cognitive reasoning 
+layer. Even though the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS 
 defines what the data means and NATS transports that data.</p>
 <h2 id="nats-jetstream-subject-routing">NATS JetStream Subject Routing<a class="headerlink" href="#nats-jetstream-subject-routing" title="Permanent link"></a></h2>
 <p>To enforce strict routing between the Read and Write paths, the broker will enforce the following contracts/namespaces:</p>
@@ -644,6 +645,10 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <p><a href="https://streamtrace.io/articles/nats-jetstream-dead-letter-queue-implementation/">NATS JetStream Dead Letter Queue</a></p>
 <p><a href="https://docs.nats.io/learn/jetstream/pull-consumers">Pull Consumers In Depth</a></p>
 <p><a href="http://thinkmicroservices.com/blog/2021/nats/nats.html">NATS Paper</a></p>
+<p><a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS Unified Namespace</a></p>
+<p><a href="https://ifactoryapp.com/industries/power-plant/unified-namespace-mqtt-opc-ua-power-plant-data">UNS MQTT OPC-UA Power Plant Data</a></p>
+<p><a href="https://solace.com/wp/unified-namespace/">UNS</a></p>
+<p><a href="https://thearchitectsnotebook.substack.com/p/why-distributed-systems-fail-in-one">Why Distributed Systems Fail</a></p>
               
             </div>
           </div><footer>

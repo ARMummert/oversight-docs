@@ -385,12 +385,11 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li><strong>NATS Command TTL Expiry</strong>:</li>
 </ol>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
-<p><img alt="NATS Data Flow" src="NATS-Data-Flow.png" /></p>
-<div class="admonition note">
+<p><img alt="NATS Data Flow" src="../NATS-Data-Flow.png" /></p>
+<div class="admonition note the core problem is ingesting telemetry without exposing the physical register addresses to the cognitive reasoning">
 <p class="admonition-title">Note</p>
 </div>
-<p>The core problem is ingesting telemetry without exposing the physical register addresses to the cognitive reasoning 
-layer. Even though the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS 
+<p>layer. Even though the Northbound Ingest Service is responsible for normalizing the raw industrial protocols, the UNS 
 defines what the data means and NATS transports that data.</p>
 <h2 id="nats-jetstream-subject-routing">NATS JetStream Subject Routing<a class="headerlink" href="#nats-jetstream-subject-routing" title="Permanent link"></a></h2>
 <p>To enforce strict routing between the Read and Write paths, the broker will enforce the following contracts/namespaces:</p>

@@ -97,26 +97,32 @@
                 <h1 id="rfc-002-northbound-ingest-service-protocol-normalization">RFC-002 - Northbound Ingest Service &amp; Protocol Normalization<a class="headerlink" href="#rfc-002-northbound-ingest-service-protocol-normalization" title="Permanent link"></a></h1>
 <p><strong>Author</strong>: Amy Mummert</p>
 <p><strong>Status</strong>: Proposed</p>
-<p><strong>Date</strong>: 2026-08-31</p>
-<p><strong>Target Components</strong>: Northbound Ingest Service, Protocol Normalization</p>
+<p><strong>Date</strong>: 2026-09-01</p>
+<p><strong>Target Components</strong>: Northbound Ingest Service &amp; Protocol Normalization</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
-<p>The Oversight ICS architecture relies on strict separation of the physical control layer (Levels 0-2) and the Level 3.5 
+<p>The Oversight ICS architecture relies on strict separation of between deterministic OT control systems and the Level 3.5 
 demilitarized zone (Level 3.5). With this in mind, this RFC proposes a Northbound Ingest Service (NIS) with protocol
 normalization for secure protocol termination and semantic normalization.  </p>
-<p>Industrial protocols such as Modbus, OPC-UA, and Ethernet/IP expose raw memory addresses and data values. If downstream
-engines (like Bytewax) or cognitive services (like the LangGraph Agent) were allowed to consume this data directly, the
-system would become tightly coupled with specific hardware vendors and introduce a severe safety risk. </p>
+<p>Industrial control assets expose telemetry to through source protocols such as Modbus, OPC-UA, and Ethernet/IP. These
+protocols expose raw memory addresses, vendor-specific addressing, data types, device metadata, timestamps, and quality
+bits. If downstream components were allowed to consume this data directly, the system would become tightly coupled with 
+specific hardware vendors and introduce a severe safety risk. </p>
 <p>This RFC defines the design and operation of the Northbound Ingest Service (NIS) and the protocol normalization layer.</p>
+<h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
+<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into Sparkplug B JSON payloads and 
+extracts raw source data. It is a <strong>read-only</strong> service.  It has no authority to issue control commands to physical 
+assets.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
 <p>Oversight ICS is designed to ingest high-throughput telemetry exceeding 10,000 points per second from the 
 deterministic control layers. If Oversight directly ingested the raw industrial protocol data, it would create several
 critical safety risks/failures.</p>
-<ol>
-<li>Address Exposure – Risk of exposing raw memory addresses to downstream systems.</li>
-<li>Protocol Dissimilarity – Vendors may not support the same protocols. </li>
-<li>Direct Session Security Risk – Allowing continuous open polling sessions directly against field PLCs introduces 
-   network jitter, possible denial of service, and violations of IEC 62264 zone segregation.</li>
-</ol>
+<p>The main reasons for this are:
+1. Risk of exposing raw memory addresses to downstream systems.
+2. Vendors may not support the same protocols. 
+3. Allowing continuous open polling sessions directly against field PLCs introduces network jitter, possible denial of 
+   service, and violations of IEC 62264 zone segregation.</p>
+<p>Without protocol normalization, every downstream consumer would need to understand the raw protocols, which creates 
+unnecessary coupling and an increased attack surface.  This is a huge safety risk.</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
 <p>The proposed solution is to implement a Northbound Ingest Service (NIS) that ingests raw industrial protocol data, 
 normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetStream Unified Namespace (UNS).</p>
@@ -163,6 +169,9 @@ normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetSt
 <p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>
 <p><a href="https://corsosystems.com/posts/mqtt-and-sparkplug-b-simplified">MQTT &amp; Sparkplug B Simplified</a></p>
 <p><a href="https://industrialmonitordirect.com/blogs/knowledgebase/mqtt-sparkplug-b-industrial-protocol-implementation-guide?srsltid=AfmBOop21wGGJiYp_qelA8yivo-C-rEMWKF1mOpZXfg0NgeJvrmqQzJd">MQTT Sparkplug B Industrial Protocol Implementation Guide</a></p>
+<p><a href="https://www.splunk.com/en_us/blog/learn/industrial-control-systems-security.html">Industrial Control Systems Security</a></p>
+<p><a href="https://www.darktrace.com/cyber-ai-glossary/industrial-control-system-security">Industrial Control System Security Cyper AI</a></p>
+<p><a href="https://www.group-ib.com/resources/knowledge-hub/industrial-control-system/">Industrial Control System</a></p>
               
             </div>
           </div><footer>

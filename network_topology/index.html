@@ -130,9 +130,9 @@
                 <h1 id="networking-clock-topology">Networking &amp; Clock Topology<a class="headerlink" href="#networking-clock-topology" title="Permanent link"></a></h1>
 <h2 id="1-objective">1. Objective<a class="headerlink" href="#1-objective" title="Permanent link"></a></h2>
 <p>This document defines the physical and logical network topology of the Oversight ICS Edge Gateway. It guarantees strict
-isolation between the IDMZ and the Control Zone while also maintaining nanosecond time synchronization. NATS JetStream
+isolation between the IDMZ and the Control Zone while also maintaining sub-second time synchronization. NATS JetStream
 is used for both deterministic high-availability telemetry ingestion and low-latency command orchestration. NATS acts
-as the Unified Namespace spine, while Bytewax performs rolling windowed $Z$-Score anomaly detection. </p>
+as the Unified Namespace, while Bytewax performs rolling windowed $Z$-Score anomaly detection. </p>
 <h2 id="2-full-system-topology">2. Full System Topology<a class="headerlink" href="#2-full-system-topology" title="Permanent link"></a></h2>
 <p>The following diagram illustrates the complete network topology of the Oversight ICS system.</p>
 <p>See <a href="/docs/assets/oversight-network-and-hardware-topology.svg">Network Topology Diagram</a> for a visual representation 

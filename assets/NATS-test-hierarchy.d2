@@ -1,0 +1,72 @@
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+direction: left
+
+  infrastructure: Infrastructure Tests {
+    shape: rectangle
+
+    nats_conn: test_nats_connectivity {
+      }
+    nats_stream: test_nats_stream_configuration {
+      }
+    nats_jetstream: test_nats_jetstream_enabled {
+      }
+    nats_consumer: test_nats_consumer_configuration {
+      }
+    nats_auth: test_nats_authentication {
+      }
+    nats_permission: test_nats_permissions {
+      }
+    nats_tls: test_nats_tls_configuration {
+      }
+  }
+
+  integration: Integration Tests {
+    shape: rectangle
+
+    nats_telemetry: test_nats_telemetry_subjects {
+     }
+    nats_events: test_nats_events_subjects {
+      }
+    nats_commands: test_nats_commands_subjects {
+      }
+    nats_ack: test_nats_ack {
+      }
+    nats_redeliver: test_nats_redelivery {
+      }
+    nats_replay: test_nats_replay {
+      }
+    nats_dlq: test_nats_dlq {
+      }
+    nats_schema: test_nats_schema_validation {
+      }
+    nats_trace: test_nats_traceability {
+      }
+  }
+
+  reliability: Reliability & Resilience Tests {
+    shape: rectangle
+
+    nats_broker_restart: test_nats_broker_restart {
+    }
+    nats_consumer_restart: test_nats_consumer_restart {
+    }
+    nats_duplicate: test_nats_duplicate_messages {
+    }
+    nats_dup2: test_nats_duplicate_commands {
+    }
+    nats_command_exp: test_nats_command_expiration {
+    }
+    nats_network_partition: test_nats_network_partition {
+    }
+    nats_backpressure: test_nats_backpressure {
+    }
+    nats_replay_safety: test_nats_replay_safety {
+    }
+    nats_fail_closed: test_nats_fail_closed {
+    }
+  }

@@ -72,7 +72,7 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#hardware-root-of-trust">Hardware Root of Trust</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper</a>
+    <li class="toctree-l4"><a class="reference internal" href="#zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary – Semantic Gatekeeper</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol</a>
     </li>
@@ -203,30 +203,29 @@
                 <h1 id="oversight-ics-technical-systems-design-architecture-report">Oversight ICS: Technical Systems &amp; Design Architecture Report<a class="headerlink" href="#oversight-ics-technical-systems-design-architecture-report" title="Permanent link"></a></h1>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link"></a></h2>
 <p>This report outlines the technical systems and design architecture of Oversight ICS, including the Purdue Network 
-Model reference architecture and key system features.</p>
+Model architecture and key system architectural features.</p>
 <h2 id="key-architectural-features">Key Architectural Features<a class="headerlink" href="#key-architectural-features" title="Permanent link"></a></h2>
 <h3 id="safety-first-predictive-failover-engine">Safety First Predictive Failover Engine<a class="headerlink" href="#safety-first-predictive-failover-engine" title="Permanent link"></a></h3>
 <p>OverSight operates as a supervisory reliability layer. It monitors internal telemetry such as scan-time jitter, 
   memory leaks, and CPU thermal-spikes, to orchestrate a graceful transition while the primary hardware is still 
   operational, without ever replacing the primary control loop.</p>
 <h3 id="cognitive-digital-twin-nats-jetstream-bytewax">Cognitive Digital Twin (NATS JetStream + Bytewax)<a class="headerlink" href="#cognitive-digital-twin-nats-jetstream-bytewax" title="Permanent link"></a></h3>
-<p>The system maintains a real-time cognitive digital twin of Distributed Control Systems (DCS), Programmable Logic 
-  Controllers (PLCs), Remote Terminal Units (RTUs), and Rotating Equipment. Oversight executes continuous windowed 
+<p>The system maintains a real-time cognitive digital twin of the control assets. Oversight executes continuous windowed 
   $Z$-Score drift analysis by streaming telemetry through a single instance of NATS JetStream and Bytewax. This allows 
   the system to detect logic drift before it causes a physical hardware failure.</p>
 <blockquote>
-<p><strong>Strategic Orchestration</strong>: Oversight doesn&rsquo;t just predict values; it plans a sequence of actions, validates them 
-against a safety schema, and executes a managed failover plan.</p>
+<p>Oversight doesn&rsquo;t just predict values; it plans a sequence of actions, validates them against a safety schema, and 
+executes a managed failover plan.</p>
 </blockquote>
 <h3 id="command-query-responsibility-segregation-cqrs-architecture">Command Query Responsibility Segregation (CQRS) Architecture<a class="headerlink" href="#command-query-responsibility-segregation-cqrs-architecture" title="Permanent link"></a></h3>
 <p>Oversight implements a strict <strong>CQRS</strong> architecture to separate the <strong>Read Path</strong> from the <strong>Write Path</strong>. The 
   <strong>Read Path</strong> is a high-velocity telemetry stream that is ingested into the system, processed, and stored in a 
   Redis Hot Cache and TimescaleDB historian. The <strong>Write Path</strong> is strictly controlled by the Level 1.5 Control 
   Authority Model (ref: Purdue Model Architecture), which requires cryptographic verification, dual-authorization, 
-  and hardware TPM signing before executing any write commands to the Level 1 physical assets.</p>
+  semantic validation, and hardware TPM signing before executing any write commands.</p>
 <h3 id="event-driven-architecture-nats-jetstream">Event-Driven Architecture (NATS JetStream)<a class="headerlink" href="#event-driven-architecture-nats-jetstream" title="Permanent link"></a></h3>
 <p>The system is built on an event-driven architecture that allows for real-time processing of telemetry data. It uses 
-  NATS JetStream as the command spine for event streaming, allowing for high-throughput, low-latency communication. 
+  NATS JetStream as the command queue for event streaming, allowing for high-throughput, low-latency communication. 
   This architecture enables the system to react to events as they occur.</p>
 <h3 id="remaining-useful-life-rul-prognostics">Remaining Useful Life (RUL) Prognostics<a class="headerlink" href="#remaining-useful-life-rul-prognostics" title="Permanent link"></a></h3>
 <p>By correlating thermal stress and vibration cycles, the agent provides a <strong>Days To Failure</strong> estimate. This switches 
@@ -248,19 +247,19 @@ against a safety schema, and executes a managed failover plan.</p>
     override is detected. This allows the human operator to always have final authority.</li>
 </ul>
 <h3 id="closed-loop-intent-verification">Closed-Loop Intent Verification<a class="headerlink" href="#closed-loop-intent-verification" title="Permanent link"></a></h3>
-<p>The Southbound Driver does not assume success upon sending a command. It waits for <strong>Process Feedback Validation</strong>
+<p>The Southbound Driver does not assume success upon sending a command. It waits for <strong>Process Confirmation</strong>
   (e.g., a limit switch closure or a current-draw increase observed via the NATS stream) and writes the confirmation 
   back to the database to close the <strong>Intent-to-Verification</strong> pessimistic loop.</p>
 <h3 id="hardware-root-of-trust">Hardware Root of Trust<a class="headerlink" href="#hardware-root-of-trust" title="Permanent link"></a></h3>
 <p>Oversight uses a <strong>TPM 2.0 hardware module</strong> to cryptographically sign every command before it can be executed. This 
   proves to the <strong>Southbound Driver</strong> that the payload met all safety audits and was not tampered with in transit.</p>
-<h3 id="zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary - Semantic Gatekeeper<a class="headerlink" href="#zero-trust-safety-boundary-semantic-gatekeeper" title="Permanent link"></a></h3>
-<p>Before any intents are sent to the physical process assets, they must pass through a strict semantic firewall. The
+<h3 id="zero-trust-safety-boundary-semantic-gatekeeper">Zero-Trust Safety Boundary – Semantic Gatekeeper<a class="headerlink" href="#zero-trust-safety-boundary-semantic-gatekeeper" title="Permanent link"></a></h3>
+<p>Before any intents are sent to the physical control assets, they must pass through a strict semantic firewall. The
   gatekeeper audits every command against physical bounds limits and hard-coded <strong>Forbidden Register Lists</strong>. This is
   critical so that the AI can never override safety-critical <strong>SIS</strong> logic. The gatekeeper also checks SOPs and OEM 
   manuals for compliance.</p>
 <h3 id="level-15-control-authority-model-two-key-protocol">Level 1.5 Control Authority Model &amp; Two-Key Protocol<a class="headerlink" href="#level-15-control-authority-model-two-key-protocol" title="Permanent link"></a></h3>
-<p>For high-impact interventions, the system pauses at the arbitrator (Purdue Network Level 1.5), and stays paused in 
+<p>For high-impact interventions, the system pauses at the arbitrator (Purdue Network Level 1.5) and stays paused in 
   isolated memory buffers until Multi-Factor Authentication (MFA) is provided by both the primary operator and either 
   the lead safety engineer or the plant manager. Multi-Factor Authentication is provided by two independent RS256-signed 
   JWT tokens.</p>
@@ -329,13 +328,11 @@ while it is still starting and the motor is still ramping up.</p>
 </tbody>
 </table>
 <h2 id="the-purdue-model-for-cybersecurity-isaiec-62443">The Purdue Model for Cybersecurity (ISA/IEC 62443)<a class="headerlink" href="#the-purdue-model-for-cybersecurity-isaiec-62443" title="Permanent link"></a></h2>
-<p>The Purdue Model defines the hierarchy of control systems in industrial environments, separated into different levels.
-Modern enterprise tech stacks (e.g., cloud services, databases) operate at Level 4 and above, Oversight ICS is
-designed with strict layer separation and sits on Level 3.5 IDMZ. This is important for security and reliability, as 
-the system must never cross-contaminate or block deterministic scan loops of the field assets. </p>
+<p>Oversight ICS is designed with strict layer separation and sits on Level 3.5 IDMZ. This is important for security and
+reliability, as the system must never cross-contaminate or block deterministic scan loops of the field assets. </p>
 <h3 id="purdue-model-overview">Purdue Model Overview<a class="headerlink" href="#purdue-model-overview" title="Permanent link"></a></h3>
 <p>The Purdue Model is used in industrial environments on six strict levels of control hierarchy (<strong>Levels 0–5</strong>). Data 
-flows dynamically <strong>upward</strong> (<strong>Read Path</strong>), but command authority is strictly<strong>downward</strong> (<strong>Write Path</strong>). The write 
+flows dynamically <strong>upward</strong> (<strong>Read Path</strong>), but command authority is strictly <strong>downward</strong> (<strong>Write Path</strong>). The write 
 path must only drop down under strict, auditable boundaries.</p>
 <table>
 <thead>

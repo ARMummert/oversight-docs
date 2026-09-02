@@ -1,0 +1,64 @@
+direction: down
+
+protocols: Field Protocols {
+  shape: cylinder
+  label: "Protocols:\nModbus, OPC_UA, Ethernet/IP"
+  style: {
+    fill: "#ecf0f1"
+    stroke: "#7f8c8d"
+  }
+}
+
+northbound_ingest: Northbound Ingest {
+  shape: rectangle
+  label: "Northbound Ingest\n- protocol decoding\n- source extraction\n- validation\n- normalization with Sparkplug B JSON payloads"
+  style: {
+    fill: "#e8f8f5"
+    stroke: "#1abc9c"
+    stroke-width: 2
+  }
+}
+
+uns_normalization: UNS Normalization {
+  shape: rectangle
+  label: "UNS Normalization\n- asset mapping\n- tag mapping\n- source data\n- data types\n- units\n- quality bits\n- timestamps\n- schema version\n- semantic model"
+  style: {
+    fill: "#ebdef0"
+    stroke: "#8e44ad"
+  }
+}
+
+nats_jetstream: NATS JetStream {
+  shape: queue
+  label: "NATS JetStream\n- transport\n- routing\n- persistence\n- replay"
+  style: {
+    fill: "#fef9e7"
+    stroke: "#f1c40f"
+  }
+}
+
+downstream: Downstream Consumers {
+  shape: rectangle
+  label: "Bytewax, Historian, Redis, Cognitive Reasoning"
+  style: {
+    fill: "#f2f4f4"
+    stroke: "#5d6d7e"
+  }
+}
+
+protocols -> northbound_ingest {
+  style: { stroke-width: 2 }
+}
+
+northbound_ingest -> uns_normalization {
+  label: "event"
+  style: { stroke-width: 2 }
+}
+
+uns_normalization -> nats_jetstream {
+  style: { stroke-width: 2 }
+}
+
+nats_jetstream -> downstream {
+  style: { stroke-width: 2 }
+}

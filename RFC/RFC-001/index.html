@@ -78,7 +78,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#the-write-path">The Write Path</a>
+    <li class="toctree-l4"><a class="reference internal" href="#the-write-path-control-execution">The Write Path (Control Execution)</a>
     </li>
         </ul>
     </li>
@@ -90,23 +90,19 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#uns-elements-should">UNS elements should:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#uns-elements-for-oversight-ics-should">UNS elements for Oversight ICS should:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#message-payload">Message Payload</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#architectural-design">Architectural Design</a>
+    <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#design-principles">Design Principles</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#deterministic-fail-safe">Deterministic Fail Safe</a>
+    <li class="toctree-l3"><a class="reference internal" href="#deterministic-fail-safe-matrix">Deterministic Fail Safe Matrix</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#architectural-goal">Architectural Goal</a>
-    </li>
-        </ul>
+    <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
         <ul>
@@ -197,8 +193,8 @@ broker.</p>
 <p>The UNS provides a single source of truth and provides hardware abstraction by providing downstream services with 
 semantic telemetry data that is not tied to any specific register addresses. It connects the data from the control 
 assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one standardized event 
-stream. A UNS can also speed up Industrial Internet of Things (IIoT) and edge systems, by providing a single source of
-truth for telemetry and commands, leading to a more efficient and effective system.</p>
+stream. By using a UNS, Oversight can speed up Industrial Internet of Things (IIoT) and edge systems, by providing a 
+single source of truth for telemetry and commands, leading to a more efficient and effective system.</p>
 <p>The system bridges deterministic OT systems with modern AI reasoning and event-driven analytics while maintaining
 zero-trust safety by implementing strict separation between the following:</p>
 <ol>
@@ -218,7 +214,7 @@ extracts raw source data.
 <strong>Downstream Consumers</strong>: Processes the events without needing to know the original protocol or physical register 
 addresses.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
-<p>Industrial Control Systems (ICS) expose data through several protocols, including Modbus, OPC_UA, and Ethernet/IP. 
+<p>Industrial Control Systems expose data through several protocols, including Modbus, OPC_UA, and Ethernet/IP. 
 These protocols may expose vendor-specific addressing, device-specific naming, data types, units, and quality bits.</p>
 <p>If downstream consumers knew this information, Oversight would become tightly coupled to individual control systems
 and this would create several problems:</p>
@@ -237,7 +233,7 @@ and this would create several problems:</p>
 <li>High-throughput telemetry (10,000 points per second)</li>
 <li>Low-latency telemetry ingestion and normalization (sub-50ms)</li>
 <li>Durable event storage</li>
-<li>Replayable telemetry and command history</li>
+<li>Replayable telemetry, event, and command history</li>
 <li>Subject-Based Routing</li>
 <li>Hardware Abstraction</li>
 <li>Schema Versioning</li>
@@ -257,7 +253,7 @@ quality bits (e.g., 192 for &ldquo;Good&rdquo;). These normalized payloads are t
 (<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. The Bytewax Streaming Engine performs 
 windowed Z-Score drift detection and concerrently publishes the results to the TimescaleDB telemetry historian (for the 
 90-day warm tier) and the Redis Hot Cache (for sub-second lookups).</p>
-<h3 id="the-write-path">The Write Path<a class="headerlink" href="#the-write-path" title="Permanent link"></a></h3>
+<h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
 <p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
 commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
 the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and persisted to the WORM audit log.
@@ -270,7 +266,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <p><code>Enterprise.Site.Area.Line.Asset.Tag</code></p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link"></a></h3>
 <p><code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
-<h3 id="uns-elements-should">UNS elements should:<a class="headerlink" href="#uns-elements-should" title="Permanent link"></a></h3>
+<h3 id="uns-elements-for-oversight-ics-should">UNS elements for Oversight ICS should:<a class="headerlink" href="#uns-elements-for-oversight-ics-should" title="Permanent link"></a></h3>
 <ul>
 <li>Be deterministic</li>
 <li>Be unique within their hierarchy</li>
@@ -309,16 +305,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 
 
 </code></pre>
-<h2 id="architectural-design">Architectural Design<a class="headerlink" href="#architectural-design" title="Permanent link"></a></h2>
-<p>Oversight will use NATS JetStream as the internal messaging component for the Unified Namespace. </p>
-<p>The UNS is a combination of the following:</p>
-<ol>
-<li>Semantic Information Model </li>
-<li>A Hierarchical Topic Structure</li>
-<li>Versioned Event Contracts</li>
-<li>NATS JetStream Streams and Consumers</li>
-</ol>
-<h2 id="design-principles">Design Principles<a class="headerlink" href="#design-principles" title="Permanent link"></a></h2>
+<h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
 <ol>
 <li><strong>Semantic Independence</strong>: Downstream consumers should not know the physical register addresses or vendor-specific 
    protocols.</li>
@@ -366,7 +353,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li><strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
   sensors across multiple Edge Gateway nodes.</li>
 </ol>
-<h3 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h3>
+<h2 id="fmea-failure-modes-and-effects-analysis">FMEA (Failure Modes and Effects Analysis)<a class="headerlink" href="#fmea-failure-modes-and-effects-analysis" title="Permanent link"></a></h2>
 <table>
 <thead>
 <tr>
@@ -415,7 +402,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </tr>
 </tbody>
 </table>
-<h3 id="deterministic-fail-safe">Deterministic Fail Safe<a class="headerlink" href="#deterministic-fail-safe" title="Permanent link"></a></h3>
+<h2 id="deterministic-fail-safe-matrix">Deterministic Fail Safe Matrix<a class="headerlink" href="#deterministic-fail-safe-matrix" title="Permanent link"></a></h2>
 <table>
 <thead>
 <tr>
@@ -432,42 +419,8 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </tr>
 </tbody>
 </table>
-<h3 id="architectural-goal">Architectural Goal<a class="headerlink" href="#architectural-goal" title="Permanent link"></a></h3>
-<pre><code class="language-text">Protocols: Modbus, OPC_UA, Ethernet/IP
-      |
----------------------
-Northbound Ingest   |
-- protocol decoding |
-- source extraction |
-- validation        | --------------------------
-- normalization with Sparkplug B JSON payloads |
-------------------------------------------------
-      |
--------------------
-UNS Normalization |
-- asset mapping   |
-- tag mapping     |
-- source data     |
-- data types      |
-- units           |
-- quality bits    |
-- timestamps      |
-- schema version  |
-- semantic model  |
--------------------
-      |
-      event
-      |
-----------------
-NATS JetStream |
-- transport    |
-- routing      |
-- persistence  |
-- replay       |
-----------------
-      |
-   Bytewax, Historian, Redis, Cognitive Reasoning
-</code></pre>
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
+<p><img alt="NATS Data Flow" src="/docs/NATS-Data-Flow.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>
@@ -564,40 +517,7 @@ defines what the data means and NATS transports that data.</p>
 </ol>
 <h2 id="testing-configuration">Testing Configuration<a class="headerlink" href="#testing-configuration" title="Permanent link"></a></h2>
 <p>The following testing configuration is used for testing NATS JetStream:</p>
-<pre><code class="language-text">tests/
-├── infrastructure/
-│   └── nats/
-│       ├── test_nats_connectivity.py
-│       ├── test_nats_jetstream_enabled.py
-│       ├── test_nats_stream_configuration.py
-│       ├── test_nats_consumer_configuration.py
-│       ├── test_nats_authentication.py
-│       ├── test_nats_permissions.py
-│       └── test_nats_tls.py
-│
-├── integration/
-│   └── nats/
-│       ├── test_nats_telemetry_subjects.py
-│       ├── test_nats_event_subjects.py
-│       ├── test_nats_command_subjects.py
-│       ├── test_nats_ack.py
-│       ├── test_nats_redelivery.py
-│       ├── test_nats_replay.py
-│       ├── test_nats_dlq.py
-│       ├── test_nats_schema_validation.py
-│       └── test_nats_trace_propagation.py
-│
-└── reliability/
-    └── nats/
-        ├── test_nats_broker_restart.py
-        ├── test_nats_consumer_restart.py
-        ├── test_nats_duplicate_command.py
-        ├── test_nats_command_expiration.py
-        ├── test_nats_network_partition.py
-        ├── test_nats_backpressure.py
-        ├── test_nats_replay_safety.py
-        └── test_nats_fail_closed.py
-</code></pre>
+<p><img alt="NATS Infrastructure Tests" src="/docs/NATS-test-hierarchy.png" /></p>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
@@ -719,7 +639,7 @@ requirements of the Oversight system without introducing unnecessary complexity 
 </tr>
 <tr>
 <td>Forensic Traceability</td>
-<td>Provides and append-only, WORM-compliant log for every telemetry frame and command transition</td>
+<td>Provides a distributed WORM-compliant log for every telemetry frame and command transition</td>
 <td>Full auditability and step-by-step reasoning replays of every command and telemetry frame for ISA 18.2, NERC CIP, and EPA regulatory compliance.</td>
 </tr>
 <tr>
@@ -737,7 +657,7 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link"></a></h2>
 <p>By choosing NATS JetStream as the message broker, I have achieved the following:</p>
 <ul>
-<li>Fulfills the strict CQRS architecture requirements</li>
+<li>Meets the strict CQRS architecture requirements</li>
 <li>Provides hardware abstraction by keeping the cognitive reasoning layer from knowing the physical register addresses. 
   This also allows for the system to be hardware-agnostic.</li>
 <li>NATS JetStream is lightweight and provides a distributed log that is WORM compliant. This allows for every 

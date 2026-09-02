@@ -321,10 +321,10 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </li>
 <li>
 <p><strong>At-Least-Once Command Delivery and Idempotency</strong>:</p>
-</li>
+<ul>
 <li>Oversight uses <strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> durable consumers and acknowledgements. </li>
-<li>
-<p>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</p>
+<li>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</li>
+</ul>
 </li>
 <li>
 <p><strong>Distributed Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 

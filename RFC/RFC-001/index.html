@@ -404,22 +404,28 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
 <p>The Oversight system treats NATS and JetStream as non-authoritative. Failure of NATS or JetStream <strong>MUST NOT</strong> 
    cause autonomous physical actuation. </p>
-<p>#### Bounded Retries
-   - Connection attempts <strong>MUST</strong> be bounded to prevent retry storms. 
-   - Connection failures are evaluated by the NATS circuit breaker.</p>
-<p>#### Health Verification
-   - Recovery <strong>MUST</strong> require successful health verification before normal message flow resumes.
-   - Recovery <strong>MUST NOT</strong> automatically restore normal message flow.
-   - After the reset timeout expires, the circuit breaker <strong>MUST</strong> transition from <code>OPEN</code> to <code>HALF_OPEN</code> and permit a 
-     limited recovery attempt.
-   - Normal message flow <strong>MUST</strong> resume only after successful health verification.
-   - A failed recover attempt <strong>MUST</strong> transition the circuit back to OPEN.</p>
-<p>#### Logging and Operator Alerting
-   - The system <strong>MUST</strong> log the NATS failures, circuit breaker transitions, recovery attempts, and recovery failures.
-   - The system <strong>MUST</strong> alert the operator when NATS availability affects normal operations or causes a transition 
-     to the degraded authority mode.</p>
-<p>#### NATS Circuit Breaker
-   The Oversight system uses a circuit-breaker to prevent continuous attempts against a failing NATS dependency.</p>
+<p>#### Bounded Retries</p>
+<ul>
+<li>Connection attempts <strong>MUST</strong> be bounded to prevent retry storms. </li>
+<li>Connection failures are evaluated by the NATS circuit breaker.</li>
+</ul>
+<p>#### Health Verification</p>
+<ul>
+<li>Recovery <strong>MUST</strong> require successful health verification before normal message flow resumes.</li>
+<li>Recovery <strong>MUST NOT</strong> automatically restore normal message flow.</li>
+<li>After the reset timeout expires, the circuit breaker <strong>MUST</strong> transition from <code>OPEN</code> to <code>HALF_OPEN</code> and permit a 
+     limited recovery attempt.</li>
+<li>Normal message flow <strong>MUST</strong> resume only after successful health verification.</li>
+<li>A failed recover attempt <strong>MUST</strong> transition the circuit back to OPEN.</li>
+</ul>
+<p>#### Logging and Operator Alerting</p>
+<ul>
+<li>The system <strong>MUST</strong> log the NATS failures, circuit breaker transitions, recovery attempts, and recovery failures.</li>
+<li>The system <strong>MUST</strong> alert the operator when NATS availability affects normal operations or causes a transition 
+     to the degraded authority mode.</li>
+</ul>
+<p>#### NATS Circuit Breaker</p>
+<p>The Oversight system uses a circuit-breaker to prevent continuous attempts against a failing NATS dependency.</p>
 <ul>
 <li>Services <strong>SHOULD</strong> use a circuit breaker to stop repeated connection attempts after the configured failure 
      threshold is reached. </li>
@@ -431,9 +437,11 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li><strong>Successful Recovery</strong>: If the system has a successful recovery, the circuit transitions from HALF-OPEN to CLOSED.</li>
 <li><strong>Failed Recovery Attempt</strong>: A failed recovery attempt transitions the circuit back to OPEN.</li>
 </ul>
-<p>#### Degraded Authority Mode
-   - Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
-     degraded authority mode. </p>
+<p>#### Degraded Authority Mode</p>
+<ul>
+<li>Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
+     degraded authority mode. </li>
+</ul>
 <p><code>text
    ┌─────────────────────────────────────────────────────────────────────────┐
    │                         NATS Connection Failure                         │

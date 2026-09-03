@@ -423,7 +423,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li>The system <strong>MUST</strong> alert the operator when command execution affects control operations.</li>
 <li>Expiration of a command <strong>MUST NOT</strong> result in autonomous physical actuation.</li>
 </ul>
-<p><a href="../NATS-ttl.png">NATS TTL Diagram</a></p>
+<p><img alt="NATS TTL Diagram" src="../diagrams/NATS-ttl.png" /></p>
 <h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
 <p>The Oversight system treats NATS and JetStream as non-authoritative. Failure of NATS or JetStream <strong>MUST NOT</strong> 
    cause autonomous physical actuation. </p>
@@ -465,9 +465,9 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li>Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
      degraded authority mode.</li>
 </ul>
-<p><img alt="NATS Circuit Breaker" src="../NATS-circuit-breaker.png" /></p>
+<p><img alt="NATS Circuit Breaker" src="../diagrams/NATS-circuit-breaker.png" /></p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
-<p><img alt="NATS Data Flow" src="../NATS-Data-Flow.png" /></p>
+<p><img alt="NATS Data Flow" src="../diagrams/NATS-Data-Flow.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>

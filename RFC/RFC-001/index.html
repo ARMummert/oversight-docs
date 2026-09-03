@@ -99,6 +99,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-connection-failure">NATS Connection Failure</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
     </li>
@@ -380,10 +384,80 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </ol>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <ol>
-<li><strong>NATS Outage</strong>:</li>
-<li><strong>Message Broker Latency</strong>:</li>
-<li><strong>NATS Command TTL Expiry</strong>:</li>
+<li>
+<p><strong>NATS Telemetry Stream Stale / Idle Timeout (Zero-Tolerance Watchdog)</strong>: If the NATS consumer detects stream 
+   silence (no telemetry packets arrive within the specified timeframe), the system will trigger a dedicated NATS 
+   Watcher service which publishes a <code>STALE_DATA</code> event.  This forces the reasoning agent into a safe state and 
+   instantly revokes the AI&rsquo;s writing privileges.</p>
+</li>
+<li>
+<p><strong>Middleware Integrity Watchdog (Fail-Safe &ldquo;HOLD&rdquo; Mode)</strong>: The Southbound Driver actively monitors the LangGraph
+   Agent&rsquo;s heartbeat via the NATS JetStream KV store. If the Agent&rsquo;s timestamp becomes stale, the system purges all
+   pending intents in the NATS Command Queue and issues a <code>WATCHDOG_TRIP</code> alarm.</p>
+</li>
+<li>
+<p><strong>Message Broker Latency</strong>:</p>
+</li>
+<li>
+<p><strong>NATS Command TTL Expiry</strong>:</p>
+</li>
 </ol>
+<h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
+<ul>
+<li>The Oversight system treats NATS and JetStream as non-authoritative. Failure of NATS or JetStream <strong>MUST NOT</strong> 
+   cause autonomous physical actuation. </li>
+</ul>
+<p>#### Bounded Retries
+   - Connection attempts <strong>MUST</strong> be bounded to prevent retry storms. 
+   - Connection failures are evaluated by the NATS circuit breaker.</p>
+<p>#### Health Verification
+   - Recovery <strong>MUST</strong> require successful health verification before normal message flow resumes.
+   - Recovery <strong>MUST NOT</strong> automatically restore normal message flow.
+   - The circuit breaker <strong>MUST</strong> transition to HALF-OPEN after the reset timeout expires and a limited recovery attempt
+     is made. Normal message flow <strong>MUST</strong> resume only after successful health verification.
+   - A failed recover attempt <strong>MUST</strong> transition the circuit back to OPEN.</p>
+<p>#### Logging and Operator Alerting
+   - The system <strong>MUST</strong> log the failures, circuit breaker transitions, recovery attempts, and recovery failures.
+   - The system <strong>MUST</strong> alert the operator when NATS availability affects normal operations or causes a transition 
+     to the degraded authority mode.</p>
+<p>#### NATS Circuit Breaker
+   The Oversight system uses a circuit-breaker to prevent continuous attempts against a failing NATS dependency.
+   - Services <strong>SHOULD</strong> use a circuit breaker to stop repeated connection attempts after the configured failure 
+     threshold is reached. 
+   - <strong>CLOSED</strong>: Normal operation. The system is healthy and NATS is available.
+   - <strong>OPEN</strong>: NATS operations are failing or rejecting messages after the failure threshold is reached.
+   - <strong>HALF-OPEN</strong>: After the reset timeout expires, a limited recovery attempt is made. This is to determine if NATS
+     has recovered.
+   - <strong>Successful Recovery</strong>: If the system has a successful recovery, the circuit transitions from HALF-OPEN to CLOSED.
+     A failed recovery attempt transitions the circuit back to OPEN.</p>
+<p>#### Degraded Authority Mode
+   - Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
+     degraded authority mode. </p>
+<p><code>text
+   NATS Connection Failure
+            |
+   Circuit Breaker: CLOSED -&gt; OPEN
+            |
+            |-- Log Failure
+            |
+            |-- Operator Alert
+            |
+            |-- Enter Degraded Authority Mode
+            |
+            |
+   Reset Timeout
+            |
+   OPEN -&gt; HALF-OPEN
+            |
+   Limited Recovery Attempt
+            |
+   Health Verification 
+        //   \\
+     FAIL     SUCCESS
+      |          |
+     OPEN     CLOSED
+                 |
+              Normal Message Flow</code></p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <p><img alt="NATS Data Flow" src="../NATS-Data-Flow.png" /></p>
 <div class="admonition note">
@@ -649,6 +723,8 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <p><a href="https://ifactoryapp.com/industries/power-plant/unified-namespace-mqtt-opc-ua-power-plant-data">UNS MQTT OPC-UA Power Plant Data</a></p>
 <p><a href="https://solace.com/wp/unified-namespace/">UNS</a></p>
 <p><a href="https://thearchitectsnotebook.substack.com/p/why-distributed-systems-fail-in-one">Why Distributed Systems Fail</a></p>
+<p><a href="https://github.com/nats-io/nats-architecture-and-design/tree/main">NATS Architecture &amp; Design</a></p>
+<p><a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker Problem</a></p>
               
             </div>
           </div><footer>

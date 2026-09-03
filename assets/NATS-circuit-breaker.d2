@@ -1,0 +1,32 @@
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+oversight: Oversight Service
+
+breaker: NATS Circuit Breaker {
+  closed: CLOSED
+  open: OPEN
+  half_open: HALF_OPEN
+}
+
+nats: NATS / JetStream
+
+oversight -> breaker.closed: message operation
+breaker.closed -> nats: publish / consume
+
+nats -> breaker.closed: success
+
+breaker.closed -> breaker.open: failure threshold reached
+breaker.open -> breaker.half_open: reset timeout
+breaker.half_open -> nats: limited recovery attempt
+
+nats -> breaker.closed: success
+nats -> breaker.open: failure
+
+breaker.open -> oversight: fail closed\nenter degraded mode

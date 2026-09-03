@@ -1,0 +1,35 @@
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+created: Command Created
+valid: Command Valid
+nats: Published to NATS
+
+ttl: Command TTL {
+  label: "Command TTL"
+}
+
+processed: Successfully Processed
+expired: EXPIRED
+
+inhibit: Inhibit Execution
+log: Log Expiration
+alert: Operator Alert
+
+created -> valid
+valid -> nats
+
+nats -> processed: Processing succeeds
+
+nats -> ttl: TTL countdown
+ttl -> expired: TTL expires
+
+expired -> inhibit
+expired -> log
+expired -> alert

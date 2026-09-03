@@ -17,16 +17,19 @@ breaker: NATS Circuit Breaker {
 
 nats: NATS / JetStream
 
-oversight -> breaker.closed: message operation
-breaker.closed -> nats: publish / consume
+oversight -> breaker.closed: NATS operation
+breaker.closed -> nats: Publish / consume
 
-nats -> breaker.closed: success
+nats -> breaker.closed: Normal operation success
 
-breaker.closed -> breaker.open: failure threshold reached
-breaker.open -> breaker.half_open: reset timeout
-breaker.half_open -> nats: limited recovery attempt
+breaker.closed -> breaker.open: Failure threshold reached
+breaker.open -> oversight: Fail fast\nEnter degraded mode
 
-nats -> breaker.closed: success
-nats -> breaker.open: failure
+breaker.open -> breaker.half_open: Reset timeout expires
 
-breaker.open -> oversight: fail closed\nenter degraded mode
+breaker.half_open -> nats: Limited recovery attempt
+nats -> breaker.half_open: Recovery verification success
+breaker.half_open -> breaker.closed: Recovery successful
+
+nats -> breaker.half_open: Recovery verification failure
+breaker.half_open -> breaker.open: Recovery failed

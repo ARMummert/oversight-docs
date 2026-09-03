@@ -440,35 +440,8 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <p><strong>Degraded Authority Mode</strong></p>
 <ul>
 <li>Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
-     degraded authority mode. </li>
+     degraded authority mode.</li>
 </ul>
-<p><code>text
-   ┌─────────────────────────────────────────────────────────────────────────┐
-   │                         NATS Connection Failure                         │
-   └───────────────────────────────────┬─────────────────────────────────────┘
-                                       |
-                           Circuit Breaker: CLOSED -&gt; OPEN
-                                    |
-                                    |-- Log Failure
-                                    |
-                                    |-- Operator Alert
-                                    |
-                                    |-- Enter Degraded Authority Mode
-                                    |
-                                    |
-                           Reset Timeout Expired
-                                    |
-                           OPEN -&gt; HALF-OPEN
-                                    |
-                           Limited Recovery Attempt
-                                    |
-                           Health Verification 
-                                //   \\
-                             FAIL     SUCCESS
-                              |          |
-                             OPEN     CLOSED
-                                         |
-                                      Normal Message Flow</code></p>
 <p><img alt="NATS Circuit Breaker" src="../NATS-circuit-breaker.png" /></p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <p><img alt="NATS Data Flow" src="../NATS-Data-Flow.png" /></p>

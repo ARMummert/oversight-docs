@@ -1,0 +1,46 @@
+vars: {
+  d2-config: {
+    theme-id: 300
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+nats: NATS / JetStream {
+  label: "NATS / JetStream\nMessage Lifecycle"
+}
+
+retention: Message Retention / Replay Policy
+delivered: Message Delivered
+
+gate: Southbound Execution Gate {
+  label: "Application-Level\nCommand Validity Check"
+}
+
+valid: VALID {
+  label: "VALID\nnow < expires_at"
+}
+
+expired: EXPIRED {
+  label: "EXPIRED\nnow >= expires_at"
+}
+
+safety: Safety Validation
+physical: Physical Execution
+
+inhibit: Inhibit Execution
+log: Log + Alert
+
+nats -> retention
+retention -> delivered
+delivered -> gate
+
+gate -> valid
+gate -> expired
+
+valid -> safety
+safety -> physical
+
+expired -> inhibit
+expired -> log

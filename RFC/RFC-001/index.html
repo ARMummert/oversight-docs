@@ -97,6 +97,36 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#semantic-independence">Semantic Independence</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#transport-independence">Transport Independence</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#idempotent-command-enforcement">Idempotent Command Enforcement</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#distributed-tracing">Distributed Tracing</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#command-time-to-live-ttl">Command Time-to-Live (TTL)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#message-durability">Message Durability</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#latency-targets">Latency Targets</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dead-letter-queue-dlq">Dead Letter Queue (DLQ)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#consumer-flow-control-backpressure-management">Consumer Flow Control (Backpressure Management)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#health-metrics">Health Metrics</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#data-storm-resilience-nats-buffer">Data Storm Resilience (NATS Buffer)</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#horizontal-scaling">Horizontal Scaling</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#fail-safe-hold-mode">Fail-Safe &ldquo;HOLD&rdquo; Mode</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#system-cold-boot-protocol">System Cold-Boot Protocol</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
         <ul>
@@ -112,7 +142,11 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nats-circuit-breaker">NATS Circuit Breaker</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nats-message-lifecycle">NATS Message Lifecycle</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
         <ul>
@@ -293,6 +327,9 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <h3 id="message-payload">Message Payload<a class="headerlink" href="#message-payload" title="Permanent link"></a></h3>
 <p><strong>Example</strong>:</p>
 <pre><code class="language-text">{
+  &quot;command_id&quot;: &quot;uuid&quot;,
+  &quot;create_at&quot;: &quot;2026-08-31T17:59:58Z&quot;,
+  &quot;expires_at&quot;: &quot;2026-08-31T18:00:02Z&quot;,
   &quot;message_id&quot;: &quot;uuid&quot;,
   &quot;trace_id&quot;: &quot;uuid&quot;,
   &quot;correlation_id&quot;: &quot;uuid&quot;,
@@ -312,96 +349,81 @@ The fully notarized commands are then handed to the Southbound Driver for execut
   &quot;quality&quot;: 192
 }
 
-
 </code></pre>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
-<ol>
-<li>
-<p><strong>Semantic Independence</strong>: Downstream consumers must not know the physical register addresses or vendor-specific 
-   protocols. Instead, the UNS provides a semantic namespace that abstracts the physical register addresses and 
-   vendor-specific protocols. </p>
+<h3 id="semantic-independence">Semantic Independence<a class="headerlink" href="#semantic-independence" title="Permanent link"></a></h3>
+<p>Downstream consumers must not know the physical register addresses or vendor-specific protocols. Instead, the UNS 
+   provides a semantic namespace that abstracts the physical register addresses and vendor-specific protocols. </p>
 <p><strong>Examples</strong>:
-  - Modbus register addresses
-  - OPC_UA node identifiers
-  - Ethernet/IP object addresses
-  - Vendor-specific device naming</p>
-</li>
-<li>
-<p><strong>Transport Independence</strong>: The event contract must remain decoupled from the NATS JetStream implementation details</p>
-</li>
-<li>
-<p><strong>Idempotent Command Enforcement</strong>:</p>
-<ul>
-<li>Oversight uses <strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> durable consumers and acknowledgements. </li>
-<li>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</li>
-</ul>
-</li>
-<li>
-<p><strong>Distributed Tracing</strong>: The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
+      — Modbus register addresses
+      — OPC_UA node identifiers
+      — Ethernet/IP object addresses
+      — Vendor-specific device naming</p>
+<h3 id="transport-independence">Transport Independence<a class="headerlink" href="#transport-independence" title="Permanent link"></a></h3>
+<p>The event contract must remain decoupled from the NATS JetStream implementation details</p>
+<h3 id="idempotent-command-enforcement">Idempotent Command Enforcement<a class="headerlink" href="#idempotent-command-enforcement" title="Permanent link"></a></h3>
+<pre><code>- Oversight uses **At-Least-Once** command delivery using **NATS JetStream** durable consumers and acknowledgements. 
+- Each command carries a `command_id` (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.
+</code></pre>
+<h3 id="distributed-tracing">Distributed Tracing<a class="headerlink" href="#distributed-tracing" title="Permanent link"></a></h3>
+<p>The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
    into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
    traveling metadata tag).</p>
-</li>
-<li>
-<p><strong>Command Time-to-Live (TTL)</strong>: Every intent published to the NATS Command Queue carries a strict command ttl 
-   (default: 2000 ms). If a command is delayed by network jitter, it expires in the queue rather than executing a 
-   stale action seconds later.</p>
-</li>
-<li>
-<p><strong>Message Durability</strong>: Using NATS JetStream&rsquo;s immutable streams and consumer offset tracking, the system guarantees 
-  it will not lose any intents or telemetry packets, even during a hard power failure. Unacknowledged commands are 
-  re-queued upon system restart.</p>
-</li>
-<li>
-<p><strong>Latency Targets</strong></p>
+<h3 id="command-time-to-live-ttl">Command Time-to-Live (TTL)<a class="headerlink" href="#command-time-to-live-ttl" title="Permanent link"></a></h3>
+<p>Every intent published to the NATS Command Queue carries a strict command ttl. If a command is delayed by network 
+   jitter, it expires in the queue rather than executing a stale action seconds later.</p>
+<h3 id="message-durability">Message Durability<a class="headerlink" href="#message-durability" title="Permanent link"></a></h3>
+<p>Using NATS JetcStream provides persistent storage, replay, acknowledgements, recovery of published messages, and 
+   consumer state tracking. The Oversight system uses a configured retention and replication policy to provide message
+   durability and recovery. Message durability in the system is dependent on the configuration of storage, replication, 
+   retention, and acknowledgement policies. Unacknowledged commands may be redelivered to consumers based on the 
+   JetStream consumer acknowledgement and redelivery policies.</p>
+<h3 id="latency-targets">Latency Targets<a class="headerlink" href="#latency-targets" title="Permanent link"></a></h3>
 <ul>
-<li><strong>Ingest-to-UNS (NATS)</strong>: &lt; 50ms</li>
-<li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms</li>
+<li><strong>Field Asset-to-UNS (NATS JetStream UNS)</strong>: &lt; 50 ms – This is measured from receipt of telemetry by the 
+    Northbound Ingest Service to the successful publishing of the event to NATS JetStream.</li>
+<li><strong>NATS Transport Latency</strong>: This is measured from the publisher timestamp to the consumer receipt timestamp. </li>
+<li><strong>UNS-to-Bytewax (Processing)</strong>: &lt; 20ms - This is measured from NATS JetStream consumer receipt of the event to
+    delivery to Bytewax.</li>
+<li><strong>End-to-End Latency</strong>: This is measured separately from the original telemetry source timestamp.  This happens
+    through the application downstream processing or execution stage.</li>
 </ul>
-</li>
-<li>
-<p><strong>Dead Letter Queue (DLQ)</strong>: Any telemetry tasks that fail validation or cause a reasoning timeout are moved to a 
-   dedicated NATS DLQ. This prevents non-validated tasks from clogging the primary pipeline while preserving them for 
-   developer forensics.</p>
-</li>
-<li>
-<p><strong>Consumer Prefetch (Backpressure Management)</strong>: By using NATS consumer pull-model flow control, the system prevents
-   the Agent from being overwhelmed by telemetry bursts. This lets the Broker buffer the load while the reasoning engine
-   completes its inference cycle.</p>
-</li>
-<li>
-<p><strong>Health Metrics</strong>: Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers 
-    a <strong>System Health</strong> alert before telemetry data is dropped.</p>
-</li>
-<li>
-<p><strong>Data Storm Resilience (NATS Buffer)</strong>: During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service 
-  uses <strong>NATS</strong> as a disk-persistent local buffer. This prevents memory exhaustion and protects the <strong>NATS Command 
-  Queue</strong> from being overwhelmed.</p>
-</li>
-<li>
-<p><strong>Horizontal Scaling</strong>: The system leverages NATS consumer groups to distribute the telemetry of thousands of 
-    sensors across multiple Edge Gateway nodes.</p>
-</li>
-<li>
-<p><strong>Fail-Safe &ldquo;HOLD&rdquo; Mode</strong>: In the event of a heartbeat failure, the system will purge all pending intents in the 
-    NATS Command Queue and issues a <code>WATCHDOG_TRIP</code> alarm.</p>
-</li>
-<li>
-<p><strong>System Cold-Boot Protocol</strong>: The system enters a 60-second passive synchronization state when powering on to 
-    prevent the cognitive reasoning engine from acting on stale telemetry.</p>
-</li>
-</ol>
+<h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
+<p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams/ consumers, retry policies, 
+   and application-level failure handling.</p>
+<h3 id="consumer-flow-control-backpressure-management">Consumer Flow Control (Backpressure Management)<a class="headerlink" href="#consumer-flow-control-backpressure-management" title="Permanent link"></a></h3>
+<p>By using NATS consumer pull-model flow control, the system prevents the Agent from being overwhelmed by telemetry 
+   bursts. This lets the Broker buffer the load while the reasoning engine completes its inference cycle.</p>
+<h3 id="health-metrics">Health Metrics<a class="headerlink" href="#health-metrics" title="Permanent link"></a></h3>
+<p>Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers a <strong>System Health</strong> 
+   alert before telemetry data is dropped.</p>
+<h3 id="data-storm-resilience-nats-buffer">Data Storm Resilience (NATS Buffer)<a class="headerlink" href="#data-storm-resilience-nats-buffer" title="Permanent link"></a></h3>
+<p>During telemetry surges or &ldquo;Data Storms,&rdquo; the Northbound Ingest Service uses <strong>NATS</strong> as a disk-persistent local 
+   buffer. This prevents memory exhaustion and protects the <strong>NATS Command Queue</strong> from being overwhelmed.</p>
+<h3 id="horizontal-scaling">Horizontal Scaling<a class="headerlink" href="#horizontal-scaling" title="Permanent link"></a></h3>
+<p>The system leverages NATS durable consumers to distribute the telemetry of thousands of sensors across multiple 
+   Edge Gateway nodes. Where appropriate, queue-groups and/or shared consumer patterns can be used. </p>
+<h3 id="fail-safe-hold-mode">Fail-Safe &ldquo;HOLD&rdquo; Mode<a class="headerlink" href="#fail-safe-hold-mode" title="Permanent link"></a></h3>
+<p>In the event of a heartbeat failure, the system will purge all pending intents in the NATS Command Queue and issues 
+   a <code>WATCHDOG_TRIP</code> alarm.</p>
+<h3 id="system-cold-boot-protocol">System Cold-Boot Protocol<a class="headerlink" href="#system-cold-boot-protocol" title="Permanent link"></a></h3>
+<p>The system enters a 60-second passive synchronization state when powering on to prevent the cognitive reasoning
+   engine from acting on stale telemetry.</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <h3 id="nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog">NATS Telemetry Stream Stale / Idle Timeout (Zero-Tolerance Watchdog)<a class="headerlink" href="#nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog" title="Permanent link"></a></h3>
-<p>If the NATS consumer detects stream silence (no telemetry packets arrive within the specified timeframe), the system 
-   will trigger a dedicated NATS Watcher service which publishes a <code>STALE_DATA</code> event.  This forces the reasoning agent 
-   into a safe state and instantly revokes the AI&rsquo;s writing privileges.</p>
+<p>If the NATS consumer detects the absense of expected telemetry, the system will trigger a dedicated NATS Watcher 
+   service which publishes a <code>STALE_DATA</code> event.  This forces the reasoning agent into a safe state and instantly 
+   revokes the AI&rsquo;s writing privileges.</p>
 <h3 id="middleware-integrity-watchdog-fail-safe-hold-mode">Middleware Integrity Watchdog (Fail-Safe &ldquo;HOLD&rdquo; Mode)<a class="headerlink" href="#middleware-integrity-watchdog-fail-safe-hold-mode" title="Permanent link"></a></h3>
-<p>The Southbound Driver actively monitors the LangGraph Agent&rsquo;s heartbeat via the NATS JetStream KV store. If the 
+<p>The Southbound Driver actively monitors the LangGraph Agent&rsquo;s heartbeat via the NATS JetStream KV bucket. If the 
    Agent&rsquo;s timestamp becomes stale, the system purges all pending intents in the NATS Command Queue and issues a 
    <code>WATCHDOG_TRIP</code> alarm.</p>
 <h3 id="nats-message-broker-latency">NATS Message Broker Latency<a class="headerlink" href="#nats-message-broker-latency" title="Permanent link"></a></h3>
 <ul>
-<li>The Oversight system <strong>MUST</strong> monitor NATS message latency for time-sensitive operations.</li>
+<li>The Oversight system <strong>MUST</strong> monitor NATS message latency for time-sensitive message flows.</li>
+<li>NATS message latency <strong>MUST</strong> be measured using message timestamps and consumer receipt timestamps for 
+     application level time-sensitive message flows.</li>
+<li>The system <strong>MUST</strong> be able to distinguish between NATS transport latency and consumer processing delays.</li>
 <li>Latency <strong>MUST</strong> be monitored against the defined thresholds. Thresholds are appropriately defined based on 
      message type and operational requirements.</li>
 <li>The system <strong>MUST</strong> treat the message flow as degraded when latency exceeds the defined thresholds.</li>
@@ -410,16 +432,33 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li>Normal message flow <strong>MUST NOT</strong> resume based on latency decreases. Recovery <strong>MUST</strong> require health
      verification.</li>
 </ul>
+<p>The following defines each latency measurement in the system:
+   1. <strong>Ingest Latency</strong>: Time from receipt of source telemetry by the Northbound Ingest to successful publishing of 
+     the event to NATS JetStream.
+   2. <strong>NATS Transport Latency</strong>: Time from the publisher timestamp to the consumer receipt timestamp.
+   3. <strong>Consumer Processing Latency</strong>: Time from consumer receipt of a message to completion of the downstream processing.
+   4. <strong>End-to-End Latency</strong>: Time from the originating event or telemetry timestamp through the application level
+      downstream processing or execution stage.</p>
+<p>Consumer Lay <strong>MUST NOT</strong> be treated as equivalent to NATS transport latency.</p>
 <h3 id="nats-command-ttl-expiry">NATS Command TTL Expiry<a class="headerlink" href="#nats-command-ttl-expiry" title="Permanent link"></a></h3>
 <ul>
-<li>Every command that affects physical actuation <strong>MUST</strong> have a defined TTL (Time-to-Live). The TTL indicates
-     the max period for which the command is stored in the stream.</li>
-<li>The TTL <strong>MUST NOT</strong> be executed after its TTL has expired.</li>
+<li>Every control-affecting command <strong>MUST</strong> have an application level expiration timestamp. The command <strong>MUST NOT</strong> 
+     be executed after expiration time.</li>
+<li>An expired command <strong>MUST NOT</strong> be executed.</li>
+<li>Commands <strong>MUST</strong> contain the following (at minimum):<ul>
+<li><code>command_id</code> - command ID (UUIDv4)</li>
+<li><code>create_at</code> - command creation timestamp</li>
+<li><code>expires_at</code> - the time after which the command is no longer valid.</li>
+</ul>
+</li>
+<li>A command is only valid while the current time is less than the <code>expires_at</code> timestamp.</li>
+<li>Command expiration <strong>MUST</strong> be enforced by the Southbound Driver before physical actuation is allowed.</li>
 <li>Command validation <strong>MUST</strong> be performed before physical actuation is allowed.</li>
-<li>If a command reaches its TTL without successful processing and acknowledgment, it <strong>MUST</strong> be marked <code>EXPIRED</code> and
-     any further execution <strong>MUST</strong> be prevented.</li>
+<li>If the current time is greater than or equal to the <code>expires_at</code> timestamp, the command <strong>MUST</strong> be marked as 
+     <code>EXPIRED</code> and physical actuation <strong>MUST NOT</strong> be allowed.</li>
 <li>If a command is expired, the system <strong>MUST NOT</strong> try to retry or reissue automatically.</li>
-<li>The system <strong>MUST</strong> log the command expiration, including the command id and expiration reason.</li>
+<li>The system <strong>MUST</strong> log the command expiration, including the <code>command_id</code>, <code>create_at</code> and <code>expires_at</code> 
+     timestamps and the expiration reason.</li>
 <li>The system <strong>MUST</strong> alert the operator when command execution affects control operations.</li>
 <li>Expiration of a command <strong>MUST NOT</strong> result in autonomous physical actuation.</li>
 </ul>
@@ -450,7 +489,7 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <p><strong>NATS Circuit Breaker</strong></p>
 <p>The Oversight system uses a circuit-breaker to prevent continuous attempts against a failing NATS dependency.</p>
 <ul>
-<li>Services <strong>SHOULD</strong> use a circuit breaker to stop repeated connection attempts after the configured failure 
+<li>Services <strong>MUST</strong> implement the NATS circuit breaker to stop repeated connection attempts after the configured failure 
      threshold is reached. </li>
 <li><strong>CLOSED</strong>: Normal operation. The system is healthy and NATS is available.</li>
 <li><strong>OPEN</strong>: The failure threshold is reached. NATS operations are rejected or fail fast, and repeated connection 
@@ -465,9 +504,12 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <li>Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
      degraded authority mode.</li>
 </ul>
+<h2 id="nats-circuit-breaker">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker" title="Permanent link"></a></h2>
 <p><img alt="NATS Circuit Breaker" src="../diagrams/NATS-circuit-breaker.png" /></p>
 <h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
 <p><img alt="NATS Data Flow Diagram" src="../diagrams/NATS-Flow.png" /></p>
+<h2 id="nats-message-lifecycle">NATS Message Lifecycle<a class="headerlink" href="#nats-message-lifecycle" title="Permanent link"></a></h2>
+<p><img alt="NATS Message Lifecycle" src="../diagrams/NATS-message-lifecycle.png" /></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 </div>
@@ -589,7 +631,7 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <li>Configure persistent storage for the telemetry and command queues.</li>
 <li>Configure Authentication &amp; Authorization.</li>
 <li>Establish Health Monitoring.</li>
-<li>Configure NATS JetStream consumer groups and DLQ.</li>
+<li>Configure NATS JetStream durable consumers and DLQ.</li>
 <li>Configure consumer offset tracking and Write Once Read Many (WORM) retention policies to enforce the at-least-once 
    processing of messages.</li>
 <li>Implement Failure Modes:<ul>
@@ -620,7 +662,7 @@ requirements of the Oversight system without introducing unnecessary complexity 
 <ol>
 <li>Create stream configuration (telemetry, event, command, and audit) in NATS JetStream</li>
 <li>Configure command expiration</li>
-<li>Configure consumer groups and DLQ</li>
+<li>Configure durable consumers and DLQ</li>
 <li>Configure consumer offset tracking and WORM retention policies</li>
 <li>Implement pull consumers where necessary to handle backpressure.</li>
 <li>Implement consumer group rebalancing.</li>
@@ -686,7 +728,7 @@ requirements of the Oversight system without introducing unnecessary complexity 
 </tr>
 <tr>
 <td>Forensic Traceability</td>
-<td>Provides a distributed WORM-compliant log for every telemetry frame and command transition</td>
+<td>Provides a distributed log that is WORM compliant for every telemetry frame and command transition</td>
 <td>Full auditability and step-by-step reasoning replays of every command and telemetry frame for ISA 18.2, NERC CIP, and EPA regulatory compliance.</td>
 </tr>
 <tr>

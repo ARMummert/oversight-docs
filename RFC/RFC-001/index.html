@@ -187,6 +187,10 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#risks-security-considerations">Risks &amp; Security Considerations</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#security-design">Security Design</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#impact-and-benefits">Impact and Benefits</a>
     </li>
@@ -755,6 +759,8 @@ defines what the data means and NATS transports that data.</p>
 <p><strong>Examples</strong>:</p>
 <ol>
 <li><code>oversight.commands.proposed</code></li>
+<li><code>oversight.commands.authorized</code></li>
+<li><code>oversight.commands.signed</code></li>
 <li><code>oversight.commands.validated</code></li>
 <li><code>oversight.commands.executed</code></li>
 <li><code>oversight.commands.failed</code></li>
@@ -781,7 +787,188 @@ defines what the data means and NATS transports that data.</p>
 </ol>
 <h2 id="testing-configuration">Testing Configuration<a class="headerlink" href="#testing-configuration" title="Permanent link"></a></h2>
 <p>The following testing configuration is used for testing NATS JetStream:</p>
-<p><img alt="NATS Infrastructure Tests" src="/docs/NATS-test-hierarchy.png" /></p>
+<p><strong>test_nats_connectivity.py</strong></p>
+<ol>
+<li><code>test_nats_connectivity</code></li>
+<li><code>test_nats_disconnect</code></li>
+<li><code>test_nats_reconnect</code></li>
+<li><code>test_nats_reconnect_after_broker_restart</code></li>
+</ol>
+<p><strong>test_nats_pub_sub.py</strong></p>
+<ol>
+<li><code>test_nats_pub_sub</code></li>
+<li><code>test_nats_publish_receives_puback</code></li>
+<li><code>test_nats_publish_to_valid_subject</code></li>
+<li><code>test_nats_subscriber_receives_published_message</code></li>
+</ol>
+<p><strong>test_nats_jetstream.py</strong></p>
+<ol>
+<li><code>test_nats_jetstream_enabled</code></li>
+<li><code>test_nats_jetstream_account_info_available</code></li>
+<li><code>test_nats_jetstream_streams_available</code></li>
+</ol>
+<p><strong>test_nats_streams.py</strong></p>
+<ol>
+<li><code>test_nats_telemetry_stream_exists</code></li>
+<li><code>test_nats_command_stream_exists</code></li>
+<li><code>test_nats_event_stream_exists</code></li>
+<li><code>test_nats_audit_stream_exists</code></li>
+<li><code>test_nats_health_stream_exists</code></li>
+<li><code>test_nats_telemetry_stream_uses_file_storage</code></li>
+<li><code>test_nats_command_stream_uses_file_storage</code></li>
+<li><code>test_nats_event_stream_uses_file_storage</code></li>
+<li><code>test_nats_stream_replication_configuration</code></li>
+<li><code>test_nats_stream_retention_configuration</code></li>
+<li><code>test_nats_stream_storage_limits_configured</code></li>
+</ol>
+<p><strong>test_nats_subjects.py</strong></p>
+<ol>
+<li><code>test_nats_telemetry_subjects</code></li>
+<li><code>test_nats_command_subjects</code></li>
+<li><code>test_nats_event_subjects</code></li>
+<li><code>test_nats_audit_subjects</code></li>
+<li><code>test_nats_health_subjects</code></li>
+<li><code>test_nats_telemetry_stream_captures_telemetry_subjects</code></li>
+<li><code>test_nats_command_stream_captures_command_subjects</code></li>
+<li><code>test_nats_event_stream_captures_event_subjects</code></li>
+<li><code>test_nats_audit_stream_captures_audit_subjects</code></li>
+<li><code>test_nats_health_stream_captures_health_subjects</code></li>
+<li><code>test_nats_telemetry_subject_follows_uns_hierarchy</code></li>
+<li><code>test_nats_telemetry_wildcard_subscription</code></li>
+</ol>
+<p><strong>test_nats_subject_permissions.py</strong></p>
+<ol>
+<li><code>test_northbound_ingest_can_publish_telemetry</code></li>
+<li><code>test_bytewax_can_subscribe_to_telemetry</code></li>
+<li><code>test_agent_can_publish_proposed_commands</code></li>
+<li><code>test_southbound_driver_can_subscribe_to_authorized_commands</code></li>
+<li><code>test_northbound_ingest_cannot_publish_commands</code></li>
+<li><code>test_bytewax_cannot_publish_commands</code></li>
+<li><code>test_agent_cannot_publish_validated_command</code></li>
+<li><code>test_agent_cannot_publish_executed_command</code></li>
+<li><code>test_unauthorized_client_cannot_publish_to_commands</code></li>
+<li><code>test_unauthorized_client_cannot_subscribe_to_commands</code></li>
+<li><code>test_southbound_driver_cannot_subscribe_to_proposed_commands</code></li>
+</ol>
+<p><strong>test_nats_consumers.py</strong></p>
+<ol>
+<li><code>test_nats_durable_consumers_exist</code></li>
+<li><code>test_nats_durable_consumer_receives_message</code></li>
+<li><code>test_nats_explicit_ack</code></li>
+<li><code>test_nats_ack_removes_message_from_pending</code></li>
+<li><code>test_nats_unacked_message_is_redelivered</code></li>
+<li><code>test_nats_durable_consumer_survives_restart</code></li>
+<li><code>test_nats_consumer_resumes_after_restart</code></li>
+<li><code>test_nats_consumer_max_ack_pending_enforced</code></li>
+<li><code>test_nats_shared_consumer_distributes_work</code></li>
+<li><code>test_nats_worker_failure_reassigns_unacked_message</code></li>
+</ol>
+<p><strong>test_nats_redelivery.py</strong></p>
+<ol>
+<li><code>test_nats_unacked_message_redelivered</code></li>
+<li><code>test_nats_redelivery_count_increments</code></li>
+<li><code>test_nats_max_deliver_is_enforced</code></li>
+<li><code>test_nats_max_deliver_advisory_emitted</code></li>
+<li><code>test_nats_message_not_redelivered_after_ack</code></li>
+</ol>
+<p><strong>test_nats_dlq.py</strong></p>
+<ol>
+<li><code>test_nats_dlq_subject_exists</code></li>
+<li><code>test_nats_message_routed_to_dlq_after_max_deliver</code></li>
+<li><code>test_nats_dlq_message_has_unique_message_id</code></li>
+<li><code>test_nats_dlq_preserves_original_message_id</code></li>
+<li><code>test_nats_dlq_preserves_original_subject</code></li>
+<li><code>test_nats_dlq_preserves_trace_id</code></li>
+<li><code>test_nats_dlq_preserves_correlation_id</code></li>
+<li><code>test_nats_dlq_preserves_schema_version</code></li>
+<li><code>test_nats_dlq_preserves_original_timestamp</code></li>
+<li><code>test_nats_dlq_preserves_consumer_identity</code></li>
+<li><code>test_nats_dlq_preserves_failure_reason</code></li>
+<li><code>test_nats_dlq_preserves_failure_type</code></li>
+<li><code>test_nats_dlq_preserves_retry_count</code></li>
+<li><code>test_nats_dlq_preserves_dead_lettered_at</code></li>
+<li><code>test_nats_dlq_preserves_stream_metadata</code></li>
+<li><code>test_nats_dlq_preserves_command_id_for_commands</code></li>
+<li><code>test_nats_dlq_preserves_command_expiration_metadata</code></li>
+<li><code>test_nats_rejected_command_not_sent_to_dlq</code></li>
+</ol>
+<p><strong>test_nats_command_idempotency.py</strong></p>
+<ol>
+<li><code>test_duplicate_command_id_not_executed_twice</code></li>
+<li><code>test_redelivered_command_not_executed_twice</code></li>
+<li><code>test_completed_command_id_is_recognized_as_duplicate</code></li>
+<li><code>test_duplicate_command_preserves_original_execution_result</code></li>
+<li><code>test_redelivered_command_not_executed_twice</code></li>
+</ol>
+<p><strong>test_nats_command_ttl.py</strong></p>
+<ol>
+<li><code>test_valid_schema_version_accepted</code></li>
+<li><code>test_unsupported_schema_version_rejected</code></li>
+<li><code>test_missing_schema_version_rejected</code></li>
+<li><code>test_invalid_message_envelope_rejected</code></li>
+<li><code>test_required_message_fields_present</code></li>
+<li><code>test_message_id_required</code></li>
+<li><code>test_trace_id_required</code></li>
+<li><code>test_correlation_id_preserved</code></li>
+<li><code>test_created_at_required</code></li>
+</ol>
+<p><strong>test_nats_tracing.py</strong></p>
+<ol>
+<li><code>test_trace_id_preserved_across_consumer_publish</code></li>
+<li><code>test_correlation_id_preserved_across_consumer_publish</code></li>
+<li><code>test_message_id_is_unique_per_message</code></li>
+<li><code>test_downstream_message_receives_new_message_id</code></li>
+<li><code>test_nats_headers_mirror_trace_id_when_configured</code></li>
+<li><code>test_nats_headers_mirror_correlation_id_when_configured</code></li>
+</ol>
+<p><strong>test_nats_replay.py</strong></p>
+<ol>
+<li><code>test_nats_stream_replay</code></li>
+<li><code>test_nats_replay_from_beginning</code></li>
+<li><code>test_nats_replay_from_sequence</code></li>
+<li><code>test_nats_durable_consumer_resumes_from_saved_position</code></li>
+<li><code>test_nats_replay_preserves_message_payload</code></li>
+<li><code>test_nats_replay_preserves_message_metadata</code></li>
+</ol>
+<p><strong>test_nats_metrics.py</strong></p>
+<ol>
+<li><code>test_nats_consumer_pending_count_available</code></li>
+<li><code>test_nats_ack_pending_count_available</code></li>
+<li><code>test_nats_redelivery_count_available</code></li>
+<li><code>test_nats_consumer_state_available</code></li>
+<li><code>test_nats_stream_message_count_available</code></li>
+<li><code>test_nats_stream_bytes_available</code></li>
+<li><code>test_nats_stream_utilization_calculable</code></li>
+<li><code>test_nats_publish_errors_recorded</code></li>
+<li><code>test_nats_puback_failures_recorded</code></li>
+<li><code>test_nats_connection_state_available</code></li>
+<li><code>test_nats_reconnect_count_recorded</code></li>
+<li><code>test_nats_dlq_count_available</code></li>
+<li><code>test_nats_max_deliver_advisory_observable</code></li>
+</ol>
+<p><strong>test_nats_data_storm.py</strong></p>
+<ol>
+<li><code>test_telemetry_and_commands_use_separate_streams</code></li>
+<li><code>test_telemetry_stream_has_independent_storage_limit</code></li>
+<li><code>test_command_stream_has_independent_storage_limit</code></li>
+<li><code>test_telemetry_backlog_does_not_use_command_consumer</code></li>
+<li><code>test_telemetry_consumer_respects_max_ack_pending</code></li>
+<li><code>test_telemetry_consumer_uses_bounded_pull_batches</code></li>
+<li><code>test_telemetry_stream_discard_policy_configured</code></li>
+<li><code>test_command_stream_remains_available_during_telemetry_burst</code></li>
+</ol>
+<p><strong>test_nats_failure_recovery.py</strong></p>
+<ol>
+<li><code>test_nats_connection_loss_detected</code></li>
+<li><code>test_nats_client_reconnects_after_broker_returns</code></li>
+<li><code>test_nats_reconnect_uses_bounded_retry_policy</code></li>
+<li><code>test_nats_circuit_breaker_opens_after_failure_threshold</code></li>
+<li><code>test_nats_circuit_breaker_enters_half_open</code></li>
+<li><code>test_nats_circuit_breaker_closes_after_health_verification</code></li>
+<li><code>test_command_execution_inhibited_during_nats_failure</code></li>
+<li><code>test_expired_commands_not_executed_after_recovery</code></li>
+<li><code>test_unexpired_commands_require_revalidation_after_recovery</code></li>
+</ol>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
 standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
@@ -877,10 +1064,14 @@ as the message broker for the Oversight system.</p>
 </ol>
 <h3 id="phase-4-security-operational-configuration">Phase 4: Security &amp; Operational Configuration<a class="headerlink" href="#phase-4-security-operational-configuration" title="Permanent link"></a></h3>
 <ol>
-<li>Create NATS identities</li>
-<li>Apply least-privilege access control to the NATS identities</li>
-<li>Enable authentication and authorization</li>
-<li>Enable TLS</li>
+<li>Create separate NATS identities for each Oversight service</li>
+<li>Apply least-privilege access control to the NATS identities defined by the NATS subject permissions&rsquo; policy.</li>
+<li>Verify that no service can publish directly to a command-lifecycle stage it is not authorized to publish.</li>
+<li>Verify that no service can subscribe to telemetry, command, audit, or health subjects outside its required scope.</li>
+<li>Enable NATS authentication and authorization</li>
+<li>Enable TLS and certificate validation for protected NATS connections</li>
+<li>Store NATS credentials outside of the application source code</li>
+<li>Add automated tests for both permitted and denied subject access</li>
 </ol>
 <h3 id="phase-5-validation-stress-and-fallback-testing">Phase 5: Validation, Stress, and Fallback Testing<a class="headerlink" href="#phase-5-validation-stress-and-fallback-testing" title="Permanent link"></a></h3>
 <ol>
@@ -902,6 +1093,63 @@ as the message broker for the Oversight system.</p>
 <li><strong>Latency</strong>: High latency in the command queue could lead to delayed execution of control intents.</li>
 <li><strong>Data Loss</strong>: In the event of a crash, there is a risk of losing unprocessed messages.</li>
 </ol>
+<h3 id="security-design">Security Design<a class="headerlink" href="#security-design" title="Permanent link"></a></h3>
+<p><strong>NATS Subject Permissions</strong></p>
+<p>NATS access follows the principle of least privilege. Each Oversight service should be granted permission to publish
+or subscribe to only the subjects it needs to.</p>
+<p><strong>Expected Subject Permissions</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Publish</th>
+<th>Subscribe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Northbound Ingest</td>
+<td><code>oversight.telemetry.&gt;</code></td>
+<td>None required for normal telemetry publishing</td>
+</tr>
+<tr>
+<td>Bytewax</td>
+<td><code>oversight.events.drift</code></td>
+<td><code>oversight.telemetry.&gt;</code></td>
+</tr>
+<tr>
+<td>Cognitive Agent</td>
+<td><code>oversight.commands.proposed</code></td>
+<td>Only approved telemetry and event subjects required for reasoning</td>
+</tr>
+<tr>
+<td>Arbitrator</td>
+<td>Approved command-validation subjects</td>
+<td><code>oversight.commands.proposed</code></td>
+</tr>
+<tr>
+<td>Semantic Gatekeeper</td>
+<td>Approved command-validation or rejection subjects</td>
+<td>Only command subjects required for validation</td>
+</tr>
+<tr>
+<td>Southbound Driver</td>
+<td><code>oversight.commands.executed</code>, <code>oversight.commands.failed</code></td>
+<td>Only the command subject authorized for physical execution</td>
+</tr>
+<tr>
+<td>Historian / Audit Consumers</td>
+<td>None unless explicitly required</td>
+<td>Approved telemetry, event, command, or audit subjects</td>
+</tr>
+<tr>
+<td>Monitoring Services</td>
+<td>Approved health subjects</td>
+<td><code>oversight.health.&gt;</code> and required NATS monitoring data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Network Access Control</strong>:</p>
 <h2 id="impact-and-benefits">Impact and Benefits<a class="headerlink" href="#impact-and-benefits" title="Permanent link"></a></h2>
 <table>
 <thead>

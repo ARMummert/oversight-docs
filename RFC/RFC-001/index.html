@@ -391,6 +391,24 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 <h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
 <p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams/ consumers, retry policies, 
    and application-level failure handling.</p>
+<p>A message may be redirected to a DLQ when it cannot be successfully processed. This happens after the configured 
+   retry policy has been exceeded or when the system determines that further processing must be stopped.</p>
+<p>DLQ Handling is separated by message type:</p>
+<ol>
+<li>Telemetry Processing Failure: Telemetry messages that cannot be processed after the retry policy is exceeded,
+      may be redirected to the DLQ: <code>oversight.telemetry.dlq</code><ul>
+<li>Examples: Schema validation failure, payload inconsistency, unsupported schema version, invalid event structure
+    Repeated consumer processing failure.</li>
+<li>Telemetry DLQ messages are retained for diagnostics, replay analysis, and developer forensics. </li>
+<li>A telemetry processing failure <strong>MUST NOT</strong> result in physical actuation.</li>
+</ul>
+</li>
+<li>Event Processing Failure: Events that cannot be processed after the retry policy is exceeded may be redirected to:
+      <code>oversight.events.dlq</code><ul>
+<li>Examples:</li>
+</ul>
+</li>
+</ol>
 <h3 id="consumer-flow-control-backpressure-management">Consumer Flow Control (Backpressure Management)<a class="headerlink" href="#consumer-flow-control-backpressure-management" title="Permanent link"></a></h3>
 <p>By using NATS consumer pull-model flow control, the system prevents the Agent from being overwhelmed by telemetry 
    bursts. This lets the Broker buffer the load while the reasoning engine completes its inference cycle.</p>
@@ -464,12 +482,20 @@ The fully notarized commands are then handed to the Southbound Driver for execut
 </ul>
 <p><img alt="NATS TTL Diagram" src="../diagrams/NATS-ttl.png" /></p>
 <h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
-<p>The Oversight system treats NATS and JetStream as non-authoritative. Failure of NATS or JetStream <strong>MUST NOT</strong> 
-   cause autonomous physical actuation. </p>
+<p>The Oversight system treats NATS and JetStream as non-authoritative. </p>
+<ul>
+<li>Failure or unavailability of NATS or JetStream <strong>MUST NOT</strong> cause Oversight to issue or authorize a new 
+     control-affecting command.</li>
+<li>Loss of NATS connectivity is required to be treated as a degraded state, and the system <strong>MUST</strong> enter degraded 
+     authority mode.</li>
+<li>The control assets and safety systems remain responsible for the local control and safety behavior.</li>
+</ul>
 <p><strong>Bounded Retries</strong></p>
 <ul>
 <li>Connection attempts <strong>MUST</strong> be bounded to prevent retry storms. </li>
-<li>Connection failures are evaluated by the NATS circuit breaker.</li>
+<li>Repeated connection failures are required to contribute to the circuit breaker failure threshold.</li>
+<li>Once the failure threshold is reached, the circuit breaker <strong>MUST</strong> prevent repeated connection attempts. 
+     Connection attempts can only be resumed after the recovery conditions are met.</li>
 </ul>
 <p><strong>Health Verification</strong></p>
 <ul>
@@ -487,22 +513,39 @@ The fully notarized commands are then handed to the Southbound Driver for execut
      to the degraded authority mode.</li>
 </ul>
 <p><strong>NATS Circuit Breaker</strong></p>
-<p>The Oversight system uses a circuit-breaker to prevent continuous attempts against a failing NATS dependency.</p>
+<p>The Oversight system uses a circuit breaker to prevent continuous attempts against a failing NATS dependency.</p>
 <ul>
-<li>Services <strong>MUST</strong> implement the NATS circuit breaker to stop repeated connection attempts after the configured failure 
-     threshold is reached. </li>
-<li><strong>CLOSED</strong>: Normal operation. The system is healthy and NATS is available.</li>
-<li><strong>OPEN</strong>: The failure threshold is reached. NATS operations are rejected or fail fast, and repeated connection 
-     attempts are blocked.</li>
-<li><strong>HALF-OPEN</strong>: After the reset timeout expires, a limited recovery attempt is made. This is to determine if NATS
+<li>Services that depend on NATS <strong>MUST</strong> implement the NATS circuit breaker to stop the circuit breaker from making 
+     repeated connection attempts after the configured failure threshold is reached.</li>
+</ul>
+<p><strong>CLOSED</strong> </p>
+<ul>
+<li>Normal operation. </li>
+<li>The system is healthy and NATS is available.</li>
+</ul>
+<p><strong>OPEN</strong> </p>
+<ul>
+<li>The failure threshold is reached. </li>
+<li>NATS operations <strong>MUST</strong> fail fast</li>
+<li>Repeated connection attempts are blocked.</li>
+<li>Dependent services <strong>MUST</strong> remain in Degraded Authority Mode.</li>
+</ul>
+<p><strong>HALF-OPEN</strong></p>
+<ul>
+<li>After the reset timeout expires, a limited recovery attempt is permitted. This is to determine if NATS
      has recovered.</li>
-<li><strong>Successful Recovery</strong>: If the system has a successful recovery, the circuit transitions from HALF-OPEN to CLOSED.</li>
-<li><strong>Failed Recovery Attempt</strong>: A failed recovery attempt transitions the circuit back to OPEN.</li>
+<li>The limited recovery attempt will determine whether NATS has recovered enough to allow normal message flow.</li>
+<li>Successful health verifications <strong>MUST</strong> transition the circuit breaker from <code>HALF-OPEN</code> to <code>CLOSED</code>.</li>
+<li>Failed health verifications <strong>MUST</strong> transition the circuit breaker back to <code>OPEN</code>.</li>
 </ul>
 <p><strong>Degraded Authority Mode</strong></p>
 <ul>
-<li>Dependent services <strong>MUST</strong> fail closed with respect to any physical actuation operations and transition to the 
-     degraded authority mode.</li>
+<li>Dependent services <strong>MUST</strong> inhibit new control-affecting commands when NATS is unavailable or degraded.</li>
+<li>The appropriate degraded authority mode <strong>MUST</strong> be reached according to Oversight&rsquo;s control authority model.</li>
+<li>Physical fail-safe behavior (fail-closed, fail-open, fail-trip, hold-last-state, or other safe state behavior)
+     <strong>MUST NOT</strong> be determined by the NATS circuit breaker.</li>
+<li>Local control assets and safe-state behavior remain responsible for their defined normal control, local safe-state,
+     and safety trip conditions.</li>
 </ul>
 <h2 id="nats-circuit-breaker">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker" title="Permanent link"></a></h2>
 <p><img alt="NATS Circuit Breaker" src="../diagrams/NATS-circuit-breaker.png" /></p>

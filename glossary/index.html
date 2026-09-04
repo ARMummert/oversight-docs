@@ -156,6 +156,8 @@
 <h2 id="b">B<a class="headerlink" href="#b" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Bytewax</strong>: The Python-native stream processing framework used within the IDMZ to calculate rolling windows and statistical anomalies from the NATS JetStream.</li>
+<li><strong>Bounded</strong>: Having a defined maximum limit rather than being allowed to continue indefinitely.</li>
+<li><strong>Bumpless Transfer</strong>: The process of synchronizing the AI&rsquo;s target setpoint with the physical asset&rsquo;s current state to prevent surges or abrupt changes during control transitions.</li>
 </ul>
 <h2 id="c">C<a class="headerlink" href="#c" title="Permanent link"></a></h2>
 <ul>
@@ -163,13 +165,16 @@
 <li><strong>CIP (Common Industrial Protocol)</strong>: An industrial protocol used over EtherNet/IP for tag-based communication with modern Allen-Bradley controllers.</li>
 <li><strong>CMMS (Centralized Maintenance Management System)</strong>: The site-wide software used to track work orders, maintenance schedules, and historical failure data.</li>
 <li><strong>Condition-Based Maintenance</strong>: A maintenance strategy that relies on the AI&rsquo;s Remaining Useful Life (RUL) prognostics to replace assets based on actual wear rather than fixed schedules.</li>
-<li><strong>Conduits</strong>: Logical or physical communication paths between different</li>
+<li><strong>Conduits</strong>: Logical or physical communication paths between different components or systems.</li>
 <li><strong>Consciousness Loop</strong>: The continuous asynchronous evaluation cycle where the LangGraph Agent processes new telemetry, references historical patterns, and drafts predictive intents.</li>
 <li><strong>CQRS (Command Query Responsibility Segregation)</strong>: An architectural pattern separating the high-velocity telemetry read path (Redis/Timescale) from the highly governed command write path (Arbitrator/Southbound Driver).</li>
+<li><strong>Cyclic Scan Loops</strong>: The repeated execution cycle used by many PLCs to continuously read inputs, execute control logic, and update outputs. The time required to complete one iteration is that scan cycle time.</li>
+<li><strong>Consumer Processing Delay</strong>: The amount of time a consumer takes to process a message after receiving it.</li>
 </ul>
 <h2 id="d">D<a class="headerlink" href="#d" title="Permanent link"></a></h2>
 <ul>
 <li><strong>Degraded Mode</strong>: A resilient fallback state triggered by component failures (e.g., loss of cloud connectivity), ensuring the system sheds AI capabilities but maintains deterministic local safety.</li>
+<li><strong>Distributed Tracing</strong>: A method of following a single operation as it travels through multiple services and systems.</li>
 </ul>
 <h2 id="e">E<a class="headerlink" href="#e" title="Permanent link"></a></h2>
 <ul>
@@ -177,6 +182,7 @@
 <li><strong>EtherNet/IP</strong>: An industrial Ethernet network protocol widely used for real-time control and data acquisition from PLCs and field devices.</li>
 <li><strong>Execution Token</strong>: The cryptographic permission object managed by the Level 1.5 Arbitrator, granting an entity (AI or Human) the temporary right to commit writes to physical registers.</li>
 <li><strong>Explainable AI (XAI)</strong>: The systemic capability to provide a fully transparent, auditable reasoning trace (via UUIDs and RAG citations) for every AI-generated decision.</li>
+<li><strong>End-to-End Latency</strong>: The total time taken for a message to travel from the point of origin to the final destination, including all processing and transmission delays.</li>
 </ul>
 <h2 id="f">F<a class="headerlink" href="#f" title="Permanent link"></a></h2>
 <ul>
@@ -204,6 +210,7 @@
 <li><strong>Intent Outbox</strong>: The authoritative PostgreSQL table acting as the transactional contract where all AI-generated intents must be persisted before physical execution.</li>
 <li><strong>ISA</strong>: 18.2 : The international standard for the management of alarm systems</li>
 <li><strong>ISO 9001</strong>: The international standard for quality management systems, incorporated into the system&rsquo;s Change Management and Document Control indexes.</li>
+<li><strong>Idempotent Command Enforcement</strong>: A mechanism that ensures processing the same command more than once does not unintentionally produce multiple physical effects.</li>
 </ul>
 <h2 id="j">J<a class="headerlink" href="#j" title="Permanent link"></a></h2>
 <ul>
@@ -235,6 +242,7 @@
 <li><strong>Node Subscriptions</strong>: The architectural pattern where the Northbound Ingest maintains authenticated connections to specific OPC-UA endpoints to read telemetry.</li>
 <li><strong>Northbound Firewall</strong>: The logical and physical barrier preventing uninitiated traffic from entering the IDMZ from the Level 4 Enterprise network.</li>
 <li><strong>Northbound Ingest</strong>: The microservice operating at the IDMZ boundary that translates raw Modbus/CIP/OPC-UA byte streams into normalized Sparkplug B payloads.</li>
+<li><strong>Network Jitter</strong>: The amount of time required for data to travel from one network endpoint to another.</li>
 </ul>
 <h2 id="o">O<a class="headerlink" href="#o" title="Permanent link"></a></h2>
 <ul>
@@ -253,10 +261,13 @@
 <li><strong>Platform Configuration Register (PCR)</strong>: Hardware-secured memory slots within the TPM 2.0 used to store the cryptographic hashes (measurements) of the boot environment and critical software.</li>
 <li><strong>Prometheus</strong>: The time-series database utilized specifically for scraping and storing internal system metrics, container health, and latency data (Technical Truth).</li>
 <li><strong>Protocol Buffers (Protobuf)</strong>: The highly efficient binary serialization format used to format telemetry streams on the NATS JetStream backbone.</li>
+<li><strong>Polling Jitter</strong>: Variation in the amount of time between scheduled polling operations.</li>
+<li><strong>Packet Loss</strong>: The percentage or number of network packets that are transmitted but never successfully reach their destination. Packet loss can cause retransmissions, delayed messages, stale telemetry, connection failures, or incomplete communication.</li>
+<li></li>
 </ul>
 <h2 id="q">Q<a class="headerlink" href="#q" title="Permanent link"></a></h2>
 <ul>
-<li><strong>Quality Bit</strong>: An integer tag appended to industrial telemetry indicating the health of the sensor read (e.g., must be &gt;= 192 for the AI to consider the data valid).</li>
+<li><strong>Quality Bit</strong>: Status indicators attached to telemetry data that describe the trustworthiness, validity, or condition of the measurement.</li>
 </ul>
 <h2 id="r">R<a class="headerlink" href="#r" title="Permanent link"></a></h2>
 <ul>
@@ -277,12 +288,14 @@
 <li><strong>Sparkplug B</strong>: The industrial IoT specification governing how MQTT edge payloads are structured to ensure birth/death certificates and state awareness.</li>
 <li><strong>State Alignment</strong>: The mandatory pre-condition for Bumpless Transfer where the AI synchronizes its target setpoint with the physical asset&rsquo;s current state to prevent surges.</li>
 <li><strong>System Operating Modes</strong>: The governed states (e.g., Active Control, Advisory Mode, Orphan Mode) dictating the system&rsquo;s level of autonomy and safety fallback behavior.</li>
+<li><strong>Semantic</strong>: Relating to the meaning or interpretation of data, rather than merely its format or structure.</li>
 </ul>
 <h2 id="t">T<a class="headerlink" href="#t" title="Permanent link"></a></h2>
 <ul>
 <li><strong>TimescaleDB</strong>: The PostgreSQL-based time-series historian acting as the immutable WORM audit log and long-term analytical storage for the Operational Truth.</li>
 <li><strong>TPM 2.0 (Trusted Platform Module)</strong>: The discrete hardware cryptoprocessor responsible for establishing the Hardware Root of Trust and signing all physical command intents.</li>
 <li><strong>Trace ID</strong>: A UUIDv4 tag appended to every agent thought and NATS message, providing the primary key for the &lsquo;Explainable AI&rsquo; forensic audit trail.</li>
+<li><strong>Transport Latency</strong>: The time required for a message to travel from the point where it is published/sent to the point where it is received by the intended consumer.</li>
 </ul>
 <h2 id="u">U<a class="headerlink" href="#u" title="Permanent link"></a></h2>
 <ul>

@@ -142,21 +142,29 @@ intents across hardware environments.</p>
 </table>
 <h2 id="3-mandatory-metadata-schema-json">3. Mandatory Metadata Schema (JSON)<a class="headerlink" href="#3-mandatory-metadata-schema-json" title="Permanent link"></a></h2>
 <pre><code class="language-json">{
-  &quot;timestamp&quot;: &quot;ISO-8601&quot;,
-  &quot;asset_id&quot;: &quot;PUMP_01&quot;,
-  &quot;metrics&quot;: [
-    {
-      &quot;name&quot;: &quot;discharge_pressure&quot;,
-      &quot;value&quot;: 48.5,
-      &quot;unit&quot;: &quot;PSI&quot;,
-      &quot;quality&quot;: 192,
-      &quot;eng_range&quot;: { &quot;min&quot;: 0, &quot;max&quot;: 100 }
-    }
-  ],
-  &quot;metadata&quot;: {
-    &quot;mode&quot;: &quot;auto&quot;,
-    &quot;loto_status&quot;: false
-  }
+  &quot;message_id&quot;: &quot;7f4c1a9e-3b2d-4f61-9c18-6e7d5a2b8140&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:30:00.125Z&quot;,
+  &quot;source&quot;: {
+    &quot;service&quot;: &quot;northbound-ingest&quot;,
+    &quot;protocol&quot;: &quot;modbus_tcp&quot;
+  },
+  &quot;asset&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+  &quot;measurement&quot;: {
+    &quot;value&quot;: 120.5,
+    &quot;unit&quot;: &quot;psi&quot;,
+    &quot;data_type&quot;: &quot;float64&quot;
+  },
+  &quot;quality&quot;: &quot;GOOD&quot;
 }
 </code></pre>
 <h2 id="4-hardware-mapping-rules">4. Hardware Mapping Rules<a class="headerlink" href="#4-hardware-mapping-rules" title="Permanent link"></a></h2>
@@ -217,6 +225,295 @@ intents across hardware environments.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="anomaly-event-payload">Anomaly Event Payload<a class="headerlink" href="#anomaly-event-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;91c3f5e2-7a48-4b16-8d29-6e1f304c7259&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:30:01.250Z&quot;,
+  &quot;event_type&quot;: &quot;anomaly&quot;,
+  &quot;source&quot;: {
+    &quot;service&quot;: &quot;bytewax&quot;
+  },
+  &quot;asset&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+  &quot;severity&quot;: &quot;WARNING&quot;,
+  &quot;anomaly&quot;: {
+    &quot;metric&quot;: &quot;Discharge_Pressure&quot;,
+    &quot;observed_value&quot;: 138.7,
+    &quot;expected_value&quot;: 121.2,
+    &quot;z_score&quot;: 2.84,
+    &quot;threshold&quot;: 2.0
+  }
+}
+</code></pre>
+<h2 id="state-change-event-payload">State Change Event Payload<a class="headerlink" href="#state-change-event-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;4d82a6f1-9c35-47e8-b201-7f6a3d5e8294&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:31:00.000Z&quot;,
+  &quot;event_type&quot;: &quot;state_change&quot;,
+  &quot;source&quot;: {
+    &quot;service&quot;: &quot;southbound-driver&quot;
+  },
+  &quot;asset&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;
+  },
+  &quot;state_change&quot;: {
+    &quot;previous_state&quot;: &quot;RUNNING&quot;,
+    &quot;new_state&quot;: &quot;STOPPED&quot;,
+    &quot;reason&quot;: &quot;COMMAND_EXECUTION&quot;
+  }
+}
+</code></pre>
+<h2 id="command-proposal-payload">Command Proposal Payload<a class="headerlink" href="#command-proposal-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;e4b17c92-5a63-48f0-91d7-2c8e6f304751&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:00.000Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;,
+    &quot;created_at&quot;: &quot;2026-09-04T15:32:00.000Z&quot;,
+    &quot;expires_at&quot;: &quot;2026-09-04T15:32:02.000Z&quot;
+  },
+
+  &quot;target&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+
+  &quot;requested_value&quot;: {
+    &quot;value&quot;: 125.0,
+    &quot;unit&quot;: &quot;psi&quot;
+  },
+
+  &quot;requested_by&quot;: {
+    &quot;type&quot;: &quot;operator&quot;,
+    &quot;identity&quot;: &quot;operator-123&quot;
+  },
+
+  &quot;justification&quot;: {
+    &quot;reason&quot;: &quot;Pressure stabilization following detected process drift&quot;,
+    &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;
+  }
+}
+</code></pre>
+<h2 id="validated-command-payload">Validated Command Payload<a class="headerlink" href="#validated-command-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;5a81d7c3-2e49-4f06-b928-6c17a3d54082&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:00.350Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;,
+    &quot;created_at&quot;: &quot;2026-09-04T15:32:00.000Z&quot;,
+    &quot;expires_at&quot;: &quot;2026-09-04T15:32:02.000Z&quot;
+  },
+
+  &quot;target&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+
+  &quot;requested_value&quot;: {
+    &quot;value&quot;: 125.0,
+    &quot;unit&quot;: &quot;psi&quot;
+  },
+
+  &quot;validation&quot;: {
+    &quot;status&quot;: &quot;VALIDATED&quot;,
+    &quot;validated_at&quot;: &quot;2026-09-04T15:32:00.350Z&quot;,
+    &quot;arbitrator&quot;: &quot;APPROVED&quot;,
+    &quot;semantic_gatekeeper&quot;: &quot;APPROVED&quot;
+  }
+}
+</code></pre>
+<h2 id="command-executed-payload">Command Executed Payload<a class="headerlink" href="#command-executed-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;8c24f6a1-5d73-4b90-a218-6e3d7f529401&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:01.100Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;
+  },
+
+  &quot;target&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+
+  &quot;execution&quot;: {
+    &quot;status&quot;: &quot;SUCCESS&quot;,
+    &quot;started_at&quot;: &quot;2026-09-04T15:32:00.900Z&quot;,
+    &quot;completed_at&quot;: &quot;2026-09-04T15:32:01.100Z&quot;
+  },
+
+  &quot;physical_feedback&quot;: {
+    &quot;verification_status&quot;: &quot;VERIFIED&quot;,
+    &quot;expected_value&quot;: 125.0,
+    &quot;observed_value&quot;: 124.8,
+    &quot;unit&quot;: &quot;psi&quot;,
+    &quot;verified_at&quot;: &quot;2026-09-04T15:32:01.100Z&quot;
+  }
+}
+</code></pre>
+<h2 id="command-rejected-payload">Command Rejected Payload<a class="headerlink" href="#command-rejected-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;2f71c8a4-6d39-4e25-b810-5a3c927f1648&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:00.400Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;
+  },
+
+  &quot;rejection&quot;: {
+    &quot;status&quot;: &quot;REJECTED&quot;,
+    &quot;reason_code&quot;: &quot;OUTSIDE_AUTHORIZED_RANGE&quot;,
+    &quot;reason&quot;: &quot;Requested setpoint exceeds configured operating constraint&quot;,
+    &quot;rejected_by&quot;: &quot;semantic-gatekeeper&quot;,
+    &quot;rejected_at&quot;: &quot;2026-09-04T15:32:00.400Z&quot;
+  }
+}
+</code></pre>
+<h2 id="command-failed-payload">Command Failed Payload<a class="headerlink" href="#command-failed-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;73a9d5e1-4c82-46b7-918f-2d6a53017489&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:01.500Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;
+  },
+
+  &quot;execution&quot;: {
+    &quot;status&quot;: &quot;FAILED&quot;,
+    &quot;failure_code&quot;: &quot;PHYSICAL_FEEDBACK_TIMEOUT&quot;,
+    &quot;failure_reason&quot;: &quot;Expected process state was not observed within execution timeout&quot;,
+    &quot;started_at&quot;: &quot;2026-09-04T15:32:01.000Z&quot;,
+    &quot;failed_at&quot;: &quot;2026-09-04T15:32:01.500Z&quot;
+  }
+}
+</code></pre>
+<h2 id="expired-command-payload">Expired Command Payload<a class="headerlink" href="#expired-command-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;9e51c7a3-2d84-46f0-b918-5a6307f12482&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:02.001Z&quot;,
+
+  &quot;command&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;,
+    &quot;command_type&quot;: &quot;SETPOINT_CHANGE&quot;,
+    &quot;created_at&quot;: &quot;2026-09-04T15:32:00.000Z&quot;,
+    &quot;expires_at&quot;: &quot;2026-09-04T15:32:02.000Z&quot;
+  },
+
+  &quot;expiration&quot;: {
+    &quot;status&quot;: &quot;EXPIRED&quot;,
+    &quot;expired_at&quot;: &quot;2026-09-04T15:32:02.001Z&quot;,
+    &quot;reason&quot;: &quot;COMMAND_VALIDITY_PERIOD_EXCEEDED&quot;
+  }
+}
+</code></pre>
+<h2 id="health-payload">Health Payload<a class="headerlink" href="#health-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;6b29f4c1-7e53-48a0-b216-9d835a704621&quot;,
+  &quot;trace_id&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;,
+  &quot;correlation_id&quot;: &quot;00000000-0000-0000-0000-000000000000&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:33:00.000Z&quot;,
+
+  &quot;health&quot;: {
+    &quot;component&quot;: &quot;nats&quot;,
+    &quot;status&quot;: &quot;HEALTHY&quot;,
+    &quot;service&quot;: &quot;edge-gateway&quot;,
+    &quot;instance&quot;: &quot;edge-gateway-01&quot;
+  },
+
+  &quot;metrics&quot;: {
+    &quot;connection_state&quot;: &quot;CONNECTED&quot;,
+    &quot;transport_latency_ms&quot;: 3.2,
+    &quot;consumer_lag&quot;: 0,
+    &quot;redelivery_count&quot;: 0
+  }
+}
+</code></pre>
+<h2 id="audit-event-payload">Audit Event Payload<a class="headerlink" href="#audit-event-payload" title="Permanent link"></a></h2>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;b52e7c19-4a83-46d1-918f-6c305e274891&quot;,
+  &quot;trace_id&quot;: &quot;a13e9d42-8b71-4c25-b6f4-2d9e7a1c5038&quot;,
+  &quot;correlation_id&quot;: &quot;c52b7e19-4a83-45d1-9f26-7b6e2d4c8015&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;timestamp&quot;: &quot;2026-09-04T15:32:01.200Z&quot;,
+
+  &quot;audit&quot;: {
+    &quot;event_type&quot;: &quot;COMMAND_EXECUTION&quot;,
+    &quot;action&quot;: &quot;SETPOINT_CHANGE&quot;,
+    &quot;actor_type&quot;: &quot;operator&quot;,
+    &quot;actor_id&quot;: &quot;operator-123&quot;,
+    &quot;component&quot;: &quot;southbound-driver&quot;,
+    &quot;result&quot;: &quot;SUCCESS&quot;
+  },
+
+  &quot;command_reference&quot;: {
+    &quot;command_id&quot;: &quot;d8f52a91-6c34-4e17-b209-7a5d1f83c624&quot;
+  },
+
+  &quot;target&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  }
+}
+</code></pre>
+<h2 id="_1"><a class="headerlink" href="#_1" title="Permanent link"></a></h2>
 <h2 id="revision-history">Revision History<a class="headerlink" href="#revision-history" title="Permanent link"></a></h2>
 <table>
 <thead>

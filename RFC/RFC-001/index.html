@@ -296,9 +296,7 @@ telemetry to remain separate from control intent execution.</p>
 <p>Raw industrial protocols are ingested and strictly terminated by the Northbound Ingest Service preventing direct 
 sessions with the field assets. They are then normalized into JSON payloads containing metadata and integer 
 quality bits. These normalized payloads are then published to the NATS JetStream message bus 
-(<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. The Bytewax Streaming Engine performs 
-windowed Z-Score drift detection and at the same time publishes the results to the TimescaleDB telemetry historian (for 
-the 90-day warm tier) and the Redis Hot Cache (for sub-second lookups).</p>
+(<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. </p>
 <h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
 <p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
 commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
@@ -747,6 +745,7 @@ defines what the data means and NATS transports that data.</p>
 <li><code>oversight.events.alarm</code></li>
 <li><code>oversight.events.status</code></li>
 <li><code>oversight.events.drift</code></li>
+<li><code>oversight.events.anomaly</code></li>
 <li><code>oversight.events.loss_of_signal</code></li>
 <li><code>oversight.events.state_change</code></li>
 <li><code>oversight.events.manual_override</code></li>

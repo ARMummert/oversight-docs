@@ -146,8 +146,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-circuit-breaker">NATS Circuit Breaker</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#data-flow">Data Flow</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-message-lifecycle">NATS Message Lifecycle</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-jetstream-subject-routing">NATS JetStream Subject Routing</a>
@@ -683,8 +681,6 @@ dot notation to route data.</p>
 </ul>
 <h2 id="nats-circuit-breaker">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker" title="Permanent link"></a></h2>
 <p><img alt="NATS Circuit Breaker" src="../diagrams/NATS-circuit-breaker.png" /></p>
-<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link"></a></h2>
-<p><img alt="NATS Data Flow Diagram" src="../diagrams/NATS-Flow.png" /></p>
 <h2 id="nats-message-lifecycle">NATS Message Lifecycle<a class="headerlink" href="#nats-message-lifecycle" title="Permanent link"></a></h2>
 <p><img alt="NATS Message Lifecycle" src="../diagrams/NATS-message-lifecycle.png" /></p>
 <div class="admonition note">
@@ -970,15 +966,15 @@ defines what the data means and NATS transports that data.</p>
 <li><code>test_unexpired_commands_require_revalidation_after_recovery</code></li>
 </ol>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
-<p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or a
-standard MQTT Broker (Mosquitto) or Kafka. NATS JetStream provides a high-performance, lightweight messaging system 
-that is appropriate for the high-velocity telemetry data in an OT environment. NATS JetStream offers lightweight
-connectivity, low latency, and built-in support for message persistence and replay. These are all critical for the 
-real-time monitoring and control requirements of the system. </p>
+<p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or Kafka.
+NATS JetStream provides a high-performance, lightweight messaging system that is appropriate for the high-velocity 
+telemetry data in an OT environment. NATS JetStream offers lightweight connectivity, low latency, and built-in support 
+for message persistence and replay. These are all critical for the real-time monitoring and control requirements of 
+the system. </p>
 <h3 id="tradeoffs-alternatives">Tradeoffs &amp; Alternatives<a class="headerlink" href="#tradeoffs-alternatives" title="Permanent link"></a></h3>
 <p>I considered several messaging technologies, including RabbitMQ, Kafka, and NATS. All three platforms are capable 
 messaging systems, but each has its own strengths and weaknesses. I based my decision on how well the message broker 
-would fit the project&rsquo;s edge deployment, UNS, reliability requirements, and operational complexity.</p>
+would fit the project&rsquo;s edge deployment, UNS, reliability requirements, and operational complexity. </p>
 <p><strong>NATS JetStream</strong></p>
 <p>For this specific use case, the simplicity and performance of NATS JetStream make it the best fit for the demands of
 the Oversight system. Core NATS provides lightweight subject-based publish/subscribe messaging, and JetStream adds
@@ -1007,7 +1003,7 @@ expressed through exchanges, bindings, queues, and RabbitMQ streams. </p>
 Oversight, RabbitMQ would introduce additional messaging concepts and operational configuration without providing 
 a clear advantage over NATS JetStream.</p>
 <p><strong>Apache Kafka</strong>:</p>
-<p>Kafka was heavily considered as the message broker for Oversight. Kafka provides highly durable, distributed event 
+<p>I heavily considered Kafka as the message broker for Oversight. Kafka provides highly durable, distributed event 
 streaming and is well suited for huge event volumes, long retention periods, and large-scale event-processing
 systems. Kafka also provides consistent replay and consumer-group capabilities.  </p>
 <p>The primary tradeoff for Oversight is operational scale and complexity. The capabilities of Kafka are valuable to 

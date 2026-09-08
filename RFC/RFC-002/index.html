@@ -98,35 +98,45 @@
 <p><strong>Author</strong>: Amy Mummert</p>
 <p><strong>Status</strong>: Proposed</p>
 <p><strong>Date</strong>: 2026-09-01</p>
-<p><strong>Target Components</strong>: Northbound Ingest Service &amp; Protocol Normalization</p>
+<p><strong>Target Components</strong>: Northbound Ingest Service, Protocol Adaptors, Protocol Normalization, Telemetry Mapping</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
-<p>The Oversight ICS architecture relies on strict separation of between deterministic OT control systems and the Level 3.5 
-demilitarized zone (Level 3.5). With this in mind, this RFC proposes a Northbound Ingest Service (NIS) with protocol
+<p>This RFC defines the proposed design and operation of the Northbound Ingest Service (NIS) and the protocol 
+normalization layer.</p>
+<p>Because Oversight ICS architecture relies on strict separation of between deterministic OT control systems and the
+Level 3.5 demilitarized zone (Level 3.5), this RFC proposes a Northbound Ingest Service (NIS) with protocol 
 normalization for secure protocol termination and semantic normalization.  </p>
-<p>Industrial control assets expose telemetry through protocols such as Modbus, OPC-UA, and Ethernet/IP. These
+<p>Field assets may expose telemetry using protocols such as Modbus, OPC-UA, Ethernet/IP, and MQTT/Sparkplug B. These
 protocols expose raw memory addresses, vendor-specific addressing, data types, device metadata, timestamps, and quality
 bits. If downstream components were allowed to consume this data directly, the system would become tightly coupled with 
-specific hardware vendors and introduce a severe safety risk. </p>
-<p>This RFC defines the design and operation of the Northbound Ingest Service (NIS) and the protocol normalization layer.</p>
+specific hardware vendors and introduce a severe safety risk.</p>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
-<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into Sparkplug B JSON payloads and 
+<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into JSON payloads and 
 extracts raw source data. It is a <strong>read-only</strong> service.  It has no authority to issue control commands to physical 
-assets.
-<strong>Protocol Normalization</strong>: Normalizes raw industrial protocols into Sparkplug B JSON payloads.</p>
+assets.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
 <p>Oversight ICS is designed to ingest high-throughput telemetry exceeding 10,000 points per second from the 
-deterministic control layers. If Oversight directly ingested the raw industrial protocol data, it would create several
-critical safety risks/failures.</p>
-<p>The main reasons for this are:
-1. Risk of exposing raw memory addresses to downstream systems.
-2. Vendors may not support the same protocols. 
-3. Allowing continuous open polling sessions directly against field PLCs introduces network jitter, possible denial of 
-   service, and violations of IEC 62264 zone segregation.</p>
-<p>Without protocol normalization, every downstream consumer would need to understand the raw protocols, which creates 
-unnecessary coupling and an increased attack surface.  This is a huge safety risk.</p>
+deterministic control layers. The Northbound Ingest Service must communicate with industrial protocols, however, to 
+remain secure, protocol-specific information must be terminated at the ingestion boundary and must not be exposed 
+directly to downstream consumers.</p>
+<p>Specific protocols expose the following information:</p>
+<ol>
+<li><strong>Modbus</strong>: Coils, Discrete Inputs, Holding Registers, Input Registers.</li>
+<li><strong>OPC-UA</strong>: Typed Values using NodeIds, Source Timestamps, Server Timestamps, and Status Codes.</li>
+<li><strong>Ethernet/IP</strong>: Uses CIP (Common Internet Protocol) to communicate with devices and exposes data through objects, 
+   instances, attributes, assemblies, and explicit or implicit messaging.</li>
+<li><strong>MQTT / Sparkplug-B</strong>: Industrial process metrics using the Sparkplug B MQTT topic namespace, payload model, and 
+   state management (such as birth and death notifications).</li>
+</ol>
+<p>If we were to allow downstream consumers (Bytwax, TimescaleDB, Redis, LangGraph Agent) to consume the protocol-specific 
+data directly, this would tightly couple Oversight to individual industrial protocols. </p>
+<p>Without protocol normalization, every downstream consumer would need to understand those raw industrial protocols, which 
+increases the attack surface and is a huge safety risk. This would also reduce hardware abstraction and increase the 
+complexity of the system. </p>
+<p>In addition, unmanaged polling, subscription, or connection behavior against field controllers can introduce excessive 
+load on the system. </p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
 <p>The proposed solution is to implement a Northbound Ingest Service (NIS) that ingests raw industrial protocol data, 
-normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetStream Unified Namespace (UNS).</p>
+normalizes it into JSON payloads, and pushes them to the NATS JetStream Unified Namespace (UNS).</p>
 <h2 id="data-flow-pipeline">Data Flow Pipeline<a class="headerlink" href="#data-flow-pipeline" title="Permanent link"></a></h2>
 <p><img alt="Northbound Ingest Data Flow" src="../../assets/northbound-ingest-data-flow.png" /></p>
 <h2 id="supported-protocols">Supported Protocols<a class="headerlink" href="#supported-protocols" title="Permanent link"></a></h2>
@@ -165,9 +175,6 @@ normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetSt
 </tbody>
 </table>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
-<ol>
-<li></li>
-</ol>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>
 <p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>
@@ -176,6 +183,17 @@ normalizes it using Sparkplug-B JSON payloads, and pushes them to the NATS JetSt
 <p><a href="https://www.splunk.com/en_us/blog/learn/industrial-control-systems-security.html">Industrial Control Systems Security</a></p>
 <p><a href="https://www.darktrace.com/cyber-ai-glossary/industrial-control-system-security">Industrial Control System Security Cyper AI</a></p>
 <p><a href="https://www.group-ib.com/resources/knowledge-hub/industrial-control-system/">Industrial Control System</a></p>
+<p><a href="https://docs.normal.dev/overview/">System Overview – Northbound Ingest Framework</a></p>
+<p><a href="https://ifactoryapp.com/industries/power-plant/industrial-iot-gateway-power-plant-scada-ai-driven-">Industrial IoT Gateway</a></p>
+<p><a href="https://corsosystems.com/posts/mqtt-and-sparkplug-b-simplified">What is Sparkplug B</a></p>
+<p><a href="https://csf.tools/reference/nist-sp-800-82/r3/">NIST SP 800-82</a></p>
+<p><a href="https://plcprogramming.io/blog/scada-best-practices-complete-guide">Scada Best Practices Complete Guide</a></p>
+<p><a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r3.pdf">Guide to Operational Technology (OT) Security</a></p>
+<p><a href="https://www.modbus.org/file/secure/modbusprotocolspecification.pdf">Modbus Protocol Specification</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Modbus">Modbus</a></p>
+<p><a href="https://www.ni.com/en/shop/seamlessly-connect-to-third-party-devices-and-supervisory-system/the-modbus-protocol-in-depth.html?srsltid=AfmBOop4P2lHChVWB95LJQjAJTXPXGZZ1UlCwrXGTxwrXmf0t4xw5qc4">The Modbus Protocol In-depth</a></p>
+<p><a href="https://en.wikipedia.org/wiki/OPC_Unified_Architecture">OPC-UA</a></p>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-3/1">OPC-UA Specs</a></p>
               
             </div>
           </div><footer>

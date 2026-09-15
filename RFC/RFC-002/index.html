@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>RFC-002 - Northbound Ingest Service &amp; Protocol Normalization - Oversight ICS</title>
+    <title>RFC-002: Northbound Ingest Service & Normalization - Oversight ICS</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "RFC-002 - Northbound Ingest Service \u0026amp; Protocol Normalization";
+        var mkdocs_page_name = "RFC-002: Northbound Ingest Service \u0026 Normalization";
         var mkdocs_page_input_path = "RFC/RFC-002.md";
         var mkdocs_page_url = null;
       </script>
@@ -45,7 +45,7 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-overview-and-tradeoffs/">System Architecture Overview</a>
@@ -62,9 +62,59 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >RFCs</a>
-    <ul>
+                  <li class="toctree-l1 current"><a class="reference internal current" >RFCs</a>
+    <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../RFC-001/">RFC-001: Unified Namespace & Messaging Architecture</a>
+                </li>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">RFC-002: Northbound Ingest Service & Normalization</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#background-context">Background / Context</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#component-responsibilities">Component Responsibilities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#problem-statement">Problem Statement</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#proposed-solution">Proposed Solution</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#data-flow-pipeline">Data Flow Pipeline</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#goals">Goals</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#non-goals">Non-Goals</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#service-boundary-industrial-modules">Service Boundary &amp; Industrial Modules</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#telemetry-contract">Telemetry Contract</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mapping-registry">Mapping Registry</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#connection-and-polling-policy">Connection and Polling Policy</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#quality-timestamping">Quality &amp; Timestamping</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#publication-contract">Publication Contract</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#security-controls">Security Controls</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#observability">Observability</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#scaling-high-availability">Scaling &amp; High Availability</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#implementation-details">Implementation Details</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#risks-tradeoffs-alternatives">Risks, Tradeoffs, &amp; Alternatives</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#acceptance-tests">Acceptance Tests</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#references">References</a>
+    </li>
+    </ul>
                 </li>
     </ul>
                   </li>
@@ -85,7 +135,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">RFC-002 - Northbound Ingest Service &amp; Protocol Normalization</li>
+          <li class="breadcrumb-item">Documentation Suite</li>
+          <li class="breadcrumb-item">RFCs</li>
+      <li class="breadcrumb-item active">RFC-002: Northbound Ingest Service & Normalization</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -98,83 +150,128 @@
 <p><strong>Author</strong>: Amy Mummert</p>
 <p><strong>Status</strong>: Proposed</p>
 <p><strong>Date</strong>: 2026-09-01</p>
-<p><strong>Target Components</strong>: Northbound Ingest Service, Protocol Adaptors, Protocol Normalization, Telemetry Mapping</p>
+<p><strong>Target Components</strong>: Northbound Ingest Service, Protocol Adapters, Protocol Normalization, Telemetry Mapping</p>
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
 <p>This RFC defines the proposed design and operation of the Northbound Ingest Service (NIS) and the protocol 
-normalization layer.</p>
-<p>Because Oversight ICS architecture relies on strict separation of between deterministic OT control systems and the
-Level 3.5 demilitarized zone (Level 3.5), this RFC proposes a Northbound Ingest Service (NIS) with protocol 
-normalization for secure protocol termination and semantic normalization.  </p>
-<p>Field assets may expose telemetry using protocols such as Modbus, OPC-UA, Ethernet/IP, and MQTT/Sparkplug B. These
-protocols expose raw memory addresses, vendor-specific addressing, data types, device metadata, timestamps, and quality
-bits. If downstream components were allowed to consume this data directly, the system would become tightly coupled with 
-specific hardware vendors and introduce a severe safety risk.</p>
+normalization pipeline. </p>
+<p>The Oversight system relies on strict separation between OT environments and IT environments. Telemetry must move 
+northbound from the field assets and control assets into the Level 3.5 demilitarized zone without allowing downstream 
+consumers to establish direct connections to those assets.</p>
+<p>Field assets, PLCs, RTUs, gateways, and supervisory systems may expose telemetry through a variety of protocols
+(e.g., Modbus, OPC-UA, Ethernet/IP, MQTT/Sparkplug-B). Each source protocol processes information differently:</p>
+<ul>
+<li>Modbus TCP represents process data as coils, discrete inputs, input registers, and holding registers which are 
+  accessed using function codes and addresses.</li>
+<li>OPC-UA represents typed process values through an information model containing variables and other nodes using NodeIds.
+  A returned value may contain a value, source timestamps, server timestamps, and status codes.</li>
+<li>Ethernet/IP implements the CIP (Common Industrial Protocol) representing device data using objects, instances, 
+  attributes, assemblies, and explicit or implicit messaging</li>
+<li>MQTT / Sparkplug-B represents industrial process metrics using the Sparkplug B MQTT topic namespace, payload model, 
+  and state management (such as birth and death notifications)</li>
+</ul>
+<p>These protocols are not suitable for the internal telemetry contract for Oversight. Allowing downstream consumers to
+have direct access to these protocols would tightly couple Oversight to the individual industrial protocols, exposing 
+raw protocol-specific information to downstream consumers. This presents a security risk and increases the complexity 
+of the system.</p>
+<p>The NIS provides a controlled boundary between source protocol communication and the internal telemetry contract. It
+terminates source-protocol communication at the NIS boundary, applies semantic mapping and normalization, constructs
+the Oversight TelemetryEvent, serializes the TelemetryEvent using Protocol Buffers, and publishes the 
+protobuf-serialized TelemetryEvent to the NATS JetStream Unified Namespace (UNS).</p>
+<p>MQTT / Sparkplug-B messages are decoded at the NIS boundary and mapped into the Oversight telemetry contract, rather
+than being forwarded directly to the UNS.</p>
+<p>The NIS is <strong>Read-Only</strong> and does not replace PLC control logic, safety-instrumented systems, or deterministic control
+functions. It has no authority to write to field assets or execute control commands.</p>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
-<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into JSON payloads and 
-extracts raw source data. It is a <strong>read-only</strong> service.  It has no authority to issue control commands to physical 
-assets.</p>
+<p><strong>The Responsibilities of Northbound Ingest Service are as follows</strong>: </p>
+<ul>
+<li>The NIS ingests telemetry through read-only connections to approved industrial telemetry sources.</li>
+<li>It terminates source-protocol communication at the Northbound Ingest Service boundary. This is important because
+  protocol-specific information must never be exposed to downstream consumers.</li>
+<li>It reads and decodes the following industrial protocols:</li>
+<li>Modbus TCP</li>
+<li>OPC-UA </li>
+<li>Ethernet/IP</li>
+<li>MQTT / Sparkplug-B</li>
+<li>It reads protocol-specific data, translates it into vendor-neutral Oversight ICS telemetry.</li>
+<li>The NIS <strong>NEVER</strong> writes to the control assets, processes command subjects, detects anomalies, or performs any 
+  physical control.</li>
+<li>The NIS normalizes data types, byte order, scaling, offsets, engineering units, quality, and timestamps.</li>
+<li>It constructs and validates the Oversight TelemetryEvent.</li>
+<li>It serializes the TelemetryEvent objects using Protocol Buffers.</li>
+<li>It builds the semantic UNS subject from the TelemetryEvent.</li>
+<li>It publishes the protobuf-serialized TelemetryEvent to the UNS subject <code>oversight.telemetry.&gt;</code>.</li>
+<li>It confirms the successful JetStream persistence through a published acknowledgement (<code>PubAck</code>).</li>
+</ul>
+<p><strong>The NIS MUST remain read-only and MUST NOT write to control assets, consume command subjects, perform process-anamoly 
+detection, authorize control actions, or perform physical control.</strong></p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
 <p>Oversight ICS is designed to ingest high-throughput telemetry exceeding 10,000 points per second from the 
 deterministic control layers. The Northbound Ingest Service must communicate with industrial protocols, however, to 
 remain secure, protocol-specific information must be terminated at the ingestion boundary and must not be exposed 
 directly to downstream consumers.</p>
-<p>Specific protocols expose the following information:</p>
-<ol>
-<li><strong>Modbus</strong>: Coils, Discrete Inputs, Holding Registers, Input Registers.</li>
-<li><strong>OPC-UA</strong>: Typed Values using NodeIds, Source Timestamps, Server Timestamps, and Status Codes.</li>
-<li><strong>Ethernet/IP</strong>: Uses CIP (Common Internet Protocol) to communicate with devices and exposes data through objects, 
-   instances, attributes, assemblies, and explicit or implicit messaging.</li>
-<li><strong>MQTT / Sparkplug-B</strong>: Industrial process metrics using the Sparkplug B MQTT topic namespace, payload model, and 
-   state management (such as birth and death notifications).</li>
-</ol>
 <p>If we were to allow downstream consumers (Bytwax, TimescaleDB, Redis, LangGraph Agent) to consume the protocol-specific 
 data directly, this would tightly couple Oversight to individual industrial protocols. </p>
 <p>Without protocol normalization, every downstream consumer would need to understand those raw industrial protocols, which 
 increases the attack surface and is a huge safety risk. This would also reduce hardware abstraction and increase the 
 complexity of the system. </p>
-<p>In addition, unmanaged polling, subscription, or connection behavior against field controllers can introduce excessive 
-load on the system. </p>
+<p>In addition, unmanaged polling, subscription, or connection behavior against field controllers can introduce an 
+excessive load on the system. </p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
-<p>The proposed solution is to implement a Northbound Ingest Service (NIS) that ingests raw industrial protocol data, 
-normalizes it into JSON payloads, and pushes them to the NATS JetStream Unified Namespace (UNS).</p>
+<p>The proposed solution is to implement the Northbound Ingest Service (NIS) as a read-only service that ingests telemetry
+and normalizes it into the Oversight TelemetryEvent contract.</p>
+<p>The NIS will contain dedicated protocol adapters for:</p>
+<ul>
+<li>Modbus TCP</li>
+<li>OPC-UA</li>
+<li>Ethernet/IP</li>
+<li>MQTT / Sparkplug-B</li>
+</ul>
+<p>Each adapter will establish controlled, read-only communication with approved field endpoints. The adapter does the
+following:</p>
+<ul>
+<li>Terminates the source-protocol</li>
+<li>Decodes the received data </li>
+<li>Converts the data into an internal raw-observation representation</li>
+</ul>
+<p>Protocol-specific identifiers (e.g., modbus register addresses, OPC-UA NodeIds, Ethernet/IP CIP object paths, and 
+Sparkplug-B MQTT topics) will remain within the protocol adapters and telemetry mapping layers.</p>
+<p>The internal raw-observation will then be passed to the NIS normalization layer. The normalization layer will use a 
+telemetry mapping registry and will perform the following:</p>
+<ul>
+<li>Determines the enterprise, site, area, line, asset, and tag identity</li>
+<li>Converts the source value into the required data-type</li>
+<li>Applies byte-order conversion where it is required</li>
+<li>Applies configured scaling factors and offsets</li>
+<li>Normalizes engineering units</li>
+<li>Normalizes the source quality information into the Oversight quality model</li>
+<li>Normalizes the source timestamp and assigns an ingestion timestamp</li>
+<li>Detects malformed, stale, unsupported, or unmapped telemetry</li>
+</ul>
+<p>The normalized telemetry will then be used to construct the TelemetryEvent. The NIS will validate the event with the 
+supported schema before allowing it to be published to the UNS.</p>
+<p>Using protocol buffers, the NIS will serialize the TelemetryEvent. It then contructs the NATS subject using the 
+following format:</p>
+<p><code>oversight.telemetry.&lt;enterprise&gt;.&lt;site&gt;.&lt;area&gt;.&lt;line&gt;.&lt;asset&gt;.&lt;tag&gt;</code></p>
+<p>The NIS will then publish the Protobuf-serialized TelemetryEvent to the UNS subject. The NIS will confirm success only
+after receiving a JetStream <code>PubAck</code>.</p>
 <h2 id="data-flow-pipeline">Data Flow Pipeline<a class="headerlink" href="#data-flow-pipeline" title="Permanent link"></a></h2>
-<p><img alt="Northbound Ingest Data Flow" src="../../assets/northbound-ingest-data-flow.png" /></p>
-<h2 id="supported-protocols">Supported Protocols<a class="headerlink" href="#supported-protocols" title="Permanent link"></a></h2>
-<table>
-<thead>
-<tr>
-<th>Protocol</th>
-<th>Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Modbus TCP</td>
-<td>PLC/RTU Telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA TCP</td>
-<td>Industrial Telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA Pub/Sub</td>
-<td>Publish/Subscribe telemetry</td>
-</tr>
-<tr>
-<td>OPC-UA Client/Server</td>
-<td>Request/Response telemetry</td>
-</tr>
-<tr>
-<td>Ethernet/IP</td>
-<td>Industrial Telemetry</td>
-</tr>
-<tr>
-<td>MQTT / Sparkplug-B</td>
-<td>Industrial MQTT Telemetry</td>
-</tr>
-</tbody>
-</table>
+<p><img alt="NIS Data Flow" src="diagrams/NIS-Data-Flow.png" width="450" /></p>
+<h2 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link"></a></h2>
+<h2 id="non-goals">Non-Goals<a class="headerlink" href="#non-goals" title="Permanent link"></a></h2>
+<h2 id="service-boundary-industrial-modules">Service Boundary &amp; Industrial Modules<a class="headerlink" href="#service-boundary-industrial-modules" title="Permanent link"></a></h2>
+<h2 id="telemetry-contract">Telemetry Contract<a class="headerlink" href="#telemetry-contract" title="Permanent link"></a></h2>
+<h2 id="mapping-registry">Mapping Registry<a class="headerlink" href="#mapping-registry" title="Permanent link"></a></h2>
+<h2 id="connection-and-polling-policy">Connection and Polling Policy<a class="headerlink" href="#connection-and-polling-policy" title="Permanent link"></a></h2>
+<h2 id="quality-timestamping">Quality &amp; Timestamping<a class="headerlink" href="#quality-timestamping" title="Permanent link"></a></h2>
+<h2 id="publication-contract">Publication Contract<a class="headerlink" href="#publication-contract" title="Permanent link"></a></h2>
+<h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
+<h2 id="security-controls">Security Controls<a class="headerlink" href="#security-controls" title="Permanent link"></a></h2>
+<h2 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link"></a></h2>
+<h2 id="scaling-high-availability">Scaling &amp; High Availability<a class="headerlink" href="#scaling-high-availability" title="Permanent link"></a></h2>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
+<h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link"></a></h2>
+<h2 id="risks-tradeoffs-alternatives">Risks, Tradeoffs, &amp; Alternatives<a class="headerlink" href="#risks-tradeoffs-alternatives" title="Permanent link"></a></h2>
+<h2 id="acceptance-tests">Acceptance Tests<a class="headerlink" href="#acceptance-tests" title="Permanent link"></a></h2>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>
 <p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>
@@ -194,9 +291,14 @@ normalizes it into JSON payloads, and pushes them to the NATS JetStream Unified 
 <p><a href="https://www.ni.com/en/shop/seamlessly-connect-to-third-party-devices-and-supervisory-system/the-modbus-protocol-in-depth.html?srsltid=AfmBOop4P2lHChVWB95LJQjAJTXPXGZZ1UlCwrXGTxwrXmf0t4xw5qc4">The Modbus Protocol In-depth</a></p>
 <p><a href="https://en.wikipedia.org/wiki/OPC_Unified_Architecture">OPC-UA</a></p>
 <p><a href="https://reference.opcfoundation.org/specs/OPC-10000-3/1">OPC-UA Specs</a></p>
+<p><a href="https://protobuf.dev/">Protocol Buffers</a></p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../RFC-001/" class="btn btn-neutral float-left" title="RFC-001: Unified Namespace & Messaging Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../glossary/" class="btn btn-neutral float-right" title="Glossary">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -222,6 +324,10 @@ normalizes it into JSON payloads, and pushes them to the NATS JetStream Unified 
         </span>
     
     
+      <span><a href="../RFC-001/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../glossary/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

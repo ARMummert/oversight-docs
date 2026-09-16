@@ -138,7 +138,21 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#publication-contract">Publication Contract</a>
+    <li class="toctree-l3"><a class="reference internal" href="#publication-policy">Publication Policy</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#telemetry-subject">Telemetry Subject</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#one-point-per-event">One Point Per Event</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#required-nats-headers">Required NATS Headers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#jetstream-publication-acknowledgement">JetStream Publication Acknowledgement</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#publication-retry-policy">Publication Retry Policy</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#maximum-payload-size">Maximum Payload Size</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
     </li>
@@ -711,7 +725,72 @@ set the <code>timestamp_source</code> to <code>NIS</code>.</p>
    - Set <code>original_message_id</code> to the ID of the original event</p>
 <p>When a JetStream acknowledgement is not received, retrying to publish it is not considered a replay. Publication retries
 use the same <code>message_id</code> as the original event.</p>
-<h2 id="publication-contract">Publication Contract<a class="headerlink" href="#publication-contract" title="Permanent link"></a></h2>
+<h2 id="publication-policy">Publication Policy<a class="headerlink" href="#publication-policy" title="Permanent link"></a></h2>
+<p>After the NIS creates the <code>TelemetryEvent</code>, it serializes it using Protocol Buffers and publishes it to NATS JetStream.</p>
+<h3 id="telemetry-subject">Telemetry Subject<a class="headerlink" href="#telemetry-subject" title="Permanent link"></a></h3>
+<p><code>oversight.telemetry.&lt;enterprise&gt;.&lt;site&gt;.&lt;area&gt;.&lt;line&gt;.&lt;asset&gt;.&lt;tag&gt;</code></p>
+<h3 id="one-point-per-event">One Point Per Event<a class="headerlink" href="#one-point-per-event" title="Permanent link"></a></h3>
+<p>The NIS must publish only one <code>TelemetryEvent</code> per event.</p>
+<h3 id="required-nats-headers">Required NATS Headers<a class="headerlink" href="#required-nats-headers" title="Permanent link"></a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Headers</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Nats-Msg-Id</code></td>
+<td style="text-align: left;">The events <code>message_id</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Content-type</code></td>
+<td style="text-align: left;"><code>application/x-protobuf</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Oversight-Schema-Version</code></td>
+<td style="text-align: left;">The schema version of the <code>TelemetryEvent</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Oversight-Trace-Id</code></td>
+<td style="text-align: left;">The events <code>trace_id</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Oversight-Correlation-Id</code></td>
+<td style="text-align: left;">The events <code>correlation_id</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Oversight-Event-Type</code></td>
+<td style="text-align: left;">telemetry</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jetstream-publication-acknowledgement">JetStream Publication Acknowledgement<a class="headerlink" href="#jetstream-publication-acknowledgement" title="Permanent link"></a></h3>
+<p>A <code>TelemetryEvent</code> is not considered successfully published until it is acknowledged by NATS JetStream and receives a
+JetStream <code>PubAck</code> acknowledgement.</p>
+<p>The NIS must:</p>
+<ul>
+<li>publish the serialized <code>TelemetryEvent</code> to the UNS subject</li>
+<li>Wait for the JetStream acknowledgement (<code>PubAck</code>)</li>
+<li>Confirm the acknowledgement was successful</li>
+<li>Record the acknowledgement latency</li>
+<li>Treat a rejected acknowledgement as a failed publication</li>
+<li>Retry when an acknowledgement is not received within the configured timeout.</li>
+</ul>
+<h3 id="publication-retry-policy">Publication Retry Policy<a class="headerlink" href="#publication-retry-policy" title="Permanent link"></a></h3>
+<p>Publication retries must be bounded and use controlled backoff. Every retry of the same <code>TelemetryEvent</code> must use the
+same <code>message_id</code>, subject, serialized payload, and <code>Nats-Msg-Id</code> header.</p>
+<p>If the retry limit is reached, the NIS must:</p>
+<ul>
+<li>Record the publication failure</li>
+<li>Update its health state</li>
+<li>Place the event into the approved bounded local buffer when available.</li>
+<li>Never retry indefinitely.</li>
+</ul>
+<h3 id="maximum-payload-size">Maximum Payload Size<a class="headerlink" href="#maximum-payload-size" title="Permanent link"></a></h3>
+<p>A complete <code>TelemetryEvent</code> must not exceed 64 KiB (65,536 bytes). Oversight will reject any event that exceeds this 
+size and route the information to the approved telemetry DLQ subject.</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <h2 id="security-controls">Security Controls<a class="headerlink" href="#security-controls" title="Permanent link"></a></h2>
 <h2 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link"></a></h2>
@@ -743,6 +822,7 @@ use the same <code>message_id</code> as the original event.</p>
 <p><a href="https://github.com/eclipse-sparkplug/sparkplug">Sparkplug B Github</a></p>
 <p><a href="https://sparkplug.eclipse.org/specification/?utm_source=chatgpt.com">Sparkplug B Specification</a></p>
 <p><a href="https://ucum.org/ucum">UCUM</a></p>
+<p><a href="https://docs.nats.io/learn/core-nats/headers">NATS Headers</a></p>
               
             </div>
           </div><footer>

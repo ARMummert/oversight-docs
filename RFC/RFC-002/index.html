@@ -110,17 +110,33 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#engineering-unit-policy">Engineering Unit Policy</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#schema-validation-rules">Schema Validation Rules</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#schema-evolution-policy">Schema Evolution Policy</a>
-    </li>
         </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#schema-validation-rules">Schema Validation Rules</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#schema-evolution-policy">Schema Evolution Policy</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#mapping-registry_1">Mapping Registry</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#connection-and-polling-policy">Connection and Polling Policy</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#quality-timestamping">Quality &amp; Timestamping</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#quality-values_1">Quality Values</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#communication-failures-and-stale-values">Communication Failures and Stale Values</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#timestamp-fields">Timestamp Fields</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#timestamp-precedence">Timestamp Precedence</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#clock-skew-detection">Clock Skew Detection</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#out-of-order-telemetry">Out-of-Order Telemetry</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#replay-identification">Replay Identification</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#publication-contract">Publication Contract</a>
     </li>
@@ -444,10 +460,7 @@ contain exactly one type so that downstream consumers can process it correctly. 
 <li><code>GOOD</code></li>
 <li><code>BAD</code></li>
 <li><code>UNCERTAIN</code></li>
-<li><code>REJECTED</code></li>
-<li><code>STALE</code></li>
-<li><code>UNSUPPORTED</code></li>
-<li><code>UNMAPPED</code></li>
+<li><code>UNKNOWN</code></li>
 </ul>
 <p>A <code>TelemetryEvent</code> with a <code>BAD</code> quality may still be published to downstream consumers so that they know that the 
 current measurement is not reliable. </p>
@@ -513,7 +526,7 @@ and string values do not require an engineering unit.</p>
     }
   }
 </code></pre>
-<h3 id="schema-validation-rules">Schema Validation Rules<a class="headerlink" href="#schema-validation-rules" title="Permanent link"></a></h3>
+<h2 id="schema-validation-rules">Schema Validation Rules<a class="headerlink" href="#schema-validation-rules" title="Permanent link"></a></h2>
 <p>Before publishing a TelemetryEvent to the UNS, the NIS must validate the following:</p>
 <ol>
 <li><code>schema_version</code> is supported</li>
@@ -527,7 +540,7 @@ and string values do not require an engineering unit.</p>
 <li>Reasoning is provided when <code>quality</code> is <code>BAD</code>, <code>UNCERTAIN</code>, <code>REJECTED</code>, <code>STALE</code>, <code>UNSUPPORTED</code>, or <code>UNMAPPED</code></li>
 <li>The event does not contain prohibited protocol-specific information or physical addresses.</li>
 </ol>
-<h3 id="schema-evolution-policy">Schema Evolution Policy<a class="headerlink" href="#schema-evolution-policy" title="Permanent link"></a></h3>
+<h2 id="schema-evolution-policy">Schema Evolution Policy<a class="headerlink" href="#schema-evolution-policy" title="Permanent link"></a></h2>
 <p>The telemetry schema must be allowed to change without breaking existing publishers, consumers, or stored messages.</p>
 <ol>
 <li>New fields should be optional.</li>
@@ -539,8 +552,165 @@ and string values do not require an engineering unit.</p>
 </ol>
 <p><a href="https://protobuf.dev/best-practices/dos-donts/">Proto Best Practices</a></p>
 <h2 id="mapping-registry_1">Mapping Registry<a class="headerlink" href="#mapping-registry_1" title="Permanent link"></a></h2>
+<p>The NIS uses a version-controlled mapping registry to translate protocol-specific data into the Oversight 
+<code>TelemetryEvent</code> contract. </p>
+<p>Each mapping must contain the following:
+- A unique unit mapping id and version
+- The approved source endpoint 
+- The source protocol
+- The protocol-specific source address, such as:
+  - Modbus register address
+  - OPC-UA NodeId
+  - Ethernet/IP objects
+  - Sparkplug-B metric name or alias
+- Semantic Path
+  - Enterprise
+  - Site
+  - Area
+  - Line
+  - Asset
+  - Tag
+- The source and data types
+- Byte order, when required
+- Scaling factor and offset, when required
+- Source and engineering units
+- Expected update interval
+- Stale-data threshold
+- Whether the mapping is active or enabled</p>
+<p>The mapping must not contain the following:
+- passwords
+- certificates
+- other credentials</p>
+<p>The protocol-specific addresses <strong>MUST NEVER</strong> leave the NIS.  The address must remain inside the NIS and must not be
+included in telemetry published to downstream consumers.</p>
+<p>New or updated mappings must be validated before they become active. If validation fails, the NIS continues using the 
+working registry and the previous registry version remains active for rollback. </p>
+<p>Changing a device, protocol, or physical address only requires a mapping change.  </p>
 <h2 id="connection-and-polling-policy">Connection and Polling Policy<a class="headerlink" href="#connection-and-polling-policy" title="Permanent link"></a></h2>
+<p>The NIS will only connect to approved OT endpoints. Each endpoint must be included in an allowlist containing its
+hostname or IP address, port, protocol, and allowed connection settings. </p>
+<p>The Oversight NIS will support two telemetry collection methods:</p>
+<ol>
+<li><strong>Polling</strong>: The NIS requests data from a source over a fixed interval.</li>
+<li><strong>Subscription</strong>: The NIS subscribes to a source and receives data values are changed or set at a fixed interval.</li>
+</ol>
+<p><strong>Connection &amp; Polling Rules:</strong></p>
+<ol>
+<li>All connections must be read-only</li>
+<li>Polling and subscription intervals must be able to be configured</li>
+<li>The NIS must not poll faster than the approved rate for an endpoint</li>
+<li>Each endpoint must have limits for active connections, requests, and subscriptions</li>
+<li>Connection and read operations must have timeouts</li>
+<li>Failed operations must use a limited number of retries with controlled backoff</li>
+<li>Repeated failures must not create an unlimited retry loop or retry storm.</li>
+<li>Only one active NIS instance may collect data from an endpoint at one time.</li>
+<li>A standby NIS instance must remain passive until ownership handover or the active instance is confirmed unavailable.</li>
+<li>Late, failed, or skipped reads must be recorded and reported.</li>
+<li>Telemetry not updated before the stale threshold is met must be reported as stale.</li>
+<li>The NIS must not present an old value as a new live measurement.</li>
+</ol>
 <h2 id="quality-timestamping">Quality &amp; Timestamping<a class="headerlink" href="#quality-timestamping" title="Permanent link"></a></h2>
+<p>The NIS must be able to tell downstream consumers whether each telemetry value can be trusted and when the measurement
+was taken.</p>
+<h3 id="quality-values_1">Quality Values<a class="headerlink" href="#quality-values_1" title="Permanent link"></a></h3>
+<p>Every <code>TelemetryEvent</code> must contain a <code>quality</code> value.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Quality Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>GOOD</code></td>
+<td style="text-align: left;">Value received successfully and is current and valid</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BAD</code></td>
+<td style="text-align: left;">Value is invalid or should not be used (e.g., stale telemetry, communication failure, or invalid data</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>UNCERTAIN</code></td>
+<td style="text-align: left;">Value may be unstable but no known concerns</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>UNKNOWN</code></td>
+<td style="text-align: left;">Not enough information for the NIS to determine quality</td>
+</tr>
+</tbody>
+</table>
+<p>The NIS should also include a controlled <code>quality_reason</code> value when <code>quality</code> is not <code>GOOD</code>. </p>
+<ul>
+<li><code>COMMUNICATION_FAILURE</code></li>
+<li><code>STALE_DATA</code></li>
+<li><code>CLOCK_SKEW</code></li>
+<li><code>SOURCE_UNCERTAIN</code></li>
+<li><code>SOURCE_BAD</code></li>
+<li><code>OUT_OF_RANGE</code></li>
+<li><code>MALFORMED_VALUE</code></li>
+<li><code>UNKNOWN</code></li>
+</ul>
+<h3 id="communication-failures-and-stale-values">Communication Failures and Stale Values<a class="headerlink" href="#communication-failures-and-stale-values" title="Permanent link"></a></h3>
+<p>A telemetry point is stale when it has not been updated with the <code>stale_threshold</code> defined in the mapping registry.</p>
+<p>When a telemetry point is stale:</p>
+<ul>
+<li>The NIS must not present the last value as a new live measurement.</li>
+<li>The previous <code>event_time</code> must remain unchanged.</li>
+<li>The point must be marked as <code>BAD</code>.</li>
+<li>The <code>quality_reason</code> must be set to <code>STALE_DATA</code> or <code>COMMUNICATION_FAILURE</code>.</li>
+<li>The NIS should publish the quality change only once when the point becomes stale.</li>
+<li>The NIS must report the communication failure through its health and diagnostics metrics.</li>
+</ul>
+<p>When communication is restored, the next successful and valid measurement is returned to <code>GOOD</code>.</p>
+<h3 id="timestamp-fields">Timestamp Fields<a class="headerlink" href="#timestamp-fields" title="Permanent link"></a></h3>
+<ol>
+<li><code>event_time</code> - the time the telemetry was received from the source</li>
+<li><code>ingested_at</code> - the time the NIS received the measurement</li>
+<li><code>published_at</code> - the time the NIS published the event to NATS JetStream</li>
+<li><code>source_timestamp</code> - the time the source device recorded the measurement (if available)</li>
+</ol>
+<p><strong>All timestamps must use UTC.</strong></p>
+<h3 id="timestamp-precedence">Timestamp Precedence<a class="headerlink" href="#timestamp-precedence" title="Permanent link"></a></h3>
+<p>The NIS must choose the <code>event_time</code> in the following order of precedence:</p>
+<ol>
+<li>A valid <code>source_timestamp</code> supplied by the field device</li>
+<li>A valid protocol-server timestamp, such as a PLC or OPC-UA server timestamp</li>
+<li>The NIS <code>ingested_at</code> timestamp when no other trusted timestamp is available</li>
+</ol>
+<p>The event should contain a <code>timestamp_source</code> value showing the source of the timestamp.</p>
+<ul>
+<li><code>SOURCE</code></li>
+<li><code>PROTOCOL_SERVER</code></li>
+<li><code>NIS</code></li>
+</ul>
+<h3 id="clock-skew-detection">Clock Skew Detection<a class="headerlink" href="#clock-skew-detection" title="Permanent link"></a></h3>
+<p>The NIS must compare the <code>event_time</code> and <code>ingested_at</code> timestamps to ensure that they are within the clock-skew 
+threshold. If the difference exceeds this threshold:</p>
+<ul>
+<li>The event is marked <code>UNCERTAIN</code></li>
+<li>The <code>quality_reason</code> is set to <code>CLOCK_SKEW</code></li>
+<li>The NIS must report the clock skew through its health and diagnostics metrics.</li>
+</ul>
+<p>If the source timestamp is invalid or unusable, the NIS must use the <code>ingested_at</code> timestamp as the <code>event_time</code> and
+set the <code>timestamp_source</code> to <code>NIS</code>.</p>
+<p>The NIS must use an approved time sync service.</p>
+<h3 id="out-of-order-telemetry">Out-of-Order Telemetry<a class="headerlink" href="#out-of-order-telemetry" title="Permanent link"></a></h3>
+<ul>
+<li>An event is &ldquo;out-of-order&rdquo; when its <code>event_time</code> is older than the previous event for the same telemetry point. </li>
+<li>Valid out-of-order events may still be published to downstream consumers for historical storage purposes. However,
+     they must be marked as <code>"out-of-order": true</code>. </li>
+<li>Consumers such as Redis must not replace a newer value with an older out-of-order value.</li>
+</ul>
+<h3 id="replay-identification">Replay Identification<a class="headerlink" href="#replay-identification" title="Permanent link"></a></h3>
+<p>Intentially replayed telemetry must be marked as <code>"is_replay": true</code></p>
+<p>A replay event should do the following:
+   - Receive a new <code>message_id</code>
+   - Preserve the original <code>event_time</code>
+   - Include the original message ID
+   - Set <code>original_message_id</code> to the ID of the original event</p>
+<p>When a JetStream acknowledgement is not received, retrying to publish it is not considered a replay. Publication retries
+use the same <code>message_id</code> as the original event.</p>
 <h2 id="publication-contract">Publication Contract<a class="headerlink" href="#publication-contract" title="Permanent link"></a></h2>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <h2 id="security-controls">Security Controls<a class="headerlink" href="#security-controls" title="Permanent link"></a></h2>

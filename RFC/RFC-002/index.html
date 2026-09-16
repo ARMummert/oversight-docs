@@ -80,11 +80,43 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#non-goals">Non-Goals</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#service-boundary-industrial-modules">Service Boundary &amp; Industrial Modules</a>
+    <li class="toctree-l3"><a class="reference internal" href="#internal-modules">Internal Modules</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#protocol-adaptors">Protocol Adaptors</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#raw-observation-interface">Raw-Observation Interface</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mapping-registry">Mapping Registry</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#normalization-layer">Normalization Layer</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#schema-validator">Schema Validator</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#protobuf-serializer">Protobuf Serializer</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-publisher">NATS Publisher</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#health-diagnostics">Health &amp; Diagnostics</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#telemetry-contract">Telemetry Contract</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#typed-values">Typed Values</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#mapping-registry">Mapping Registry</a>
+    <li class="toctree-l4"><a class="reference internal" href="#quality-values">Quality Values</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#timestamp-rules">Timestamp Rules</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#engineering-unit-policy">Engineering Unit Policy</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#schema-validation-rules">Schema Validation Rules</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#schema-evolution-policy">Schema Evolution Policy</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mapping-registry_1">Mapping Registry</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#connection-and-polling-policy">Connection and Polling Policy</a>
     </li>
@@ -250,10 +282,263 @@ than being forwarded directly to the UNS.</p>
 <p>The NIS is <strong>Read-Only</strong> and does not replace PLC control logic, safety-instrumented systems, or deterministic control
 functions. It has no authority to write to field assets or execute control commands.</p>
 <h2 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link"></a></h2>
+<ol>
+<li>Safely collect OT Telemetry</li>
+<li>Communicate only with approved field endpoints.</li>
+<li>Use read-only requests and subscriptions.</li>
+<li>Prevent downstream consumers from having direct connections to field assets.</li>
+<li>Hardware &amp; Protocol Abstraction</li>
+<li>Terminate source-protocol communication at the NIS boundary.</li>
+<li>Prevent physical addresses, NodeIds, CIP object paths, Sparkplug-B topics, and vendor-specific identifiers from
+     being exposed to downstream consumers.</li>
+<li>Allow downstream components to use the telemetry contract without knowing the original protocol.</li>
+<li>Keep the telemetry identity stable if a device, address, or source protocol changes.</li>
+<li>Telemetry </li>
+<li>Map each source value to the correct enterprise, site, area, line, asset, and tag identity.</li>
+<li>Normalize data types, byte order, scaling, offsets, engineering units, quality, and timestamps.</li>
+<li>Build and validate the Oversight TelemetryEvent.</li>
+<li>Serialize the TelemetryEvent objects using Protocol Buffers.</li>
+<li>Publish Telemetry to the UNS</li>
+<li>Build the UNS subject <code>oversight.telemetry.&gt;</code>. </li>
+<li>Publish the protobuf-serialized TelemetryEvent to NATS JetStream.</li>
+<li>Confirm JetStream accepted the message through a published acknowledgement (<code>PubAck</code>).</li>
+<li>Provide Reliable &amp; Measurable Operations</li>
+<li>Measure telemetry throughput and latency.</li>
+<li>When connection fails: Use limited retries and controlled backoff.</li>
+<li>Detect and report stale, invalid, unsupported, unmapped, rejected, or dropped telemetry.</li>
+<li>Do not let telemetry fail or disappear without being detected and reported.</li>
+<li>Test the NIS for performance, reliability, and read-only requirements.</li>
+</ol>
 <h2 id="non-goals">Non-Goals<a class="headerlink" href="#non-goals" title="Permanent link"></a></h2>
-<h2 id="service-boundary-industrial-modules">Service Boundary &amp; Industrial Modules<a class="headerlink" href="#service-boundary-industrial-modules" title="Permanent link"></a></h2>
+<p>The NIS is not responsible for:</p>
+<ol>
+<li>Writing to field devices</li>
+<li>Processing commands</li>
+<li>Controlling PLC or Safety Logic</li>
+</ol>
+<h2 id="internal-modules">Internal Modules<a class="headerlink" href="#internal-modules" title="Permanent link"></a></h2>
+<h3 id="protocol-adaptors">Protocol Adaptors<a class="headerlink" href="#protocol-adaptors" title="Permanent link"></a></h3>
+<p>Protocol adaptors communicate with approved telemetry sources.</p>
+<ul>
+<li>The Oversight NIS includes adaptors for: Modbus TCP, OPC-UA, Ethernet/IP, and MQTT/Sparkplug-B.</li>
+<li>Each adaptor does the following:</li>
+<li>Opens and manages a read-only connection or subscription</li>
+<li>Reads or receives telemetry</li>
+<li>Decodes the source protocol message</li>
+<li>Prevents protocol-specific information from leaving the adaptor boundary</li>
+<li>Passes the decoded data to the raw-observation interface</li>
+</ul>
+<h3 id="raw-observation-interface">Raw-Observation Interface<a class="headerlink" href="#raw-observation-interface" title="Permanent link"></a></h3>
+<p>The raw-observation interface is the interface between the protocol adapters and the normalization layer. It is a
+temporary internal representation of the telemetry data.</p>
+<ul>
+<li>The raw-observation interface contains:</li>
+<li>A mapping identifier (e.g., modbus register address, OPC-UA NodeId, CIP object path, Sparkplug-B topic)</li>
+<li>The raw value (e.g., integer, float, string, boolean, array)</li>
+<li>The source timestamp </li>
+<li>The source quality information (e.g., status, flags, error codes)</li>
+<li>The time the NIS received the observation</li>
+</ul>
+<p>This raw-observation is only used inside the NIS and is not published to the UNS.</p>
+<h3 id="mapping-registry">Mapping Registry<a class="headerlink" href="#mapping-registry" title="Permanent link"></a></h3>
+<p>The mapping registry contains the telemetry mapping rules. It is used to map the raw-observation interface to the
+Oversight TelemetryEvent contract (e.g., enterprise, site, area, line, asset, tag).</p>
+<p>The mapping registry contains:
+   - Data Type
+   - Byte Order
+   - Scaling Factor
+   - Offset
+   - Engineering Units
+   - Expected update interval
+   - Stale-data threshold
+   - Mapping version</p>
+<p>Physical addresses and protocol identifiers remain in the mapping registry and are not included in the published
+telemetry.</p>
+<h3 id="normalization-layer">Normalization Layer<a class="headerlink" href="#normalization-layer" title="Permanent link"></a></h3>
+<p>The normalization layer converts the raw-observation into vendor-neutral Oversight ICS telemetry.</p>
+<p>It performs the following:
+   - Converts the data type
+   - Corrects byte order
+   - Applies scaling and offsets
+   - Converts engineering units
+   - Normalizes quality
+   - Normalizes timestamps
+   - Detects stale, malformed, unsupported, or unmapped telemetry</p>
+<h3 id="schema-validator">Schema Validator<a class="headerlink" href="#schema-validator" title="Permanent link"></a></h3>
+<p>The schema validator checks the completed TelemetryEvent against the Oversight TelemetryEvent schema.</p>
+<p>It verifies the following:
+   - All required fields are present
+   - The semantic identity is valid
+   - Exactly on telemetry value is set
+   - The quality value is supported
+   - Timestamps are valid
+   - The schema version is supported
+   - The payload does not contain prohibited protocol-specific information</p>
+<h3 id="protobuf-serializer">Protobuf Serializer<a class="headerlink" href="#protobuf-serializer" title="Permanent link"></a></h3>
+<p>The Protobuf serializer converts a valid TelemetryEvent into binary Protocol Buffer bytes.</p>
+<h3 id="nats-publisher">NATS Publisher<a class="headerlink" href="#nats-publisher" title="Permanent link"></a></h3>
+<p>The NATS publisher does the following:
+   - Builds the <code>oversight.telemetry.&gt;</code> subject
+   - Publishes the Protobuf payload to NATS JetStream
+   - Waits for JetStream to publish an acknowledgement (<code>PubAck</code>)
+   - Uses bounded retries when publication fails
+   - Reports unsuccessful or dropped publications</p>
+<h3 id="health-diagnostics">Health &amp; Diagnostics<a class="headerlink" href="#health-diagnostics" title="Permanent link"></a></h3>
+<p>The health and diagnostics of the NIS report the following:
+   - Adaptor connection state
+   - Last successful observation
+   - Points received, normalized, published, and rejected
+   - Unmapped or stale points
+   - Normalization and validation failures
+   - Retry counts
+   - Publication failures
+   - Processing and publication latency</p>
 <h2 id="telemetry-contract">Telemetry Contract<a class="headerlink" href="#telemetry-contract" title="Permanent link"></a></h2>
-<h2 id="mapping-registry">Mapping Registry<a class="headerlink" href="#mapping-registry" title="Permanent link"></a></h2>
+<p>The following payload defines the information that every downstream consumer receives:</p>
+<pre><code class="language-json">{
+  &quot;message_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,
+  &quot;trace_id&quot;: &quot;6f9619ff-8b86-d011-b42d-00cf4fc964ff&quot;,
+  &quot;correlation_id&quot;: &quot;7c9e6679-7425-40de-944b-e07fc1f90ae7&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;event_type&quot;: &quot;telemetry&quot;,
+  &quot;source&quot;: &quot;northbound-ingest&quot;,
+  &quot;event_time&quot;: &quot;2026-09-04T18:00:00Z&quot;,
+  &quot;published_at&quot;: &quot;2026-09-04T18:00:00.010Z&quot;,
+  &quot;asset&quot;: {
+    &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
+    &quot;site&quot;: &quot;Longview_Plant&quot;,
+    &quot;area&quot;: &quot;WaterTreatment&quot;,
+    &quot;line&quot;: &quot;Filtration&quot;,
+    &quot;asset&quot;: &quot;Pump_01&quot;,
+    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+  },
+  &quot;quality&quot;: &quot;GOOD&quot;,
+  &quot;quality_reason&quot;: &quot;Normal operation&quot;,
+  &quot;source_sequence&quot;: 12345,
+  &quot;payload&quot;: {
+    &quot;mapping_version&quot;: &quot;1.0.0&quot;,
+    &quot;data_type&quot;: &quot;DOUBLE&quot;,
+    &quot;value&quot;: 72.4,
+    &quot;engineering_unit&quot;: &quot;[psi]&quot;,
+    &quot;source_timestamp&quot;: &quot;2026-09-04T18:00:00Z&quot;,
+    &quot;ingested_at&quot;: &quot;2026-09-04T18:00:00.005Z&quot;,
+    &quot;is_replay&quot;: false
+  }
+}
+</code></pre>
+<h3 id="typed-values">Typed Values<a class="headerlink" href="#typed-values" title="Permanent link"></a></h3>
+<p>A <code>TelemetryEvent</code> represents one normalized telemetry point and must contain exactly one telemetry value. 
+To avoid ambiguous values (e.g., &ldquo;value&rdquo;: &ldquo;72.4&rdquo; could text, integer, double, or binary), the <code>TelemetryEvent</code> must 
+contain exactly one type so that downstream consumers can process it correctly. The following data types are supported:</p>
+<ul>
+<li>Boolean</li>
+<li>Signed Integer</li>
+<li>Unsigned Integer</li>
+<li>Double-Precision number</li>
+<li>String</li>
+<li>Binary value</li>
+</ul>
+<h3 id="quality-values">Quality Values<a class="headerlink" href="#quality-values" title="Permanent link"></a></h3>
+<p>Quality values are used to indicate the reliability of the telemetry value.</p>
+<ul>
+<li><code>GOOD</code></li>
+<li><code>BAD</code></li>
+<li><code>UNCERTAIN</code></li>
+<li><code>REJECTED</code></li>
+<li><code>STALE</code></li>
+<li><code>UNSUPPORTED</code></li>
+<li><code>UNMAPPED</code></li>
+</ul>
+<p>A <code>TelemetryEvent</code> with a <code>BAD</code> quality may still be published to downstream consumers so that they know that the 
+current measurement is not reliable. </p>
+<h3 id="timestamp-rules">Timestamp Rules<a class="headerlink" href="#timestamp-rules" title="Permanent link"></a></h3>
+<ol>
+<li><code>ingest_at</code> - required and assigned by the NIS.</li>
+<li><code>source_timestamp</code> - included only when the source provides a timestamp.</li>
+<li>The NIS will not create a fake source timestamp when one is unavailable.</li>
+<li>All timestamps must use UTC.</li>
+<li>Protobuf timestamps use <code>google.protobuf.Timestamp</code> format.</li>
+<li>Replayed telemetry must set <code>is_replay</code> to <code>true</code>.</li>
+<li>Live telemetry must set <code>is_replay</code> to <code>false</code>.</li>
+</ol>
+<h3 id="engineering-unit-policy">Engineering Unit Policy<a class="headerlink" href="#engineering-unit-policy" title="Permanent link"></a></h3>
+<p>Engineering units are assigned by the telemetry mapping registry. The NIS must use an approved list of engineering 
+unit codes so that the same unit is always written the same way (e.g., PSI for pounds per square inch are all
+normalized to &ldquo;[psi]&rdquo;). </p>
+<p>For the NIS, UCUM (Unified Code for Units of Measure) is used to define engineering units. UCUM codes should be used 
+for numeric measurements. Numeric values without a physical unit of measurement are to use the UCUM code <code>1</code>. Boolean
+and string values do not require an engineering unit.</p>
+<p><a href="https://ucum.org/ucum">UCUM</a></p>
+<p><strong>Proposed Protobuf Schema</strong>:</p>
+<pre><code class="language-protobuf">{ 
+  syntax = &quot;proto3&quot;; 
+
+  package oversight.telemetry.v1; 
+
+  import &quot;google/protobuf/timestamp.proto&quot;; 
+
+  enum Quality { 
+    QUALITY_UNKNOWN = 0; 
+    QUALITY_GOOD = 1; 
+    QUALITY_UNCERTAIN = 2; 
+    QUALITY_BAD = 3; 
+    } 
+    message TelemetryEvent { 
+      string schema_version = 1; 
+      string message_id = 2; 
+      optional string trace_id = 3; 
+      optional string correlation_id = 4; 
+      string mapping_version = 5; 
+      string enterprise = 6; 
+      string site = 7; 
+      string area = 8; 
+      string line = 9; 
+      string asset = 10; 
+      string tag = 11; 
+    oneof value { 
+      bool bool_value = 12; 
+      sint64 signed_integer_value = 13; 
+      uint64 unsigned_integer_value = 14; 
+      double double_value = 15; 
+      string string_value = 16; 
+      bytes bytes_value = 17; 
+    } 
+    optional string engineering_unit = 18; 
+    Quality quality = 19; 
+    optional string quality_reason = 20; 
+    optional google.protobuf.Timestamp source_timestamp = 21; 
+    google.protobuf.Timestamp ingested_at = 22; 
+    optional uint64 source_sequence = 23; 
+    bool is_replay = 24; 
+    }
+  }
+</code></pre>
+<h3 id="schema-validation-rules">Schema Validation Rules<a class="headerlink" href="#schema-validation-rules" title="Permanent link"></a></h3>
+<p>Before publishing a TelemetryEvent to the UNS, the NIS must validate the following:</p>
+<ol>
+<li><code>schema_version</code> is supported</li>
+<li><code>message_id</code> is a valid UUIDv4</li>
+<li>All identity fields are present</li>
+<li>Exactly one typed value</li>
+<li>The identity matches the NATS subject</li>
+<li><code>ingested_at</code> is present and valid</li>
+<li><code>source_timestamp</code> is valid when present</li>
+<li><code>engineering_unit</code> follows the approved unit policy</li>
+<li>Reasoning is provided when <code>quality</code> is <code>BAD</code>, <code>UNCERTAIN</code>, <code>REJECTED</code>, <code>STALE</code>, <code>UNSUPPORTED</code>, or <code>UNMAPPED</code></li>
+<li>The event does not contain prohibited protocol-specific information or physical addresses.</li>
+</ol>
+<h3 id="schema-evolution-policy">Schema Evolution Policy<a class="headerlink" href="#schema-evolution-policy" title="Permanent link"></a></h3>
+<p>The telemetry schema must be allowed to change without breaking existing publishers, consumers, or stored messages.</p>
+<ol>
+<li>New fields should be optional.</li>
+<li>Existing default Protobuf field numbers must not be changed or reused.</li>
+<li>Deleted enum values, tag numbers, field types, and names must be marked as reserved so no one accidentally 
+   reuses them.</li>
+<li>Breaking changes require a new major schema package, such as <code>oversight.telemetry.v2</code>.</li>
+<li>Consumers must reject unsupported major schema changes.</li>
+</ol>
+<p><a href="https://protobuf.dev/best-practices/dos-donts/">Proto Best Practices</a></p>
+<h2 id="mapping-registry_1">Mapping Registry<a class="headerlink" href="#mapping-registry_1" title="Permanent link"></a></h2>
 <h2 id="connection-and-polling-policy">Connection and Polling Policy<a class="headerlink" href="#connection-and-polling-policy" title="Permanent link"></a></h2>
 <h2 id="quality-timestamping">Quality &amp; Timestamping<a class="headerlink" href="#quality-timestamping" title="Permanent link"></a></h2>
 <h2 id="publication-contract">Publication Contract<a class="headerlink" href="#publication-contract" title="Permanent link"></a></h2>
@@ -285,6 +570,9 @@ functions. It has no authority to write to field assets or execute control comma
 <p><a href="https://en.wikipedia.org/wiki/OPC_Unified_Architecture">OPC-UA</a></p>
 <p><a href="https://reference.opcfoundation.org/specs/OPC-10000-3/1">OPC-UA Specs</a></p>
 <p><a href="https://protobuf.dev/">Protocol Buffers</a></p>
+<p><a href="https://github.com/eclipse-sparkplug/sparkplug">Sparkplug B Github</a></p>
+<p><a href="https://sparkplug.eclipse.org/specification/?utm_source=chatgpt.com">Sparkplug B Specification</a></p>
+<p><a href="https://ucum.org/ucum">UCUM</a></p>
               
             </div>
           </div><footer>

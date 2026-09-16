@@ -94,9 +94,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#non-goals">Non-Goals</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#event-payload">Event Payload</a>
+    <li class="toctree-l3"><a class="reference internal" href="#telemetry-event-payload">Telemetry Event Payload</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#command-payload">Command Payload</a>
+    <li class="toctree-l3"><a class="reference internal" href="#telemetry-command-payload">Telemetry Command Payload</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
         <ul>
@@ -341,16 +341,18 @@ dot notation to route data.</p>
 <li>WORM/audit storage implementation</li>
 <li>regulatory retention requirements</li>
 </ul>
-<h2 id="event-payload">Event Payload<a class="headerlink" href="#event-payload" title="Permanent link"></a></h2>
+<h2 id="telemetry-event-payload">Telemetry Event Payload<a class="headerlink" href="#telemetry-event-payload" title="Permanent link"></a></h2>
+<p><code>oversight.telemetry.events</code></p>
 <pre><code class="language-json">{
-  &quot;message_id&quot;: &quot;uuid&quot;,
-  &quot;trace_id&quot;: &quot;uuid&quot;,
-  &quot;correlation_id&quot;: &quot;uuid&quot;,
+  &quot;message_id&quot;: &quot;550e8400-e29b-41d4-a716-446655440000&quot;,
+  &quot;trace_id&quot;: &quot;6f9619ff-8b86-d011-b42d-00cf4fc964ff&quot;,
+  &quot;correlation_id&quot;: &quot;7c9e6679-7425-40de-944b-e07fc1f90ae7&quot;,
   &quot;schema_version&quot;: &quot;1.0&quot;,
-  &quot;event_type&quot;: &quot;telemetry&quot;,
+  &quot;event_type&quot;: &quot;loss_of_signal&quot;,
   &quot;source&quot;: &quot;northbound-ingest&quot;,
-  &quot;event_time&quot;: &quot;2026-09-04T18:00:00Z&quot;,
-  &quot;published_at&quot;: &quot;2026-09-04T18:00:00.010Z&quot;,
+  &quot;event_time&quot;: &quot;2026-09-04T18:00:05Z&quot;,
+  &quot;published_at&quot;: &quot;2026-09-04T18:00:05.010Z&quot;,
+  &quot;severity&quot;: &quot;WARNING&quot;,
   &quot;asset&quot;: {
     &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
     &quot;site&quot;: &quot;Longview_Plant&quot;,
@@ -359,33 +361,51 @@ dot notation to route data.</p>
     &quot;asset&quot;: &quot;Pump_01&quot;,
     &quot;tag&quot;: &quot;Discharge_Pressure&quot;
   },
-  &quot;quality&quot;: &quot;GOOD&quot;,
-  &quot;payload&quot;: {}
+  &quot;payload&quot;: {
+    &quot;reason&quot;: &quot;NO_TELEMETRY_WITHIN_STALE_THRESHOLD&quot;,
+    &quot;last_observation_at&quot;: &quot;2026-09-04T18:00:00Z&quot;,
+    &quot;stale_threshold_ms&quot;: 5000
+  }
 }
 </code></pre>
-<h2 id="command-payload">Command Payload<a class="headerlink" href="#command-payload" title="Permanent link"></a></h2>
+<h2 id="telemetry-command-payload">Telemetry Command Payload<a class="headerlink" href="#telemetry-command-payload" title="Permanent link"></a></h2>
+<p><code>oversight.commands.proposed</code></p>
 <pre><code class="language-json">{
-  &quot;message_id&quot;: &quot;uuid&quot;,
-  &quot;command_id&quot;: &quot;uuid&quot;,
-  &quot;created_at&quot;: &quot;2026-09-04T18:00:00Z&quot;,
-  &quot;expires_at&quot;: &quot;2026-09-04T18:00:10Z&quot;,
-  &quot;trace_id&quot;: &quot;uuid&quot;,
-  &quot;correlation_id&quot;: &quot;uuid&quot;,
+  &quot;message_id&quot;: &quot;9c858901-8a57-4791-81fe-4c455b099bc9&quot;,
+  &quot;command_id&quot;: &quot;1b4e28ba-2fa1-11d2-883f-0016d3cca427&quot;,
+  &quot;trace_id&quot;: &quot;6f9619ff-8b86-d011-b42d-00cf4fc964ff&quot;,
+  &quot;correlation_id&quot;: &quot;7c9e6679-7425-40de-944b-e07fc1f90ae7&quot;,
   &quot;schema_version&quot;: &quot;1.0&quot;,
-  &quot;event_type&quot;: &quot;telemetry&quot;,
-  &quot;source&quot;: &quot;northbound-ingest&quot;,
+  &quot;event_type&quot;: &quot;command.proposed&quot;,
+  &quot;source&quot;: &quot;langgraph-agent&quot;,
   &quot;event_time&quot;: &quot;2026-09-04T18:00:00Z&quot;,
   &quot;published_at&quot;: &quot;2026-09-04T18:00:00.010Z&quot;,
-  &quot;asset&quot;: {
+  &quot;created_at&quot;: &quot;2026-09-04T18:00:00Z&quot;,
+  &quot;expires_at&quot;: &quot;2026-09-04T18:00:10Z&quot;,
+  &quot;requested_by&quot;: {
+    &quot;actor_type&quot;: &quot;AGENT&quot;,
+    &quot;actor_id&quot;: &quot;oversight-langgraph-agent&quot;
+  },
+  &quot;target&quot;: {
     &quot;enterprise&quot;: &quot;AcmeCorp&quot;,
     &quot;site&quot;: &quot;Longview_Plant&quot;,
     &quot;area&quot;: &quot;WaterTreatment&quot;,
     &quot;line&quot;: &quot;Filtration&quot;,
     &quot;asset&quot;: &quot;Pump_01&quot;,
-    &quot;tag&quot;: &quot;Discharge_Pressure&quot;
+    &quot;tag&quot;: &quot;Speed_Setpoint&quot;
   },
-  &quot;quality&quot;: &quot;GOOD&quot;,
-  &quot;payload&quot;: {}
+  &quot;action&quot;: {
+    &quot;operation&quot;: &quot;SET&quot;,
+    &quot;data_type&quot;: &quot;DOUBLE&quot;,
+    &quot;requested_value&quot;: 55.0,
+    &quot;engineering_unit&quot;: &quot;Hz&quot;
+  },
+  &quot;justification&quot;: {
+    &quot;reason&quot;: &quot;Reduce pump speed after sustained discharge-pressure deviation&quot;,
+    &quot;evidence_references&quot;: [
+      &quot;drift-event-uuid&quot;
+    ]
+  }
 }
 </code></pre>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>

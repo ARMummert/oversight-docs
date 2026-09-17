@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RFC ADR TOC - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RFC ADR TOC";
+        var mkdocs_page_input_path = "RFC/RFC-ADR-TOC.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-container-diagram.png">System Architecture Container View</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >RFCs</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../RFC-001/">RFC-001: Unified Namespace & Messaging Architecture</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../RFC-002/">RFC-002: Northbound Ingest Service & Normalization</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">RFC ADR TOC</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <table>
+<thead>
+<tr>
+<th>RFC</th>
+<th>RFC Title</th>
+<th>File</th>
+<th>Corresponding ADR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RFC-001</td>
+<td>UNS &amp; NATS JetStream</td>
+<td><a href="../RFC-001/">RFC-001</a></td>
+<td>ADR-001 — Use NATS JetStream as the UNS and Messaging Backbone; <br/> ADR-002 — Use IEC 62264/ISA-95 Semantic Subject Hierarchy; <br/>ADR-003 — Use At-Least-Once Command Delivery with Application-Level Idempotency</td>
+</tr>
+<tr>
+<td>RFC-002</td>
+<td>Northbound Ingest &amp; Protocol Normalization</td>
+<td><a href="../RFC-002/">RFC-002</a></td>
+<td>ADR-004 — Terminate OT Protocols at the IDMZ Boundary; <br/>ADR-005 — Normalize Modbus, OPC-UA, and EtherNet/IP into Sparkplug B Canonical Telemetry</td>
+</tr>
+<tr>
+<td>RFC-003</td>
+<td>Streaming Analytics &amp; Anomaly Detection</td>
+<td><a href="RFC-003.md">RFC-003</a></td>
+<td>ADR-006 — Use Bytewax for Stateful Stream Processing; <br/>ADR-007 — Use Windowed Z-Score Drift Detection with Hysteresis/Deadband</td>
+</tr>
+<tr>
+<td>RFC-004</td>
+<td>Telemetry Persistence &amp; Read Models</td>
+<td><a href="RFC-004.md">RFC-004</a></td>
+<td>ADR-008 — Use TimescaleDB as the Telemetry Historian; <br/>ADR-009 — Use Redis as the Hot-State Read Model</td>
+</tr>
+<tr>
+<td>RFC-005</td>
+<td>Cognitive Digital Twin &amp; State Model</td>
+<td><a href="../RFC-005/">RFC-005</a></td>
+<td>ADR-010 — Maintain a Semantic Digital Twin Independent of Physical Register Addressing; <br/>ADR-011 — Use Physical Telemetry as Authoritative State</td>
+</tr>
+<tr>
+<td>RFC-006</td>
+<td>AI Reasoning &amp; LangGraph Orchestration</td>
+<td><a href="RFC-006.md">RFC-006</a></td>
+<td>ADR-012 — Use LangGraph for Bounded Agent Orchestration; <br/>ADR-013 — Separate Agentic Reasoning from Deterministic Execution</td>
+</tr>
+<tr>
+<td>RFC-007</td>
+<td>RAG Knowledge &amp; Technical Documentation Architecture</td>
+<td><a href="RFC-007.md">RFC-007</a></td>
+<td>ADR-014 — Use Local pgVector for RAG Knowledge Storage;  <br/>ADR-015 — Require Source-Grounded Reasoning for Control Proposals</td>
+</tr>
+<tr>
+<td>RFC-008</td>
+<td>Control Intent &amp; Command Contract</td>
+<td><a href="RFC-008.md">RFC-008</a></td>
+<td>ADR-016 — Treat AI Output as Untrusted Control Intent; <br/>ADR-017 — Use Canonical Command Envelopes with command_id, trace_id, created_at, and expires_at</td>
+</tr>
+<tr>
+<td>RFC-009</td>
+<td>Control Authority &amp; Arbitration Layer</td>
+<td><a href="RFC-009.md">RFC-009</a></td>
+<td>ADR-018 — Introduce a Level 1.5 Control Authority Layer; <br/>ADR-019 — Enforce Explicit Authority Modes; ADR-020 — Require Two-Key Authorization for High-Impact Actions</td>
+</tr>
+<tr>
+<td>RFC-010</td>
+<td>Semantic Gatekeeper &amp; Policy Enforcement</td>
+<td><a href="RFC-010.md">RFC-010</a></td>
+<td>ADR-021 — Place Deterministic Safety Validation Outside the AI Agent; <br/>ADR-022 — Use Allowlisted Command/Asset Constraints and Forbidden Register Policies</td>
+</tr>
+<tr>
+<td>RFC-011</td>
+<td>TPM 2.0 Command Notarization &amp; Cryptographic Trust</td>
+<td><a href="RFC-011.md">RFC-011</a></td>
+<td>ADR-023 — Use TPM 2.0 as the Hardware Root of Trust; <br/>ADR-024 — Require Hardware-Notarized Commands Before Southbound Execution</td>
+</tr>
+<tr>
+<td>RFC-012</td>
+<td>Southbound Driver &amp; Deterministic Execution</td>
+<td><a href="RFC-012.md">RFC-012</a></td>
+<td>ADR-025 — Isolate Physical Writes in a Dedicated Southbound Driver;<br/> ADR-026 — Require Application-Level Command Expiration Enforcement at Execution; <br/>ADR-027 — Use Closed-Loop Physical Verification Before Reporting Success</td>
+</tr>
+<tr>
+<td>RFC-013</td>
+<td>Predictive Failover &amp; Bumpless Transfer</td>
+<td><a href="RFC-013.md">RFC-013</a></td>
+<td>ADR-028 — Use Warm-Standby Predictive Failover;<br/> ADR-029 — Require Bumpless Transfer and Process Stability Verification</td>
+</tr>
+<tr>
+<td>RFC-014</td>
+<td>Control Authority Modes &amp; Degraded Operation</td>
+<td><a href="RFC-014.md">RFC-014</a></td>
+<td>ADR-030 — Fail Toward Non-Actuating Authority Modes;<br/> ADR-031 — Treat Messaging and Cognitive Infrastructure as Non-Authoritative</td>
+</tr>
+<tr>
+<td>RFC-015</td>
+<td>Watchdogs, Heartbeats &amp; Failure Detection</td>
+<td><a href="RFC-015.md">RFC-015</a></td>
+<td>ADR-032 — Use Multi-Layer Recursive Watchdogs; <br/>ADR-033 — Decouple Deterministic Heartbeats from AI Reasoning Latency</td>
+</tr>
+<tr>
+<td>RFC-016</td>
+<td>Identity, Authentication &amp; RBAC</td>
+<td><a href="RFC-016.md">RFC-016</a></td>
+<td>ADR-034 — Use Enterprise/Federated Identity with OIDC and RS256 JWTs; <br/>ADR-035 — Map Identity Claims to Oversight RBAC</td>
+</tr>
+<tr>
+<td>RFC-017</td>
+<td>Network Segmentation &amp; IDMZ Architecture</td>
+<td><a href="RFC-017.md">RFC-017</a></td>
+<td>ADR-036 — Deploy Oversight at Purdue Level 3.5;<br/> ADR-037 — Use Dual-NIC Isolation with IP Forwarding Disabled; <br/>ADR-038 — Terminate Protocols Instead of Routing OT Sessions Across Zones</td>
+</tr>
+<tr>
+<td>RFC-018</td>
+<td>Time Synchronization &amp; Event Ordering</td>
+<td><a href="RFC-018.md">RFC-018</a></td>
+<td>ADR-039 — Use PTP for High-Precision OT Time Synchronization; <br/>ADR-040 — Carry Source and Processing Timestamps Through the Event Contract</td>
+</tr>
+<tr>
+<td>RFC-019</td>
+<td>Audit, WORM Logging &amp; Forensic Traceability</td>
+<td><a href="RFC-019.md">RFC-019</a></td>
+<td>ADR-041 — Propagate trace_id Across the Entire Intent Lifecycle; <br/>ADR-042 — Use Immutable/WORM Audit Storage for Control-Relevant Events</td>
+</tr>
+<tr>
+<td>RFC-020</td>
+<td>Observability, Health Monitoring &amp; Alerting</td>
+<td><a href="RFC-020.md">RFC-020</a></td>
+<td>ADR-043 — Use Prometheus for Infrastructure Metrics; <br/>ADR-044 — Use Grafana for Read-Only Operational Visualization; <br/>ADR-045 — Treat Audit Data Separately from Operational Metrics</td>
+</tr>
+<tr>
+<td>RFC-021</td>
+<td>Operator Dashboard &amp; Pessimistic UI State Model</td>
+<td><a href="RFC-021.md">RFC-021</a></td>
+<td>ADR-046 — Never Report Command Success Before Physical Confirmation; <br/>ADR-047 — Treat the Level-4 UI as an Untrusted Client</td>
+</tr>
+<tr>
+<td>RFC-022</td>
+<td>Governed Learning &amp; Threshold Adaptation</td>
+<td><a href="RFC-022.md">RFC-022</a></td>
+<td>ADR-048 — Allow AI to Propose but Not Directly Apply Threshold Changes;<br/> ADR-049 — Apply Risk-Based Human Approval to Adaptation Proposals</td>
+</tr>
+<tr>
+<td>RFC-023</td>
+<td>Failure Recovery, Cold Start &amp; State Reconstruction</td>
+<td><a href="RFC-023.md">RFC-023</a></td>
+<td>ADR-050 — Reconstruct State from Physical Assets Before Restoring Authority; <br/>ADR-051 — Require Health Verification Before Recovery from Degraded States</td>
+</tr>
+<tr>
+<td>RFC-024</td>
+<td>Schema Governance &amp; Contract Versioning</td>
+<td><a href="RFC-024.md">RFC-024</a></td>
+<td>ADR-052 — Use Versioned Canonical Event Schemas; <br/>ADR-053 — Maintain Backward-Compatible Event Contracts Where Possible</td>
+</tr>
+<tr>
+<td>RFC-025</td>
+<td>Deployment, Runtime Isolation &amp; Resource Governance</td>
+<td><a href="RFC-025.md">RFC-025</a></td>
+<td>ADR-054 — Containerize Non-Deterministic Services; <br/>ADR-055 — Run Deterministic Southbound Execution with Higher OS Scheduling Priority; ADR-056 — Use Cgroups to Protect Control-Critical Resources</td>
+</tr>
+<tr>
+<td>RFC-026</td>
+<td>Security Boundary, TLS &amp; Service Authorization</td>
+<td><a href="RFC-026.md">RFC-026</a></td>
+<td>ADR-057 — Use Mutual/Authenticated TLS Across Trusted Service Boundaries; <br/>ADR-058 — Use Least-Privilege Subject-Level NATS Permissions</td>
+</tr>
+<tr>
+<td>RFC-027</td>
+<td>Configuration &amp; Change Management</td>
+<td><a href="RFC-027.md">RFC-027</a></td>
+<td>ADR-059 — Treat Operational Configuration as Version-Controlled Infrastructure; <br/>ADR-060 — Require Governed Change Approval for Control-Relevant Configuration</td>
+</tr>
+<tr>
+<td>RFC-028</td>
+<td>Testing, Verification &amp; Fault Injection Architecture</td>
+<td><a href="RFC-028.md">RFC-028</a></td>
+<td>ADR-061 — Require Failure-Mode Testing as an Architectural Acceptance Criterion; <br/>ADR-062 — Use Simulated OT Assets for Automated Integration/Fault Testing</td>
+</tr>
+<tr>
+<td>RFC-029</td>
+<td>High Availability, Recovery &amp; Edge Resilience</td>
+<td><a href="RFC-029.md">RFC-029</a></td>
+<td>ADR-063 — Prefer Local Edge Autonomy Over Cloud Dependency; <br/>ADR-064 — Use Bounded Retry/Circuit-Breaker Patterns for Infrastructure Dependencies</td>
+</tr>
+<tr>
+<td>RFC-030</td>
+<td>Safety Boundary &amp; SIS Decoupling</td>
+<td><a href="RFC-030.md">RFC-030</a></td>
+<td>ADR-065 — Explicitly Exclude SIS Authority from Oversight; <br/>ADR-066 — Restrict Oversight to Supervisory Reliability Functions</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

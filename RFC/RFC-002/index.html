@@ -86,7 +86,7 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#raw-observation-interface">Raw-Observation Interface</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#mapping-registry">Mapping Registry</a>
+    <li class="toctree-l4"><a class="reference internal" href="#telemetry-mapping-registry">Telemetry Mapping Registry</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#normalization-layer">Normalization Layer</a>
     </li>
@@ -116,7 +116,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#schema-evolution-policy">Schema Evolution Policy</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#mapping-registry_1">Mapping Registry</a>
+    <li class="toctree-l3"><a class="reference internal" href="#mapping-registry">Mapping Registry</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#connection-and-polling-policy">Connection and Polling Policy</a>
     </li>
@@ -155,20 +155,116 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#the-nis-must-fail-safely">The NIS must fail safely</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#source-unavailable">Source Unavailable</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#read-timeout">Read Timeout</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#invalid-or-unmapped-source-point">Invalid or Unmapped Source Point</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#unsupported-data-type">Unsupported Data Type</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#invalid-scale-offset-or-unit">Invalid Scale, Offset, or Unit</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#missing-source-timestamp">Missing Source Timestamp</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#invalid-or-stale-timestamp">Invalid or Stale Timestamp</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#protobuf-serialization-failure">Protobuf Serialization Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#jetstream-puback-timeout">JetStream PubAck Timeout</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-unavailable">NATS Unavailable</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#store-forware-buffer">Store &amp; Forware Buffer</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#certificate-invalid-or-expired">Certificate Invalid or Expired</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#mapping-reload-failure">Mapping Reload Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#adapter-crash">Adapter Crash</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nis-process-restart">NIS Process Restart</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#retries-must-have">Retries MUST HAVE:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#the-local-telemetry-buffer-must">The Local Telemetry Buffer MUST:</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#security-controls">Security Controls</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#observability">Observability</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#adaptor-states">Adaptor States</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#log-structure">Log Structure</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#scaling-high-availability">Scaling &amp; High Availability</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#endpoint-ownership">Endpoint Ownership</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#active-passive-behavior">Active / Passive Behavior</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#duplicate-prevention">Duplicate Prevention</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#partitioning">Partitioning</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#graceful-shutdown">Graceful Shutdown</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#architectural-design-principles">Architectural Design Principles</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#implementation-details">Implementation Details</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#runtime-processing">Runtime Processing</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#implementation-plan">Implementation Plan</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-1-contract-and-configuration">Phase 1: Contract and Configuration</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-2-modbus-tcp-adapter">Phase 2: Modbus TCP Adapter</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-3-opc-ua-adapter">Phase 3: OPC UA Adapter</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-4-nats-publisher">Phase 4: NATS Publisher</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-5-remaining-adapters">Phase 5: Remaining Adapters</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-6-security-and-observability">Phase 6: Security and Observability</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-7-performance-and-fault-testing">Phase 7: Performance and Fault Testing</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phase-8-staged-deployment">Phase 8: Staged Deployment</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#risks-tradeoffs-alternatives">Risks, Tradeoffs, &amp; Alternatives</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#acceptance-tests">Acceptance Tests</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#unit-tests">Unit Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#integration-tests">Integration Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#security-tests">Security Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#fault-injection-tests">Fault Injection Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#high-availability-tests">High Availability Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#schema-compatibility-tests">Schema Compatibility Tests</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#performance-tests">Performance Tests</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#references">References</a>
     </li>
@@ -222,7 +318,7 @@ consumers to establish direct connections to those assets.</p>
 <li>Process data - coils, discrete inputs, input registers, and holding registers</li>
 <li>Accessed using function codes and addresses.</li>
 <li><strong>OPC-UA</strong>:</li>
-<li>Typed process values – accessed through an information model containing variables and other nodes using NodeIds.</li>
+<li>Typed process values – Uses NodeIds.</li>
 <li>A returned value may contain a value, source timestamps, server timestamps, and status codes.</li>
 <li><strong>Ethernet/IP</strong>:</li>
 <li>Implements the CIP (Common Industrial Protocol) using objects, instances, attributes, assemblies, and explicit or 
@@ -249,8 +345,8 @@ complexity of the system. </p>
 excessive load on the system. </p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
 <p>The proposed solution is to implement the Northbound Ingest Service (NIS) as a read-only service that ingests telemetry
-and normalizes it into the Oversight TelemetryEvent contract.</p>
-<p>The NIS will contain dedicated protocol adapters for:</p>
+and normalizes it into the Oversight <code>TelemetryEvent</code> contract.</p>
+<p>The NIS will contain dedicated protocol adapters for the following industrial protocols:</p>
 <ul>
 <li>Modbus TCP</li>
 <li>OPC-UA</li>
@@ -278,13 +374,13 @@ telemetry mapping registry and will perform the following:</p>
 <li>Normalizes the source timestamp and assigns an ingestion timestamp</li>
 <li>Detects malformed, stale, unsupported, or unmapped telemetry</li>
 </ul>
-<p>The normalized telemetry will then be used to construct the TelemetryEvent. The NIS will validate the event with the 
+<p>The normalized telemetry will then be used to construct the <code>TelemetryEvent</code>. The NIS will validate the event with the 
 supported schema before allowing it to be published to the UNS.</p>
-<p>Using protocol buffers, the NIS will serialize the TelemetryEvent. It then contructs the NATS subject using the 
+<p>Using protocol buffers, the NIS will serialize the <code>TelemetryEvent</code>. It then constructs the NATS subject using the 
 following format:</p>
 <p><code>oversight.telemetry.&lt;enterprise&gt;.&lt;site&gt;.&lt;area&gt;.&lt;line&gt;.&lt;asset&gt;.&lt;tag&gt;</code></p>
-<p>The NIS will then publish the Protobuf-serialized TelemetryEvent to the UNS subject. The NIS will confirm success only
-after receiving a JetStream <code>PubAck</code>.</p>
+<p>The NIS will then publish the Protobuf-serialized <code>TelemetryEvent</code> to the UNS subject. The NIS will confirm success only
+after receiving a JetStream <code>PubAck</code> acknowledgement.</p>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
 <p>The NIS provides a controlled boundary between source protocol communication and the internal telemetry contract.</p>
 <p><strong>The Responsibilities of Northbound Ingest Service are as follows</strong>: </p>
@@ -301,11 +397,11 @@ after receiving a JetStream <code>PubAck</code>.</p>
 <li>The NIS <strong>NEVER</strong> writes to the control assets, processes command subjects, detects anomalies, or performs any 
   physical control.</li>
 <li>The NIS normalizes data types, byte order, scaling, offsets, engineering units, quality, and timestamps.</li>
-<li>It constructs and validates the Oversight TelemetryEvent.</li>
-<li>It serializes the TelemetryEvent objects using Protocol Buffers.</li>
-<li>It builds the semantic UNS subject from the TelemetryEvent.</li>
-<li>It publishes the protobuf-serialized TelemetryEvent to the UNS subject <code>oversight.telemetry.&gt;</code>.</li>
-<li>It confirms the successful JetStream persistence through a published acknowledgement (<code>PubAck</code>).</li>
+<li>Constructs and validates the Oversight <code>TelemetryEvent</code>.</li>
+<li>Serializes the <code>TelemetryEvent</code> objects using Protocol Buffers.</li>
+<li>Builds the semantic UNS subject from the <code>TelemetryEvent</code>.</li>
+<li>Publishes the protobuf-serialized <code>TelemetryEvent</code> to the UNS subject <code>oversight.telemetry.&gt;</code>.</li>
+<li>Confirms the successful JetStream persistence through a published acknowledgement (<code>PubAck</code>).</li>
 </ul>
 <p>MQTT / Sparkplug-B messages are decoded at the NIS boundary and mapped into the Oversight telemetry contract, rather
 than being forwarded directly to the UNS.</p>
@@ -326,11 +422,11 @@ functions. It has no authority to write to field assets or execute control comma
 <li>Telemetry </li>
 <li>Map each source value to the correct enterprise, site, area, line, asset, and tag identity.</li>
 <li>Normalize data types, byte order, scaling, offsets, engineering units, quality, and timestamps.</li>
-<li>Build and validate the Oversight TelemetryEvent.</li>
+<li>Build and validate the Oversight <code>TelemetryEvent</code>.</li>
 <li>Serialize the TelemetryEvent objects using Protocol Buffers.</li>
 <li>Publish Telemetry to the UNS</li>
 <li>Build the UNS subject <code>oversight.telemetry.&gt;</code>. </li>
-<li>Publish the protobuf-serialized TelemetryEvent to NATS JetStream.</li>
+<li>Publish the protobuf-serialized <code>TelemetryEvent</code> to NATS JetStream.</li>
 <li>Confirm JetStream accepted the message through a published acknowledgement (<code>PubAck</code>).</li>
 <li>Provide Reliable &amp; Measurable Operations</li>
 <li>Measure telemetry throughput and latency.</li>
@@ -370,9 +466,9 @@ temporary internal representation of the telemetry data.</p>
 <li>The time the NIS received the observation</li>
 </ul>
 <p>This raw-observation is only used inside the NIS and is not published to the UNS.</p>
-<h3 id="mapping-registry">Mapping Registry<a class="headerlink" href="#mapping-registry" title="Permanent link"></a></h3>
+<h3 id="telemetry-mapping-registry">Telemetry Mapping Registry<a class="headerlink" href="#telemetry-mapping-registry" title="Permanent link"></a></h3>
 <p>The mapping registry contains the telemetry mapping rules. It is used to map the raw-observation interface to the
-Oversight TelemetryEvent contract (e.g., enterprise, site, area, line, asset, tag).</p>
+Oversight <code>TelemetryEvent</code> contract (e.g., enterprise, site, area, line, asset, tag).</p>
 <p>The mapping registry contains:
    - Data Type
    - Byte Order
@@ -386,43 +482,51 @@ Oversight TelemetryEvent contract (e.g., enterprise, site, area, line, asset, ta
 telemetry.</p>
 <h3 id="normalization-layer">Normalization Layer<a class="headerlink" href="#normalization-layer" title="Permanent link"></a></h3>
 <p>The normalization layer converts the raw-observation into vendor-neutral Oversight ICS telemetry.</p>
-<p>It performs the following:
-   - Converts the data type
-   - Corrects byte order
-   - Applies scaling and offsets
-   - Converts engineering units
-   - Normalizes quality
-   - Normalizes timestamps
-   - Detects stale, malformed, unsupported, or unmapped telemetry</p>
+<p>It performs the following:</p>
+<ul>
+<li>Converts the data type</li>
+<li>Corrects byte order</li>
+<li>Applies scaling and offsets</li>
+<li>Converts engineering units</li>
+<li>Normalizes quality</li>
+<li>Normalizes timestamps</li>
+<li>Detects stale, malformed, unsupported, or unmapped telemetry</li>
+</ul>
 <h3 id="schema-validator">Schema Validator<a class="headerlink" href="#schema-validator" title="Permanent link"></a></h3>
-<p>The schema validator checks the completed TelemetryEvent against the Oversight TelemetryEvent schema.</p>
-<p>It verifies the following:
-   - All required fields are present
-   - The semantic identity is valid
-   - Exactly on telemetry value is set
-   - The quality value is supported
-   - Timestamps are valid
-   - The schema version is supported
-   - The payload does not contain prohibited protocol-specific information</p>
+<p>The schema validator checks the completed <code>TelemetryEvent</code> against the Oversight <code>TelemetryEvent</code> schema.</p>
+<p>It verifies the following:</p>
+<ul>
+<li>All required fields are present</li>
+<li>The semantic identity is valid</li>
+<li>Exactly one telemetry value is set</li>
+<li>The quality value is supported</li>
+<li>Timestamps are valid</li>
+<li>The schema version is supported</li>
+<li>The payload does not contain prohibited protocol-specific information</li>
+</ul>
 <h3 id="protobuf-serializer">Protobuf Serializer<a class="headerlink" href="#protobuf-serializer" title="Permanent link"></a></h3>
-<p>The Protobuf serializer converts a valid TelemetryEvent into binary Protocol Buffer bytes.</p>
+<p>The Protobuf serializer converts a valid <code>TelemetryEvent</code> into binary Protocol Buffer bytes.</p>
 <h3 id="nats-publisher">NATS Publisher<a class="headerlink" href="#nats-publisher" title="Permanent link"></a></h3>
-<p>The NATS publisher does the following:
-   - Builds the <code>oversight.telemetry.&gt;</code> subject
-   - Publishes the Protobuf payload to NATS JetStream
-   - Waits for JetStream to publish an acknowledgement (<code>PubAck</code>)
-   - Uses bounded retries when publication fails
-   - Reports unsuccessful or dropped publications</p>
+<p>The NATS publisher does the following:</p>
+<ul>
+<li>Builds the <code>oversight.telemetry.&gt;</code> subject</li>
+<li>Publishes the Protobuf payload to NATS JetStream</li>
+<li>Waits for JetStream to publish an acknowledgement (<code>PubAck</code>)</li>
+<li>Uses bounded retries when publication fails</li>
+<li>Reports unsuccessful or dropped publications</li>
+</ul>
 <h3 id="health-diagnostics">Health &amp; Diagnostics<a class="headerlink" href="#health-diagnostics" title="Permanent link"></a></h3>
-<p>The health and diagnostics of the NIS report the following:
-   - Adaptor connection state
-   - Last successful observation
-   - Points received, normalized, published, and rejected
-   - Unmapped or stale points
-   - Normalization and validation failures
-   - Retry counts
-   - Publication failures
-   - Processing and publication latency</p>
+<p>The health and diagnostics of the NIS report the following:</p>
+<ul>
+<li>Adaptor connection state</li>
+<li>Last successful observation</li>
+<li>Points received, normalized, published, and rejected</li>
+<li>Unmapped or stale points</li>
+<li>Normalization and validation failures</li>
+<li>Retry counts</li>
+<li>Publication failures</li>
+<li>Processing and publication latency</li>
+</ul>
 <h2 id="telemetry-contract">Telemetry Contract<a class="headerlink" href="#telemetry-contract" title="Permanent link"></a></h2>
 <p>The following payload defines the information that every downstream consumer receives:</p>
 <pre><code class="language-json">{
@@ -458,7 +562,7 @@ telemetry.</p>
 </code></pre>
 <h3 id="typed-values">Typed Values<a class="headerlink" href="#typed-values" title="Permanent link"></a></h3>
 <p>A <code>TelemetryEvent</code> represents one normalized telemetry point and must contain exactly one telemetry value. 
-To avoid ambiguous values (e.g., &ldquo;value&rdquo;: &ldquo;72.4&rdquo; could text, integer, double, or binary), the <code>TelemetryEvent</code> must 
+To avoid ambiguous values (e.g., &ldquo;value&rdquo;: &ldquo;72.4&rdquo; could be text, integer, double, or binary), the <code>TelemetryEvent</code> must 
 contain exactly one type so that downstream consumers can process it correctly. The following data types are supported:</p>
 <ul>
 <li>Boolean</li>
@@ -541,7 +645,7 @@ and string values do not require an engineering unit.</p>
   }
 </code></pre>
 <h2 id="schema-validation-rules">Schema Validation Rules<a class="headerlink" href="#schema-validation-rules" title="Permanent link"></a></h2>
-<p>Before publishing a TelemetryEvent to the UNS, the NIS must validate the following:</p>
+<p>Before publishing a <code>TelemetryEvent</code> to the UNS, the NIS must validate the following:</p>
 <ol>
 <li><code>schema_version</code> is supported</li>
 <li><code>message_id</code> is a valid UUIDv4</li>
@@ -565,36 +669,44 @@ and string values do not require an engineering unit.</p>
 <li>Consumers must reject unsupported major schema changes.</li>
 </ol>
 <p><a href="https://protobuf.dev/best-practices/dos-donts/">Proto Best Practices</a></p>
-<h2 id="mapping-registry_1">Mapping Registry<a class="headerlink" href="#mapping-registry_1" title="Permanent link"></a></h2>
+<h2 id="mapping-registry">Mapping Registry<a class="headerlink" href="#mapping-registry" title="Permanent link"></a></h2>
 <p>The NIS uses a version-controlled mapping registry to translate protocol-specific data into the Oversight 
 <code>TelemetryEvent</code> contract. </p>
-<p>Each mapping must contain the following:
-- A unique unit mapping id and version
-- The approved source endpoint 
-- The source protocol
-- The protocol-specific source address, such as:
-  - Modbus register address
-  - OPC-UA NodeId
-  - Ethernet/IP objects
-  - Sparkplug-B metric name or alias
-- Semantic Path
-  - Enterprise
-  - Site
-  - Area
-  - Line
-  - Asset
-  - Tag
-- The source and data types
-- Byte order, when required
-- Scaling factor and offset, when required
-- Source and engineering units
-- Expected update interval
-- Stale-data threshold
-- Whether the mapping is active or enabled</p>
-<p>The mapping must not contain the following:
-- passwords
-- certificates
-- other credentials</p>
+<p>Each mapping must contain the following:</p>
+<ol>
+<li>A unique unit mapping id and version</li>
+<li>The approved source endpoint </li>
+<li>The source protocol</li>
+<li>The protocol-specific source address, such as:<ul>
+<li>Modbus register address</li>
+<li>OPC-UA NodeId</li>
+<li>Ethernet/IP objects</li>
+<li>Sparkplug-B metric name or alias</li>
+</ul>
+</li>
+<li>Semantic Path<ul>
+<li>Enterprise</li>
+<li>Site</li>
+<li>Area</li>
+<li>Line</li>
+<li>Asset</li>
+<li>Tag</li>
+</ul>
+</li>
+<li>The source and data types</li>
+<li>Byte order, when required</li>
+<li>Scaling factor and offset, when required</li>
+<li>Source and engineering units</li>
+<li>Expected update interval</li>
+<li>Stale-data threshold</li>
+<li>Whether the mapping is active or enabled</li>
+</ol>
+<p>The mapping must not contain the following:</p>
+<ol>
+<li>passwords</li>
+<li>certificates</li>
+<li>other credentials</li>
+</ol>
 <p>The protocol-specific addresses <strong>MUST NEVER</strong> leave the NIS.  The address must remain inside the NIS and must not be
 included in telemetry published to downstream consumers.</p>
 <p>New or updated mappings must be validated before they become active. If validation fails, the NIS continues using the 
@@ -606,7 +718,8 @@ hostname or IP address, port, protocol, and allowed connection settings. </p>
 <p>The Oversight NIS will support two telemetry collection methods:</p>
 <ol>
 <li><strong>Polling</strong>: The NIS requests data from a source over a fixed interval.</li>
-<li><strong>Subscription</strong>: The NIS subscribes to a source and receives data values are changed or set at a fixed interval.</li>
+<li><strong>Subscription</strong>: The NIS subscribes to a source and receives data values that are changed or set at a fixed 
+   interval.</li>
 </ol>
 <p><strong>Connection &amp; Polling Rules:</strong></p>
 <ol>
@@ -642,7 +755,7 @@ was taken.</p>
 </tr>
 <tr>
 <td style="text-align: left;"><code>BAD</code></td>
-<td style="text-align: left;">Value is invalid or should not be used (e.g., stale telemetry, communication failure, or invalid data</td>
+<td style="text-align: left;">Value is invalid or should not be used (e.g., stale telemetry, communication failure, or invalid data)</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>UNCERTAIN</code></td>
@@ -730,7 +843,7 @@ use the same <code>message_id</code> as the original event.</p>
 <h3 id="telemetry-subject">Telemetry Subject<a class="headerlink" href="#telemetry-subject" title="Permanent link"></a></h3>
 <p><code>oversight.telemetry.&lt;enterprise&gt;.&lt;site&gt;.&lt;area&gt;.&lt;line&gt;.&lt;asset&gt;.&lt;tag&gt;</code></p>
 <h3 id="one-point-per-event">One Point Per Event<a class="headerlink" href="#one-point-per-event" title="Permanent link"></a></h3>
-<p>The NIS must publish only one <code>TelemetryEvent</code> per event.</p>
+<p>The NIS must publish only one <code>TelemetryEvent</code> point per event.</p>
 <h3 id="required-nats-headers">Required NATS Headers<a class="headerlink" href="#required-nats-headers" title="Permanent link"></a></h3>
 <table>
 <thead>
@@ -792,13 +905,501 @@ same <code>message_id</code>, subject, serialized payload, and <code>Nats-Msg-Id
 <p>A complete <code>TelemetryEvent</code> must not exceed 64 KiB (65,536 bytes). Oversight will reject any event that exceeds this 
 size and route the information to the approved telemetry DLQ subject.</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
+<h3 id="the-nis-must-fail-safely">The NIS must fail safely<a class="headerlink" href="#the-nis-must-fail-safely" title="Permanent link"></a></h3>
+<ul>
+<li>A failure must not cause a field write, equipment state change, or control command. </li>
+<li>A failure in one adaptor must not stop unrelated endpoints from being processed.</li>
+</ul>
+<h3 id="source-unavailable">Source Unavailable<a class="headerlink" href="#source-unavailable" title="Permanent link"></a></h3>
+<ul>
+<li>Mark endpoint as unavailable</li>
+<li>Begin bounded reconnection attempts</li>
+<li>Mark affected points stale after their configured thresholds are met.</li>
+</ul>
+<h3 id="read-timeout">Read Timeout<a class="headerlink" href="#read-timeout" title="Permanent link"></a></h3>
+<ul>
+<li>Record the timeout</li>
+<li>Retry, according to the endpoint policy</li>
+<li>Do not create a fake measurement</li>
+</ul>
+<h3 id="invalid-or-unmapped-source-point">Invalid or Unmapped Source Point<a class="headerlink" href="#invalid-or-unmapped-source-point" title="Permanent link"></a></h3>
+<ul>
+<li>Reject observation </li>
+<li>Send sanitized failure info to the diagnostic or telemetry DLQ subject</li>
+</ul>
+<h3 id="unsupported-data-type">Unsupported Data Type<a class="headerlink" href="#unsupported-data-type" title="Permanent link"></a></h3>
+<ul>
+<li>Reject only the affected point</li>
+<li>Increment the rejection counter</li>
+<li>Allow the adaptor to continue processing other points</li>
+</ul>
+<h3 id="invalid-scale-offset-or-unit">Invalid Scale, Offset, or Unit<a class="headerlink" href="#invalid-scale-offset-or-unit" title="Permanent link"></a></h3>
+<ul>
+<li>Reject the affected mapping </li>
+<li>Do not publish an incorrectly normalized value</li>
+</ul>
+<h3 id="missing-source-timestamp">Missing Source Timestamp<a class="headerlink" href="#missing-source-timestamp" title="Permanent link"></a></h3>
+<ul>
+<li>Use the NIS ingestion time and set <code>timestamp_source</code> to <code>NIS</code></li>
+</ul>
+<h3 id="invalid-or-stale-timestamp">Invalid or Stale Timestamp<a class="headerlink" href="#invalid-or-stale-timestamp" title="Permanent link"></a></h3>
+<ul>
+<li>Mark the event <code>UNCERTAIN</code> or <code>BAD</code>, depending on the configured timestamp and stale-data rules</li>
+</ul>
+<h3 id="protobuf-serialization-failure">Protobuf Serialization Failure<a class="headerlink" href="#protobuf-serialization-failure" title="Permanent link"></a></h3>
+<ul>
+<li>Do not publish the invalid event</li>
+<li>Record the failure</li>
+<li>Route sanitized diagnostic info to the telemetry DLQ subject</li>
+</ul>
+<h3 id="jetstream-puback-timeout">JetStream <code>PubAck</code> Timeout<a class="headerlink" href="#jetstream-puback-timeout" title="Permanent link"></a></h3>
+<ul>
+<li>Retry with the same <code>message_id</code> and <code>Nats-Msg-Id</code> header using bounded backoff.</li>
+</ul>
+<h3 id="nats-unavailable">NATS Unavailable<a class="headerlink" href="#nats-unavailable" title="Permanent link"></a></h3>
+<ul>
+<li>Store validated events in the bounded local telemetry buffer</li>
+<li>Attempt controlled connections</li>
+</ul>
+<h3 id="store-forware-buffer">Store &amp; Forware Buffer<a class="headerlink" href="#store-forware-buffer" title="Permanent link"></a></h3>
+<h3 id="certificate-invalid-or-expired">Certificate Invalid or Expired<a class="headerlink" href="#certificate-invalid-or-expired" title="Permanent link"></a></h3>
+<ul>
+<li>Refuse connection</li>
+<li>Mark the endpoint as unhealthy</li>
+<li>Generate an alert</li>
+<li>TLS validation must not be bypassed.</li>
+</ul>
+<h3 id="mapping-reload-failure">Mapping Reload Failure<a class="headerlink" href="#mapping-reload-failure" title="Permanent link"></a></h3>
+<ul>
+<li>Continue using the current valid mapping-registry version</li>
+</ul>
+<h3 id="adapter-crash">Adapter Crash<a class="headerlink" href="#adapter-crash" title="Permanent link"></a></h3>
+<ul>
+<li>Restart the affected adaptor without restarting unrelated adaptors when possible</li>
+</ul>
+<h3 id="nis-process-restart">NIS Process Restart<a class="headerlink" href="#nis-process-restart" title="Permanent link"></a></h3>
+<ul>
+<li>Recover buffered telemetry</li>
+<li>Reacquire endpoint ownership</li>
+<li>Prevent duplicate active pollers</li>
+</ul>
+<h3 id="retries-must-have">Retries MUST HAVE:<a class="headerlink" href="#retries-must-have" title="Permanent link"></a></h3>
+<ul>
+<li>A configured maximum attempt count</li>
+<li>A configured timeout</li>
+<li>Controlled backoff</li>
+<li>Jitter to prevent many endpoints from reconnecting at the same time</li>
+<li>A health alert after the retries are exhausted</li>
+</ul>
+<h3 id="the-local-telemetry-buffer-must">The Local Telemetry Buffer MUST:<a class="headerlink" href="#the-local-telemetry-buffer-must" title="Permanent link"></a></h3>
+<ul>
+<li>Have a fixed maximum size</li>
+<li>Survive an ordinary NIS process restart</li>
+<li>Track its current depth and oldest event age</li>
+<li>Protect stored data against unauthorized access</li>
+<li>Never grow without a limit</li>
+</ul>
 <h2 id="security-controls">Security Controls<a class="headerlink" href="#security-controls" title="Permanent link"></a></h2>
+<ol>
+<li><strong>Read-Only Access</strong>: The NIS must only have read-only access to the approved OT endpoints.</li>
+<li><strong>NATS Permissions</strong>: The NIS must use a dedicated NATS identity.</li>
+</ol>
+<p><strong>It must be allowed to</strong>:</p>
+<ul>
+<li>Publish to <code>oversight.telemetry.&gt;</code></li>
+<li>Publish NIS health info to its <code>oversight.health.&gt;</code> subject</li>
+<li>Publish failures to <code>oversight.telemetry.dlq.&gt;</code></li>
+<li>Subscribe to its NATS inbox subjects when required to receive JetStream acknowledgements.</li>
+</ul>
+<p><strong>It must not be allowed to</strong>:</p>
+<ul>
+<li>Publish to <code>oversight.commands.&gt;</code></li>
+<li>Subscribe to <code>oversight.commands.&gt;</code></li>
+<li>Create, Delete, or Change Jetstream streams</li>
+<li>Access unrelated audit, command, or administrative subjects.</li>
+</ul>
+<p>NATS permissions are managed and enforced through the publish and subscribe allowlists. </p>
+<p><a href="https://docs.nats.io/learn/security/authorization">NATS Authorization Documentation</a></p>
+<ol>
+<li>
+<p><strong>Transport Security</strong></p>
+</li>
+<li>
+<p>Use TLS where supported</p>
+</li>
+<li>Validate certificate trust chains, hostnames, and expiration dates</li>
+<li>Reject invalid, untrusted, or expired certificates</li>
+<li>Never silently disable certificate validation</li>
+<li>
+<p>Use network segmentation and endpoint allowlists for protocols that do not provide native encryption</p>
+</li>
+<li>
+<p><strong>Endpoint Allowlists</strong></p>
+</li>
+</ol>
+<p>Connections must only be allowed to approved IP addresses, ports, protocols, device identities, MQTT topics, or
+   OPC-UA namespaces.</p>
+<ol>
+<li><strong>Secret Management</strong></li>
+</ol>
+<p>Credentials, private keys, and tokens MUST:</p>
+<ul>
+<li>Be stored outside the mapping registry and source code</li>
+<li>Be provided through an approved secret manager</li>
+<li>Be readable only by the NIS </li>
+<li>Never appear in logs, metrics, telemetry payloads, or diagnostic events</li>
+<li>
+<p>Support rotation without changing telemetry mappings.</p>
+</li>
+<li>
+<p><strong>Input Validation</strong>: The NIS must validate all incoming telemetry data.</p>
+</li>
+</ul>
+<p>The NIS must reject the following:</p>
+<ul>
+<li>Malformed protocol responses</li>
+<li>Oversized messages</li>
+<li>Unsupported data types</li>
+<li>Invalid lengths of register counts</li>
+<li>Invalid Protobuf events</li>
+<li>Unapproved topics, NodeIds, object paths, or register ranges</li>
+</ul>
+<p>Raw protocol frames and physical addresses must not be exposed to the normal UNS telemetry path.</p>
 <h2 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link"></a></h2>
+<p>The NIS must be able to gather enough information to determine whether telemetry is being received, normalized, and is
+being published correctly.</p>
+<p>The following metrics must be collected and available for monitoring:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Area</th>
+<th style="text-align: left;">Required Measurement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Telemetry</td>
+<td style="text-align: left;">Points received, normalized, published, rejected, buffered, and dropped</td>
+</tr>
+<tr>
+<td style="text-align: left;">Mapping</td>
+<td style="text-align: left;">Unmapped points, unsupported types, active mapping version, and mapping reload failures</td>
+</tr>
+<tr>
+<td style="text-align: left;">Connections</td>
+<td style="text-align: left;">Adaptor state, active connections, reconnect count, timeouts, and connection failures</td>
+</tr>
+<tr>
+<td style="text-align: left;">Freshness</td>
+<td style="text-align: left;">Stale points and last successful observation time per endpoint</td>
+</tr>
+<tr>
+<td style="text-align: left;">Normalization</td>
+<td style="text-align: left;">Normalization success, failure count, and normalization latency</td>
+</tr>
+<tr>
+<td style="text-align: left;">Publication</td>
+<td style="text-align: left;">Successful publications, failed publications, PubAck latency, and retries</td>
+</tr>
+<tr>
+<td style="text-align: left;">Buffer</td>
+<td style="text-align: left;">Current spool depth, maximum depth, oldest event age, and dropped-event count</td>
+</tr>
+<tr>
+<td style="text-align: left;">Security</td>
+<td style="text-align: left;">Authentication failures, authorization failures, rejected endpoints, and certificate expiration</td>
+</tr>
+<tr>
+<td style="text-align: left;">Timing</td>
+<td style="text-align: left;">Clock-skew detection, out-of-order events, and ingest-to-publication latency</td>
+</tr>
+</tbody>
+</table>
+<p>The NIS must provide the following:</p>
+<ul>
+<li>A liveness check showing that the process is running</li>
+<li>A readiness check showing that the required configuration is valid and the service can publish telemetry</li>
+<li>Alerts for stale endpoints, repeated failures, high buffer usage, publication failures, and certificate expiration.</li>
+</ul>
+<h3 id="adaptor-states">Adaptor States<a class="headerlink" href="#adaptor-states" title="Permanent link"></a></h3>
+<p>Each adaptor should report one of the following states:</p>
+<ul>
+<li><code>STARTING</code></li>
+<li><code>CONNECTING</code></li>
+<li><code>HEALTHY</code></li>
+<li><code>DEGRADED</code></li>
+<li><code>BACKOFF</code></li>
+<li><code>DISCONNECTED</code></li>
+<li><code>STOPPING</code></li>
+</ul>
+<h3 id="log-structure">Log Structure<a class="headerlink" href="#log-structure" title="Permanent link"></a></h3>
+<p>Logs must be structured and should include the following fields:</p>
+<ul>
+<li>Endpoint ID</li>
+<li>Mapping ID</li>
+<li>Adapter type</li>
+<li><code>message_id</code></li>
+<li>Error Category</li>
+<li>Retry Count</li>
+<li>Timestamp</li>
+</ul>
 <h2 id="scaling-high-availability">Scaling &amp; High Availability<a class="headerlink" href="#scaling-high-availability" title="Permanent link"></a></h2>
+<p>The Northbound Ingest Service scales in different ways. It assigns different OT endpoints or asset groups to different
+NIS instances.</p>
+<h3 id="endpoint-ownership">Endpoint Ownership<a class="headerlink" href="#endpoint-ownership" title="Permanent link"></a></h3>
+<ul>
+<li>Only one NIS instance is allowed to actively poll or subscribe to an endpoint at a time. </li>
+<li>The NIS instance must acquire ownership before connecting to the endpoint.</li>
+</ul>
+<p>Each endpoint must have: </p>
+<ul>
+<li>One active owner</li>
+<li>An optional standby owner</li>
+<li>A way to determine the current ownership generation</li>
+<li>A timeout for detecting ownership before connecting to the endpoint.</li>
+</ul>
+<h3 id="active-passive-behavior">Active / Passive Behavior<a class="headerlink" href="#active-passive-behavior" title="Permanent link"></a></h3>
+<p>The NIS is designed to be highly available and uses active/passive ownership. </p>
+<p>The standby instance must not connect to or poll the endpoint while the active instance is healthy. When new ownership
+is acquired, the new owner must perform a health check before reporting the endpoint as healthy.</p>
+<p>Failover may occur only after:</p>
+<ol>
+<li>The active instance releases ownership</li>
+<li>The ownership lease expires</li>
+<li>The active instance is confirmed unavailable</li>
+</ol>
+<h3 id="duplicate-prevention">Duplicate Prevention<a class="headerlink" href="#duplicate-prevention" title="Permanent link"></a></h3>
+<ul>
+<li>The NIS must prevent duplicate active pollers from connecting to the same endpoint.</li>
+<li>Publication retries must use stable message IDs. Downstream consumers must process the <code>message_id</code> idempotently.</li>
+</ul>
+<h3 id="partitioning">Partitioning<a class="headerlink" href="#partitioning" title="Permanent link"></a></h3>
+<p>Endpoints may be partitioned by:</p>
+<ul>
+<li>Site</li>
+<li>Area</li>
+<li>Line</li>
+<li>Asset</li>
+<li>Protocol</li>
+<li>Endpoint Load</li>
+</ul>
+<p>A failure on one partition must not affect the other partitions.</p>
+<h3 id="graceful-shutdown">Graceful Shutdown<a class="headerlink" href="#graceful-shutdown" title="Permanent link"></a></h3>
+<p>During a planned shutdown, the NIS must:</p>
+<ol>
+<li>Stop starting new polls and subscriptions</li>
+<li>Finish or cancel active reads within the bounded timeout</li>
+<li>Finish normalization of accepted observations</li>
+<li>Collect outstanding JetStream acknowledgements</li>
+<li>Flush or preserve buffered telemetry</li>
+<li>Close field connections</li>
+<li>Release endpoint ownership</li>
+<li>Exit</li>
+</ol>
+<p><strong>The NIS must not release endpoint ownership until all active polls and subscriptions are complete.</strong></p>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
+<ol>
+<li><strong>Read-Only</strong>: The NIS is a read-only service that observes the field state but never changes it</li>
+<li><strong>Protocol Termination</strong>: Modbus, OPC-UA, Ethernet/IP, and Sparkplug-B details stop at the adaptor boundary</li>
+<li><strong>Semantic Independence</strong>: Downstream consumers receive vendor-neutral Oversight telemetry</li>
+<li><strong>Telemetry Contract</strong>: The NIS normalizes all telemetry into the Oversight TelemetryEvent contract</li>
+<li><strong>Strict Serialization</strong>: Validated events are serialized using Protocol Buffers</li>
+<li><strong>Bounded Behavior</strong>: Connections, retries, queues, buffers, and timeouts must have a bounded size (limits)</li>
+<li><strong>Fail-Safe Behavior</strong>: Failures must not generate writes or control actions</li>
+<li><strong>Single Endpoint Owner</strong>: Only one NIS instance may actively poll or subscribe to an endpoint at a time</li>
+<li><strong>At-Least-Once Publication</strong>: Events may be retried and republished if the original publication fails</li>
+<li><strong>Configuration as Code</strong>: Endpoint definitions and mappings must be version controlled and validated</li>
+<li><strong>Measurable Observation</strong>: Failures, dropped data, latency, freshness, and connection state must be measurable</li>
+<li><strong>Separation of Responsibilities</strong>: The NIS does not perform anomaly detection, command validation, command
+    execution, or physical control</li>
+<li><strong>NATS as transport</strong>: The UNS subject identifies the semantic telemetry point, while NATS transports and JetStream
+    stores the Protobuf event.</li>
+</ol>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link"></a></h2>
+<h3 id="runtime-processing">Runtime Processing<a class="headerlink" href="#runtime-processing" title="Permanent link"></a></h3>
+<p>For every source observation, the NIS performs this sequence:</p>
+<ol>
+<li>Receive the observation from an approved endpoint.</li>
+<li>Decode the source-protocol response.</li>
+<li>Locate the mapping-registry entry.</li>
+<li>Convert the value into the correct data type.</li>
+<li>Apply byte order, scaling, offset, and unit conversion.</li>
+<li>Normalize quality and timestamps. </li>
+<li>Construct the Oversight TelemetryEvent. </li>
+<li>Validate the event. </li>
+<li>Serialize the event using Protocol Buffers. </li>
+<li>Construct the semantic NATS subject. </li>
+<li>Publish the event to JetStream. </li>
+<li>Confirm the JetStream PubAck. </li>
+<li>Record metrics and health status.</li>
+</ol>
+<p>An observation that fails a required stage must not continue to the next stage.</p>
+<h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
+<h3 id="phase-1-contract-and-configuration">Phase 1: Contract and Configuration<a class="headerlink" href="#phase-1-contract-and-configuration" title="Permanent link"></a></h3>
+<ul>
+<li>Finalize the TelemetryEvent Protobuf schema.</li>
+<li>Finalize quality, timestamp, and typed-value rules.</li>
+<li>Implement mapping-registry validation.</li>
+<li>Implement endpoint allowlist validation.</li>
+<li>Create test fixtures and protocol simulator data.</li>
+</ul>
+<h3 id="phase-2-modbus-tcp-adapter">Phase 2: Modbus TCP Adapter<a class="headerlink" href="#phase-2-modbus-tcp-adapter" title="Permanent link"></a></h3>
+<ul>
+<li>Implement read-only Modbus connections.</li>
+<li>Implement scan classes and bounded polling.</li>
+<li>Implement register decoding and byte-order handling.</li>
+<li>Test scaling, offsets, units, timeouts, and stale detection.</li>
+</ul>
+<h3 id="phase-3-opc-ua-adapter">Phase 3: OPC UA Adapter<a class="headerlink" href="#phase-3-opc-ua-adapter" title="Permanent link"></a></h3>
+<ul>
+<li>Implement read-only OPC UA sessions.</li>
+<li>Implement reads and monitored-item subscriptions.</li>
+<li>Normalize OPC UA values, StatusCodes, and timestamps.</li>
+<li>Test reconnection and subscription recovery.</li>
+</ul>
+<h3 id="phase-4-nats-publisher">Phase 4: NATS Publisher<a class="headerlink" href="#phase-4-nats-publisher" title="Permanent link"></a></h3>
+<ul>
+<li>Implement Protobuf serialization.</li>
+<li>Implement UNS subject construction.</li>
+<li>Implement required NATS headers.</li>
+<li>Implement <code>PubAck</code> checking and stable-ID retries.</li>
+<li>Implement the bounded local telemetry buffer.</li>
+</ul>
+<h3 id="phase-5-remaining-adapters">Phase 5: Remaining Adapters<a class="headerlink" href="#phase-5-remaining-adapters" title="Permanent link"></a></h3>
+<ul>
+<li>Implement EtherNet/IP telemetry reads.</li>
+<li>Implement MQTT/Sparkplug B subscriptions.</li>
+<li>Map both protocols into the same telemetry contract.</li>
+</ul>
+<h3 id="phase-6-security-and-observability">Phase 6: Security and Observability<a class="headerlink" href="#phase-6-security-and-observability" title="Permanent link"></a></h3>
+<ul>
+<li>Apply protocol and NATS least-privilege permissions.</li>
+<li>Enable TLS and certificate validation where supported.</li>
+<li>Add metrics, structured logs, health checks, and alerts.</li>
+<li>Test secret rotation and certificate failure behavior.</li>
+</ul>
+<h3 id="phase-7-performance-and-fault-testing">Phase 7: Performance and Fault Testing<a class="headerlink" href="#phase-7-performance-and-fault-testing" title="Permanent link"></a></h3>
+<ul>
+<li>Test sustained telemetry throughput.</li>
+<li>Measure normalization and publication latency.</li>
+<li>Test source, network, NATS, and certificate failures.</li>
+<li>Test local-buffer saturation and recovery.</li>
+<li>Test active/passive ownership and failover.</li>
+</ul>
+<h3 id="phase-8-staged-deployment">Phase 8: Staged Deployment<a class="headerlink" href="#phase-8-staged-deployment" title="Permanent link"></a></h3>
+<ul>
+<li>Deploy to a development environment using simulated sources.</li>
+<li>Deploy to a test environment using approved non-production equipment.</li>
+<li>Begin with a limited group of telemetry points.</li>
+<li>Compare NIS telemetry with the existing source system.</li>
+<li>Expand endpoint coverage only after acceptance tests pass.</li>
+<li>Keep the previous NIS and mapping versions available for rollback.</li>
+</ul>
 <h2 id="risks-tradeoffs-alternatives">Risks, Tradeoffs, &amp; Alternatives<a class="headerlink" href="#risks-tradeoffs-alternatives" title="Permanent link"></a></h2>
+<p>I considered the following alternatives and tradeoffs during the design process of the Northbound Ingest Service:</p>
+<ol>
+<li>Protobuf instead of JSON<ul>
+<li><strong>Benefit</strong>: I found that Protobuf is more efficient and has strict schema enforcement. This reduces the risk
+  of malformed telemetry and allows the NIS to validate the telemetry before publishing it.</li>
+<li><strong>Tradeoff/Risk</strong>: Binary payloads are harder for people to read without decoding tools, but I found using binary
+  payloads worth the time to prevent malformed telemetry from being published to downstream consumers.</li>
+</ul>
+</li>
+<li>Custom Oversight <code>TelemetryEvent</code> instead of Sparkplug B internally</li>
+<li><strong>Benefit</strong>: By using the custom Oversight <code>TelemetryEvent</code> I can keep the internal contract independent of MQTT 
+     and Sparkplug B session behavior</li>
+<li><strong>Tradeoff/Risk</strong>: Oversight must maintain and version its own schema, however, this was the best option for me
+     because it allows me to reuse the existing Oversight <code>TelemetryEvent</code> contract.</li>
+<li>One modular NIS instead of separate adaptor services</li>
+<li><strong>Benefit</strong>: The benefit is simpler deployment, configuration, and initial operation.</li>
+<li><strong>Tradeoff/Risk</strong>: A process-level failure may affect multiple adaptors unless isolation is implemented carefully.
+     Although this risk is low, it is still a tradeoff. </li>
+<li>One point per event instead of batching</li>
+<li><strong>Benefit</strong>: Simpler retries, quality handling, routing, and failure isolation.</li>
+<li><strong>Tradeoff/Risk</strong>: Produces more NATS messages and slightly more message overhead, however, for Oversight, the 
+     benefit of simpler retries and quality handling outweighs the cost of more messages.</li>
+<li>Durable Store-and-Forward Buffer</li>
+<li><strong>Benefit</strong>: </li>
+<li><strong>Tradeoff/Risk</strong>: </li>
+<li>Dropping the oldest telemetry when the buffer is full instead of blocking.</li>
+<li><strong>Benefit</strong>: Preserves newer, more useful process information.</li>
+<li><strong>Tradeoff/Risk</strong>: Creates a gap in historical telemetry that must be reported.</li>
+<li>Active/Passive Endpoint Ownership instead of Active/Active Endpoint Ownership</li>
+<li><strong>Benefit</strong>: Prevents duplicate polling and reduces load on field devices.</li>
+<li><strong>Tradeoff/Risk</strong>: Failover is slower than active/active operations, but, Oversight is a telemetry system and not 
+     a control system, so the slower failover is acceptable.</li>
+<li>Configurable Polling Intervals instead of fixed intervals</li>
+<li><strong>Benefit</strong>: Allows polling to match device and process requirements.</li>
+<li><strong>Tradeoff/Risk</strong>: Misconfiguration can overload a controller or make telemetry too slow.</li>
+</ol>
 <h2 id="acceptance-tests">Acceptance Tests<a class="headerlink" href="#acceptance-tests" title="Permanent link"></a></h2>
+<h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_mapping_registry_accepts_valid_mapping</code></li>
+<li><code>test_mapping_registry_rejects_invalid_mapping</code></li>
+<li><code>test_mapping_reload_preserves_previous_version_on_failure</code></li>
+<li><code>test_normalization_applies_byte_order_scale_and_offset</code></li>
+<li><code>test_normalization_converts_engineering_units</code></li>
+<li><code>test_telemetry_event_contains_exactly_one_value_type</code></li>
+<li><code>test_protocol_quality_maps_to_oversight_quality</code></li>
+<li><code>test_stale_value_is_marked_bad</code></li>
+<li><code>test_timestamp_precedence</code></li>
+<li><code>test_subject_contains_no_physical_addresses</code></li>
+<li><code>test_oversized_event_is_rejected</code></li>
+</ol>
+<h3 id="integration-tests">Integration Tests<a class="headerlink" href="#integration-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_modbus_observation_reaches_uns</code></li>
+<li><code>test_opcua_observation_reaches_uns</code></li>
+<li><code>test_sparkplug_metric_reaches_uns</code></li>
+<li><code>test_jetstream_puback_confirms_publication</code></li>
+<li><code>test_publish_retry_uses_stable_message_id</code></li>
+<li><code>test_out_of_order_event_is_identified</code></li>
+<li><code>test_replayed_event_is_identified</code></li>
+<li><code>test_buffered_events_publish_after_recovery</code></li>
+</ol>
+<h3 id="security-tests">Security Tests<a class="headerlink" href="#security-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_nis_cannot_issue_field_write</code></li>
+<li><code>test_unapproved_endpoint_is_rejected</code></li>
+<li><code>test_nis_cannot_publish_command</code></li>
+<li><code>test_nis_cannot_subscribe_to_commands</code></li>
+<li><code>test_invalid_certificate_is_rejected</code></li>
+<li><code>test_expired_certificate_is_rejected</code></li>
+<li><code>test_secrets_are_not_written_to_logs</code></li>
+<li><code>test_malformed_and_oversized_inputs_are_rejected</code></li>
+</ol>
+<h3 id="fault-injection-tests">Fault Injection Tests<a class="headerlink" href="#fault-injection-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_source_unavailable_uses_bounded_backoff</code></li>
+<li><code>test_read_timeout_does_not_create_fake_value</code></li>
+<li><code>test_nats_outage_uses_local_buffer</code></li>
+<li><code>test_buffer_exhaustion_is_reported</code></li>
+<li><code>test_mapping_relaod_failure_does_not_stop_ingestion</code></li>
+<li><code>test_adaptor_failure_does_not_stop_other_adaptors</code></li>
+</ol>
+<h3 id="high-availability-tests">High Availability Tests<a class="headerlink" href="#high-availability-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_only_one_instance_owns_endpoint</code></li>
+<li><code>test_standby_remains_passive</code></li>
+<li><code>test_failover_transfers_endpoint_ownership</code></li>
+<li><code>test_graceful_shutdown_drains_publications</code></li>
+</ol>
+<h3 id="schema-compatibility-tests">Schema Compatibility Tests<a class="headerlink" href="#schema-compatibility-tests" title="Permanent link"></a></h3>
+<ol>
+<li><code>test_current_consumer_reads_previous_schema</code></li>
+<li><code>test_unknown_protobuf_fields_are_tolerated</code></li>
+<li><code>test_unsupported_schema_version_is_rejected</code></li>
+</ol>
+<h3 id="performance-tests">Performance Tests<a class="headerlink" href="#performance-tests" title="Permanent link"></a></h3>
+<ol>
+<li>Sustain at least 10,000 telemetry points per second for 30 minutes under normal test conditions</li>
+<li>Maintain an NIS-to-Jetstream latency target of less than 50ms</li>
+<li>Produce no unexplainable telemetry loss during the normal-load test</li>
+<li>Remain within its approved CPU and memory usage limits</li>
+<li>Maintain bounded buffer and retry behavior</li>
+<li>Recover from a temporary source or NATS interruption without requiring a process restart</li>
+</ol>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>
 <p><a href="https://cthings.co/blog/understanding-northbound-vs-southbound-connections-in-edge-iot">Understanding Northbound vs. Southbound Connections in edge IoT</a></p>
@@ -823,6 +1424,8 @@ size and route the information to the approved telemetry DLQ subject.</p>
 <p><a href="https://sparkplug.eclipse.org/specification/?utm_source=chatgpt.com">Sparkplug B Specification</a></p>
 <p><a href="https://ucum.org/ucum">UCUM</a></p>
 <p><a href="https://docs.nats.io/learn/core-nats/headers">NATS Headers</a></p>
+<p><a href="https://docs.nats.io/learn/security/authorization">NATS Authorization</a></p>
+<p><a href="https://docs.nats.io/learn/jetstream/advanced-publishing">NATS Advanced Publishing</a></p>
               
             </div>
           </div><footer>

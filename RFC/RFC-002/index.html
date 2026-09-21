@@ -251,26 +251,22 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#risks-tradeoffs-alternatives">Risks, Tradeoffs, &amp; Alternatives</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#acceptance-tests">Acceptance Tests</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#unit-tests">Unit Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-unit-tests">Additional Unit Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#protocol-integration-tests">Protocol Integration Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-publication-and-durable-spool-tests">Additional Publication and Durable Spool Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#publication-and-durable-spool-tests">Publication and Durable Spool Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-protocol-integration-tests">Additional Protocol Integration Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#diagnostic-and-dlq-tests">Diagnostic and DLQ Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-security-tests">Additional Security Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#observability-tests">Observability Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-fault-injection-tests">Additional Fault-Injection Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#security-tests">Security Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-high-availability-tests">Additional High-Availability Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#fault-injection-tests">Fault-Injection Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-observability-tests">Additional Observability Tests</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#high-availability-tests">High-Availability Tests</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#schema-compatibility-tests">Schema-Compatibility Tests</a>
+    <li class="toctree-l4"><a class="reference internal" href="#additional-schema-compatibility-tests">Additional Schema-Compatibility Tests</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#performance-tests">Performance Tests</a>
     </li>
@@ -1491,123 +1487,113 @@ is acquired, the new owner must perform a health check before reporting the endp
 <li><strong>Tradeoff/Risk</strong>: Misconfiguration can overload a controller or make telemetry too slow, but, the benefit of 
      configuration intervals for Oversight outweighs the risk because the system is designed to be highly available.</li>
 </ol>
-<h2 id="acceptance-tests">Acceptance Tests<a class="headerlink" href="#acceptance-tests" title="Permanent link"></a></h2>
-<h3 id="unit-tests">Unit Tests<a class="headerlink" href="#unit-tests" title="Permanent link"></a></h3>
+<h3 id="additional-unit-tests">Additional Unit Tests<a class="headerlink" href="#additional-unit-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_mapping_registry_accepts_valid_mapping</code></li>
-<li><code>test_mapping_registry_rejects_invalid_mapping</code></li>
-<li><code>test_mapping_reload_preserves_previous_version_on_failure</code></li>
-<li><code>test_normalization_applies_byte_order_scale_and_offset</code></li>
-<li><code>test_normalization_converts_engineering_units</code></li>
-<li><code>test_telemetry_event_contains_exactly_one_value_type</code></li>
-<li><code>test_protocol_quality_maps_to_oversight_quality</code></li>
-<li><code>test_stale_value_is_marked_bad</code></li>
-<li><code>test_timestamp_precedence</code></li>
-<li><code>test_out_of_order_event_is_identified</code></li>
-<li><code>test_replayed_event_is_identified</code></li>
-<li><code>test_oversized_event_is_rejected</code></li>
-<li><code>test_all_value_types_round_trip</code></li>
-<li><code>test_binary_value_requires_base64</code></li>
-<li><code>test_integer_value_range_is_validated</code></li>
-<li><code>test_missing_quality_is_rejected</code></li>
+<li><code>test_message_id_must_be_valid_uuidv4</code></li>
+<li><code>test_event_identity_matches_nats_subject</code></li>
+<li><code>test_quality_reason_is_required_for_bad_quality</code></li>
+<li><code>test_quality_reason_is_required_for_uncertain_quality</code></li>
+<li><code>test_invalid_quality_reason_is_rejected</code></li>
+<li><code>test_missing_source_timestamp_uses_ingested_at</code></li>
+<li><code>test_clock_skew_marks_event_uncertain</code></li>
+<li><code>test_stale_transition_preserves_original_event_time</code></li>
+<li><code>test_stale_transition_is_published_only_once</code></li>
+<li><code>test_valid_measurement_restores_good_quality</code></li>
+<li><code>test_null_telemetry_value_is_rejected</code></li>
+<li><code>test_nan_and_infinite_values_are_rejected</code></li>
+<li><code>test_invalid_engineering_unit_is_rejected</code></li>
+<li><code>test_mapping_reload_is_atomic</code></li>
+<li><code>test_mapping_rejects_duplicate_active_source_binding</code></li>
+<li><code>test_mapping_rejects_invalid_stale_threshold</code></li>
 </ol>
-<h3 id="protocol-integration-tests">Protocol Integration Tests<a class="headerlink" href="#protocol-integration-tests" title="Permanent link"></a></h3>
+<h3 id="additional-publication-and-durable-spool-tests">Additional Publication and Durable Spool Tests<a class="headerlink" href="#additional-publication-and-durable-spool-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_modbus_observation_reaches_uns</code></li>
-<li><code>test_opcua_observation_reaches_uns</code></li>
-<li><code>test_ethernet_ip_observation_reaches_uns</code></li>
-<li><code>test_sparkplug_metric_reaches_uns</code></li>
+<li><code>test_event_is_replicated_before_first_publication</code></li>
+<li><code>test_event_is_not_accepted_without_standby_commit</code></li>
+<li><code>test_delivered_status_is_replicated_before_spool_cleanup</code></li>
+<li><code>test_puback_timeout_keeps_record_pending</code></li>
+<li><code>test_puback_stream_matches_expected_stream</code></li>
+<li><code>test_no_matching_jetstream_stream_keeps_record_pending</code></li>
+<li><code>test_spool_recovery_preserves_record_sequence</code></li>
+<li><code>test_recovered_record_uses_original_serialized_payload</code></li>
+<li><code>test_replication_recovery_clears_unreplicated_records</code></li>
 </ol>
-<h3 id="publication-and-durable-spool-tests">Publication and Durable Spool Tests<a class="headerlink" href="#publication-and-durable-spool-tests" title="Permanent link"></a></h3>
+<h3 id="additional-protocol-integration-tests">Additional Protocol Integration Tests<a class="headerlink" href="#additional-protocol-integration-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_jetstream_puback_confirms_publication</code></li>
-<li><code>test_publish_retry_uses_stable_message_id</code></li>
-<li><code>test_retry_uses_identical_payload_subject_and_headers</code></li>
-<li><code>test_event_is_spooled_before_first_publish</code></li>
-<li><code>test_publish_is_blocked_when_spool_commit_fails</code></li>
-<li><code>test_spooled_events_publish_after_recovery</code></li>
-<li><code>test_pending_record_survives_process_restart</code></li>
-<li><code>test_pending_record_survives_unintended_shutdown</code></li>
-<li><code>test_spool_record_is_not_deleted_without_puback</code></li>
-<li><code>test_duplicate_puback_marks_record_delivered</code></li>
+<li><code>test_modbus_partial_response_is_rejected</code></li>
+<li><code>test_modbus_invalid_register_length_is_rejected</code></li>
+<li><code>test_opcua_subscription_is_recreated_after_reconnect</code></li>
+<li><code>test_opcua_status_code_is_normalized</code></li>
+<li><code>test_ethernet_ip_session_recovers_after_timeout</code></li>
+<li><code>test_sparkplug_birth_rebuilds_metric_alias_mapping</code></li>
+<li><code>test_sparkplug_death_marks_source_unavailable</code></li>
+<li><code>test_mqtt_duplicate_delivery_does_not_create_duplicate_logical_event</code></li>
+<li><code>test_source_sequence_gap_is_reported</code></li>
 </ol>
-<h3 id="diagnostic-and-dlq-tests">Diagnostic and DLQ Tests<a class="headerlink" href="#diagnostic-and-dlq-tests" title="Permanent link"></a></h3>
+<h3 id="additional-security-tests">Additional Security Tests<a class="headerlink" href="#additional-security-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_invalid_telemetry_publishes_sanitized_diagnostic</code></li>
-<li><code>test_oversized_payload_is_not_copied_into_dlq</code></li>
-<li><code>test_dlq_record_contains_no_protocol_address</code></li>
-<li><code>test_dlq_record_contains_no_secret</code></li>
-<li><code>test_nis_can_publish_telemetry_dlq</code></li>
-<li><code>test_nis_cannot_subscribe_to_telemetry_dlq</code></li>
-<li><code>test_normal_telemetry_consumer_does_not_receive_dlq_record</code></li>
-<li><code>test_dlq_record_is_durably_spooled_before_publication</code></li>
+<li><code>test_nis_nats_identity_cannot_manage_streams</code></li>
+<li><code>test_nis_nats_identity_cannot_publish_outside_allowed_subjects</code></li>
+<li><code>test_untrusted_certificate_authority_is_rejected</code></li>
+<li><code>test_certificate_hostname_mismatch_is_rejected</code></li>
+<li><code>test_raw_protocol_frame_never_appears_in_telemetry</code></li>
+<li><code>test_spool_files_have_restricted_permissions</code></li>
+<li><code>test_ownership_service_requires_authenticated_connection</code></li>
+<li><code>test_diagnostic_reason_is_sanitized_before_publication</code></li>
 </ol>
-<h3 id="observability-tests">Observability Tests<a class="headerlink" href="#observability-tests" title="Permanent link"></a></h3>
+<h3 id="additional-fault-injection-tests">Additional Fault-Injection Tests<a class="headerlink" href="#additional-fault-injection-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_spool_replication_latency_is_recorded</code></li>
-<li><code>test_spool_replication_failure_increments_counter</code></li>
-<li><code>test_unreplicated_record_gauge_tracks_pending_records</code></li>
-<li><code>test_standby_spool_availability_changes_on_disconnect</code></li>
-<li><code>test_standby_last_confirmed_timestamp_updates_after_commit</code></li>
-<li><code>test_spool_high_water_generates_alert</code></li>
+<li><code>test_spool_disk_full_stops_new_acquisition</code></li>
+<li><code>test_read_only_spool_filesystem_sets_service_not_ready</code></li>
+<li><code>test_corrupt_spool_record_does_not_block_other_records</code></li>
+<li><code>test_standby_spool_unavailable_marks_replication_degraded</code></li>
+<li><code>test_replication_timeout_retains_local_record</code></li>
+<li><code>test_nats_reconnect_does_not_create_new_message_id</code></li>
+<li><code>test_power_loss_during_spool_commit_does_not_create_partial_record</code></li>
 </ol>
-<h3 id="security-tests">Security Tests<a class="headerlink" href="#security-tests" title="Permanent link"></a></h3>
+<h3 id="additional-high-availability-tests">Additional High-Availability Tests<a class="headerlink" href="#additional-high-availability-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_nis_cannot_issue_field_write</code></li>
-<li><code>test_unapproved_endpoint_is_rejected</code></li>
-<li><code>test_nis_cannot_publish_command</code></li>
-<li><code>test_nis_cannot_subscribe_to_commands</code></li>
-<li><code>test_invalid_certificate_is_rejected</code></li>
-<li><code>test_expired_certificate_is_rejected</code></li>
-<li><code>test_secrets_are_not_written_to_logs</code></li>
-<li><code>test_malformed_and_oversized_inputs_are_rejected</code></li>
-<li><code>test_subject_contains_no_physical_addresses</code></li>
-<li><code>test_subject_tokens_reject_wildcards_and_dots</code></li>
-<li><code>test_modbus_read_function_codes_are_allowed</code></li>
-<li><code>test_modbus_write_function_codes_are_denied</code></li>
-<li><code>test_opcua_read_and_subscription_are_allowed</code></li>
-<li><code>test_opcua_write_is_denied</code></li>
-<li><code>test_opcua_method_call_is_denied</code></li>
-<li><code>test_ethernet_ip_read_service_is_allowed</code></li>
-<li><code>test_ethernet_ip_write_service_is_denied</code></li>
-<li><code>test_ethernet_ip_output_assembly_is_denied</code></li>
-<li><code>test_mqtt_identity_can_subscribe_to_approved_topics</code></li>
-<li><code>test_mqtt_identity_cannot_publish</code></li>
-<li><code>test_mqtt_unapproved_topic_is_denied</code></li>
+<li><code>test_endpoint_lease_renews_before_expiration</code></li>
+<li><code>test_active_stops_polling_after_lease_expiration</code></li>
+<li><code>test_active_closes_subscriptions_after_lease_loss</code></li>
+<li><code>test_standby_cannot_takeover_while_active_lease_is_valid</code></li>
+<li><code>test_standby_cannot_takeover_when_ownership_service_is_unavailable</code></li>
+<li><code>test_ownership_generation_increases_after_failover</code></li>
+<li><code>test_stale_owner_cannot_resume_with_old_generation</code></li>
+<li><code>test_takeover_waits_for_configured_grace_period</code></li>
+<li><code>test_new_owner_recovers_pending_spool_before_new_collection</code></li>
+<li><code>test_graceful_shutdown_releases_endpoint_lease</code></li>
 </ol>
-<h3 id="fault-injection-tests">Fault-Injection Tests<a class="headerlink" href="#fault-injection-tests" title="Permanent link"></a></h3>
+<h3 id="additional-observability-tests">Additional Observability Tests<a class="headerlink" href="#additional-observability-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_source_unavailable_uses_bounded_backoff</code></li>
-<li><code>test_read_timeout_does_not_create_fake_value</code></li>
-<li><code>test_nats_outage_uses_durable_spool</code></li>
-<li><code>test_spool_exhaustion_is_reported</code></li>
-<li><code>test_spool_full_does_not_overwrite_pending_events</code></li>
-<li><code>test_spool_checksum_failure_is_quarantined</code></li>
-<li><code>test_mapping_reload_failure_does_not_stop_ingestion</code></li>
-<li><code>test_adapter_failure_does_not_stop_other_adapters</code></li>
+<li><code>test_nats_outage_sets_publication_health_degraded</code></li>
+<li><code>test_nats_outage_does_not_fail_process_liveness</code></li>
+<li><code>test_spool_full_sets_ingestion_readiness_not_ready</code></li>
+<li><code>test_ownership_lease_failure_updates_health_state</code></li>
+<li><code>test_adapter_state_transitions_are_recorded</code></li>
+<li><code>test_metrics_do_not_contain_protocol_addresses_or_secrets</code></li>
+<li><code>test_received_normalized_rejected_counters_reconcile</code></li>
 </ol>
-<h3 id="high-availability-tests">High-Availability Tests<a class="headerlink" href="#high-availability-tests" title="Permanent link"></a></h3>
+<h3 id="additional-schema-compatibility-tests">Additional Schema-Compatibility Tests<a class="headerlink" href="#additional-schema-compatibility-tests" title="Permanent link"></a></h3>
 <ol>
-<li><code>test_only_one_instance_owns_endpoint</code></li>
-<li><code>test_standby_remains_passive</code></li>
-<li><code>test_failover_transfers_endpoint_ownership</code></li>
-<li><code>test_standby_recovers_active_spool_after_failover</code></li>
-<li><code>test_graceful_shutdown_drains_publications</code></li>
-</ol>
-<h3 id="schema-compatibility-tests">Schema-Compatibility Tests<a class="headerlink" href="#schema-compatibility-tests" title="Permanent link"></a></h3>
-<ol>
-<li><code>test_current_consumer_reads_previous_schema</code></li>
-<li><code>test_unknown_protobuf_fields_are_tolerated</code></li>
-<li><code>test_unsupported_schema_version_is_rejected</code></li>
+<li><code>test_protobuf_round_trip_preserves_all_telemetry_fields</code></li>
+<li><code>test_json_and_protobuf_representations_are_equivalent</code></li>
+<li><code>test_removed_protobuf_field_numbers_are_reserved</code></li>
+<li><code>test_removed_enum_values_are_reserved</code></li>
+<li><code>test_new_optional_field_does_not_break_previous_consumer</code></li>
 </ol>
 <h3 id="performance-tests">Performance Tests<a class="headerlink" href="#performance-tests" title="Permanent link"></a></h3>
 <ol>
-<li>Sustain at least 10,000 telemetry points per second for 30 minutes under normal test conditions</li>
-<li>Maintain an NIS-to-Jetstream latency target of less than 50ms</li>
-<li>Produce no unexplainable telemetry loss during the normal-load test</li>
-<li>Remain within its approved CPU and memory usage limits</li>
-<li>Maintain bounded spool and retry behavior</li>
-<li>Recover from a temporary source or NATS interruption without requiring a process restart</li>
+<li><code>test_sustains_10000_points_per_second_for_30_minutes</code></li>
+<li><code>test_ingest_to_puback_latency_meets_p95_target</code></li>
+<li><code>test_spool_replication_latency_meets_p95_target</code></li>
+<li><code>test_nats_outage_spools_events_without_accepted_event_loss</code></li>
+<li><code>test_spool_drains_faster_than_live_ingestion_after_recovery</code></li>
+<li><code>test_failover_completes_within_recovery_time_objective</code></li>
+<li><code>test_mapping_reload_under_load_does_not_lose_accepted_events</code></li>
+<li><code>test_maximum_payload_processing_remains_within_resource_limits</code></li>
+<li><code>test_cpu_and_memory_remain_within_approved_limits</code></li>
+<li><code>test_extended_outage_does_not_exceed_spool_capacity_plan</code></li>
 </ol>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <p><a href="https://www.techtarget.com/whatis/definition/northbound-interface-southbound-interface">Northbound Interface &amp; Southbound Interface</a></p>

@@ -124,8 +124,6 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#horizontal-scaling">Horizontal Scaling</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#fail-safe-hold-mode">Fail-Safe &ldquo;HOLD&rdquo; Mode</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
@@ -157,6 +155,8 @@
     <li class="toctree-l4"><a class="reference internal" href="#audit-subjects">Audit Subjects</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#health-subjects">Health Subjects</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dlq-subjects">DLQ Subjects</a>
     </li>
         </ul>
     </li>
@@ -453,7 +453,7 @@ dot notation to route data.</p>
 <h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
 <p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams and consumers, retry policies, 
    and application-level failure handling.</p>
-<p>Because NATS does not have a separate broker-level DLQ object, Oversight implements DLQ handling using NATS subjects,
+<p>Because NATS does not have a separate broker-level DLQ object, Oversight implements DLQ handling using NATS subjects
    and application-level failure handling.</p>
 <p>A message may be redirected to a DLQ when it cannot be successfully processed. This happens after the configured 
    retry policy has been exceeded or when the system determines that further processing must be stopped.</p>
@@ -580,9 +580,6 @@ dot notation to route data.</p>
 <p>The system can horizontally scale using NATS durable consumers. Where appropriate, queue-groups can be used for 
    distributing live messages among subscribers and the JetStream persistent worker model for distributing stored
    stream messages while sharing one consumer cursor.</p>
-<h3 id="fail-safe-hold-mode">Fail-Safe &ldquo;HOLD&rdquo; Mode<a class="headerlink" href="#fail-safe-hold-mode" title="Permanent link"></a></h3>
-<p>In the event of a heartbeat failure, the system will prevent control-affecting commands from being executed by the
-   Southbound Driver and issues a <code>WATCHDOG_TRIP</code> alarm.</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
 <h3 id="nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog">NATS Telemetry Stream Stale / Idle Timeout (Zero-Tolerance Watchdog)<a class="headerlink" href="#nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog" title="Permanent link"></a></h3>
 <p>If the NATS consumer detects the absence of expected telemetry, the system will trigger a dedicated NATS Watcher 
@@ -751,6 +748,12 @@ defines what the data means and NATS transports that data.</p>
 <td style="text-align: left;">Platform Services</td>
 <td style="text-align: left;">Monitoring / Operations</td>
 </tr>
+<tr>
+<td><code>oversight.dlq.&gt;</code></td>
+<td>DLQ messages</td>
+<td style="text-align: left;">Platform Services</td>
+<td style="text-align: left;">Monitoring / Operations</td>
+</tr>
 </tbody>
 </table>
 <h3 id="telemetry-subjects">Telemetry Subjects<a class="headerlink" href="#telemetry-subjects" title="Permanent link"></a></h3>
@@ -800,6 +803,17 @@ defines what the data means and NATS transports that data.</p>
 <li><code>oversight.health.service_up</code></li>
 <li><code>oversight.health.service_down</code></li>
 <li><code>oversight.health.watchdog_pulse</code></li>
+</ol>
+<h3 id="dlq-subjects">DLQ Subjects<a class="headerlink" href="#dlq-subjects" title="Permanent link"></a></h3>
+<p><code>oversight.dlq.&gt;</code> is the namespace for all messages that are dropped by the broker.</p>
+<p><strong>Examples</strong>:</p>
+<ol>
+<li><code>oversight.dlq.telemetry</code></li>
+<li><code>oversight.dlq.commands</code></li>
+<li><code>oversight.dlq.events</code></li>
+<li><code>oversight.dlq.audit</code></li>
+<li><code>oversight.dlq.failover</code></li>
+<li><code>oversight.dlq.manual_override</code></li>
 </ol>
 <h2 id="acceptance-tests">Acceptance Tests<a class="headerlink" href="#acceptance-tests" title="Permanent link"></a></h2>
 <p>The following acceptance tests are used for testing NATS JetStream:</p>

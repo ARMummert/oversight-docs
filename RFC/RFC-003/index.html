@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>RFC-003 - Streaming Analytics &amp; Anomaly Detection - Oversight ICS</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RFC-003 - Streaming Analytics \u0026amp; Anomaly Detection";
+        var mkdocs_page_input_path = "RFC/RFC-003.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Oversight ICS
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Documentation Suite</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-context-diagram.svg">System Architecture Context View</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../system-architecture-container-diagram.png">System Architecture Container View</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >RFCs</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../RFC-001/">RFC-001: Unified Namespace & Messaging Architecture</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../RFC-002/">RFC-002: Northbound Ingest Service & Normalization</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Oversight ICS</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">RFC-003 - Streaming Analytics &amp; Anomaly Detection</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rfc-003-streaming-analytics-anomaly-detection">RFC-003 - Streaming Analytics &amp; Anomaly Detection<a class="headerlink" href="#rfc-003-streaming-analytics-anomaly-detection" title="Permanent link"></a></h1>
+<p><strong>Author</strong>: Amy Mummert</p>
+<p><strong>Status</strong>: Proposed</p>
+<p><strong>Date</strong>: 2026-21-26</p>
+<p><strong>Target Components</strong>: Stateful Streaming Analytics Service, NATS JetStream Telemetry Consumers, Redis Hot Cache, TimescaleDB
+Analytics Persistence</p>
+<h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
+<p>Oversight ICS requires streaming analytics and anomaly detection that is able to ingest a large volume of data and
+process it continuously. To do this, Oversight proposes the implementation of a streaming engine that detects 
+statistical drift and abnormal operating behavior.</p>
+<p>The streaming analytics service consumes the normalized telemetry events from NATS JetStream and performs real-time 
+statistical analysis on the data before reaching the cognitive reasoning layer. The streaming analytics service 
+provides a boundary between telemetry transport and cognitive reasoning and maintains the following:</p>
+<ul>
+<li>Rolling analytical state</li>
+<li>Calculates statistical metrics</li>
+<li>Identifies statistical drift</li>
+<li>Applies persistence and hysteresis rules</li>
+<li>Publishes anomaly events for authorized downstream consumers</li>
+</ul>
+<p>The streaming analytics service does not:</p>
+<ul>
+<li>Determine root cause analysis</li>
+<li>Perform rag operations</li>
+<li>Generate control intents</li>
+<li>Authorize commands</li>
+<li>Select failover actions</li>
+<li>Execute commands against field assets</li>
+</ul>
+<p>By implementing the streaming analytics service, Oversight will be able to provide a real-time, continuous, and 
+persistent view of the telemetry data without possessing control authority.</p>
+<h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
+<p>Industrial telemetry data is continuously generated and contains process variables, measurement noise, startup and 
+shutdown transients, network jitter, sensor drift, and legitimate process-state changes.</p>
+<p>If Oversight were to send every telemetry value directly to the cognitive reasoning layer, it would create several 
+problems:</p>
+<ol>
+<li>An increased sensitivity to normal process noise and measurement noise</li>
+<li>Increased false-positives</li>
+<li>Increased processing load on downstream reasoning services</li>
+<li>Alarm chatter caused by transient threshold crossings</li>
+<li>Loss of statistical context between individual measurements</li>
+<li>Difficulty distinguishing between sustained process drift and transient excursions</li>
+<li>Difficulty detecting gradual degradation that may remain within operating limits</li>
+<li>Reduced ability to reproduce and explain exactly what happened</li>
+<li>Increased risk of downstream reasoning services operating on stale, uncertain, or invalid telemetry</li>
+</ol>
+<p>Oversight therefore requires a streaming analytics service that is capable of maintaining state across telemetry events 
+and evaluating measurements against their recent operational history.</p>
+<p>The streaming analytics service must perform the following:</p>
+<ol>
+<li>Stateful stream processing</li>
+<li>Per-signal analytical state</li>
+<li>Rolling statistical windows</li>
+<li>Rolling mean calculations</li>
+<li>Rolling standard deviation calculations</li>
+<li>Windowed $Z$-score calculations</li>
+<li>Configurable anomaly thresholds</li>
+<li>Hysteresis for anomaly state transitions</li>
+<li>Persistence requirements for analytical state and anomaly events</li>
+<li>Telemetry quality checks and validation of incoming telemetry</li>
+<li>Detection of stale or missing telemetry</li>
+<li>Cold-start and window warm-up behavior</li>
+<li>Replayable and reproducible anomaly detection</li>
+<li>Low-latency processing of high-frequency telemetry</li>
+<li>Idempotent handling of redelivered telemetry events</li>
+<li>Publication of deterministic anomaly events</li>
+<li>Monitoring of consumer lag, processing latency, and analytical health</li>
+</ol>
+<p>The streaming analytics service must remain non-authoritative for control operations. It is for detecting anomalies that
+Oversight will then use to inform the cognitive reasoning layer.</p>
+<p>!!! &ldquo;Anomaly Detection&rdquo;
+Detection of an anomaly must not directly result in physical actuation.</p>
+<h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
+<p>The proposed solution is to implement a streaming analytics service that consumes telemetry events from NATS JetStream 
+and processes them in real-time. The streaming analytics service will perform statistical analysis on the telemetry data.</p>
+<h3 id="initial-implementation">Initial Implementation<a class="headerlink" href="#initial-implementation" title="Permanent link"></a></h3>
+<ul>
+<li><strong>Python</strong> - for the analytics service</li>
+<li><strong>NATS JetStream durable pull consumers</strong>: for telemetry ingestion</li>
+<li><strong>Protocol Buffers</strong>: for telemetry and event serialization</li>
+<li><strong>Redis</strong>: for current hot analytical state and anomaly events</li>
+<li><strong>TimescaleDB</strong>: for analytical history and recovery </li>
+</ul>
+<p>This implementation may be replaced by another stateful stream-processing framework in the future without changing the
+telemetry or anomaly event contracts.</p>
+<h3 id="processing-pipeline">Processing Pipeline<a class="headerlink" href="#processing-pipeline" title="Permanent link"></a></h3>
+<h2 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link"></a></h2>
+<ol>
+<li>Stateful streaming analytics service</li>
+<li>Rolling statistical windows</li>
+<li>Rolling mean calculations</li>
+<li>Rolling standard deviation calculations</li>
+<li>Windowed $Z$-score calculations</li>
+<li>Configurable anomaly thresholds</li>
+<li>Hysteresis for anomaly state transitions</li>
+<li>Persistence requirements for analytical state and anomaly events</li>
+<li>Telemetry quality checks and validation of incoming telemetry</li>
+<li>Detection of stale or missing telemetry</li>
+<li>Cold-start and window warm-up behavior</li>
+<li>Replayable and reproducible anomaly detection</li>
+<li>Low-latency processing of high-frequency telemetry</li>
+<li>Idempotent handling of redelivered telemetry events</li>
+<li>Publication of deterministic anomaly events</li>
+<li>Monitoring of consumer lag, processing latency, and analytical health</li>
+</ol>
+<h2 id="non-goals">Non-Goals<a class="headerlink" href="#non-goals" title="Permanent link"></a></h2>
+<ol>
+<li>Modbus TCP decoding</li>
+<li>OPC UA session management</li>
+<li>EtherNet/IP or CIP decoding</li>
+<li>MQTT transport handling</li>
+<li>Sparkplug B source validation</li>
+<li>Industrial protocol termination</li>
+<li>Telemetry normalization</li>
+<li>Unified namespace design</li>
+<li>NATS stream retention configuration, broker configuration, and command processing</li>
+<li>LangGraph reasoning</li>
+<li>RAG-based RCA</li>
+<li>Semantic Anomaly Interpretation</li>
+<li>Remaining Useful Life</li>
+<li>Control intent generation</li>
+<li>Command authorization</li>
+</ol>
+<h2 id="streaming-analytics-pipeline">Streaming Analytics Pipeline<a class="headerlink" href="#streaming-analytics-pipeline" title="Permanent link"></a></h2>
+<pre><code class="language-mermaid">---
+title: &quot;Oversight ICS: Streaming Analytics Pipeline&quot;
+config:
+  theme: dark
+  themeVariables:
+    fontSize: &quot;14px&quot;
+    fontFamily: &quot;Monserrat&quot;
+  flowchart:
+    curve: cardinal-orthogonal
+    nodeSpacing: 45
+    rankSpacing: 50
+---
+flowchart TD
+
+    NATS_IN[&quot;NATS JetStream&lt;br/&gt;oversight.telemetry.&gt;&quot;]
+
+    NATS_IN --&gt;|&quot;Durable Pull Consumer&quot;| SAS
+
+    subgraph SAS[&quot;Stateful Streaming Analytics Service&quot;]
+        direction TB
+
+        SV[&quot;Schema Validation&quot;]
+        QV[&quot;Quality Validation&quot;]
+        TFV[&quot;Timestamp / Freshness Validation&quot;]
+        DD[&quot;Duplicate Detection&quot;]
+        SKR[&quot;State-Key Resolution&quot;]
+        WM[&quot;Window Management&quot;]
+        RM[&quot;Rolling Mean&quot;]
+        RSD[&quot;Rolling Standard Deviation&quot;]
+        ZS[&quot;Z-Score&quot;]
+        PE[&quot;Persistence Evaluation&quot;]
+        HY[&quot;Hysteresis&quot;]
+        ASM[&quot;Anomaly State Machine&quot;]
+
+        SV --&gt; QV
+        QV --&gt; TFV
+        TFV --&gt; DD
+        DD --&gt; SKR
+        SKR --&gt; WM
+        WM --&gt; RM
+        RM --&gt; RSD
+        RSD --&gt; ZS
+        ZS --&gt; PE
+        PE --&gt; HY
+        HY --&gt; ASM
+    end
+
+    ASM --&gt; REDIS[&quot;Redis&lt;br/&gt;Current Analytics State&quot;]
+    ASM --&gt; TSDB[&quot;TimescaleDB&lt;br/&gt;Analytics History / Checkpoints&quot;]
+    ASM --&gt; NATS_OUT[&quot;NATS JetStream&lt;br/&gt;oversight.events.&gt;&quot;]
+</code></pre>
+<h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
+<h3 id="deterministic-statistical-processing">Deterministic Statistical Processing<a class="headerlink" href="#deterministic-statistical-processing" title="Permanent link"></a></h3>
+<p>The Oversight streaming analytics service must process telemetry data deterministically. This means that the 
+same telemetry data must always produce the same statistical results. This model follows strict rules and clear paths 
+without any non-deterministic behavior. It provides data consistency, auditability, and precision. </p>
+<p>The statistical processing does not depend on an LLM, RAG retrieval, or another non-deterministic reasoning service.</p>
+<h3 id="separation-of-detection-decision-making">Separation of Detection &amp; Decision-Making<a class="headerlink" href="#separation-of-detection-decision-making" title="Permanent link"></a></h3>
+<p>The streaming analytics service identifies the anomalies and publishes them to the cognitive reasoning layer. It does 
+not make any decisions or take any actions. </p>
+<p>If an anomaly is detected, the event is published to the <code>oversight.events.&gt;</code> subject, but that event does not contain
+authorization to take any control action.</p>
+<h3 id="source-protocol-independence">Source-Protocol Independence<a class="headerlink" href="#source-protocol-independence" title="Permanent link"></a></h3>
+<p>The streaming analytics service only uses the telemetry contracts defined by Oversight. It does not depend on any 
+specific protocol.  </p>
+<p>It must not require any of the following:</p>
+<ul>
+<li>Modbus register addresses</li>
+<li>OPC UA NodeIDs</li>
+<li>EtherNet/IP or CIP addresses</li>
+<li>MQTT topic structures</li>
+<li>Sparkplug B source names</li>
+<li>vendor-specific device addressing</li>
+</ul>
+<p>All source-specific information must be terminated by Northbound Ingest Service before reaching the streaming analytics
+service.</p>
+<h3 id="at-least-once-delivery-awareness">At-least-once Delivery Awareness<a class="headerlink" href="#at-least-once-delivery-awareness" title="Permanent link"></a></h3>
+<p>NATS Jetstream may redeliver telemetry based on the acknowledgement and recover behavior of the system. The streaming
+analytics service must be able to handle those redeliveries, however, the redelivered telemetry must not be counted as
+a new statistical sample. The <code>TelemetryEvent</code> contract contains a unique <code>message_id</code> field that can be used to 
+identify telemetry that has been redelivered.</p>
+<h3 id="stateful-isolation-state-key-resolution">Stateful Isolation (State-Key Resolution)<a class="headerlink" href="#stateful-isolation-state-key-resolution" title="Permanent link"></a></h3>
+<p>The Oversight streaming analytics service maintains an independent state for each monitored telemetry signal. Each 
+telemetry event is resolved to a deterministic state key that will uniquely identify the telemetry signal whose state 
+is being updated.</p>
+<p><strong>State Key</strong>:</p>
+<p><code>Enterprise.Site.Area.Line.Asset.Tag</code></p>
+<p>All telemetry events with the same signal resolve to the same state key where rolling windows, statistical baselines, 
+persistence counters, hysteresis state, and anomaly state that are associated with one key must remain isolated from the 
+state belonging to another key.</p>
+<p><strong>Example</strong>:</p>
+<p><code>Pump_01.Discharge_Pressure</code> remains independent of <code>Pump_01.Motor_Current</code> even though they both belong to the same 
+asset.</p>
+<p>For Oversight, the state key provides a base for future horizontal partitioning of the telemetry data. This is because
+the telemetry with the same key can be routed to the worker that is responsible for that state.</p>
+<h3 id="data-quality-before-analytics">Data Quality Before Analytics<a class="headerlink" href="#data-quality-before-analytics" title="Permanent link"></a></h3>
+<p>A telemetry event must be validated and pass quality checks before it can perform statistical analysis. Malformed,
+invalid, stale, or ineligible telemetry must not silently enter an analytical window.</p>
+<h3 id="fail-safe-analytics">Fail-Safe Analytics<a class="headerlink" href="#fail-safe-analytics" title="Permanent link"></a></h3>
+<p>A failure of the streaming analytics service must not result in the loss of telemetry data or cause raw telemetry to be
+interpreted as valid statistical output.</p>
+<p>The service must be placed in a <code>DEGRADED</code> state if any of the following conditions are met:</p>
+<ol>
+<li>Loss of analytical state</li>
+<li>Invalid calculations</li>
+<li>Analytics service failure</li>
+</ol>
+<h3 id="replayable-anomaly-detection">Replayable Anomaly Detection<a class="headerlink" href="#replayable-anomaly-detection" title="Permanent link"></a></h3>
+<p>Oversight must be able to replay anomalies that have been detected and published to the cognitive reasoning layer. This 
+is necessary for auditing, reproducibility, and explainability of the anomaly detection process. </p>
+<p>Historical replays of anomalies must be distinguished from live real-time processing and replayed data must not be 
+allowed to present itself as a new live anomaly.</p>
+<h2 id="streaming-analytics-data-flow">Streaming Analytics &amp; Data Flow<a class="headerlink" href="#streaming-analytics-data-flow" title="Permanent link"></a></h2>
+<h3 id="telemetry-ingestion">Telemetry Ingestion<a class="headerlink" href="#telemetry-ingestion" title="Permanent link"></a></h3>
+<ol>
+<li>The streaming analytics service subscribes to the <code>oversight.telemetry.&gt;</code> subject</li>
+<li>The system uses a durable JetStream pull consumer to receive telemetry events from NATS JetStream</li>
+<li>Pull-based consumption allows Oversight to control the following:</li>
+<li>Batch size</li>
+<li>Processing rate</li>
+<li>Acknowledgement timing</li>
+<li>Backpressure</li>
+<li>Retry Behavior</li>
+<li>Consumer concurrency</li>
+<li>The service must acknowledge a message only after the message has been successfully processed and persisted to the 
+   analytical state and history. This ensures that the service can recover from failures without losing telemetry data.</li>
+</ol>
+<h3 id="telemetry-validation">Telemetry Validation<a class="headerlink" href="#telemetry-validation" title="Permanent link"></a></h3>
+<p>Before any statistical processing takes place, the streaming analytics service must validate the telemetry event. 
+The following validation steps are required:</p>
+<ol>
+<li><code>schema_version</code> (e.g., 1.0.0, telemetry.v1)</li>
+<li><code>message_id</code> (e.g., UUIDv4)</li>
+<li><code>semantic_identity</code> (e.g. <code>Enterprise.Site.Area.Line.Asset.Tag</code>)</li>
+<li><code>value</code> (e.g., 72.4)</li>
+<li><code>timestamp</code> (e.g., 2024-06-01T12:34:56.789Z)</li>
+<li><code>data_type</code> (e.g., FLOAT64, INT32, BOOLEAN)</li>
+<li><code>quality</code> (e.g., <code>GOOD</code>, <code>BAD</code>, <code>UNCERTAIN</code>)</li>
+<li>Any Required Metadata (e.g., engineering_unit=&rdquo;psi&rdquo;, sample_interval_ms=100, analytics_profile=&rdquo;pump_pressure_v1&rdquo;)</li>
+</ol>
+<p>If a schema validation error occurs, the service must not let the message enter the statistical baseline.</p>
+<h3 id="duplicate-detection">Duplicate Detection<a class="headerlink" href="#duplicate-detection" title="Permanent link"></a></h3>
+<p>Oversight uses the abilities of NATs JetStream to detect duplicate telemetry events. Because NATS JetStream provides
+at-least-once delivery, redelivery remains possible inside the streaming analytics service.</p>
+<p>To prevent duplicates, the analytics service must not use the same <code>message_id</code> for two telemetry events.</p>
+<h3 id="state-key-resolution">State-Key Resolution<a class="headerlink" href="#state-key-resolution" title="Permanent link"></a></h3>
+<p>Each telemetry event is given an analytical state key which identifies which analytical window receives the 
+measurement.</p>
+<p><strong>Example</strong>: <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h3 id="window-management">Window Management<a class="headerlink" href="#window-management" title="Permanent link"></a></h3>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
+<h3 id="python-stateful-analytics-implementation">Python Stateful Analytics Implementation<a class="headerlink" href="#python-stateful-analytics-implementation" title="Permanent link"></a></h3>
+<p><a href="https://docs.python.org/3.14/library/statistics.html">Mathematical Statistics Functions</a></p>
+<p><a href="https://docs.python.org/3.14/library/asyncio-queue.html">asyncio Queues</a></p>
+<p><a href="https://docs.python.org/3.14/library/asyncio-task.html">asyncio Coroutines and Tasks</a></p>
+<p><a href="https://docs.python.org/3.14/library/collections.html#collections.deque">collections.deque</a></p>
+<p><a href="https://docs.python.org/3.14/library/math.html">Mathematical Functions</a></p>
+<h3 id="redis-hot-analytical-state">Redis Hot Analytical State<a class="headerlink" href="#redis-hot-analytical-state" title="Permanent link"></a></h3>
+<p><a href="https://redis.io/docs/latest/develop/data-types/hashes/">Hashes</a></p>
+<p><a href="https://redis.io/docs/latest/develop/using-commands/keyspace/">Key Expiration</a></p>
+<p><a href="https://redis.io/docs/latest/commands/expire/">EXPIRE Command</a></p>
+<p><a href="https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/">Persistence</a></p>
+<h3 id="timescaledb-analytics-historian">TimescaleDB Analytics Historian<a class="headerlink" href="#timescaledb-analytics-historian" title="Permanent link"></a></h3>
+<p><a href="https://docs.timescale.com/use-timescale/latest/hypertables/">Hypertables</a></p>
+<p><a href="https://docs.timescale.com/use-timescale/latest/continuous-aggregates/about-continuous-aggregates/">Continuous Aggregates</a></p>
+<p><a href="https://docs.timescale.com/use-timescale/latest/continuous-aggregates/refresh-policies/">Continuous Aggregate Refresh Policies</a></p>
+<p><a href="https://docs.timescale.com/use-timescale/latest/data-retention/">Data Retention</a></p>
+<p><a href="https://docs.timescale.com/use-timescale/latest/data-retention/data-retention-with-continuous-aggregates/">Data Retention with Continuous Aggregates</a></p>
+<h3 id="statistical-process-monitoring-anomaly-detection">Statistical Process Monitoring &amp; Anomaly Detection<a class="headerlink" href="#statistical-process-monitoring-anomaly-detection" title="Permanent link"></a></h3>
+<p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm">Detection of Outliers: Z-Scores and Modified Z-Scores</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/pmc.htm">Process or Product Monitoring and Control</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc12.htm">Process Control Techniques</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm">What Are Control Charts?</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc32.htm">Variables Control Charts</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/ppc/section4/ppc45.htm">Assessing Process Stability</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/ppc/section4/ppc47.htm">Checking Statistical Assumptions</a></p>
+<h3 id="ot-security-alarm-management-industrial-governance">OT Security, Alarm Management &amp; Industrial Governance<a class="headerlink" href="#ot-security-alarm-management-industrial-governance" title="Permanent link"></a></h3>
+<p><a href="https://csrc.nist.gov/pubs/sp/800/82/r3/final">NIST SP 800-82 Rev. 3 - Guide to Operational Technology (OT) Security</a></p>
+<p><a href="https://csrc.nist.gov/pubs/sp/800/82/r4/ipd">NIST SP 800-82 Rev. 4 - Guide to Operational Technology (OT) Security - Initial Public Draft</a></p>
+<p><a href="https://www.isa.org/standards-and-publications/isa-standards/isa-18-series-of-standards">ISA-18 Series - Alarm Management Standards</a></p>
+<p><a href="https://www.isa.org/intech/2020/september-october/isa-18-2-management-of-alarm-systems-for-the-proce">ISA - ANSI/ISA-18.2 Management of Alarm Systems for the Process Industries</a></p>
+<p><a href="https://www.isa.org/standards-and-publications/isa-standards/isa-iec-62443-series-of-standards">ISA/IEC 62443 Series - Industrial Automation and Control Systems Security</a></p>
+<p><a href="https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/contchar.htm">NIST Control Chart</a></p>
+<p><a href="https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/studio-5000-logix-designer/alarms/tag-based-alarms/alarm-properties-dialog-box/alarm-properties-dialog-box---general-tab-settings.html">Alarm Properties Dialog Box</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc323.htm">NIST CUSUM Control Charts</a></p>
+<p><a href="https://product-help.se.com/docs/Machine%20Expert/V1.1/en/TbAppLib/TbAppLib/FB_DeadBand/FB_DeadBand-2.htm">FB - Deadbanding</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc12.htm">Process Control Techniques</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/mpc/section2/mpc2211.htm">EWMA Control Chart</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/mpc/section2/mpc233.htm">Monitoring Short-Term Precision</a></p>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-8/7.3.2/">OPC UA Data Access</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Deterministic_system">Deterministic System</a></p>
+<p><a href="https://www.rudderstack.com/blog/deterministic-vs-probabilistic/">Deterministic vs. Probabilistic</a></p>
+<p><a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/concepts/stateful-stream-processing/">Apache Flink - Stateful Stream Processing</a></p>
+<p><a href="https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/fault-tolerance/state/">Apache Flink - Working with State</a></p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://armummert.github.io/oversight-docs/" class="fa fa-code-fork" style="color: #fcfcfc"> Armummert</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

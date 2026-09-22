@@ -255,9 +255,7 @@ zero-trust safety by implementing strict separation between the following:</p>
 <li>Physical Execution</li>
 </ol>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
-<p><strong>Northbound Ingest Service</strong>: Terminates and normalizes raw industrial protocols into JSON payloads and 
-extracts raw source data.
-<strong>UNS Normalization</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
+<p><strong>UNS Normalization</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
 <strong>NATS JetStream</strong>: Transports, persists, routes, and replays telemetry and commands.
 <strong>Downstream Consumers</strong>: Processes the events without needing to know the original protocol or physical register 
 addresses.</p>
@@ -296,9 +294,9 @@ the Unified Namespace to enforce strict Command Query Responsibility Segregation
 telemetry to remain separate from control intent execution.</p>
 <h3 id="the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)<a class="headerlink" href="#the-read-path-ingestion-observation" title="Permanent link"></a></h3>
 <p>Raw industrial protocols are ingested and strictly terminated by the Northbound Ingest Service preventing direct 
-sessions with the field assets. They are then normalized into JSON payloads containing metadata and integer 
-quality bits. These normalized payloads are then published to the NATS JetStream message bus 
-(<code>oversight.telemetry.&gt;</code>) and are consumed by the Bytewax Streaming Engine. </p>
+sessions with the field assets. The NIS validates and normalizes the telemetry then uses protocol buffers for 
+serialization. These normalized payloads are then published to the NATS JetStream message bus(<code>oversight.telemetry.&gt;</code>) 
+and are consumed by the Bytewax Streaming Engine. </p>
 <h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
 <p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
 commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
@@ -1078,7 +1076,7 @@ as the message broker for the Oversight system.</p>
 </li>
 <li>Map raw vendor registers to the ISA-95 / IEC 62264 UNS namespace. The topic structure will be 
    <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code>. This occurs via tag dictionary 
-   lookup / uns mapping where raw data is translated into JSON payloads needed for the system.</li>
+   lookup / uns mapping where raw data is translated into payloads needed for the system.</li>
 </ol>
 <h3 id="phase-3-stream-configuration">Phase 3: Stream Configuration<a class="headerlink" href="#phase-3-stream-configuration" title="Permanent link"></a></h3>
 <ol>

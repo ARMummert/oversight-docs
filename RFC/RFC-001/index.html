@@ -424,10 +424,10 @@ to route data. </p>
 </code></pre>
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
 <h3 id="semantic-independence">Semantic Independence<a class="headerlink" href="#semantic-independence" title="Permanent link"></a></h3>
-<p>Downstream consumers must not know the physical register addresses or vendor-specific protocols. Instead, the UNS 
-   provides a semantic namespace that abstracts the physical register addresses and vendor-specific protocols. </p>
-<p>The following are examples of physical register addresses and vendor-specific protocols that must not be exposed to 
-   downstream consumers:</p>
+<p>Oversight&rsquo;s downstream consumers must not know things like physical register addresses or vendor-specific protocols. 
+   Instead, the Oversight UNS architecture provides a semantic namespace that does not expose OT environment-specific 
+   details.</p>
+<p>The following are examples of industrial protocols that must not be exposed to downstream consumers:</p>
 <ul>
 <li>Modbus register addresses</li>
 <li>OPC-UA node identifiers</li>
@@ -435,15 +435,16 @@ to route data. </p>
 <li>Vendor-specific device naming</li>
 </ul>
 <h3 id="transport-independence">Transport Independence<a class="headerlink" href="#transport-independence" title="Permanent link"></a></h3>
-<ul>
-<li>The event contract must remain independent of the NATS JetStream implementation details.</li>
-</ul>
+<p>To comply with Oversights requirements, the event contract must remain independent of the NATS JetStream 
+   implementation details.</p>
+<p>NATS messaging is used to transport messages only to subscribers connected to the Oversight system. JetStream
+   provides a persistence layer that allows at-least-once delivery of messages. Messages can therefore survive restarts
+   and can be replayed [32].</p>
 <h3 id="idempotent-command-enforcement">Idempotent Command Enforcement<a class="headerlink" href="#idempotent-command-enforcement" title="Permanent link"></a></h3>
-<ul>
-<li>Oversight uses <strong>At-Least-Once</strong> command delivery using <strong>NATS JetStream</strong> durable consumers and acknowledgements. </li>
-<li>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</li>
-<li>Because the UUID alone cannot provide idempotency alone, an idempotency store or execution journal is used. </li>
-</ul>
+<p>Oversight uses NATS JetStream for at-least-once delivery of messages using durable consumers and acknowledgements.
+   By using durable consumers and acknowledgements, the consumer becomes long-lived and be restarted where it left off
+   without losing any messages. </p>
+<p>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</p>
 <h3 id="distributed-tracing">Distributed Tracing<a class="headerlink" href="#distributed-tracing" title="Permanent link"></a></h3>
 <p>The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
    into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
@@ -1273,6 +1274,10 @@ or subscribe to only the subjects it needs to.</p>
 <p>[29] <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r1.pdf?utm_source=chatgpt.com">Guide to Industrial Control Systems Security</a></p>
 <p>[30] <a href="https://www.modbus.org/file/secure/modbusprotocolspecification.pdf">Modbus Application Protocol</a></p>
 <p>[31] <a href="https://sparkplug.eclipse.org/specification/version/2.2/documents/sparkplug-specification-2.2.pdf">Sparkplug Specification</a></p>
+<p>[32] <a href="https://docs.nats.io/concepts/jetstream">JetStream</a></p>
+<p>[33] <a href="https://docs.nats.io/learn/jetstream/">JetStream Deep Dive</a></p>
+<p>[34] <a href="https://docs.nats.io/learn/jetstream/delivery-and-acknowledgment">Delivery &amp; Acknowledgements - NATS</a></p>
+<p>[35] <a href="https://nats.io/blog/jetstream-java-client-03-consume/">Durable Consumers</a></p>
               
             </div>
           </div><footer>

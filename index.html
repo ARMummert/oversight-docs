@@ -67,14 +67,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#introduction-scope">Introduction &amp; Scope</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#in-scope">In-Scope</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#out-of-scope">Out-of-Scope</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#target-environment">Target Environment</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#overview-core-principles">Overview &amp; Core Principles</a>
@@ -216,23 +208,19 @@ still meeting the highest standards of industrial governance and safety. </p>
 <ul>
 <li><strong>Operating System</strong>: Linux-based OS is required for compatibility with hardware interfaces and systemd watchdogs. 
     Windows users must use a fully configured WSL2 environment.</li>
-<li><strong>Container Engine</strong>: Docker Engine 24.0+ &amp; Docker Compose to spin up the core local gateway services (FastAPI 
-    endpoints, TimescaleDB, Redis Hot Cache, NATS JetStream Command Spine, Bytewax Stream Workers).</li>
-<li><strong>NATS Server (w/ JetStream enabled)</strong>: Required locally for stream processing and command orchestration.</li>
-<li><strong>Bytewax Streaming</strong>: Required to execute the stateful stream processing jobs locally for windowed Z-score 
-    analysis and logic drift detection.</li>
+<li><strong>Container Engine</strong>: Docker Engine 24.0+ &amp; Docker Compose</li>
+<li><strong>NATS Server (w/ JetStream enabled)</strong>: Required for the UNS &amp; messaging layer.</li>
+<li><strong>Streaming Analytics Service</strong>: To consume the streaming data from the NATS JetStream for the UNS and perform
+    windowed $Z$-score analysis.</li>
 <li><strong>Python 3.12+</strong>: Managed via uv </li>
 <li><strong>Node.js 20+</strong>: Required for local building and testing of the frontend dashboard.</li>
 <li><strong>C++ Build Tools</strong>: Requires full toolchain suite including <code>build-essential</code>, <code>cmake</code>, and a standard compiler to 
     anchor the native C++ Southbound Driver.</li>
 <li><strong>(Optional) TPM 2.0 Emulator</strong>: For local hardware testing</li>
-<li><strong>Storage Permissions</strong>: Hard directory controls must be configured for the WORM audit spools so that local WORM 
-    storage directories have strict write-only permissions configured before launching the stack.</li>
 </ul>
 <h3 id="physical-hardware-requirements">Physical Hardware Requirements<a class="headerlink" href="#physical-hardware-requirements" title="Permanent link"></a></h3>
-<p>The Edge Gateway is designed for deployment in harsh OT environments. To guarantee high availability, strict zero-trust 
-network segregation, and deterministic safety interlocks, production deployments must meet or exceed the following 
-specifications:</p>
+<p>The Edge Gateway is designed for deployment in industrial environments. Production hardware must meet the systems 
+requirements below:</p>
 <ul>
 <li><strong>Form Factor</strong>: <strong>Industrial PC (IPC)</strong> with <strong>Fanless Passive Cooling</strong> to prevent ingress of dust/particulates.</li>
 <li><strong>Mounting</strong>: Heavy-duty integrated chassis tailored for standard 35mm DIN-Rail mounting inside field control
@@ -253,9 +241,6 @@ specifications:</p>
     Southbound Driver process must check this watchdog loop continuously; if the loop misses a heartbeat for &gt;500ms, 
     the physical DO-0 relay drops open, forcing the system to shed AI control and instantly fall back to local safety 
     logic solvers.</li>
-</ul>
-<!-- TODO: Update Physical Hardware Requirements to include PVP-01 -->
-<ul>
 <li><strong>Environmental &amp; Enclosure</strong>: Operating Temperature: Ruggedized tolerance across a -20°C to 60°C without thermal 
     throttling or clock jitter degradation. </li>
 <li><strong>Ingress Protection</strong>: Minimum IP40 if mounted inside a certified plant control cabinet; IP67 weatherproofing if 
@@ -269,81 +254,167 @@ specifications:</p>
     specific to production deployments in industrial environments.</li>
 </ul>
 <h3 id="quick-start-guide">Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permanent link"></a></h3>
-<!-- TODO: Update Quick Start Guide to include up-to-date Docker container names -->
-<!-- TODO: Quick Start Guide out-of-date - need to update to include Bytewax workers, Nginx, and FastAPI backend -->
-
+<blockquote>
+<p><strong>Development and Test Environment Setup</strong>:
+</p>
+</blockquote>
 <ol>
-<li><strong>Clone the repository:</strong>
-   <code>bash
-   git clone [https://github.com/org/oversight-ics.git](https://github.com/ARMummert/oversight-ics.git)
-   cd oversight-ics</code></li>
-<li><strong>Environment Configuration:</strong>
-   Copy the example env file and configure your local networking, LLM API keys, the Unified Namespace paths, and 
-   database credentials:
-    <code>bash
-    cp .env.example .env</code></li>
-<li><strong>Run Preflight Compliance Verification</strong>:
-   Before attaching active interfaces, validate the local Cgroups, chrony configurations, and PTP interfaces meet 
-   security constraints.
-    <code>bash
-    python scripts/monitoring/compliance_watcher.py</code></li>
-<li><strong>Launch the Core Infrastructure using Docker Compose</strong>:
-   Start the core services including NATS JetStream, Redis Hot Cache, TimescaleDB, and the FastAPI backend:
-   <code>bash
-   docker compose up -d nats redis historian backend</code></li>
-<li><strong>Compile and Provision the Southbound Driver</strong>:
-  Build the native, high-priority C++ binary directly on the host to bridge NATS JetStream events to physical control 
-  registers:
-   <code>bash
-   mkdir build &amp;&amp; cd build
-   cmake ..
-   make
-   sudo ./oversight_sb_driver</code></li>
-<li><strong>Initialize Bytewax Stream Workers</strong>:
-   Spin up the stateful Python dataflows to handle windowed $Z$-score analysis and logic drift detection.
-   <code>bash
-   docker compose up -d bytewax-workers</code></li>
-<li>Start the Frontend Secure Dashboard:
-   <code>bash
-   cd ui
-   npm ci
-   npm run dev</code></li>
-<li>Verify System Heartbeat</li>
-<li>Navigate to http://localhost:3000/system/health to confirm the watchdog handshake is active and the tracking 
-     process variables.</li>
+<li><strong>Clone the repository:</strong></li>
 </ol>
-<h2 id="introduction-scope">Introduction &amp; Scope<a class="headerlink" href="#introduction-scope" title="Permanent link"></a></h2>
-<p>The project scope strictly follows the <strong>ISA/IEC 62443 Purdue Model</strong> for network segmentation, spanning from the 
-Physical &amp; Deterministic Control Layers (Levels 0–2) up through the Operations and the Business Logistics Layers (Levels
-3–4), and finally reaches up to the Enterprise Cloud Layer (Level 5). </p>
-<p>The Industrial Demilitarized Zone (Level 3.5 IDMZ) acts as the boundary and security checkpoint, where the Northbound 
-Ingest Service and Streaming Engine sanitize and normalize OT data before it reaches the Agent. This is also
-where the Nginx Perimeter Gateway intercepts enterprise data (e.g., cryptographically signed OEM manuals pushed from
-Level 5 for RAG ingestion) and sanitizes it before it reaches the Agent.</p>
-<h3 id="in-scope">In-Scope<a class="headerlink" href="#in-scope" title="Permanent link"></a></h3>
-<ul>
-<li><strong>Predictive Orchestration</strong>: Monitoring process assets for logic drift and mechanical wear patterns</li>
-<li><strong>Protocol Normalization</strong>: Consolidates Modbus, OPC_UA, and EtherNet/IP data into a Sparkplug B-enabled Unified 
-    Namespace (UNS)</li>
-<li><strong>Autonomous Reliability</strong>: Executes <strong>warm standby</strong> transitions when the primary hardware health degrades</li>
-<li><strong>Root Cause Analysis</strong>: Using <strong>RAG (Retrieval-Augmented Generation)</strong> to compare real-time anomalies against 
-    technical manuals and historical incident logs.</li>
-<li><strong>Air Gapped Reasoning</strong>: Maintaining a <strong>local-first</strong> architecture that ensures Level 3 operational autonomy even 
-    during loss of internet connectivity.</li>
-</ul>
-<h3 id="out-of-scope">Out-of-Scope<a class="headerlink" href="#out-of-scope" title="Permanent link"></a></h3>
-<ul>
-<li><strong>Primary Safety (SIS)</strong>: Oversight operates under strict safety boundaries to prevent unauthorized interventions.
-    Oversight does <strong><em>NOT</em></strong> manage Emergency Stops or high-pressure relief interlocks. These remain hard-wired at 
-    Level 1.</li>
-<li><strong>Hard Real-Time Control (&lt;10 ms)</strong>: The system is a supervisory reliability layer. While the <strong>NATS Command 
-    Queue</strong> and <strong>Bytewax Streaming Engine</strong> execution path is sub-100 ms, it is designed to operate within a 
-    500 ms supervisory safety watchdog window and does not replace Level 1 deterministic control loops.</li>
-<li><strong>Direct Cloud Control</strong>: No control or write command path exists from the Cloud (Level 5) to the Field (Level 0–2). 
-    All commands must be validated, authenticated, and executed locally at the IDMZ/Edge (Level 3.5).</li>
-<li><strong>Commands &amp; System Modifications</strong>: Oversight <strong>DOES NOT</strong> execute unapproved control actions or perform 
-    autonomous system modifications</li>
-</ul>
+<p><code>bash
+   git clone [https://github.com/org/oversight-ics.git](https://github.com/ARMummert/oversight-ics.git)
+   cd oversight-ics</code></p>
+<ol>
+<li>
+<p><strong>Environment Configuration:</strong>
+   Copy the environment variables file (.env.example) and configure your <code>.env</code> file with the appropriate values.</p>
+<p><code>bash
+cp .env.example .env</code></p>
+</li>
+<li>
+<p><strong>Install Python Dependencies</strong></p>
+<p>Oversight Python dependencies are managed using <code>uv</code>.</p>
+<p><code>bash
+uv sync</code></p>
+<p>Verify the configured Python environment:</p>
+<p><code>bash
+uv run python --version</code></p>
+</li>
+<li>
+<p><strong>Run the Test Suite</strong></p>
+<p>Validate the software configuration before starting the local stack:</p>
+<p><code>bash
+uv run pytest</code></p>
+</li>
+<li>
+<p><strong>Run Preflight Checks</strong></p>
+<p><code>bash
+uv run python infrastructure/monitoring/compliance_watcher.py</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PTP, physical watchdogs, a TPM, and dual physical NICs are not required for normal local development unless
+those specific hardware-dependent behaviors are being tested.</p>
+</div>
+</li>
+<li>
+<p><strong>Start the Core Infrastructure</strong></p>
+<p>Start the Docker Compose services:</p>
+<p><code>bash
+docker compose up -d</code></p>
+<p>Verify container status:</p>
+<p><code>bash
+docker compose ps</code></p>
+</li>
+<li>
+<p><strong>Start the Northbound Ingest Service</strong></p>
+<p><code>bash
+docker compose up -d northbound_ingest</code></p>
+<p>During local development, use simulated Modbus TCP, OPC UA, and EtherNet/IP endpoints rather than production
+control assets.</p>
+</li>
+<li>
+<p><strong>Start the Stateful Streaming Analytics Service</strong></p>
+<p><code>bash
+docker compose up -d streaming_analytics_service</code></p>
+</li>
+<li>
+<p><strong>Build the Southbound Driver</strong></p>
+</li>
+</ol>
+<p>Build the native C++ Southbound Driver:</p>
+<p><code>bash
+   cmake -S . -B build
+   cmake --build build</code></p>
+<p>!!! danger &ldquo;Physical Writes&rdquo;</p>
+<pre><code>   Building the Southbound Driver does not authorize connection to production control hardware.
+</code></pre>
+<ol>
+<li>
+<p><strong>Start the Southbound Driver in Development/Test Mode</strong></p>
+<p>Start the driver using the project&rsquo;s development or simulator configuration.</p>
+<p><code>bash
+./build/southbound_driver --config ./config/southbound_dev.yaml</code></p>
+</li>
+<li>
+<p><strong>Start the Frontend Dashboard</strong></p>
+<p>Install frontend dependencies and start the local development server:</p>
+<p><code>bash
+cd ui
+npm ci
+npm run dev</code></p>
+</li>
+<li>
+<p><strong>Verify NATS JetStream</strong></p>
+<p><code>bash
+nats server check jetstream</code></p>
+<p>Confirm that the NATS server is running with JetStream enabled and that the required Oversight streams,
+ consumers, and subjects have been created.</p>
+<p>At minimum, verify coverage for the applicable namespaces:</p>
+<p><code>text
+ oversight.telemetry.&gt;
+ oversight.commands.&gt;
+ oversight.events.&gt;
+ oversight.audit.&gt;
+ oversight.health.&gt;</code></p>
+<p>Stream configuration must be validated before application services are allowed to depend on persistent
+ messaging or command delivery.</p>
+</li>
+<li>
+<p><strong>Verify NATS Streams</strong>:</p>
+<p><code>bash
+nats stream ls</code></p>
+</li>
+<li>
+<p><strong>Verify System Health</strong></p>
+<p><code>bash
+curl http://localhost:8000/health</code></p>
+</li>
+<li>
+<p><strong>Verify Redis</strong>:</p>
+<p><code>bash
+docker compose exec redis redis-cli ping</code></p>
+</li>
+<li>
+<p><strong>Verify TimescaleDB</strong></p>
+<p><code>bash
+docker compose exec timescale pg_isready</code></p>
+</li>
+<li>
+<p><strong>Verify the Northbound Ingest Service</strong></p>
+<p><code>bash
+docker compose logs --tail=100 northbound-ingest</code></p>
+</li>
+<li>
+<p><strong>Verify the Stateful Streaming Analytics Service</strong></p>
+<p><code>bash
+docker compose logs --tail=100 streaming-analytics</code></p>
+</li>
+<li>
+<p><strong>Check all Logs</strong>:</p>
+<p><code>bash
+docker compose logs --tail=100</code></p>
+</li>
+<li>
+<p><strong>Run Ruff</strong>: </p>
+<p><code>bash
+uv run ruff check</code></p>
+</li>
+<li>
+<p><strong>Shut Down the Development Environment</strong></p>
+<p><code>bash
+docker compose down</code></p>
+<p>To preserve database and JetStream volumes, do not remove volumes unless the test procedure specifically requires
+a clean environment.</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Production Deployment</p>
+<p>The Quick Start Guide does not constitute a production commissioning procedure.</p>
+<p>Production deployment requires separate validation of network segmentation, firewall rules, NATS subject
+permissions, TPM provisioning, RBAC, physical watchdog behavior, time synchronization, audit-storage
+immutability, fail-safe behavior, hardware redundancy, and FAT/SAT acceptance criteria before Oversight is granted
+write access to operational control assets.</p>
+</div>
 <h2 id="target-environment">Target Environment<a class="headerlink" href="#target-environment" title="Permanent link"></a></h2>
 <p><strong>Hardware</strong>: Industrial PCs (IPCs) with Dual-NIC network isolation Hardware-Rooted TPM 2.0 modules</p>
 <p><strong>Connectivity</strong>: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets</p>
@@ -495,5 +566,5 @@ and for the specific safety protocols see <a href="/docs/fat/FAT-03-safety_and_s
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-09-23 19:37:09.672235+00:00
+Build Date UTC : 2026-09-23 20:30:02.029346+00:00
 -->

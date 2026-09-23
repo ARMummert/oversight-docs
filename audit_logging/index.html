@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Amy Mummert" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Audit Logging - Oversight ICS</title>
+    <title>Comprehensive Agent Interaction Logging - Oversight ICS</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Audit Logging";
+        var mkdocs_page_name = "Comprehensive Agent Interaction Logging";
         var mkdocs_page_input_path = "audit_logging.md";
         var mkdocs_page_url = null;
       </script>
@@ -45,7 +45,7 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Documentation Suite</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" >System Architecture</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../system-architecture-context-diagram.svg">System Architecture Context View</a>
@@ -56,65 +56,11 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../network_topology/">Network Topology</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../alarm_philosophy/">Alarm Management</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Audit Logging</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#regulatory-retention-requirements">Regulatory Retention Requirements</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#data-management-retention">Data Management &amp; Retention</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#worm-storage-worm-spooling">WORM Storage &amp; WORM Spooling</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#worm-spooling-capacity-thresholds">WORM Spooling Capacity Thresholds</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#auditor-agent-fault-tolerance">Auditor Agent Fault Tolerance</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#actor-identity-ai-governance">Actor Identity &amp; AI Governance</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#log-schema-forensic-clarity">Log Schema &amp; Forensic Clarity</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#the-unified-audit-schema">The Unified Audit Schema</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#three-tier-log-architecture">Three-Tier Log Architecture</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#log-integrity-lgtm-stack-forwarding">Log Integrity &amp; LGTM Stack Forwarding</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#verification-checkpoint-logging">Verification Checkpoint Logging</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#automated-signature-scheduling">Automated Signature Scheduling</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#disconnected-operations-siem-buffer-limits">Disconnected Operations &amp; SIEM Buffer Limits</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#local-spooling-worm-buffer">Local Spooling (WORM Buffer)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#queue-exhaustion-safety-lockout-thresholds">Queue Exhaustion &amp; Safety Lockout Thresholds</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#recovery-replay-handshake">Recovery &amp; Replay Handshake</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#8-role-based-log-access-rbac">8. Role-Based Log Access (RBAC)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#example-log-entry">Example Log Entry</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#revision-history">Revision History</a>
-    </li>
-    </ul>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" >RFCs</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../RFC/RFC-001/">RFC-001: Unified Namespace & Messaging Architecture</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../RFC/RFC-002/">RFC-002: Northbound Ingest Service & Normalization</a>
-                </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../glossary/">Glossary</a>
                   </li>
               </ul>
       </div>
@@ -131,8 +77,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Documentation Suite</li>
-      <li class="breadcrumb-item active">Audit Logging</li>
+      <li class="breadcrumb-item active">Comprehensive Agent Interaction Logging</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -451,10 +396,6 @@ local WORM database and the LGTM stack are strictly governed:
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../alarm_philosophy/" class="btn btn-neutral float-left" title="Alarm Management"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../RFC/RFC-001/" class="btn btn-neutral float-right" title="RFC-001: Unified Namespace & Messaging Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -480,10 +421,6 @@ local WORM database and the LGTM stack are strictly governed:
         </span>
     
     
-      <span><a href="../alarm_philosophy/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../RFC/RFC-001/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

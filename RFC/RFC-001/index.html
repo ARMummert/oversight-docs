@@ -56,10 +56,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../network_topology/">Network Topology</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../alarm_philosophy/">Alarm Management</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../audit_logging/">Audit Logging</a>
-                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" >RFCs</a>
     <ul class="current">
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">RFC-001: Unified Namespace & Messaging Architecture</a>
@@ -106,7 +102,7 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#idempotent-command-enforcement">Idempotent Command Enforcement</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#distributed-tracing">Distributed Tracing</a>
+    <li class="toctree-l4"><a class="reference internal" href="#distributed-tracing-37">Distributed Tracing [37]</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#message-durability">Message Durability</a>
     </li>
@@ -196,11 +192,7 @@
     </li>
     </ul>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../RFC-002/">RFC-002: Northbound Ingest Service & Normalization</a>
-                </li>
     </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../../glossary/">Glossary</a>
                   </li>
               </ul>
       </div>
@@ -445,25 +437,24 @@ to route data. </p>
    By using durable consumers and acknowledgements, the consumer becomes long-lived and be restarted where it left off
    without losing any messages. </p>
 <p>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</p>
-<h3 id="distributed-tracing">Distributed Tracing<a class="headerlink" href="#distributed-tracing" title="Permanent link"></a></h3>
-<p>The <code>trace_id</code> (UUIDv4) that propagates from the LangGraph Agent is injected 
-   into the NATS JetStream message headers of the Command Queue and the Southbound Driver&rsquo;s execution payload (a live 
-   traveling metadata tag).</p>
+<h3 id="distributed-tracing-37">Distributed Tracing [37]<a class="headerlink" href="#distributed-tracing-37" title="Permanent link"></a></h3>
+<p>Every Oversight command is assigned a unique <code>trace_id</code> (UUIDv4) to &ldquo;follow, analyze, and debug [36]&rdquo; the command&rsquo;s 
+   execution. The <code>trace_id</code> is used to follow the command lifecycle across the distributed system. </p>
+<p>When the LangGraph Agent generates an intent or command proposal, a <code>trace_id</code> is created. NATS JetStream message
+   headers let you attach a third header to the message, in Oversight&rsquo;s case, the <code>trace_id</code> is attached to the message
+   header.</p>
 <h3 id="message-durability">Message Durability<a class="headerlink" href="#message-durability" title="Permanent link"></a></h3>
-<p>Using NATS JetStream provides persistent storage, replay, acknowledgements, recovery of published messages, and 
-   consumer state tracking. The Oversight system uses a configured retention and replication policy to provide message
-   durability and recovery. Message durability in the system is dependent on the configuration of storage, replication, 
-   retention, and acknowledgement policies. Unacknowledged commands may be redelivered to consumers based on the 
-   JetStream consumer acknowledgement and redelivery policies.</p>
+<p>The Oversight system relies on at-least-once delivery of messages so that commands are not lost when the system
+   restarts or fails. NATS JetStream provides persistent storage, replay, durable consumers, acknowledgements, and 
+   redelivery of messages.  </p>
+<p>Oversight uses JetStream&rsquo;s message durability capabilities, which are dependent on the configuration of storage, 
+   replication, retention, and acknowledgement policies. Unacknowledged commands can be redelivered to consumers based 
+   on the system&rsquo;s configuration. </p>
 <h3 id="latency-targets">Latency Targets<a class="headerlink" href="#latency-targets" title="Permanent link"></a></h3>
+<p>The following are the latency targets for Oversight&rsquo;s message flow:</p>
 <ul>
-<li><strong>Field Asset-to-UNS (NATS JetStream UNS)</strong>: &lt; 50 ms – This is measured from receipt of telemetry by the 
-    Northbound Ingest Service to the successful publishing of the event to NATS JetStream.</li>
-<li><strong>NATS Transport Latency</strong>: This is measured from the publisher timestamp to the consumer receipt timestamp. </li>
-<li><strong>NATS to Bytewax</strong>: &lt; 20 ms - This is measured from NATS JetStream consumer receipt of the event to
-    the start of Bytewax processing.</li>
-<li><strong>End-to-End Latency</strong>: This is measured separately from the original telemetry source timestamp.  This happens
-    through the application downstream processing or execution stage.</li>
+<li><strong>Northbound Ingest Service → UNS Published Message:</strong>: &lt;50ms</li>
+<li><strong>NATS Transport Latency (Publication -&gt; Consumer Receipt)</strong> </li>
 </ul>
 <h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
 <p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams and consumers, retry policies, 
@@ -1278,12 +1269,16 @@ or subscribe to only the subjects it needs to.</p>
 <p>[33] <a href="https://docs.nats.io/learn/jetstream/">JetStream Deep Dive</a></p>
 <p>[34] <a href="https://docs.nats.io/learn/jetstream/delivery-and-acknowledgment">Delivery &amp; Acknowledgements - NATS</a></p>
 <p>[35] <a href="https://nats.io/blog/jetstream-java-client-03-consume/">Durable Consumers</a></p>
+<p>[36] <a href="https://www.w3.org/TR/trace-context/">Distributed Tracing - W3C</a></p>
+<p>[37] <a href="https://docs.nats.io/learn/core-nats/headers">NATS Message Headers</a></p>
+<p>[38] <a href="https://docs.nats.io/learn/jetstream/surviving-node-loss">Surviving Node Loss - NATS</a></p>
+<p>[39] <a href="https://docs.nats.io/learn/jetstream/retention-policies">Rentention Policies - NATS</a></p>
+<p>[40] <a href="https://nats.io/blog/nats-server-2.9.16-release/">NATS Server - 2.9.16</a></p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../audit_logging/" class="btn btn-neutral float-left" title="Audit Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../RFC-002/" class="btn btn-neutral float-right" title="RFC-002: Northbound Ingest Service & Normalization">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../network_topology/" class="btn btn-neutral float-left" title="Network Topology"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -1310,10 +1305,8 @@ or subscribe to only the subjects it needs to.</p>
         </span>
     
     
-      <span><a href="../../audit_logging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../../network_topology/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../RFC-002/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

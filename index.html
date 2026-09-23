@@ -69,44 +69,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#target-environment">Target Environment</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#overview-core-principles">Overview &amp; Core Principles</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#oversight-ics-is-built-on-four-non-negotiable-principles">Oversight ICS is built on four non-negotiable principles:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#1-safety-first">1. Safety-First</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#2-human-authority">2. Human Authority</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#3-deterministic-execution">3. Deterministic Execution</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#4-full-auditability">4. Full Auditability</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#5-separation-of-readwrite-paths-cqrs">5. Separation of Read/Write Paths (CQRS)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#6-explainable-ai-xai">6. Explainable AI (XAI)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#core-architecture">Core Architecture</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#northbound-ingest-protocol-isolation">Northbound Ingest (Protocol Isolation)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#level-15-arbitrator-the-gatekeeper-of-authority">Level 1.5 Arbitrator (The Gatekeeper of Authority)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#semantic-gatekeeper-safety-dominance">Semantic Gatekeeper (Safety Dominance)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#tpm-20-notary-buffers-hardware-root-of-trust">TPM 2.0 &amp; Notary Buffers (Hardware Root-of-Trust)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#southbound-driver-deterministic-execution">Southbound Driver (Deterministic Execution)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#agent-architecture">Agent Architecture</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#authority-mode-overview">Authority Mode Overview</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#degraded-mode-behavior">Degraded Mode Behavior</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#industrial-safety-protocol">Industrial Safety Protocol</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#safety-regulatory-governance">Safety &amp; Regulatory Governance</a>
@@ -420,71 +382,6 @@ write access to operational control assets.</p>
 <p><strong>Connectivity</strong>: Industrial environments using OPC-UA, Modbus TCP, EtherNet/IP, or MQTT-enabled process assets</p>
 <p><strong>Use Case</strong>: Critical Infrastructure (Wastewater, Energy, Manufacturing) where unplanned downtime exceeds the cost of
   redundant hardware.</p>
-<h2 id="overview-core-principles">Overview &amp; Core Principles<a class="headerlink" href="#overview-core-principles" title="Permanent link"></a></h2>
-<p>As a <strong>Safety-First, Human Governed AI Agent</strong>, Oversight ICS is designed to improve reliability, resilience, and 
-observability of industrial control systems.</p>
-<h4 id="oversight-ics-is-built-on-four-non-negotiable-principles">Oversight ICS is built on four <strong>non-negotiable</strong> principles:<a class="headerlink" href="#oversight-ics-is-built-on-four-non-negotiable-principles" title="Permanent link"></a></h4>
-<h3 id="1-safety-first">1. Safety-First<a class="headerlink" href="#1-safety-first" title="Permanent link"></a></h3>
-<p>Oversights safety first system never bypasses <strong>Safety Interlocks</strong> or <strong>E-Stops</strong> and the <strong>Safety Instrumented 
-System (SIS)</strong> is strictly decoupled and never modified. The system is designed so that all actions are validated 
-against physical-layer constraints.</p>
-<h3 id="2-human-authority">2. Human Authority<a class="headerlink" href="#2-human-authority" title="Permanent link"></a></h3>
-<p>All control actions and system modifications require explicit human approval. The system <strong>DOES NOT</strong> autonomously 
-execute changes that affect control behavior. Operators retain full <strong>Kill Switch</strong> authority over the system.</p>
-<h3 id="3-deterministic-execution">3. Deterministic Execution<a class="headerlink" href="#3-deterministic-execution" title="Permanent link"></a></h3>
-<p>All control actions follow predefined Standard Operating Procedures (SOPs). No dynamic or unverified control sequences 
-are allowed while execution remains predictable, repeatable, and auditable.</p>
-<h3 id="4-full-auditability">4. Full Auditability<a class="headerlink" href="#4-full-auditability" title="Permanent link"></a></h3>
-<p>Every AI decision, proposal, and action is logged in an immutable historian. The decisions are auditable, traceable, 
-and reproducible. The system is designed to meet industrial audit and compliance expectations.</p>
-<h3 id="5-separation-of-readwrite-paths-cqrs">5. Separation of Read/Write Paths (CQRS)<a class="headerlink" href="#5-separation-of-readwrite-paths-cqrs" title="Permanent link"></a></h3>
-<p>Telemetry and state data are strictly separated from control commands. The system uses a Command Query Responsibility 
-Segregation (CQRS) pattern to make the read and write paths decoupled, allowing for better scalability and security.</p>
-<h3 id="6-explainable-ai-xai">6. Explainable AI (XAI)<a class="headerlink" href="#6-explainable-ai-xai" title="Permanent link"></a></h3>
-<p>AI actions must be traceable to a mathematical baseline drift (Z-Score) or a cited Technical Manual (RAG).</p>
-<h2 id="core-architecture">Core Architecture<a class="headerlink" href="#core-architecture" title="Permanent link"></a></h2>
-<p>Oversight strictly separates decision-making, validation, and physical execution so that the AI-driven orchestration
-never compromises plant safety.</p>
-<h3 id="northbound-ingest-protocol-isolation">Northbound Ingest (Protocol Isolation)<a class="headerlink" href="#northbound-ingest-protocol-isolation" title="Permanent link"></a></h3>
-<p>Absorbs all protocols (Modbus TCP, OPC-UA, EtherNet/IP CIP) at the Level 3.5 IDMZ boundary, normalizing it 
-into a unified namespace.</p>
-<h3 id="level-15-arbitrator-the-gatekeeper-of-authority">Level 1.5 Arbitrator (The Gatekeeper of Authority)<a class="headerlink" href="#level-15-arbitrator-the-gatekeeper-of-authority" title="Permanent link"></a></h3>
-<p>A stateless routing checkpoint that physically halts any proposed command until it verifies cryptographically signed 
-authorization (Two-Factor Authentication).</p>
-<h3 id="semantic-gatekeeper-safety-dominance">Semantic Gatekeeper (Safety Dominance)<a class="headerlink" href="#semantic-gatekeeper-safety-dominance" title="Permanent link"></a></h3>
-<p>A strict validation ruleset that cross-references all AI intents against physical constraints, digitized SOPs, and the 
-hardcoded Forbidden Register List.</p>
-<h3 id="tpm-20-notary-buffers-hardware-root-of-trust">TPM 2.0 &amp; Notary Buffers (Hardware Root-of-Trust)<a class="headerlink" href="#tpm-20-notary-buffers-hardware-root-of-trust" title="Permanent link"></a></h3>
-<p>Attaches an immutable, cryptographic hardware signature proving the command passed all safety audits before dropping to 
-the plant floor.</p>
-<h3 id="southbound-driver-deterministic-execution">Southbound Driver (Deterministic Execution)<a class="headerlink" href="#southbound-driver-deterministic-execution" title="Permanent link"></a></h3>
-<p>The only layer with write-access to the field assets. It executes vetted intents and monitors the physical hardware 
-loop for a Pessimistic Confirmation of Success.</p>
-<h2 id="agent-architecture">Agent Architecture<a class="headerlink" href="#agent-architecture" title="Permanent link"></a></h2>
-<p>Oversight is a Type 2/3 Hybrid Agent that combines procedural control with governed intelligence using strict SOP-based 
-sequences. This architecture solves the <strong>Black Box</strong> problem in industrial AI by wrapping high-level reasoning inside 
-a low-level procedural safety shell.</p>
-<p>For more detailed information on Oversight&rsquo;s Agent architecture, see 
-<a href="/docs/oversight_ics_technical_deep_dive.md#agent-architecture">Agent Architecture</a>.</p>
-<h2 id="authority-mode-overview">Authority Mode Overview<a class="headerlink" href="#authority-mode-overview" title="Permanent link"></a></h2>
-<p>The platform operates under the following defined authority modes, strictly enforced at Level 1.5 (The Arbitration 
-Layer):</p>
-<ol>
-<li><code>CONTROL_ENABLED</code>: Full autonomous control with active write token held by the AI Agent.</li>
-<li><code>ADVISORY_MODE</code>: Write token is parked. AI can generate intents but requires human approval for execution.</li>
-<li><code>MONITOR_ONLY</code>: AI is strictly read-only. All control intents are dropped at the Arbitrator.</li>
-<li><code>AI_LOCKOUT</code>: AI is completely locked out. No intents can pass the Arbitrator. Control is manual via SCADA/HMI.</li>
-<li><code>MAINTENANCE</code>: All remote commands are blocked. Control is local-only via physical interfaces.</li>
-<li><code>ORPHAN_MODE</code>: Triggered by comm-loss. Software components are detached; local PLC reverts to hardcoded logic.</li>
-<li><code>SAFETY_LOCKOUT</code>: Triggered by safety violation. All software control is destroyed. Physical reset required.</li>
-<li><code>COMMISSIONING_MODE</code>: Shared control for testing. Intents must pass through the full validation loop with a testing key.</li>
-</ol>
-<h2 id="degraded-mode-behavior">Degraded Mode Behavior<a class="headerlink" href="#degraded-mode-behavior" title="Permanent link"></a></h2>
-<blockquote>
-<p>The system strictly defaults to non-actuating modes (<code>ORPHAN_MODE</code> or <code>MONITOR_ONLY</code>) in degraded infrastructure 
-conditions, ensuring that system safety and operational determinism are never compromised.</p>
-</blockquote>
-<p>See <a href="/docs/control_authority_model.md">Control Authority Model</a> for more information.</p>
 <h2 id="industrial-safety-protocol">Industrial Safety Protocol<a class="headerlink" href="#industrial-safety-protocol" title="Permanent link"></a></h2>
 <div class="admonition important">
 <p class="admonition-title">SAFETY PROTOCOL: READ CAREFULLY</p>
@@ -566,5 +463,5 @@ and for the specific safety protocols see <a href="/docs/fat/FAT-03-safety_and_s
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-09-23 20:30:02.029346+00:00
+Build Date UTC : 2026-09-23 20:32:10.175728+00:00
 -->

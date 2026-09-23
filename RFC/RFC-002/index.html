@@ -1042,14 +1042,15 @@ spool. The durable spool is a temporary delivery protection mechanism so that no
 during a failure.</p>
 <p>Each spool record contains the following information:</p>
 <ul>
-<li>Serialized Protobuf payload</li>
-<li>Complete NATS subject</li>
-<li>Required NATS headers</li>
+<li>Serialized Protobuf payload (e.g., <code>TelemetryEvent</code>)</li>
+<li>Complete NATS subject (e.g., <code>oversight.telemetry.&lt;enterprise&gt;.&lt;site&gt;.&lt;area&gt;.&lt;line&gt;.&lt;asset&gt;.&lt;tag&gt;</code>)</li>
+<li>Required NATS headers (e.g., <code>Nats-Msg-Id</code>, <code>Oversight-Schema-Version</code>, <code>Oversight-Trace-Id</code>, 
+  <code>Oversight-Correlation-Id</code>, <code>Oversight-Event-Type</code>)</li>
 <li>Original <code>message_id</code></li>
 <li>Original <code>Nats-Msg-Id</code> </li>
-<li>Spool sequence number</li>
-<li>Endpoint ownership</li>
-<li>A checksum or other integrity check</li>
+<li>Spool sequence number (e.g., 1, 2, 3, &hellip;)</li>
+<li>Endpoint ownership </li>
+<li>A checksum or other integrity check </li>
 <li>A timestamp when the event was committed to the spool</li>
 <li>Delivery status</li>
 </ul>
@@ -1639,6 +1640,7 @@ is acquired, the new owner must perform a health check before reporting the endp
 <p><a href="https://protobuf.dev/programming-guides/field_presence/">Protocol Buffers - Field Presence</a></p>
 <p><a href="https://protobuf.dev/programming-guides/style/">Protocol Buffers - Style Guide</a></p>
 <p><a href="https://csrc.nist.gov/pubs/sp/800/82/r3/final">NIST SP 800-82 Rev. 3 - Guide to Operational Technology (OT) Security</a></p>
+<p><a href="https://www.energy.gov/sites/default/files/2022-10/Infra_Topic_Paper_4-14_FINAL.pdf">Purdue Model Framework For ICS &amp; Cybersecurity Segmentation</a></p>
               
             </div>
           </div><footer>

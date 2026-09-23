@@ -1,0 +1,53 @@
+```mermaid
+
+---
+title: "Oversight ICS: Streaming Analytics Flow"
+config:
+  theme: dark
+  themeVariables:
+    fontSize: "14px"
+    fontFamily: "Monserrat"
+  flowchart:
+    curve: cardinal-orthogonal
+    nodeSpacing: 45
+    rankSpacing: 50
+---
+flowchart TD
+
+    NATS_IN["NATS JetStream<br/>oversight.telemetry.>"]
+
+    NATS_IN -->|"Durable Pull Consumer"| SAS
+
+    subgraph SAS["Stateful Streaming Analytics Service"]
+        direction TB
+
+        SV["Schema Validation"]
+        QV["Quality Validation"]
+        TFV["Timestamp / Freshness Validation"]
+        DD["Duplicate Detection"]
+        SKR["State-Key Resolution"]
+        WM["Window Management"]
+        RM["Rolling Mean"]
+        RSD["Rolling Standard Deviation"]
+        ZS["Z-Score"]
+        PE["Persistence Evaluation"]
+        HY["Hysteresis"]
+        ASM["Anomaly State Machine"]
+
+        SV --> QV
+        QV --> TFV
+        TFV --> DD
+        DD --> SKR
+        SKR --> WM
+        WM --> RM
+        RM --> RSD
+        RSD --> ZS
+        ZS --> PE
+        PE --> HY
+        HY --> ASM
+    end
+
+    ASM --> REDIS["Redis<br/>Current Analytics State"]
+    ASM --> TSDB["TimescaleDB<br/>Analytics History / Checkpoints"]
+    ASM --> NATS_OUT["NATS JetStream<br/>oversight.events.>"]
+```

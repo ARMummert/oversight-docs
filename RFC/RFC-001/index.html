@@ -236,15 +236,21 @@
 <h2 id="background-context">Background / Context<a class="headerlink" href="#background-context" title="Permanent link"></a></h2>
 <p>This RFC outlines the proposed creation of a unified namespace and messaging architecture for Oversight ICS. 
 The Unified Namespace (UNS) provides an event-driven communication layer that connects telemetry producers, 
-streaming analytics, safety validation services, and the Southbound Driver and uses NATS JetStream as the core message 
-broker.</p>
-<p>The UNS provides an operational data namespace and provides hardware abstraction by providing downstream services with 
-semantic telemetry data that is not tied to any specific register addresses. It connects the data from the control 
-assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one standardized event 
-stream. By using a UNS, Oversight can speed up Industrial Internet of Things (IIoT) and edge systems, by providing a 
-operational data namespace for telemetry and commands, leading to a more efficient and effective system.</p>
-<p>The system bridges deterministic OT systems with modern AI reasoning and event-driven analytics while maintaining
-zero-trust safety by implementing strict separation between the following:</p>
+streaming analytics, safety validation services, and the Southbound Driver. Oversight will use NATS JetStream as the 
+core message broker.</p>
+<p>The UNS provides data standardization, hardware abstraction, and a single source of truth by providing downstream 
+services with standardized telemetry data that is not tied to any specific industrial protocol. It connects that data 
+from the control assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one 
+standardized event stream. By using a UNS, Oversight can speed up Industrial Internet of Things (IIoT) and edge
+systems, by providing a data namespace for telemetry and commands, leading to a more efficient and effective system.</p>
+<p>Industial Control Systems must strictly separate OT and IT environments. Oversight uses the Purdue Enterprise Reference 
+Architecture (PERA) to define the boundaries between the OT and IT environments. &ldquo;The Purdue Model provides a 
+framework for segmenting industrial control systems networks from corporate enterprise networks and the internet&rdquo; [26].
+A UNS improves upon the Purdue Model by providing a single source of truth that standardizes the data. Having a single 
+source of truth allows Oversight to reduce costs, complexity, and risk by separating read and write access to the data,
+similar to the MQTT messaging protocol. </p>
+<p>The system bridges OT systems with modern AI reasoning and event-driven analytics while maintaining its zero-trust 
+architecture and implementing strict separation between the following:</p>
 <ol>
 <li>Telemetry Ingestion </li>
 <li>Telemetry Normalization</li>
@@ -260,53 +266,63 @@ zero-trust safety by implementing strict separation between the following:</p>
 <strong>Downstream Consumers</strong>: Processes the events without needing to know the original protocol or physical register 
 addresses.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
-<p>Industrial Control Systems expose data through several protocols, including Modbus, OPC-UA, and Ethernet/IP. 
-These protocols may expose vendor-specific addressing, device-specific naming, data types, units, and quality bits.</p>
-<p>If downstream consumers knew this information, Oversight would become tightly coupled to individual control systems
-and this would create several problems:</p>
+<p>Industrial Control Systems expose data that should never enter the IT environment. They expose data through several 
+industrial protocols, including Modbus, OPC-UA, and Ethernet/IP. These protocols may expose vendor-specific addressing, 
+device-specific naming, data types, units, and quality bits. </p>
+<p>If downstream consumers were allowed to know this information, Oversight would become tightly coupled to individual 
+control systems and expose data to the IT environment. This would also violate the zero-trust architecture and the 
+standards and governance requirements for Industrial Control Systems. If the system was tightly coupled to the OT 
+environment, any changes to PLC vendors, protocols, register mapping, or any device configuration would require changes
+to the downstream Oversight architecture.</p>
+<p>Downstream consumers must not have knowledge of the OT environment and its protocols or how the data was acquired.
+Without a UNS, Oversight would run into the following problems:</p>
 <ol>
-<li>Vendor-specific dependencies</li>
-<li>Physical Register Address Exposure</li>
-<li>Challenging Horizontal Scaling</li>
-<li>Tight Coupling Between Cognitive Services and OT</li>
-<li>Increased Safety Risk</li>
-<li>Challenging Portability Between Plants</li>
-<li>Difficult Replay and Forensic Auditing</li>
-<li>Increased Sensitivity to Network Latency and Polling Jitter</li>
+<li>Vendor-specific addressing and device-specific naming</li>
+<li>Decreased operation efficiency</li>
+<li>Security Vulnerabilities</li>
+<li>Data Exposure</li>
+<li>Increased Complexity when integrating with other systems</li>
+<li>Difficulty with scaling</li>
+<li>Complex forensic and replay capabilities</li>
+<li>Tight Coupling with the OT environment</li>
+<li>Inability to support new protocols and devices</li>
 </ol>
-<p>Oversight therefore requires a messaging architecture that supports the following:</p>
+<p>Oversight therefore requires a messaging architecture that is vendor-agnostic and does not expose data to the IT 
+environment. </p>
 <ol>
-<li>High-throughput telemetry (10,000 points per second)</li>
-<li>Low-latency telemetry ingestion and normalization (sub-50ms)</li>
+<li>High-throughput telemetry (exceeding 10,000 points per second)</li>
+<li>Low-latency event transport</li>
 <li>Durable event storage</li>
 <li>Replayable telemetry, event, and command history</li>
 <li>Subject-Based Routing</li>
-<li>Hardware Abstraction</li>
+<li>Hardware and Protocol Abstraction</li>
 <li>Schema Versioning</li>
 <li>Traceability and Forensic Auditing</li>
 <li>Controlled access to event subjects</li>
+<li>Independent downstream consumers</li>
 </ol>
-<p>To achieve this, Oversight uses the Unified Namespace (UNS) to abstract the physical register addresses and 
-vendor-specific protocols.</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
+<p>To solve the problems listed above, Oversight will implement a Unified Namespace (UNS) and NATS JetStream for 
+messaging and persistence.</p>
 <p>The proposed solution is to use NATS JetStream to provide the messaging, persistence, and replay used for implementing
-the Unified Namespace to enforce strict Command Query Responsibility Segregation (CQRS) allowing high-velocity 
-telemetry to remain separate from control intent execution.</p>
+the Unified Namespace, which will enforce Oversight&rsquo;s strict Command Query Responsibility Segregation (CQRS) pipeline,
+and allowing high-velocity telemetry to remain separate from control intent execution.</p>
 <h3 id="the-read-path-ingestion-observation">The Read Path (Ingestion &amp; Observation)<a class="headerlink" href="#the-read-path-ingestion-observation" title="Permanent link"></a></h3>
-<p>Raw industrial protocols are ingested and strictly terminated by the Northbound Ingest Service preventing direct 
-sessions with the field assets. The NIS validates and normalizes the telemetry then uses protocol buffers for 
-serialization. These normalized payloads are then published to the NATS JetStream message bus(<code>oversight.telemetry.&gt;</code>) 
-and are consumed by the Bytewax Streaming Engine. </p>
+<p>Raw industrial protocols are ingested and strictly terminated by the Northbound Ingest Service (NIS) preventing direct 
+sessions from the OT environment from reaching the IT environment. The NIS validates and normalizes the telemetry then 
+uses protocol buffers for serialization. These normalized payloads are then published to the NATS JetStream message 
+contract (<code>oversight.telemetry.&gt;</code>) and are consumed by the streaming analytics service.</p>
 <h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
 <p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
 commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
 the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and persisted to the audit log.
 The fully notarized commands are then handed to the Southbound Driver for execution, which then publishes the results to
-<code>oversight.commands.executed</code>.</p>
+<code>oversight.commands.executed</code>. The Southbound Driver is responsible for executing the command and publishing the 
+results to the Northbound Ingest Service.</p>
 <h2 id="unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model<a class="headerlink" href="#unified-namespace-uns-information-model" title="Permanent link"></a></h2>
 <h3 id="iec-62264-semantic-hierarchy">IEC 62264 Semantic Hierarchy<a class="headerlink" href="#iec-62264-semantic-hierarchy" title="Permanent link"></a></h3>
-<p>Oversight uses an IEC 62264-inspired equipment hierarchy as the UNS naming model and it maps the hierarchy into NATS 
-dot notation to route data.</p>
+<p>Oversight uses a semantic naming model for the UNS architecture and maps the semantic hierarchy into NATS dot notation
+to route data. </p>
 <h3 id="format">Format<a class="headerlink" href="#format" title="Permanent link"></a></h3>
 <p><code>Enterprise.Site.Area.Line.Asset.Tag</code></p>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link"></a></h3>
@@ -314,25 +330,25 @@ dot notation to route data.</p>
 <h3 id="uns-elements-for-oversight-ics-should-be">UNS elements for Oversight ICS should be:<a class="headerlink" href="#uns-elements-for-oversight-ics-should-be" title="Permanent link"></a></h3>
 <ul>
 <li>Deterministic</li>
-<li>Unique within their hierarchy</li>
 <li>Use consistent naming conventions</li>
 <li>Avoid physical protocol addresses or vendor-specific protocols</li>
 <li>Versioned and schema-compliant</li>
 <li>Traceable, auditable, immutable, and replayable</li>
 <li>Horizontally scalable</li>
-<li>Remain stable when the source protocol changes</li>
+<li>Remain stable and hardware-agnostic</li>
+<li>Be independent of the OT environment</li>
 </ul>
 <h2 id="non-goals">Non-Goals<a class="headerlink" href="#non-goals" title="Permanent link"></a></h2>
 <ul>
 <li>PLC control logic</li>
 <li>SIS safety logic</li>
-<li>Physical actuator behavior</li>
-<li>Southbound protocol implementation</li>
-<li>Command arbitration algorithms</li>
+<li>Control Behavior </li>
+<li>Southbound Driver implementation</li>
+<li>Command arbitration and execution</li>
 <li>Semantic gatekeeper implementation</li>
 <li>TPM 2.0 hardware signer implementation</li>
 <li>LangGraph reasoning workflows</li>
-<li>Bytewax anomaly detection algorithms</li>
+<li>Streaming Analytics implementation</li>
 <li>TimescaleDB historian schema</li>
 <li>Redis Cache implementation</li>
 <li>RAG/pgVector implementation</li>
@@ -1226,31 +1242,37 @@ or subscribe to only the subjects it needs to.</p>
 <li>The Level 3.5 IDMZ/Edge maintains full autonomy and safe-state control even during loss of internet connectivity. </li>
 </ul>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
-<p><a href="https://www.synadia.com/blog/nats-and-kafka-compared">NATS and Kafka Compared</a></p>
-<p><a href="https://www.nozominetworks.com/compliance/isa-iec-62443-standards?qgad=797086865745&amp;qgterm=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_term=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_campaign=SEM_GGL_AMER_NOZOMI_NB_COMPLIANCE&amp;utm_source=google&amp;utm_medium=cpc&amp;hsa_acc=2658488350&amp;hsa_cam=23556465977&amp;hsa_grp=193779575672&amp;hsa_ad=797086865745&amp;hsa_src=g&amp;hsa_tgt=kwd-323614820138&amp;hsa_kw=security%20for%20industrial%20automation%20and%20control%20systems&amp;hsa_mt=p&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gad_source=1&amp;gad_campaignid=23556465977&amp;gbraid=0AAAAAo_WPzj_41QdOJMyn3wGXF51H8AcC&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWpR3uEKLzgEUnxXJVJi5IOPsydtNZA3qL2cje1qbhEIzf_kvCZDaXxoC9IoQAvD_BwE">Applying the ISA/IEC 62443 Standards for IACS Security</a></p>
-<p><a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS</a></p>
-<p><a href="https://kalypso.com/viewpoints/entry/unified-namespace-and-data-management">Unified Namespace and Data Management</a></p>
-<p><a href="https://www.synadia.com/blog/nats-and-rabbitmq-compared">NATS and RabbitMQ Compared</a></p>
-<p><a href="https://tier0.app/product/tier0-platform/uns?gad_source=1&amp;gad_campaignid=24171182373&amp;gbraid=0AAAABD-TtuWFqQTktJeJL8c3AdFA-SP10&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWkEVaGgi03pLIbslXraRtVyjLGsI9ATBt73klZGBki19ChO5zQx2bBoCO9kQAvD_BwE">What is a Unified Namespace</a></p>
-<p><a href="https://docs.nats.io/">NATS JetStream</a></p>
-<p><a href="https://oneuptime.com/blog/post/2026-02-02-nats-python/view">NATS Python</a></p>
-<p><a href="https://docs.nats.io/concepts/intro">NATS Documentation</a></p>
-<p><a href="http://en.wikipedia.org/wiki/Idempotence">Idempotence</a></p>
-<p><a href="https://www.splunk.com/en_us/blog/learn/idempotent-design.html">Idempotent Design</a></p>
-<p><a href="https://aws.amazon.com/what-is/distributed-tracing/">Distributed Tracing</a></p>
-<p><a href="https://streamtrace.io/articles/nats-jetstream-dead-letter-queue-implementation/">NATS JetStream Dead Letter Queue</a></p>
-<p><a href="https://docs.nats.io/learn/jetstream/pull-consumers">Pull Consumers In Depth</a></p>
-<p><a href="http://thinkmicroservices.com/blog/2021/nats/nats.html">NATS Paper</a></p>
-<p><a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS Unified Namespace</a></p>
-<p><a href="https://ifactoryapp.com/industries/power-plant/unified-namespace-mqtt-opc-ua-power-plant-data">UNS MQTT OPC-UA Power Plant Data</a></p>
-<p><a href="https://solace.com/wp/unified-namespace/">UNS</a></p>
-<p><a href="https://thearchitectsnotebook.substack.com/p/why-distributed-systems-fail-in-one">Why Distributed Systems Fail</a></p>
-<p><a href="https://github.com/nats-io/nats-architecture-and-design/tree/main">NATS Architecture &amp; Design</a></p>
-<p><a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker Problem</a></p>
-<p><a href="https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern">Circuit Breaker Design Pattern</a></p>
-<p><a href="https://aerospike.com/blog/circuit-breaker-pattern/">Circuit Breaker Pattern</a></p>
-<p><a href="https://docs.nats.io/learn/jetstream/message-ttl">Message TTL</a></p>
-<p><a href="https://static1.squarespace.com/static/5e7135caec915516f2aaf65b/t/649606b5c7a31a37aee7073d/1757733990591/Unified-Namespaces-Ultimate-Guide-Alex-Marcy-2023.pdf">Unified Namespace Guide</a></p>
+<p>[1] <a href="https://www.synadia.com/blog/nats-and-kafka-compared">NATS and Kafka Compared</a></p>
+<p>[2] <a href="https://www.nozominetworks.com/compliance/isa-iec-62443-standards?qgad=797086865745&amp;qgterm=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_term=security%20for%20industrial%20automation%20and%20control%20systems&amp;utm_campaign=SEM_GGL_AMER_NOZOMI_NB_COMPLIANCE&amp;utm_source=google&amp;utm_medium=cpc&amp;hsa_acc=2658488350&amp;hsa_cam=23556465977&amp;hsa_grp=193779575672&amp;hsa_ad=797086865745&amp;hsa_src=g&amp;hsa_tgt=kwd-323614820138&amp;hsa_kw=security%20for%20industrial%20automation%20and%20control%20systems&amp;hsa_mt=p&amp;hsa_net=adwords&amp;hsa_ver=3&amp;gad_source=1&amp;gad_campaignid=23556465977&amp;gbraid=0AAAAAo_WPzj_41QdOJMyn3wGXF51H8AcC&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWpR3uEKLzgEUnxXJVJi5IOPsydtNZA3qL2cje1qbhEIzf_kvCZDaXxoC9IoQAvD_BwE">Applying the ISA/IEC 62443 Standards for IACS Security</a></p>
+<p>[3] <a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS</a></p>
+<p>[4] <a href="https://kalypso.com/viewpoints/entry/unified-namespace-and-data-management">Unified Namespace and Data Management</a></p>
+<p>[5] <a href="https://www.synadia.com/blog/nats-and-rabbitmq-compared">NATS and RabbitMQ Compared</a></p>
+<p>[6] <a href="https://tier0.app/product/tier0-platform/uns?gad_source=1&amp;gad_campaignid=24171182373&amp;gbraid=0AAAABD-TtuWFqQTktJeJL8c3AdFA-SP10&amp;gclid=CjwKCAjwzNTUBhAjEiwA7zcvWkEVaGgi03pLIbslXraRtVyjLGsI9ATBt73klZGBki19ChO5zQx2bBoCO9kQAvD_BwE">What is a Unified Namespace</a></p>
+<p>[7] <a href="https://docs.nats.io/">NATS JetStream</a></p>
+<p>[8] <a href="https://oneuptime.com/blog/post/2026-02-02-nats-python/view">NATS Python</a></p>
+<p>[9] <a href="https://docs.nats.io/concepts/intro">NATS Documentation</a></p>
+<p>[10] <a href="http://en.wikipedia.org/wiki/Idempotence">Idempotence</a></p>
+<p>[11] <a href="https://www.splunk.com/en_us/blog/learn/idempotent-design.html">Idempotent Design</a></p>
+<p>[12] <a href="https://aws.amazon.com/what-is/distributed-tracing/">Distributed Tracing</a></p>
+<p>[13] <a href="https://streamtrace.io/articles/nats-jetstream-dead-letter-queue-implementation/">NATS JetStream Dead Letter Queue</a></p>
+<p>[14] <a href="https://docs.nats.io/learn/jetstream/pull-consumers">Pull Consumers In Depth</a></p>
+<p>[15] <a href="http://thinkmicroservices.com/blog/2021/nats/nats.html">NATS Paper</a></p>
+<p>[16] <a href="https://inductiveautomation.com/resources/article/uns-unified-namespace">UNS Unified Namespace</a></p>
+<p>[17] <a href="https://ifactoryapp.com/industries/power-plant/unified-namespace-mqtt-opc-ua-power-plant-data">UNS MQTT OPC-UA Power Plant Data</a></p>
+<p>[18] <a href="https://solace.com/wp/unified-namespace/">UNS</a></p>
+<p>[19] <a href="https://thearchitectsnotebook.substack.com/p/why-distributed-systems-fail-in-one">Why Distributed Systems Fail</a></p>
+<p>[20] <a href="https://github.com/nats-io/nats-architecture-and-design/tree/main">NATS Architecture &amp; Design</a></p>
+<p>[21] <a href="https://martinfowler.com/bliki/CircuitBreaker.html">Circuit Breaker Problem</a></p>
+<p>[22] <a href="https://en.wikipedia.org/wiki/Circuit_breaker_design_pattern">Circuit Breaker Design Pattern</a></p>
+<p>[23] <a href="https://aerospike.com/blog/circuit-breaker-pattern/">Circuit Breaker Pattern</a></p>
+<p>[24] <a href="https://docs.nats.io/learn/jetstream/message-ttl">Message TTL</a></p>
+<p>[25] <a href="https://static1.squarespace.com/static/5e7135caec915516f2aaf65b/t/649606b5c7a31a37aee7073d/1757733990591/Unified-Namespaces-Ultimate-Guide-Alex-Marcy-2023.pdf">Unified Namespace Guide</a></p>
+<p>[26] <a href="https://www.energy.gov/sites/default/files/2022-10/Infra_Topic_Paper_4-14_FINAL.pdf">Purdue Model Framework For ICS &amp; Cybersecurity Segmentation</a></p>
+<p>[27] <a href="https://studylib.net/doc/28515566/nist.sp.800-82r3">Guide to Operational Technology Security</a></p>
+<p>[28] <a href="https://industrialmonitordirect.com/blogs/knowledgebase/industrial-ethernet-security-nist-800-82-resources-guide">Industrial Ethernet Security NIST</a></p>
+<p>[29] <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r1.pdf?utm_source=chatgpt.com">Guide to Industrial Control Systems Security</a></p>
+<p>[30] <a href="https://www.modbus.org/file/secure/modbusprotocolspecification.pdf">Modbus Application Protocol</a></p>
+<p>[31] <a href="https://sparkplug.eclipse.org/specification/version/2.2/documents/sparkplug-specification-2.2.pdf">Sparkplug Specification</a></p>
               
             </div>
           </div><footer>

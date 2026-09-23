@@ -114,20 +114,22 @@ provides a boundary between telemetry transport and cognitive reasoning and main
 <li>Applies persistence and hysteresis rules</li>
 <li>Publishes anomaly events for authorized downstream consumers</li>
 </ul>
-<p>The streaming analytics service does not:</p>
+<p>The streaming analytics service does <strong>NOT</strong>:</p>
 <ul>
 <li>Determine root cause analysis</li>
-<li>Perform rag operations</li>
+<li>Perform RAG operations</li>
 <li>Generate control intents</li>
 <li>Authorize commands</li>
 <li>Select failover actions</li>
 <li>Execute commands against field assets</li>
+<li>Modify PLC control logic</li>
+<li>Modify SIS Logic</li>
 </ul>
 <p>By implementing the streaming analytics service, Oversight will be able to provide a real-time, continuous, and 
 persistent view of the telemetry data without possessing control authority.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
-<p>Industrial telemetry data is continuously generated and contains process variables, measurement noise, startup and 
-shutdown transients, network jitter, sensor drift, and legitimate process-state changes.</p>
+<p>Industrial telemetry data contains normal process variables, measurement noise, startup and 
+shutdown transients, network jitter, sensor drift, and approved changes in the operating state.</p>
 <p>If Oversight were to send every telemetry value directly to the cognitive reasoning layer, it would create several 
 problems:</p>
 <ol>
@@ -168,19 +170,19 @@ Oversight will then use to inform the cognitive reasoning layer.</p>
 <p>!!! &ldquo;Anomaly Detection&rdquo;
 Detection of an anomaly must not directly result in physical actuation.</p>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
-<p>The proposed solution is to implement a streaming analytics service that consumes telemetry events from NATS JetStream 
-and processes them in real-time. The streaming analytics service will perform statistical analysis on the telemetry data.</p>
+<p>The proposed solution is to implement a stateful streaming analytics service that consumes telemetry events from NATS 
+JetStream and processes them in real-time. The streaming analytics service will perform statistical analysis on the 
+telemetry data.</p>
 <h3 id="initial-implementation">Initial Implementation<a class="headerlink" href="#initial-implementation" title="Permanent link"></a></h3>
 <ul>
-<li><strong>Python</strong> - for the analytics service</li>
+<li><strong>Python</strong> – for the analytics service</li>
 <li><strong>NATS JetStream durable pull consumers</strong>: for telemetry ingestion</li>
 <li><strong>Protocol Buffers</strong>: for telemetry and event serialization</li>
 <li><strong>Redis</strong>: for current hot analytical state and anomaly events</li>
-<li><strong>TimescaleDB</strong>: for analytical history and recovery </li>
+<li><strong>TimescaleDB</strong>: for analytical history and recovery</li>
 </ul>
-<p>This implementation may be replaced by another stateful stream-processing framework in the future without changing the
-telemetry or anomaly event contracts.</p>
-<h3 id="processing-pipeline">Processing Pipeline<a class="headerlink" href="#processing-pipeline" title="Permanent link"></a></h3>
+<p>This implementation may be replaced by another stateful stream-processing framework (e.g., Apache Flink) in the future 
+without changing the telemetry or anomaly event contracts.</p>
 <h2 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link"></a></h2>
 <ol>
 <li>Stateful streaming analytics service</li>
@@ -217,6 +219,13 @@ telemetry or anomaly event contracts.</p>
 <li>Remaining Useful Life</li>
 <li>Control intent generation</li>
 <li>Command authorization</li>
+<li>Level 1.5 Arbitration</li>
+<li>Semantic Gatekeeper</li>
+<li>TPM 2.0 </li>
+<li>Southbound execution</li>
+<li>PLC control logic</li>
+<li>SIS logic</li>
+<li>Physical failover execution</li>
 </ol>
 <h2 id="streaming-analytics-pipeline">Streaming Analytics Pipeline<a class="headerlink" href="#streaming-analytics-pipeline" title="Permanent link"></a></h2>
 <pre><code class="language-mermaid">---
@@ -273,14 +282,13 @@ flowchart TD
 <h2 id="architectural-design-principles">Architectural Design Principles<a class="headerlink" href="#architectural-design-principles" title="Permanent link"></a></h2>
 <h3 id="deterministic-statistical-processing">Deterministic Statistical Processing<a class="headerlink" href="#deterministic-statistical-processing" title="Permanent link"></a></h3>
 <p>The Oversight streaming analytics service must process telemetry data deterministically. This means that the 
-same telemetry data must always produce the same statistical results. This model follows strict rules and clear paths 
-without any non-deterministic behavior. It provides data consistency, auditability, and precision. </p>
-<p>The statistical processing does not depend on an LLM, RAG retrieval, or another non-deterministic reasoning service.</p>
+same telemetry data must always produce the same statistical results. This model does not rely on LLM, RAG lookup, or 
+other non-deterministic reasoning. It provides data consistency, auditability, and precision.</p>
 <h3 id="separation-of-detection-decision-making">Separation of Detection &amp; Decision-Making<a class="headerlink" href="#separation-of-detection-decision-making" title="Permanent link"></a></h3>
-<p>The streaming analytics service identifies the anomalies and publishes them to the cognitive reasoning layer. It does 
-not make any decisions or take any actions. </p>
+<p>The streaming analytics service identifies statistical anomalies. It does not make any decisions or take any actions. </p>
 <p>If an anomaly is detected, the event is published to the <code>oversight.events.&gt;</code> subject, but that event does not contain
 authorization to take any control action.</p>
+<p>The streaming analytics service must not publish to <code>oversight.commands.&gt;</code>.</p>
 <h3 id="source-protocol-independence">Source-Protocol Independence<a class="headerlink" href="#source-protocol-independence" title="Permanent link"></a></h3>
 <p>The streaming analytics service only uses the telemetry contracts defined by Oversight. It does not depend on any 
 specific protocol.  </p>
@@ -293,27 +301,24 @@ specific protocol.  </p>
 <li>Sparkplug B source names</li>
 <li>vendor-specific device addressing</li>
 </ul>
-<p>All source-specific information must be terminated by Northbound Ingest Service before reaching the streaming analytics
-service.</p>
+<p>All source-specific information must be terminated by the Northbound Ingest Service before reaching the streaming 
+analytics service.</p>
 <h3 id="at-least-once-delivery-awareness">At-least-once Delivery Awareness<a class="headerlink" href="#at-least-once-delivery-awareness" title="Permanent link"></a></h3>
-<p>NATS Jetstream may redeliver telemetry based on the acknowledgement and recover behavior of the system. The streaming
-analytics service must be able to handle those redeliveries, however, the redelivered telemetry must not be counted as
+<p>NATS Jetstream may redeliver telemetry based on the acknowledgement and recovery behavior of the system. The streaming
+analytics service has to be able to handle those redeliveries. However, the redelivered telemetry must not be counted as
 a new statistical sample. The <code>TelemetryEvent</code> contract contains a unique <code>message_id</code> field that can be used to 
 identify telemetry that has been redelivered.</p>
 <h3 id="stateful-isolation-state-key-resolution">Stateful Isolation (State-Key Resolution)<a class="headerlink" href="#stateful-isolation-state-key-resolution" title="Permanent link"></a></h3>
-<p>The Oversight streaming analytics service maintains an independent state for each monitored telemetry signal. Each 
-telemetry event is resolved to a deterministic state key that will uniquely identify the telemetry signal whose state 
-is being updated.</p>
+<p>Each monitored telemetry signal maintains an independent state. Every telemetry event is resolved to a state key that 
+will uniquely identify the telemetry signal whose state is being updated.</p>
 <p><strong>State Key</strong>:</p>
 <p><code>Enterprise.Site.Area.Line.Asset.Tag</code></p>
 <p>All telemetry events with the same signal resolve to the same state key where rolling windows, statistical baselines, 
 persistence counters, hysteresis state, and anomaly state that are associated with one key must remain isolated from the 
-state belonging to another key.</p>
+state belonging to another key.     </p>
 <p><strong>Example</strong>:</p>
 <p><code>Pump_01.Discharge_Pressure</code> remains independent of <code>Pump_01.Motor_Current</code> even though they both belong to the same 
 asset.</p>
-<p>For Oversight, the state key provides a base for future horizontal partitioning of the telemetry data. This is because
-the telemetry with the same key can be routed to the worker that is responsible for that state.</p>
 <h3 id="data-quality-before-analytics">Data Quality Before Analytics<a class="headerlink" href="#data-quality-before-analytics" title="Permanent link"></a></h3>
 <p>A telemetry event must be validated and pass quality checks before it can perform statistical analysis. Malformed,
 invalid, stale, or ineligible telemetry must not silently enter an analytical window.</p>
@@ -346,6 +351,14 @@ allowed to present itself as a new live anomaly.</p>
 <li>The service must acknowledge a message only after the message has been successfully processed and persisted to the 
    analytical state and history. This ensures that the service can recover from failures without losing telemetry data.</li>
 </ol>
+<h3 id="telemetry-quality-evaluation">Telemetry Quality Evaluation<a class="headerlink" href="#telemetry-quality-evaluation" title="Permanent link"></a></h3>
+<p>Incoming telemetry observation must have its quality validated before it can be processed.</p>
+<p><strong>Quality State</strong></p>
+<ol>
+<li><code>GOOD</code> - telemetry is valid and can be processed</li>
+<li><code>BAD</code> - telemetry is invalid and must not be processed</li>
+<li><code>UNCERTAIN</code> - telemetry is questionable and must not be processed</li>
+</ol>
 <h3 id="telemetry-validation">Telemetry Validation<a class="headerlink" href="#telemetry-validation" title="Permanent link"></a></h3>
 <p>Before any statistical processing takes place, the streaming analytics service must validate the telemetry event. 
 The following validation steps are required:</p>
@@ -357,17 +370,49 @@ The following validation steps are required:</p>
 <li><code>timestamp</code> (e.g., 2024-06-01T12:34:56.789Z)</li>
 <li><code>data_type</code> (e.g., FLOAT64, INT32, BOOLEAN)</li>
 <li><code>quality</code> (e.g., <code>GOOD</code>, <code>BAD</code>, <code>UNCERTAIN</code>)</li>
-<li>Any Required Metadata (e.g., engineering_unit=&rdquo;psi&rdquo;, sample_interval_ms=100, analytics_profile=&rdquo;pump_pressure_v1&rdquo;)</li>
+<li>Any Required Metadata (e.g., <code>engineering_unit="psi"</code>, <code>sample_interval_ms=100</code>, 
+   <code>analytics_profile="pump_pressure_v1"</code>)</li>
+<li>Distributed tracing metadata (e.g., <code>trace_id</code>, <code>correlation_id</code>)</li>
 </ol>
 <p>If a schema validation error occurs, the service must not let the message enter the statistical baseline.</p>
 <h3 id="duplicate-detection">Duplicate Detection<a class="headerlink" href="#duplicate-detection" title="Permanent link"></a></h3>
 <p>Oversight uses the abilities of NATs JetStream to detect duplicate telemetry events. Because NATS JetStream provides
-at-least-once delivery, redelivery remains possible inside the streaming analytics service.</p>
-<p>To prevent duplicates, the analytics service must not use the same <code>message_id</code> for two telemetry events.</p>
+at-least-once delivery, redelivery is possible inside the streaming analytics service.</p>
+<p>To prevent duplicates, the analytics service must not use the same <code>message_id</code> for two telemetry events and any 
+redelivered attempt must not be treated as a new statistical sample. </p>
 <h3 id="state-key-resolution">State-Key Resolution<a class="headerlink" href="#state-key-resolution" title="Permanent link"></a></h3>
-<p>Each telemetry event is given an analytical state key which identifies which analytical window receives the 
+<p>Each telemetry event is given an analytical state key that identifies which analytical window receives the 
 measurement.</p>
 <p><strong>Example</strong>: <code>AcmeCorp.Longview_Plant.WaterTreatment.Filtration.Pump_01.Discharge_Pressure</code></p>
+<h3 id="timestamp-freshness-validation">Timestamp &amp; Freshness Validation<a class="headerlink" href="#timestamp-freshness-validation" title="Permanent link"></a></h3>
+<p>The streaming analytics service must be able to distinguish the different information each timestamp provides. The 
+following timestamps are used:</p>
+<ol>
+<li><code>source_timestamp</code> - the timestamp of the source device (physical observation)</li>
+<li><code>ingest_timestamp</code> - the timestamp when the NIS received the telemetry event from the source device</li>
+<li><code>analytics_timestamp</code> - the timestamp when the telemetry event was processed by the streaming analytics service</li>
+</ol>
+<p>Both <code>source_timestamp</code> and <code>ingest_timestamp</code> can be used to determine several analytical metrics:</p>
+<ol>
+<li><code>ingest_latency_ms</code> - arrival -&gt; ingestion</li>
+<li><code>source_latency_ms</code> - observation -&gt; ingestion</li>
+<li><code>freshness_ratio</code> - the ratio of <code>ingest_latency_ms</code> to <code>source_latency_ms</code></li>
+<li><code>freshness_threshold_ms</code> - the configured freshness threshold</li>
+<li><code>freshness_threshold_ratio</code> - the ratio of <code>ingest_latency_ms</code> to <code>freshness_threshold_ms</code></li>
+<li><code>processing_latency_ms</code> - ingestion -&gt; processing</li>
+<li><code>processing_latency_ratio</code> - the ratio of <code>ingest_latency_ms</code> to <code>processing_latency_ms</code></li>
+<li><code>consumer_lag_ms</code> - last processed telemetry event -&gt; last received telemetry event</li>
+<li><code>consumer_lag_ratio</code> - the ratio of <code>consumer_lag_ms</code> to <code>ingest_latency_ms</code></li>
+</ol>
+<p>Any telemetry event older than the configured freshness threshold must not be processed.</p>
+<h3 id="out-of-order-telemetry">Out-of-Order Telemetry<a class="headerlink" href="#out-of-order-telemetry" title="Permanent link"></a></h3>
+<p>There are several reasons why telemetry events may arrive out-of-order. These include, network jitter, polling delays, 
+source buffering, reconnection, NATS redelivery, and consumer backpressure.</p>
+<p><strong>Breakdown</strong>:</p>
+<ul>
+<li>The statistical analytics service records the timestamps of the last accepted live observation.  </li>
+<li>If that observation is older than the configured freshness threshold, it must not alter the statistical state.</li>
+</ul>
 <h3 id="window-management">Window Management<a class="headerlink" href="#window-management" title="Permanent link"></a></h3>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link"></a></h2>
 <h3 id="python-stateful-analytics-implementation">Python Stateful Analytics Implementation<a class="headerlink" href="#python-stateful-analytics-implementation" title="Permanent link"></a></h3>
@@ -404,6 +449,8 @@ measurement.</p>
 <p><a href="https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/contchar.htm">NIST Control Chart</a></p>
 <p><a href="https://www.rockwellautomation.com/en-us/docs/studio-5000-logix-designer/38-01/contents-ditamap/studio-5000-logix-designer/alarms/tag-based-alarms/alarm-properties-dialog-box/alarm-properties-dialog-box---general-tab-settings.html">Alarm Properties Dialog Box</a></p>
 <p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc323.htm">NIST CUSUM Control Charts</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm">NIST Detection of Outliers</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc324.htm">NIST EWMA Control Charts</a></p>
 <p><a href="https://product-help.se.com/docs/Machine%20Expert/V1.1/en/TbAppLib/TbAppLib/FB_DeadBand/FB_DeadBand-2.htm">FB - Deadbanding</a></p>
 <p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc12.htm">Process Control Techniques</a></p>
 <p><a href="https://www.itl.nist.gov/div898/handbook/mpc/section2/mpc2211.htm">EWMA Control Chart</a></p>
@@ -413,6 +460,24 @@ measurement.</p>
 <p><a href="https://www.rudderstack.com/blog/deterministic-vs-probabilistic/">Deterministic vs. Probabilistic</a></p>
 <p><a href="https://nightlies.apache.org/flink/flink-docs-lts/docs/concepts/stateful-stream-processing/">Apache Flink - Stateful Stream Processing</a></p>
 <p><a href="https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/datastream/fault-tolerance/state/">Apache Flink - Working with State</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/mpc/section2/mpc233.htm">NIST Monitoring Short-Term Precision</a></p>
+<p><a href="https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc12.htm">What are Process Control Techniques</a></p>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-8/7.3.2/">Operation Level Result Codes: OPC UA</a></p>
+<p><a href="https://airc.nist.gov/airmf-resources/playbook/measure/">NIST AI Risk Management Framework Playbook - Measure</a></p>
+<h2 id="nats">NATS<a class="headerlink" href="#nats" title="Permanent link"></a></h2>
+<p><a href="https://docs.nats.io/nats-concepts/jetstream/consumers">JetStream Consumers</a></p>
+<p><a href="https://docs.nats.io/learn/jetstream/delivery-and-acknowledgment">Delivery and Acknowledgment</a></p>
+<p><a href="https://docs.nats.io/learn/jetstream/acknowledgment">Ack Responses and Redelivery</a></p>
+<p><a href="https://docs.nats.io/running-a-nats-service/configuration/securing_nats/authorization">Authorization</a></p>
+<p><a href="https://docs.nats.io/learn/monitoring/">Monitoring and Observability</a></p>
+<h3 id="protocol-buffers">Protocol Buffers<a class="headerlink" href="#protocol-buffers" title="Permanent link"></a></h3>
+<p><a href="https://protobuf.dev/programming-guides/">Protocol Buffers - Programming Guides</a></p>
+<p><a href="https://protobuf.dev/programming-guides/proto3/">Protocol Buffers - Proto3 Language Guide</a></p>
+<p><a href="https://protobuf.dev/programming-guides/field_presence/">Protocol Buffers - Field Presence</a></p>
+<h3 id="opc-ua">OPC UA<a class="headerlink" href="#opc-ua" title="Permanent link"></a></h3>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-4/7.38">OPC UA – StatusCode</a></p>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-4/7.11.5">OPC UA – StatusCode Assigned to a Value</a></p>
+<p><a href="https://reference.opcfoundation.org/specs/OPC-10000-8/a-4-3-3">OPC UA – Data Access Quality</a></p>
               
             </div>
           </div><footer>

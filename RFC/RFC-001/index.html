@@ -126,11 +126,29 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#telemetry-stream-stale">Telemetry Stream Stale</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#northbound-ingest-failure">Northbound Ingest Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#consumer-backlog-processing-degradation">Consumer Backlog / Processing Degradation</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-message-latency-degradation">NATS Message Latency Degradation</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#jetstream-publication-failure">JetStream Publication Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#command-redelivery-duplicate-execution-risk">Command Redelivery / Duplicate Execution Risk</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#stream-capacity-storage-exhaustion">Stream Capacity / Storage Exhaustion</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#poison-messages-maximum-delivery-failure">Poison Messages / Maximum Delivery Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-authorization-failure">NATS Authorization Failure</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#time-synchronization-failure">Time Synchronization Failure</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#middleware-integrity-watchdog">Middleware Integrity Watchdog</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#nats-message-broker-latency">NATS Message Broker Latency</a>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-command-ttl-expiration">NATS Command TTL Expiration</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#nats-command-ttl-expiry">NATS Command TTL Expiry</a>
+    <li class="toctree-l4"><a class="reference internal" href="#disconnected-client-command-buffering">Disconnected-Client Command Buffering</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#nats-connection-failure">NATS Connection Failure</a>
     </li>
@@ -634,23 +652,32 @@ acknowledgement [43].</p>
    appropriate, queue-groups can be used for distributing live messages among subscribers and the JetStreams persistent 
    worker model for distributing stored stream messages while sharing one consumer. [48], [49]</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
+<p>Oversight treats NATS and JetStream as non-authoritative messaging. NATS provides message transport, persistence, 
+   acknowledgement, redelivery, monitoring, and recovery capabilities. It has no authority to determine the physical 
+   state of an industrial process.</p>
+<p>NIST notes that OT systems commonly use &ldquo;fail-to-a-known-state design&rdquo; and recommends defining thresholds at which
+   OT components may continue operating with reduced or disrupted capability when failures such as loss of network
+   communications occur. [27]</p>
 <h3 id="telemetry-stream-stale">Telemetry Stream Stale<a class="headerlink" href="#telemetry-stream-stale" title="Permanent link"></a></h3>
 <p>Oversight independently monitors whether telemetry is stale by calculating the age of the most recent valid 
    observation for each telemetry signal. It is not determined by consumer lag. The reason for this is that consumer
    lag can indicate that the telemetry is fresh even when the Northbound Ingest Service dies. Consumer lag can be used
-   to support diagnostic information but it cannot determine telemetry staleness. [50]</p>
+   to support diagnostic information, but it cannot determine telemetry staleness. [50]</p>
+<p>NIST requires that OT timing requirements be defined for the installation rather than assuming a universal timing 
+   value. NIST also states, that an empty pull consumer fetch can be completely normal when no messages are currently
+   waiting.  Meaning, an idle consumer must not trigger a <code>STALE_DATA</code> alarm. [27]</p>
 <p>For each monitored telemetry signal, Oversight monitors:</p>
 <ul>
-<li>The most recent source timestamp</li>
+<li>The most recent <code>source_timestamp</code></li>
 <li>The most recent Northbound Ingest receipt timestamp</li>
-<li>The expected telemetry update or refresh interval</li>
-<li>The configured stale-data threshold</li>
+<li>Expected telemetry update or refresh interval</li>
+<li>Configured stale-data threshold</li>
 </ul>
 <p>Telemetry age is calculated as:</p>
 <p><code>telemetry_age = current_time - most_recent_valid_source_timestamp</code></p>
 <p>When telemetry age &gt; configured stale-data threshold, the signal is considered stale. If the telemetry age reaches 
-   or exceeds the configured stale-data threshold, the signal MUST transition to <code>STALE_DATA</code>.</p>
-<p>When the source timestamp cannot be trusted, the Northbound Ingest receipt timestamp can be used as a secondary
+   or exceeds the configured stale-data threshold, the signal transitions to <code>STALE_DATA</code>.</p>
+<p>When the source timestamp cannot be trusted, the Northbound Ingest receipt timestamp is used as a secondary
    measurement to determine staleness.</p>
 <p>The Oversight system distinguishes between:</p>
 <ul>
@@ -661,64 +688,119 @@ acknowledgement [43].</p>
 </ul>
 <p>Any stale telemetry signals must be considered invalid for any control-affecting behavior. Upon recovery, the system
    must verify that the telemetry is not stale before allowing any control-affecting commands. [43], [50]</p>
+<h3 id="northbound-ingest-failure">Northbound Ingest Failure<a class="headerlink" href="#northbound-ingest-failure" title="Permanent link"></a></h3>
+<p>Loss of the Northbound Ingest Service (NIS) must be evaluated separately from the following conditions:</p>
+<ul>
+<li>Source device failure</li>
+<li>Stale telemetry</li>
+<li>JetStream consumer backlog</li>
+<li>NATS connection failure</li>
+<li>Downstream consumer failure</li>
+</ul>
+<p>If the NIS stopped receiving or publishing telemetry, Oversight investigates to determine whether the condition is 
+from consumer lag or from a NATS outage.</p>
+<p>Oversight uses the NIS heartbeat, latest valid telemetry timestamp, NATS health, stream health, and consumer state to 
+identify the affected layer.</p>
+<p>If the NIS is not functioning correctly, AI command authority is stopped completely.</p>
+<h3 id="consumer-backlog-processing-degradation">Consumer Backlog / Processing Degradation<a class="headerlink" href="#consumer-backlog-processing-degradation" title="Permanent link"></a></h3>
+<p>JetStream consumer backlog is considered a health condition and is not treated as stale telemetry calculation.</p>
+<p>Oversight monitors the following:</p>
+<ul>
+<li><code>num_pending</code></li>
+<li><code>num_ack_pending</code></li>
+<li><code>num_redelivered</code></li>
+<li>delivered stream sequence</li>
+<li>acknowledgement-floor sequence</li>
+</ul>
+<p>NATS defines consumer lag from the difference between the streams&rsquo; current position to the consumer&rsquo;s delivered 
+position. [43] Pull consumers use bounded pull sizes and <code>MaxAckPending</code> to limit the number of messages delivered to 
+the consumer at one time. NATS documents that smaller batches can reduce latency and throughput. [50]</p>
+<p>NATS evaluates <code>num_pending</code> and <code>num_ack_pending</code> differently. <code>num_pending</code> represents messages no worker has taken,
+while <code>num_ack_pending</code> represents messages already delivered but not yet acknowledged [43].</p>
+<p>Sustained or increasing backlog above the configured Oversight threshold transitions the affected consumer or
+processing path to <code>DEGRADED</code>.</p>
+<h3 id="nats-message-latency-degradation">NATS Message Latency Degradation<a class="headerlink" href="#nats-message-latency-degradation" title="Permanent link"></a></h3>
+<p>NIST states that acceptable OT delay and jitter depend on the individual installation and that real-time requirements 
+must be defined for each installation. [27]</p>
+<p>The project SLO&rsquo;s are as follows:</p>
+<ol>
+<li>NIS → PubAck: p95 &lt; 50 ms</li>
+<li>Publish → Consumer Receipt: p95 &lt; 20 ms</li>
+<li>Consumer → Analytics Processing Start: p95 &lt; 20 ms</li>
+<li>Middleware End-to-End Latency: p95 &lt; 100 ms</li>
+</ol>
+<p>These values are performance acceptance criteria for the Oversight system and not NATS or NIST guarantees.</p>
+<h3 id="jetstream-publication-failure">JetStream Publication Failure<a class="headerlink" href="#jetstream-publication-failure" title="Permanent link"></a></h3>
+<p>All JetStream publications must verify their success. For R3 streams, NATS documents that the stream leader returns
+a <code>PubAck</code> when a majority of the stream&rsquo;s replicas has stored the message. [38]</p>
+<h3 id="command-redelivery-duplicate-execution-risk">Command Redelivery / Duplicate Execution Risk<a class="headerlink" href="#command-redelivery-duplicate-execution-risk" title="Permanent link"></a></h3>
+<p>Oversight control commands must be idempotent and must use explicit acknowledgements. According to NATS, they 
+recommend an explicit <code>ACK</code> for work that must not be lost and will redeliver, according to the acknowledgement and 
+redelivery policies, when processing is not successfully acknowledged. [41]</p>
+<p>NATS worker-scaling documentation states that a worker can perform an external action and fail before acknowledgement,
+allowing another worker to receive the same work. [38]</p>
+<p>Every command for Oversight must have a <code>command_id</code> and the Southbound execution path must confirm this before issing 
+a physical write.</p>
+<h3 id="stream-capacity-storage-exhaustion">Stream Capacity / Storage Exhaustion<a class="headerlink" href="#stream-capacity-storage-exhaustion" title="Permanent link"></a></h3>
+<p>For both command and audit streams, capacity exhaustion must produce an observable alert rather than removing records
+required for processing or forensic evaluation.</p>
+<p>According to JetStream, stream storage is finite and cannot have an unlimited buffer.  Telemetry, commands, events, 
+health metrics, audit, and DLQ streams must have configured retention periods and firm storage limits. </p>
+<p>Oversight monitors these limits and alerts the operator when the stream storage is exhausted.</p>
+<h3 id="poison-messages-maximum-delivery-failure">Poison Messages / Maximum Delivery Failure<a class="headerlink" href="#poison-messages-maximum-delivery-failure" title="Permanent link"></a></h3>
+<p>Messages that NATS cannot successfully process must not re-deliver indefinitely. JetStream supports <code>AckWait</code>, 
+<code>Backoff</code>, <code>MaxDeliver</code>, and message termination [41]. When <code>MaxDeliver</code> becomes exhausted, JetStream stops delivery
+to that consumer and publishes a max delivery failure alarm.</p>
+<h3 id="nats-authorization-failure">NATS Authorization Failure<a class="headerlink" href="#nats-authorization-failure" title="Permanent link"></a></h3>
+<p>NATS supports independent publish and subscribe permissions on subjects. [58] </p>
+<p>Authorization failure is treated as a security or configuration failure rather than as a transient message
+processing failure. When a service is denied access to a subject, the system must not retry, reissue, or republish the 
+message outside the configured policy. Subject authorization failures are logged in the system&rsquo;s audit log.</p>
+<h3 id="time-synchronization-failure">Time Synchronization Failure<a class="headerlink" href="#time-synchronization-failure" title="Permanent link"></a></h3>
+<p>Time synchronization is critical for event correlation, command validation, and forensic analysis. </p>
+<p>NIST identifies time synchronization as important for event/log correlation, authentication, access control, and
+quality of service [27]. NIST states, &ldquo;Synchronizing the internal clocks of OT systems and devices is critical
+for cyber event correlation and other OT functions&rdquo; that rely on accurate timekeeping. [27]</p>
+<p>Oversight uses PTP (Precision Time Protocol – <strong>IEEE 1588v2</strong>) because PTP provides a much higher level of precision and 
+accuracy, which is critical for the real-time monitoring and control requirements.</p>
+<p>If clock integrity exceeds the defined tolerance required to establish command validity, new control commands must be
+rejected.</p>
 <h3 id="middleware-integrity-watchdog">Middleware Integrity Watchdog<a class="headerlink" href="#middleware-integrity-watchdog" title="Permanent link"></a></h3>
 <p>Oversight uses heartbeats to determine if middleware services are processing and are available. The system uses
-   a middleware health service to monitor the LangGraph Agent&rsquo;s heartbeat. Periodically, the agent updates the heartbeat
-   timestamp. If the heartbeat exceeds its configured stale data threshold while NATS is still healthy, the system
-   publishes a <code>WATCHDOG_TRIP</code> alarm.</p>
+a middleware health service to monitor the LangGraph Agent&rsquo;s heartbeat. Periodically, the agent updates the heartbeat
+timestamp. If the heartbeat exceeds its configured stale data threshold while NATS is still healthy, the system
+publishes a <code>WATCHDOG_TRIP</code> alarm.</p>
 <p>If the LangGraph Agent&rsquo;s heartbeat becomes stale, the agent is required to stop all AI-originated commands. </p>
-<p>The LangGraph Agent&rsquo;s heartbeat is monitored using NATS KV Store, which provides a KV bucket for 
-   storing the heartbeat timestamp. The system uses the NATS KV Store&rsquo;s watch feature to monitor the heartbeat for 
-   staleness. [51], [52]</p>
-<h3 id="nats-message-broker-latency">NATS Message Broker Latency<a class="headerlink" href="#nats-message-broker-latency" title="Permanent link"></a></h3>
-<p>The Oversight system monitors message latency for time-sensitive messaging. According to NIST SP 800-82, OT systems
-   as having unique performance, reliability, and safety requirements. The system uses the following latency measurements:</p>
-<ul>
-<li>NATS message latency using message timestamps and consumer receipt timestamps</li>
-<li></li>
-<li>
-<p>NATS message latency <strong>MUST</strong> be measured using message timestamps and consumer receipt timestamps for 
-     application level time-sensitive message flows.</p>
-</li>
-<li>The system <strong>MUST</strong> be able to distinguish between NATS transport latency and consumer processing delays.</li>
-<li>Latency <strong>MUST</strong> be monitored against the defined thresholds. Thresholds are appropriately defined based on 
-     message type and operational requirements.</li>
-<li>The system <strong>MUST</strong> treat the message flow as degraded when latency exceeds the defined thresholds.</li>
-<li>Latency <strong>MUST NOT</strong> result in autonomous physical actuation.</li>
-<li>The system <strong>MUST</strong> log latency events and alert the operator when the threshold is exceeded.</li>
-<li>Normal message flow <strong>MUST NOT</strong> resume based on latency decreases. Recovery <strong>MUST</strong> require health
-     verification.</li>
-</ul>
-<p>The following defines each latency measurement in the system:
-   1. <strong>Ingest Latency</strong>: Time from receipt of source telemetry by the Northbound Ingest to successful publishing of 
-     the event to NATS JetStream.
-   2. <strong>NATS Transport Latency</strong>: Time from the publisher timestamp to the consumer receipt timestamp.
-   3. <strong>Consumer Processing Latency</strong>: Time from consumer receipt of a message to completion of the downstream processing.
-   4. <strong>End-to-End Latency</strong>: Time from the originating event or telemetry timestamp through the application level
-      downstream processing or execution stage.</p>
-<p>Consumer Lag <strong>MUST NOT</strong> be treated as equivalent to NATS transport latency.</p>
-<h3 id="nats-command-ttl-expiry">NATS Command TTL Expiry<a class="headerlink" href="#nats-command-ttl-expiry" title="Permanent link"></a></h3>
-<ul>
-<li>Every control-affecting command <strong>MUST</strong> have an application level expiration timestamp. </li>
-<li>An expired command <strong>MUST NOT</strong> be executed.</li>
-<li>Commands <strong>MUST</strong> contain the following (at minimum):<ul>
-<li><code>command_id</code> - command ID (UUIDv4)</li>
-<li><code>created_at</code> - command creation timestamp</li>
-<li><code>expires_at</code> - the time after which the command is no longer valid.</li>
-</ul>
-</li>
-<li>A command is only valid while the current time is less than the <code>expires_at</code> timestamp.</li>
-<li>Command expiration <strong>MUST</strong> be enforced by the Southbound Driver before control-affecting commands are allowed.</li>
-<li>Command validation <strong>MUST</strong> be performed before control-affecting commands are allowed.</li>
-<li>If the current time is greater than or equal to the <code>expires_at</code> timestamp, the command <strong>MUST</strong> be marked as 
-     <code>EXPIRED</code> and control-affecting commands <strong>MUST NOT</strong> be allowed.</li>
-<li>If a command is expired, the system <strong>MUST NOT</strong> try to retry or reissue automatically.</li>
-<li>The system <strong>MUST</strong> log the command expiration, including the <code>command_id</code>, <code>created_at</code> and <code>expires_at</code> 
-     timestamps and the expiration reason.</li>
-<li>The system <strong>MUST</strong> alert the operator when command execution affects control operations.</li>
-<li>Expiration of a command <strong>MUST NOT</strong> result in control-affecting commands being issued or authorized.</li>
-</ul>
-<p><img alt="NATS TTL Diagram" src="../diagrams/NATS-ttl.png" /></p>
+<p>The LangGraph Agent&rsquo;s heartbeat is monitored using NATS KV Bucket, which provides a KV bucket for 
+storing the heartbeat timestamp. The system uses the NATS KV Bucket&rsquo;s watch feature to monitor the heartbeat for 
+staleness. [51], [52]</p>
+<p>If JetStream becomes unavailable, the KV heartbeat becomes unavailable and Agent state is treated as <code>UNKNOWN</code>.</p>
+<p>The middleware heartbeat does not replace the independent hardware watchdog, PLC control logic, or SIS.</p>
+<h3 id="nats-command-ttl-expiration">NATS Command TTL Expiration<a class="headerlink" href="#nats-command-ttl-expiration" title="Permanent link"></a></h3>
+<p>Every control-affecting command has an application level expiration timestamp. 
+   - An expired command must not be executed.
+   - Commands must contain the following (at minimum):
+     - <code>command_id</code> - command ID (UUIDv4)
+     - <code>created_at</code> - command creation timestamp
+     - <code>expires_at</code> - the time after which the command is no longer valid.
+   - A command is only valid while the <code>current_time</code> &lt; <code>expires_at</code> timestamp.
+   - Command expiration must be enforced by the Southbound Driver before control-affecting commands are allowed.
+   - Command validation must be performed before control-affecting commands are allowed.
+   - If the current time is greater than or equal to the <code>expires_at</code> timestamp, the command must be marked as 
+     <code>EXPIRED</code> and control-affecting commands must not be allowed.
+   - If a command is expired, the system must not try to retry or reissue automatically.
+   - The system must log the command expiration, including the <code>command_id</code>, <code>created_at</code> and <code>expires_at</code> 
+     timestamps and the expiration reason.
+   - The system then alerts the operator when command execution affects control operations.
+   - Expiration of a command must not result in control-affecting commands being issued or authorized.</p>
+<h3 id="disconnected-client-command-buffering">Disconnected-Client Command Buffering<a class="headerlink" href="#disconnected-client-command-buffering" title="Permanent link"></a></h3>
+<p>NATS says, &ldquo;The connection is a state machine. It moves through a small set of states (DISCONNECTED, CONNECTING, 
+CONNECTED, RECONNECTING, DRAINING, CLOSED), and every fault is just a transition between them.&rdquo; [54]</p>
+<p>This introduces a specific control command hazard. Within Oversight, command-producing services cannot rely on blind
+reconnect buffering for control-affecting publication. Control commands must be validated for staleness and authority
+before publication. Each buffered command remains subject to <code>expires_at</code> and idempotency validation before execution.</p>
+<p>Oversight telemetry may use bounded reconnect where appropriate because the <code>source_timestamp</code>, when available, remains
+part of the event contract and allows downstream services to identify old observations.</p>
 <h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
 <p>The Oversight system treats NATS and JetStream as non-authoritative. </p>
 <ul>
@@ -1367,6 +1449,8 @@ or subscribe to only the subjects it needs to.</p>
 <p>[50] <a href="https://docs.nats.io/learn/jetstream/pull-consumers">NATS - Pull Consumers in Depth</a></p>
 <p>[51] <a href="https://docs.nats.io/learn/key-value/">NATS - Key-Value Store</a></p>
 <p>[52] <a href="https://docs.nats.io/learn/key-value/watching">NATS - Watching</a></p>
+<p>[53] <a href="https://docs.nats.io/learn/jetstream/message-ttl">JetStream - Per-message TTL</a></p>
+<p>[54] <a href="https://docs.nats.io/learn/resilient-clients">NATS - Resilient Clients</a></p>
               
             </div>
           </div><footer>

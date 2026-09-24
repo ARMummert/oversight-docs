@@ -297,11 +297,15 @@ sessions from the OT environment from reaching the IT environment. The NIS valid
 uses protocol buffers for serialization. These normalized payloads are then published to the NATS JetStream message 
 contract (<code>oversight.telemetry.&gt;</code>) and are consumed by the streaming analytics service.</p>
 <h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
-<p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
-commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, Cryptographic Notary Buffers, and 
-the TPM 2.0 hardware signer. If the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and 
-persisted to the audit log. The fully notarized commands are then handed to the Southbound Driver for execution, which 
-then publishes the results to <code>oversight.commands.executed</code>. </p>
+<p>Control intents and manual overrides are published to <code>oversight.commands.proposed</code>. The commands are then sent to be 
+validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, Cryptographic Notary Buffers, and the TPM 2.0 hardware 
+signer. Command outcomes such as auth rejection, safety rejection, command expiration, or duplicate detection are 
+published to the appropriate command subject and persisted to the audit trail. The fully notarized commands are then 
+handed to the Southbound Driver for execution, which then publishes the results to <code>oversight.commands.executed</code>. </p>
+<p>If the failure is a technical processing failure that prevents a message from being successfully processed, it is routed to
+the DLQ <code>oversight.dlq.commands</code>.</p>
+<p>Upon successful validation and authorization of a command, the message is published to the 
+<code>oversight.commands.executed</code>and passed to Southbound Driver for execution.</p>
 <h2 id="unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model<a class="headerlink" href="#unified-namespace-uns-information-model" title="Permanent link"></a></h2>
 <h3 id="iec-62264-semantic-hierarchy">IEC 62264 Semantic Hierarchy<a class="headerlink" href="#iec-62264-semantic-hierarchy" title="Permanent link"></a></h3>
 <p>Oversight uses a semantic naming model for the UNS architecture and maps the semantic hierarchy into NATS dot notation
@@ -370,9 +374,9 @@ to route data. </p>
 <p><code>oversight.commands.proposed</code></p>
 <pre><code class="language-json">{
   &quot;message_id&quot;: &quot;9c858901-8a57-4791-81fe-4c455b099bc9&quot;,
-  &quot;command_id&quot;: &quot;1b4e28ba-2fa1-11d2-883f-0016d3cca427&quot;,
-  &quot;trace_id&quot;: &quot;6f9619ff-8b86-d011-b42d-00cf4fc964ff&quot;,
-  &quot;correlation_id&quot;: &quot;7c9e6679-7425-40de-944b-e07fc1f90ae7&quot;,
+  &quot;command_id&quot;: &quot;bc968f55-8455-451c-b711-c564382ad518&quot;,
+  &quot;trace_id&quot;: &quot;12ec711b-b2ad-4c63-9463-28d19c361301&quot;,
+  &quot;correlation_id&quot;: &quot;87ad8fa3-f3db-4145-b8de-77d34404768d&quot;,
   &quot;schema_version&quot;: &quot;1.0&quot;,
   &quot;event_type&quot;: &quot;command.proposed&quot;,
   &quot;source&quot;: &quot;langgraph-agent&quot;,
@@ -430,11 +434,14 @@ to route data. </p>
    without losing any messages. </p>
 <p>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</p>
 <h3 id="distributed-tracing">Distributed Tracing<a class="headerlink" href="#distributed-tracing" title="Permanent link"></a></h3>
-<p>Every Oversight command is assigned a unique <code>trace_id</code> (UUIDv4) to &ldquo;follow, analyze, and debug [36]&rdquo; the command&rsquo;s 
-   execution. The <code>trace_id</code> is used to follow the command lifecycle across the distributed system. </p>
-<p>When the LangGraph Agent generates an intent or command proposal, a <code>trace_id</code> is created. NATS JetStream message
-   headers let you attach a third header to the message, in Oversight&rsquo;s case, the <code>trace_id</code> is attached to the message
-   header. [37]</p>
+<p>Every Oversight command is assigned a unique <code>trace_id</code> (UUIDv4). The <code>trace_id</code> is used to follow the command 
+   lifecycle across different distributed Oversight services. </p>
+<p>When the LangGraph Agent generates an intent or command proposal, a <code>trace_id</code> is created. For operator-generated
+   commands, the <code>trace_id</code> is created by the operator Nginx/API boundary.</p>
+<p>The same <code>trace_id</code> remains with the transaction throughout the entire process. NATS message headers let 
+   you attach one or more key-value metadata fields along with the message payload. In this case, Oversight can 
+   attach <code>message_id</code>, <code>trace_id</code>, and <code>correlation_id</code> into the NATS message headers. [37]</p>
+<p>The same <code>trace_id</code> and <code>command_id</code> must be preserved during redelivery. </p>
 <h3 id="message-durability">Message Durability<a class="headerlink" href="#message-durability" title="Permanent link"></a></h3>
 <p>The Oversight system relies on at-least-once delivery of messages so that commands are not lost when the system
    restarts or fails. NATS JetStream provides persistent storage, replay, durable consumers, acknowledgements, and 
@@ -442,6 +449,12 @@ to route data. </p>
 <p>Oversight uses JetStream&rsquo;s message durability capabilities, which are dependent on the configuration of storage, 
    replication, retention, and acknowledgement policies. Unacknowledged commands can be redelivered to consumers based 
    on the system&rsquo;s configuration. [45]</p>
+<p>For production-critical streams, Oversight uses a replicated NATS cluster rather than a single-server <code>R=1</code> 
+   configuration. NATS documents that <code>R=1</code> has no fault tolerance and describes <code>R=3</code> as its production floor with more 
+   copies. With three replicas, the stream can tolerate loss of one server while retaining a majority [38].</p>
+<p>For an <code>R=3</code> stream, the stream leader returns a JetStream <code>PubAck</code> only after the majority of replicas have stored 
+   the message [38]. Failure to receive a required <code>PubAck</code> is treated as an unsuccessful or ambiguous publication rather 
+   than assumed success.</p>
 <h3 id="latency-targets">Latency Targets<a class="headerlink" href="#latency-targets" title="Permanent link"></a></h3>
 <p>The following Service Level Objectives (SLOs) are the latency targets for Oversight&rsquo;s message flow. According to
    NIST, &ldquo;OT systems are generally time-critical, with the criterion for acceptable levels of delay and jitter dictated 
@@ -455,28 +468,29 @@ to route data. </p>
 <li><strong>Source-to-Analytics End-to-End Latency</strong>: Measured from originating source timestamp → the beginning of the 
      streaming analytics processing </li>
 </ul>
+<p>Consumer Lag cannot be used for latency measurements.</p>
 <h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
 <p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams and consumers, bounded retry 
    policies, and application-level failure handling.</p>
 <p>Because NATS does not have a separate broker-level DLQ, Oversight implements DLQ handling using NATS subjects
-   and failure handling. [41]</p>
+   and failure handling. Jetstream supports acknowledgements, bounded redelivery,  <code>AckWait</code>, <code>Backoff</code>, <code>MaxDeliver</code>, 
+   and termination of messages that should no longer be delivered to a consumer. [41]</p>
 <p>A message may be redirected to a DLQ when it cannot be successfully processed. This happens after the configured 
    retry policy has been exceeded or when the system determines that further processing must be stopped.</p>
-<p>JetStream supports a bounded retry policy for messages that cannot be successfully processed.  It also supports 
-   application-level failure handling to handle messages that cannot be successfully processed.  The system uses 
-   JetStream&rsquo;s <code>MaxDeliver</code> advisory to determine when to redirect messages to the DLQ. The system uses the <code>AckWait</code> 
-   consumer setting to limit the amount of time that a consumer can wait for a message to be delivered. [42]</p>
+<p>The system uses JetStream&rsquo;s <code>MaxDeliver</code> advisory to limit the number of delivery attempts to the consumer. The 
+   system uses the <code>AckWait</code>consumer setting to limit the amount of time that a consumer can wait for a message to be 
+   redelivered. [41]</p>
 <p>DLQ Handling is separated by message type:</p>
 <ol>
-<li>Telemetry Processing Failure: Telemetry messages that cannot be processed after the retry policy is exceeded,
-      are redirected to: <code>oversight.dlq.telemetry</code><ul>
+<li>Telemetry Processing Failure: Telemetry messages that cannot be processed successfully are redirected to: 
+      <code>oversight.dlq.telemetry</code><ul>
 <li>Examples: Schema validation failure, payload inconsistency, unsupported schema version, invalid event structure
     Repeated consumer processing failure.</li>
 <li>Telemetry DLQ messages must be retained for diagnostics, replay analysis, and developer forensics. </li>
 <li>A telemetry processing failure <strong>MUST NOT</strong> result in control-affecting commands.</li>
 </ul>
 </li>
-<li>Event Processing Failure: Events that cannot be processed after the retry policy is exceeded may be redirected to:
+<li>Event Processing Failure: Events that cannot be processed successfully are redirected to:
       <code>oversight.dlq.events</code>.<ul>
 <li>Examples: invalid event schema, unsupported event type, invalid event metadata, repeated consumer processing 
     failure, failure to process a system-generated event.</li>
@@ -484,7 +498,7 @@ to route data. </p>
 <li>An event processing failure <strong>MUST NOT</strong> result in control-affecting commands.</li>
 </ul>
 </li>
-<li>Command Processing Failure: Commands that fail validation or execution may be redirected to:
+<li>Command Processing Failure: Commands that cannot be processed successfully are redirected to:
       <code>oversight.dlq.commands</code>.<ul>
 <li>Examples: Command validation failure, safety validation failure, auth failure, expired command, safety 
     validation failure, duplicate command, Southbound execution failure, physical state verification failure.</li>
@@ -535,10 +549,10 @@ to route data. </p>
 }
 </code></pre>
 <h3 id="consumer-flow-control-backpressure-management">Consumer Flow Control (Backpressure Management)<a class="headerlink" href="#consumer-flow-control-backpressure-management" title="Permanent link"></a></h3>
-<p>By using NATS JetStreams pull consumers with bounded pull sizes and <code>MaxAckPending</code> limits the number of delivered
-   but unacknowledged messages that are sent to the consumer at one time. This prevents the Agent from being overwhelmed 
-   by telemetry bursts. When the maximum pull size is reached, JetStream will stop sending messages to the consumer 
-   until the pull size is reduced. [46]</p>
+<p>By using NATS JetStreams pull consumers with bounded pull batches and configured <code>MaxAckPending</code> which limits the 
+   number of delivered but unacknowledged messages that are sent to the consumer at one time. This prevents the Agent 
+   from being overwhelmed by telemetry bursts. When the maximum pull batch size is reached, JetStream will stop sending 
+   messages to the consumer until acknowledgements reduce the in-flight count. [46]</p>
 <h3 id="health-metrics">Health Metrics<a class="headerlink" href="#health-metrics" title="Permanent link"></a></h3>
 <p>Oversight monitors NATS JetStream health using the NATS monitoring endpoints and Prometheus metrics 
    (<code>prometheus-nats-exporter</code>). [43], [44]</p>
@@ -554,6 +568,9 @@ to route data. </p>
 <li>Outstanding Acknowledgements</li>
 <li><code>MaxDeliver</code> </li>
 </ul>
+<p><code>num_pending</code>, <code>num_ack_pending</code>, and telemetry freshness represent different system conditions. NATS defines 
+<code>num_pending</code> as work not yet taken by a consumer and<code>num_ack_pending</code> as work already delivered but awaiting 
+acknowledgement [43].</p>
 <p><strong>Stream Health</strong></p>
 <ul>
 <li>Stream message count</li>
@@ -613,7 +630,7 @@ to route data. </p>
 <li>Publisher Errors and Timeouts</li>
 </ul>
 <h3 id="horizontal-scaling">Horizontal Scaling<a class="headerlink" href="#horizontal-scaling" title="Permanent link"></a></h3>
-<p>Oversight can horizontally scale by running multiple worker processes against one NATS durable pull consumer. Where 
+<p>NATS distributes messages by running multiple worker processes against one NATS durable pull consumer. Where 
    appropriate, queue-groups can be used for distributing live messages among subscribers and the JetStreams persistent 
    worker model for distributing stored stream messages while sharing one consumer. [48], [49]</p>
 <h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>

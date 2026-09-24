@@ -102,7 +102,7 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#idempotent-command-enforcement">Idempotent Command Enforcement</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#distributed-tracing-37">Distributed Tracing [37]</a>
+    <li class="toctree-l4"><a class="reference internal" href="#distributed-tracing">Distributed Tracing</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#message-durability">Message Durability</a>
     </li>
@@ -124,9 +124,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#failure-modes-fallbacks">Failure Modes &amp; Fallbacks</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog">NATS Telemetry Stream Stale / Idle Timeout (Zero-Tolerance Watchdog)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#telemetry-stream-stale">Telemetry Stream Stale</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#middleware-integrity-watchdog-fail-safe-hold-mode">Middleware Integrity Watchdog (Fail-Safe &ldquo;HOLD&rdquo; Mode)</a>
+    <li class="toctree-l4"><a class="reference internal" href="#middleware-integrity-watchdog">Middleware Integrity Watchdog</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#nats-message-broker-latency">NATS Message Broker Latency</a>
     </li>
@@ -230,17 +230,20 @@
 The Unified Namespace (UNS) provides an event-driven communication layer that connects telemetry producers, 
 streaming analytics, safety validation services, and the Southbound Driver. Oversight will use NATS JetStream as the 
 core message broker.</p>
-<p>The UNS provides data standardization, hardware abstraction, and a single source of truth by providing downstream 
-services with standardized telemetry data that is not tied to any specific industrial protocol. It connects that data 
-from the control assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, MES, ERP, etc. into one 
-standardized event stream. By using a UNS, Oversight can speed up Industrial Internet of Things (IIoT) and edge
-systems, by providing a data namespace for telemetry and commands, leading to a more efficient and effective system.</p>
-<p>Industial Control Systems must strictly separate OT and IT environments. Oversight uses the Purdue Enterprise Reference 
+<p>The Oversight UNS provides data standardization, hardware abstraction, and a common namespace that allows downstream 
+services to consume normalized telemetry that is not tied to any specific industrial protocol, physical register 
+addresses, or vendor-specific information. According to Solace, &ldquo;A UNS organizes real-time industrial data into a shared
+structure where producers publish information and consumers subscribe to it.&rdquo; [18] It provides a consistent 
+representation of the data from the control assets (e.g., PLCs, RTUs, and sensors), edge-of-network devices, SCADA, 
+MES, ERP, etc. into one standardized location. [16] By using a UNS, Oversight can speed up Industrial Internet of 
+Things (IIoT) and edge systems, by providing a data namespace for telemetry and commands, leading to a more efficient 
+and effective system. [25]</p>
+<p>Industrial Control Systems must strictly separate OT and IT environments. Oversight uses the Purdue Enterprise Reference 
 Architecture (PERA) to define the boundaries between the OT and IT environments. &ldquo;The Purdue Model provides a 
 framework for segmenting industrial control systems networks from corporate enterprise networks and the internet&rdquo; [26].
-A UNS improves upon the Purdue Model by providing a single source of truth that standardizes the data. Having a single 
-source of truth allows Oversight to reduce costs, complexity, and risk by separating read and write access to the data,
-similar to the MQTT messaging protocol. </p>
+A UNS improves upon the original ISA-95 industrial architecture (The Purdue Model) by &ldquo;creating a single source of 
+truth with data standarization&rdquo;. [16] Having a single source of truth allows Oversight to reduce costs, complexity, 
+and risk by only using one communication channel for telemetry.</p>
 <p>The system bridges OT systems with modern AI reasoning and event-driven analytics while maintaining its zero-trust 
 architecture and implementing strict separation between the following:</p>
 <ol>
@@ -253,21 +256,24 @@ architecture and implementing strict separation between the following:</p>
 <li>Physical Execution</li>
 </ol>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link"></a></h3>
-<p><strong>UNS Normalization</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
-<strong>NATS JetStream</strong>: Transports, persists, routes, and replays telemetry and commands.
+<p><strong>Northbound Ingest Service</strong>: Terminates raw industrial protocols, normalizes telemetry, and publishes to NATS 
+JetStream.
+<strong>UNS</strong>: Provides a standardized, vendor-agnostic namespace for telemetry and command data.
+<strong>NATS JetStream</strong>: Transports, persists, routes, and replays messages.
 <strong>Downstream Consumers</strong>: Processes the events without needing to know the original protocol or physical register 
-addresses.</p>
+addresses, NodeIDs, CIP object identifiers, or other vendor-specific information.</p>
 <h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link"></a></h2>
-<p>Industrial Control Systems expose data that should never enter the IT environment. They expose data through several 
+<p>Industrial Control Systems expose telemetry that should never enter the IT environment. They expose data through several 
 industrial protocols, including Modbus, OPC-UA, and Ethernet/IP. These protocols may expose vendor-specific addressing, 
 device-specific naming, data types, units, and quality bits. </p>
 <p>If downstream consumers were allowed to know this information, Oversight would become tightly coupled to individual 
-control systems and expose data to the IT environment. This would also violate the zero-trust architecture and the 
-standards and governance requirements for Industrial Control Systems. If the system was tightly coupled to the OT 
-environment, any changes to PLC vendors, protocols, register mapping, or any device configuration would require changes
-to the downstream Oversight architecture.</p>
-<p>Downstream consumers must not have knowledge of the OT environment and its protocols or how the data was acquired.
-Without a UNS, Oversight would run into the following problems:</p>
+control systems and expose data to the IT environment. This would also violate the standards and governance 
+requirements for Industrial Control Systems. If the system was tightly coupled to the OT environment, any changes to 
+PLC vendors, protocols, register mapping, or any device configuration would require changes to the downstream Oversight 
+architecture.</p>
+<p>Oversight therefore requires a messaging architecture that separates downstream consumers from the IT environment, 
+while preserving controlled, auditable data flows across defined boundaries. [27]</p>
+<p>Without a UNS, Oversight would run into the following problems:</p>
 <ol>
 <li>Vendor-specific addressing and device-specific naming</li>
 <li>Decreased operation efficiency</li>
@@ -278,20 +284,6 @@ Without a UNS, Oversight would run into the following problems:</p>
 <li>Complex forensic and replay capabilities</li>
 <li>Tight Coupling with the OT environment</li>
 <li>Inability to support new protocols and devices</li>
-</ol>
-<p>Oversight therefore requires a messaging architecture that is vendor-agnostic and does not expose data to the IT 
-environment. </p>
-<ol>
-<li>High-throughput telemetry (exceeding 10,000 points per second)</li>
-<li>Low-latency event transport</li>
-<li>Durable event storage</li>
-<li>Replayable telemetry, event, and command history</li>
-<li>Subject-Based Routing</li>
-<li>Hardware and Protocol Abstraction</li>
-<li>Schema Versioning</li>
-<li>Traceability and Forensic Auditing</li>
-<li>Controlled access to event subjects</li>
-<li>Independent downstream consumers</li>
 </ol>
 <h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link"></a></h2>
 <p>To solve the problems listed above, Oversight will implement a Unified Namespace (UNS) and NATS JetStream for 
@@ -306,11 +298,10 @@ uses protocol buffers for serialization. These normalized payloads are then publ
 contract (<code>oversight.telemetry.&gt;</code>) and are consumed by the streaming analytics service.</p>
 <h3 id="the-write-path-control-execution">The Write Path (Control Execution)<a class="headerlink" href="#the-write-path-control-execution" title="Permanent link"></a></h3>
 <p>Control intents and manual overrides are published to the NATS Command Queue <code>oversight.commands.proposed</code>. These 
-commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, and the TPM 2.0 hardware signer. If
-the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and persisted to the audit log.
-The fully notarized commands are then handed to the Southbound Driver for execution, which then publishes the results to
-<code>oversight.commands.executed</code>. The Southbound Driver is responsible for executing the command and publishing the 
-results to the Northbound Ingest Service.</p>
+commands are sent to be validated by the Level 1.5 Arbitrator, Semantic Gatekeeper, Cryptographic Notary Buffers, and 
+the TPM 2.0 hardware signer. If the command fails it is routed to <code>oversight.commands.failed</code>, moved into the DLQ, and 
+persisted to the audit log. The fully notarized commands are then handed to the Southbound Driver for execution, which 
+then publishes the results to <code>oversight.commands.executed</code>. </p>
 <h2 id="unified-namespace-uns-information-model">Unified Namespace (UNS) Information Model<a class="headerlink" href="#unified-namespace-uns-information-model" title="Permanent link"></a></h2>
 <h3 id="iec-62264-semantic-hierarchy">IEC 62264 Semantic Hierarchy<a class="headerlink" href="#iec-62264-semantic-hierarchy" title="Permanent link"></a></h3>
 <p>Oversight uses a semantic naming model for the UNS architecture and maps the semantic hierarchy into NATS dot notation
@@ -338,6 +329,7 @@ to route data. </p>
 <li>Southbound Driver implementation</li>
 <li>Command arbitration and execution</li>
 <li>Semantic gatekeeper implementation</li>
+<li>Cryptographic notary buffer implementation</li>
 <li>TPM 2.0 hardware signer implementation</li>
 <li>LangGraph reasoning workflows</li>
 <li>Streaming Analytics implementation</li>
@@ -434,39 +426,50 @@ to route data. </p>
    and can be replayed [32].</p>
 <h3 id="idempotent-command-enforcement">Idempotent Command Enforcement<a class="headerlink" href="#idempotent-command-enforcement" title="Permanent link"></a></h3>
 <p>Oversight uses NATS JetStream for at-least-once delivery of messages using durable consumers and acknowledgements.
-   By using durable consumers and acknowledgements, the consumer becomes long-lived and be restarted where it left off
+   By using durable consumers and acknowledgements, the consumer becomes long-lived and can restart where it left off
    without losing any messages. </p>
 <p>Each command carries a <code>command_id</code> (UUIDv4) that is used to ensure idempotency to prevent duplicate executions.</p>
-<h3 id="distributed-tracing-37">Distributed Tracing [37]<a class="headerlink" href="#distributed-tracing-37" title="Permanent link"></a></h3>
+<h3 id="distributed-tracing">Distributed Tracing<a class="headerlink" href="#distributed-tracing" title="Permanent link"></a></h3>
 <p>Every Oversight command is assigned a unique <code>trace_id</code> (UUIDv4) to &ldquo;follow, analyze, and debug [36]&rdquo; the command&rsquo;s 
    execution. The <code>trace_id</code> is used to follow the command lifecycle across the distributed system. </p>
 <p>When the LangGraph Agent generates an intent or command proposal, a <code>trace_id</code> is created. NATS JetStream message
    headers let you attach a third header to the message, in Oversight&rsquo;s case, the <code>trace_id</code> is attached to the message
-   header.</p>
+   header. [37]</p>
 <h3 id="message-durability">Message Durability<a class="headerlink" href="#message-durability" title="Permanent link"></a></h3>
 <p>The Oversight system relies on at-least-once delivery of messages so that commands are not lost when the system
    restarts or fails. NATS JetStream provides persistent storage, replay, durable consumers, acknowledgements, and 
    redelivery of messages.  </p>
 <p>Oversight uses JetStream&rsquo;s message durability capabilities, which are dependent on the configuration of storage, 
    replication, retention, and acknowledgement policies. Unacknowledged commands can be redelivered to consumers based 
-   on the system&rsquo;s configuration. </p>
+   on the system&rsquo;s configuration. [45]</p>
 <h3 id="latency-targets">Latency Targets<a class="headerlink" href="#latency-targets" title="Permanent link"></a></h3>
-<p>The following are the latency targets for Oversight&rsquo;s message flow:</p>
+<p>The following Service Level Objectives (SLOs) are the latency targets for Oversight&rsquo;s message flow. According to
+   NIST, &ldquo;OT systems are generally time-critical, with the criterion for acceptable levels of delay and jitter dictated 
+   by the individual installation. [27]&rdquo; Therefore, these values are engineering requirements rather than latency 
+   guarantees.</p>
 <ul>
-<li><strong>Northbound Ingest Service → UNS Published Message:</strong>: &lt;50ms</li>
-<li><strong>NATS Transport Latency (Publication -&gt; Consumer Receipt)</strong> </li>
+<li><strong>Northbound Ingest Service → UNS Successful Publication:</strong>: P95 &lt;50 ms</li>
+<li><strong>NATS Publication -&gt; Consumer Delivery:</strong>: P95 &lt;20 ms </li>
+<li><strong>NATS Consumer -&gt; Streaming Analytics Service:</strong> P95 &lt;20 ms</li>
+<li><strong>End-to-End Latency:</strong> P95 &lt;100 ms</li>
+<li><strong>Source-to-Analytics End-to-End Latency</strong>: Measured from originating source timestamp → the beginning of the 
+     streaming analytics processing </li>
 </ul>
 <h3 id="dead-letter-queue-dlq">Dead Letter Queue (DLQ)<a class="headerlink" href="#dead-letter-queue-dlq" title="Permanent link"></a></h3>
-<p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams and consumers, retry policies, 
-   and application-level failure handling.</p>
-<p>Because NATS does not have a separate broker-level DLQ object, Oversight implements DLQ handling using NATS subjects
-   and application-level failure handling.</p>
+<p>Oversight implements a dead letter queue (DLQ) using NATS subjects, JetStream streams and consumers, bounded retry 
+   policies, and application-level failure handling.</p>
+<p>Because NATS does not have a separate broker-level DLQ, Oversight implements DLQ handling using NATS subjects
+   and failure handling. [41]</p>
 <p>A message may be redirected to a DLQ when it cannot be successfully processed. This happens after the configured 
    retry policy has been exceeded or when the system determines that further processing must be stopped.</p>
+<p>JetStream supports a bounded retry policy for messages that cannot be successfully processed.  It also supports 
+   application-level failure handling to handle messages that cannot be successfully processed.  The system uses 
+   JetStream&rsquo;s <code>MaxDeliver</code> advisory to determine when to redirect messages to the DLQ. The system uses the <code>AckWait</code> 
+   consumer setting to limit the amount of time that a consumer can wait for a message to be delivered. [42]</p>
 <p>DLQ Handling is separated by message type:</p>
 <ol>
 <li>Telemetry Processing Failure: Telemetry messages that cannot be processed after the retry policy is exceeded,
-      may be redirected to the DLQ: <code>oversight.telemetry.dlq</code><ul>
+      are redirected to: <code>oversight.dlq.telemetry</code><ul>
 <li>Examples: Schema validation failure, payload inconsistency, unsupported schema version, invalid event structure
     Repeated consumer processing failure.</li>
 <li>Telemetry DLQ messages must be retained for diagnostics, replay analysis, and developer forensics. </li>
@@ -474,41 +477,48 @@ to route data. </p>
 </ul>
 </li>
 <li>Event Processing Failure: Events that cannot be processed after the retry policy is exceeded may be redirected to:
-      <code>oversight.events.dlq</code><ul>
+      <code>oversight.dlq.events</code>.<ul>
 <li>Examples: invalid event schema, unsupported event type, invalid event metadata, repeated consumer processing 
     failure, failure to process a system-generated event.</li>
-<li>Like Telemetry DLQ messages, event processing messages must be retained for diagnostics, replay analysis, and 
-    developer forensics.</li>
+<li>Event processing messages must be retained for diagnostics, replay analysis, and developer forensics.</li>
 <li>An event processing failure <strong>MUST NOT</strong> result in control-affecting commands.</li>
 </ul>
 </li>
 <li>Command Processing Failure: Commands that fail validation or execution may be redirected to:
-      <code>oversight.commands.dlq</code>.<ul>
+      <code>oversight.dlq.commands</code>.<ul>
 <li>Examples: Command validation failure, safety validation failure, auth failure, expired command, safety 
     validation failure, duplicate command, Southbound execution failure, physical state verification failure.</li>
 <li>Command DLQ messages must be retained for audit and operator reviews.</li>
 <li>A command processing failure <strong>MUST NOT</strong> result in control-affecting commands.</li>
-<li>Failed or rejected commands <strong>MUST NOT</strong> be retried. </li>
+<li>Validation, authorization, safety, expiration, and duplicate command failures are not retryable and must be
+    terminated immediately.</li>
 </ul>
 </li>
 </ol>
 <h3 id="dlq-metadata">DLQ Metadata<a class="headerlink" href="#dlq-metadata" title="Permanent link"></a></h3>
+<p>For JetStream Failures:</p>
+<ul>
+<li><code>deliver_count</code>: The total number of delivery attempts</li>
+<li><code>retry_count</code>: If <code>retry_count</code> is also recorded, it shows the delivery attempts after the initial attempt.</li>
+<li>Examples: A message reaching <code>MaxDeliver</code> advisory after five delivery attempts, has a <code>deliver_count</code> of 5 and a 
+  <code>retry_count</code> of 4.</li>
+</ul>
 <pre><code class="language-json">{ &quot;message_id&quot;: &quot;2fd3201a-f376-4d37-9cb2-c40db8c01e15&quot;, 
   &quot;trace_id&quot;: &quot;12ec711b-b2ad-4c63-9463-28d19c361301&quot;, 
   &quot;correlation_id&quot;: &quot;87ad8fa3-f3db-4145-b8de-77d34404768d&quot;, 
   &quot;schema_version&quot;: &quot;1.0&quot;, 
   &quot;event_type&quot;: &quot;dead_letter&quot;, 
   &quot;created_at&quot;: &quot;2026-09-04T18:42:15.231Z&quot;, 
-  &quot;dead_letter&quot;: { 
-    &quot;failure_type&quot;: &quot;MAX_DELIVERIES_EXCEEDED&quot;, 
-    &quot;failure_reason&quot;: &quot;Consumer failed to process message after the configured maximum delivery attempts.&quot;, 
-    &quot;retry_count&quot;: 5, 
-    &quot;dead_lettered_at&quot;: &quot;2026-09-04T18:42:15.231Z&quot;,
+  &quot;dead_letter&quot;: { &quot;failure_type&quot;: &quot;MAX_DELIVERIES_EXCEEDED&quot;, 
+    &quot;failure_reason&quot;: &quot;Consumer failed to process the message after the configured maximum delivery attempts.&quot;, 
+    &quot;delivery_count&quot;: 5, 
+    &quot;retry_count&quot;: 4, 
+    &quot;dead_lettered_at&quot;: &quot;2026-09-04T18:42:15.231Z&quot;, 
     &quot;consumer_identity&quot;: &quot;semantic-gatekeeper-01&quot;, 
-    &quot;jetstream&quot;: { 
-      &quot;stream&quot;: &quot;OVERSIGHT_COMMANDS&quot;, 
+    &quot;jetstream&quot;: { &quot;stream&quot;: &quot;OVERSIGHT_COMMANDS&quot;, 
       &quot;consumer&quot;: &quot;semantic-gatekeeper&quot;, 
-      &quot;stream_sequence&quot;: 18421
+      &quot;stream_sequence&quot;: 18421, 
+      &quot;consumer_sequence&quot;: 764
     }
   }, 
   &quot;original_message&quot;: { 
@@ -525,80 +535,134 @@ to route data. </p>
 }
 </code></pre>
 <h3 id="consumer-flow-control-backpressure-management">Consumer Flow Control (Backpressure Management)<a class="headerlink" href="#consumer-flow-control-backpressure-management" title="Permanent link"></a></h3>
-<p>By using NATS client-driven pull consumption with bounded batches and <code>MaxAckPending</code>, the system prevents the 
-   Agent from being overwhelmed by telemetry bursts. This lets the Broker buffer the load while the reasoning 
-   engine completes its inference cycle.</p>
+<p>By using NATS JetStreams pull consumers with bounded pull sizes and <code>MaxAckPending</code> limits the number of delivered
+   but unacknowledged messages that are sent to the consumer at one time. This prevents the Agent from being overwhelmed 
+   by telemetry bursts. When the maximum pull size is reached, JetStream will stop sending messages to the consumer 
+   until the pull size is reduced. [46]</p>
 <h3 id="health-metrics">Health Metrics<a class="headerlink" href="#health-metrics" title="Permanent link"></a></h3>
-<p>Tracks system-level KPIs via <strong>NATS Consumer Lag</strong> If backpressure rises, Prometheus triggers a <strong>System Health</strong> 
-   alert before telemetry data is dropped.</p>
-<p>The following metrics should be collected and exposed to Prometheus / Grafana:</p>
-<p><strong>Consumer Health</strong>:</p>
+<p>Oversight monitors NATS JetStream health using the NATS monitoring endpoints and Prometheus metrics 
+   (<code>prometheus-nats-exporter</code>). [43], [44]</p>
+<p>The following should be monitored:</p>
+<p><strong>Consumer Health</strong></p>
 <ul>
-<li>consumer pending count</li>
-<li>acknowledgement-pending (<code>ack-pending</code>) count</li>
-<li>consumer redelivery count</li>
-<li>consumer state</li>
-<li><code>MaxDeliver</code> advisories</li>
+<li><code>num_pending</code> / Consumer Lag</li>
+<li><code>num_ack_pending</code> / Acknowledgement Pending Messages</li>
+<li><code>num_redelivered</code> / Redelivery Count</li>
+<li><code>num_waiting</code> / For Pull Consumers</li>
+<li>Last delivered message </li>
+<li>Acknowledgement Floor</li>
+<li>Outstanding Acknowledgements</li>
+<li><code>MaxDeliver</code> </li>
 </ul>
-<p><strong>Stream Health</strong>:</p>
+<p><strong>Stream Health</strong></p>
 <ul>
-<li>stream message count</li>
-<li>stream storage usage in bytes</li>
-<li>stream utilization as a percentage of the configured storage limit</li>
-<li>DLQ message count</li>
+<li>Stream message count</li>
+<li>Stream storage size (bytes)</li>
+<li>First and Last Stream Sequence</li>
+<li>Active Consumer Count</li>
+<li>Configured <code>MaxBytes</code> and <code>MaxMsgs</code></li>
+<li>Stream Storage Utilization Percentage</li>
+<li>DLQ stream message count</li>
 </ul>
-<p><strong>Publisher Health</strong>:</p>
+<p>Stream Utilization is the percentage of the stream storage that is used:</p>
+<p><code>stream_storage_utilization</code> = <code>stream_storage_bytes</code> / <code>stream_max_bytes</code> * 100</p>
+<p><strong>Publisher Health</strong></p>
 <ul>
-<li>publish errors</li>
+<li>Publish Attempts, Errors, Timeouts</li>
 <li>JetStream <code>PubAck</code> failures</li>
+<li><code>PubAck</code> Latency</li>
 </ul>
-<p><strong>Connection Health</strong>:</p>
+<p><strong>Connection Health</strong></p>
 <ul>
-<li>NATS connection state</li>
-<li>Reconnect count</li>
-</ul>
-<p><strong>Alerting Thresholds</strong>:</p>
-<ul>
-<li>sustained consumer backlog</li>
-<li>increasing redelivery rates</li>
-<li>failed publishes</li>
-<li>failed acknowledgements</li>
-<li>high stream usage</li>
-<li>repeated reconnects</li>
-<li>increasing DLQ volume</li>
+<li>Active NATS Connections</li>
+<li>Client Connection State</li>
+<li>Client Reconnects</li>
+<li>NATS <code>slow_consumers</code></li>
+<li>JetStream server and cluster health</li>
 </ul>
 <h3 id="data-storm-resilience-nats-buffer">Data Storm Resilience (NATS Buffer)<a class="headerlink" href="#data-storm-resilience-nats-buffer" title="Permanent link"></a></h3>
-<p>Oversight must be able to handle sudden spikes in telemetry data without allowing traffic to interfere with the 
-   command path.  JetStream offers short-term increases in message volume, but buffering alone is not enough.
-   Telemetry and commands should use separate streams with their own retention policies, storage limits, consumer
-   settings, and capacity limits.</p>
-<p>Oversight monitors:</p>
+<p>Oversight must be able to handle sudden or temporary spikes in telemetry data without allowing traffic to interfere 
+   with the command path.  JetStream offers persistent stream storage that allows producers and consumers to operate
+   at different rates. However, JetStream storage is bounded and cannot be treated like an unlimited buffer.</p>
+<p>Telemetry and commands should use separate streams with their own retention policies, storage limits, consumer
+   settings, and capacity limits. [47]</p>
+<p>Each stream is independently configured: </p>
 <ul>
-<li>stream utilization</li>
-<li>pending messages</li>
-<li>acknowledgement backlog</li>
-<li>consumer lag</li>
-<li>redelivery status</li>
+<li>subject namespaces</li>
+<li>retention policies</li>
+<li><code>MaxBytes</code></li>
+<li><code>MaxMsgs</code></li>
+<li><code>MaxAge</code></li>
+<li>replication settings</li>
+<li>discard policies</li>
+<li>consumer settings</li>
+<li><code>MaxAckPending</code></li>
+<li>alerting thresholds</li>
 </ul>
 <p>To reduce excessive CPU or memory usage, the system can use container resource limits, but these are an additional
    safeguard.</p>
-<h3 id="horizontal-scaling">Horizontal Scaling<a class="headerlink" href="#horizontal-scaling" title="Permanent link"></a></h3>
-<p>The system can horizontally scale using NATS durable consumers. Where appropriate, queue-groups can be used for 
-   distributing live messages among subscribers and the JetStream persistent worker model for distributing stored
-   stream messages while sharing one consumer cursor.</p>
-<h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
-<h3 id="nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog">NATS Telemetry Stream Stale / Idle Timeout (Zero-Tolerance Watchdog)<a class="headerlink" href="#nats-telemetry-stream-stale-idle-timeout-zero-tolerance-watchdog" title="Permanent link"></a></h3>
-<p>If the NATS consumer detects the absence of expected telemetry, the system will trigger a dedicated NATS Watcher 
-   service which publishes a <code>STALE_DATA</code> event. </p>
-<h3 id="middleware-integrity-watchdog-fail-safe-hold-mode">Middleware Integrity Watchdog (Fail-Safe &ldquo;HOLD&rdquo; Mode)<a class="headerlink" href="#middleware-integrity-watchdog-fail-safe-hold-mode" title="Permanent link"></a></h3>
-<p>The Southbound Driver actively monitors the LangGraph Agent&rsquo;s heartbeat via the NATS JetStream KV bucket. If the 
-   Agent&rsquo;s timestamp becomes stale, the system will prevent control-affecting commands from being executed in the NATS 
-   Command Queue and issues a <code>WATCHDOG_TRIP</code> alarm.</p>
-<h3 id="nats-message-broker-latency">NATS Message Broker Latency<a class="headerlink" href="#nats-message-broker-latency" title="Permanent link"></a></h3>
+<p>Oversight Monitors:</p>
 <ul>
-<li>The Oversight system <strong>MUST</strong> monitor NATS message latency for time-sensitive message flows.</li>
-<li>NATS message latency <strong>MUST</strong> be measured using message timestamps and consumer receipt timestamps for 
-     application level time-sensitive message flows.</li>
+<li>stream storage utilization</li>
+<li><code>num_pending</code> / Consumer Lag</li>
+<li><code>num_ack_pending</code> / Acknowledgement Pending Messages</li>
+<li><code>num_redelivered</code> / Redelivery Count</li>
+<li><code>num_waiting</code> / For Pull Consumers</li>
+<li><code>MaxDeliver</code> </li>
+<li>DLQ Volume</li>
+<li>Publisher Errors and Timeouts</li>
+</ul>
+<h3 id="horizontal-scaling">Horizontal Scaling<a class="headerlink" href="#horizontal-scaling" title="Permanent link"></a></h3>
+<p>Oversight can horizontally scale by running multiple worker processes against one NATS durable pull consumer. Where 
+   appropriate, queue-groups can be used for distributing live messages among subscribers and the JetStreams persistent 
+   worker model for distributing stored stream messages while sharing one consumer. [48], [49]</p>
+<h2 id="failure-modes-fallbacks">Failure Modes &amp; Fallbacks<a class="headerlink" href="#failure-modes-fallbacks" title="Permanent link"></a></h2>
+<h3 id="telemetry-stream-stale">Telemetry Stream Stale<a class="headerlink" href="#telemetry-stream-stale" title="Permanent link"></a></h3>
+<p>Oversight independently monitors whether telemetry is stale by calculating the age of the most recent valid 
+   observation for each telemetry signal. It is not determined by consumer lag. The reason for this is that consumer
+   lag can indicate that the telemetry is fresh even when the Northbound Ingest Service dies. Consumer lag can be used
+   to support diagnostic information but it cannot determine telemetry staleness. [50]</p>
+<p>For each monitored telemetry signal, Oversight monitors:</p>
+<ul>
+<li>The most recent source timestamp</li>
+<li>The most recent Northbound Ingest receipt timestamp</li>
+<li>The expected telemetry update or refresh interval</li>
+<li>The configured stale-data threshold</li>
+</ul>
+<p>Telemetry age is calculated as:</p>
+<p><code>telemetry_age = current_time - most_recent_valid_source_timestamp</code></p>
+<p>When telemetry age &gt; configured stale-data threshold, the signal is considered stale. If the telemetry age reaches 
+   or exceeds the configured stale-data threshold, the signal MUST transition to <code>STALE_DATA</code>.</p>
+<p>When the source timestamp cannot be trusted, the Northbound Ingest receipt timestamp can be used as a secondary
+   measurement to determine staleness.</p>
+<p>The Oversight system distinguishes between:</p>
+<ul>
+<li>Source telemetry becoming stale</li>
+<li>Northbound Ingest becoming unavailable</li>
+<li>A JetStream consumer falling behind</li>
+<li>NATS or JetStream becoming unavailable</li>
+</ul>
+<p>Any stale telemetry signals must be considered invalid for any control-affecting behavior. Upon recovery, the system
+   must verify that the telemetry is not stale before allowing any control-affecting commands. [43], [50]</p>
+<h3 id="middleware-integrity-watchdog">Middleware Integrity Watchdog<a class="headerlink" href="#middleware-integrity-watchdog" title="Permanent link"></a></h3>
+<p>Oversight uses heartbeats to determine if middleware services are processing and are available. The system uses
+   a middleware health service to monitor the LangGraph Agent&rsquo;s heartbeat. Periodically, the agent updates the heartbeat
+   timestamp. If the heartbeat exceeds its configured stale data threshold while NATS is still healthy, the system
+   publishes a <code>WATCHDOG_TRIP</code> alarm.</p>
+<p>If the LangGraph Agent&rsquo;s heartbeat becomes stale, the agent is required to stop all AI-originated commands. </p>
+<p>The LangGraph Agent&rsquo;s heartbeat is monitored using NATS KV Store, which provides a KV bucket for 
+   storing the heartbeat timestamp. The system uses the NATS KV Store&rsquo;s watch feature to monitor the heartbeat for 
+   staleness. [51], [52]</p>
+<h3 id="nats-message-broker-latency">NATS Message Broker Latency<a class="headerlink" href="#nats-message-broker-latency" title="Permanent link"></a></h3>
+<p>The Oversight system monitors message latency for time-sensitive messaging. According to NIST SP 800-82, OT systems
+   as having unique performance, reliability, and safety requirements. The system uses the following latency measurements:</p>
+<ul>
+<li>NATS message latency using message timestamps and consumer receipt timestamps</li>
+<li></li>
+<li>
+<p>NATS message latency <strong>MUST</strong> be measured using message timestamps and consumer receipt timestamps for 
+     application level time-sensitive message flows.</p>
+</li>
 <li>The system <strong>MUST</strong> be able to distinguish between NATS transport latency and consumer processing delays.</li>
 <li>Latency <strong>MUST</strong> be monitored against the defined thresholds. Thresholds are appropriately defined based on 
      message type and operational requirements.</li>
@@ -1260,9 +1324,9 @@ or subscribe to only the subjects it needs to.</p>
 <p>[24] <a href="https://docs.nats.io/learn/jetstream/message-ttl">Message TTL</a></p>
 <p>[25] <a href="https://static1.squarespace.com/static/5e7135caec915516f2aaf65b/t/649606b5c7a31a37aee7073d/1757733990591/Unified-Namespaces-Ultimate-Guide-Alex-Marcy-2023.pdf">Unified Namespace Guide</a></p>
 <p>[26] <a href="https://www.energy.gov/sites/default/files/2022-10/Infra_Topic_Paper_4-14_FINAL.pdf">Purdue Model Framework For ICS &amp; Cybersecurity Segmentation</a></p>
-<p>[27] <a href="https://studylib.net/doc/28515566/nist.sp.800-82r3">Guide to Operational Technology Security</a></p>
+<p>[27] <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r3.pdf">Guide to Operational Technology Security</a></p>
 <p>[28] <a href="https://industrialmonitordirect.com/blogs/knowledgebase/industrial-ethernet-security-nist-800-82-resources-guide">Industrial Ethernet Security NIST</a></p>
-<p>[29] <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r1.pdf?utm_source=chatgpt.com">Guide to Industrial Control Systems Security</a></p>
+<p>[29] <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-82r1.pdf">Guide to Industrial Control Systems Security</a></p>
 <p>[30] <a href="https://www.modbus.org/file/secure/modbusprotocolspecification.pdf">Modbus Application Protocol</a></p>
 <p>[31] <a href="https://sparkplug.eclipse.org/specification/version/2.2/documents/sparkplug-specification-2.2.pdf">Sparkplug Specification</a></p>
 <p>[32] <a href="https://docs.nats.io/concepts/jetstream">JetStream</a></p>
@@ -1274,6 +1338,18 @@ or subscribe to only the subjects it needs to.</p>
 <p>[38] <a href="https://docs.nats.io/learn/jetstream/surviving-node-loss">Surviving Node Loss - NATS</a></p>
 <p>[39] <a href="https://docs.nats.io/learn/jetstream/retention-policies">Rentention Policies - NATS</a></p>
 <p>[40] <a href="https://nats.io/blog/nats-server-2.9.16-release/">NATS Server - 2.9.16</a></p>
+<p>[41] <a href="https://docs.nats.io/learn/jetstream/acknowledgment">NATS Acknowledgements</a></p>
+<p>[42] <a href="https://streamtrace.io/articles/nats-jetstream-dead-letter-queue-implementation/">NATS JetStream Dead Letter Queue</a></p>
+<p>[43] <a href="https://docs.nats.io/learn/monitoring/jetstream-health">NATS JetStream Health</a></p>
+<p>[44] <a href="https://docs.nats.io/learn/monitoring/prometheus-and-dashboards">NATS Prometheus &amp; Dashboards</a></p>
+<p>[45] <a href="https://docs.nats.io/learn/core-nats/">Core NATS Deep Dive</a></p>
+<p>[46] <a href="https://docs.nats.io/learn/jetstream/worker-pool?_highlight=maxackpending#see-also">NATS - Scaling a Consumer</a></p>
+<p>[47] <a href="https://docs.nats.io/learn/jetstream/shaping-the-stream?_highlight=maxbytes#where-you-are">NATS - Shaping the Stream</a></p>
+<p>[48] <a href="https://docs.nats.io/concepts/queue-groups?_highlight=que">NATS - Queue Groups</a></p>
+<p>[49] <a href="https://docs.nats.io/learn/services/scaling?_highlight=horizontal&amp;_highlight=scaling#run-more-instances">NATS - Scaling</a></p>
+<p>[50] <a href="https://docs.nats.io/learn/jetstream/pull-consumers">NATS - Pull Consumers in Depth</a></p>
+<p>[51] <a href="https://docs.nats.io/learn/key-value/">NATS - Key-Value Store</a></p>
+<p>[52] <a href="https://docs.nats.io/learn/key-value/watching">NATS - Watching</a></p>
               
             </div>
           </div><footer>

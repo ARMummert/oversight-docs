@@ -148,13 +148,19 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#nats-command-ttl-expiration">NATS Command TTL Expiration</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#disconnected-client-command-buffering">Disconnected-Client Command Buffering</a>
+    <li class="toctree-l4"><a class="reference internal" href="#disconnected-command-buffering">Disconnected Command Buffering</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#nats-connection-failure">NATS Connection Failure</a>
+    <li class="toctree-l4"><a class="reference internal" href="#disconnected-publish-buffering">Disconnected Publish Buffering</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-connection-failure-nats-circuit-breaker">NATS Connection Failure &amp; NATS Circuit Breaker</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nats-circuit-breaker">NATS Circuit Breaker</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#control-authority-recovery">Control Authority Recovery</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#nats-circuit-breaker">NATS Circuit Breaker</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nats-circuit-breaker_1">NATS Circuit Breaker</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nats-message-lifecycle">NATS Message Lifecycle</a>
     </li>
@@ -793,7 +799,7 @@ staleness. [51], [52]</p>
      timestamps and the expiration reason.
    - The system then alerts the operator when command execution affects control operations.
    - Expiration of a command must not result in control-affecting commands being issued or authorized.</p>
-<h3 id="disconnected-client-command-buffering">Disconnected-Client Command Buffering<a class="headerlink" href="#disconnected-client-command-buffering" title="Permanent link"></a></h3>
+<h3 id="disconnected-command-buffering">Disconnected Command Buffering<a class="headerlink" href="#disconnected-command-buffering" title="Permanent link"></a></h3>
 <p>NATS says, &ldquo;The connection is a state machine. It moves through a small set of states (DISCONNECTED, CONNECTING, 
 CONNECTED, RECONNECTING, DRAINING, CLOSED), and every fault is just a transition between them.&rdquo; [54]</p>
 <p>This introduces a specific control command hazard. Within Oversight, command-producing services cannot rely on blind
@@ -801,41 +807,98 @@ reconnect buffering for control-affecting publication. Control commands must be 
 before publication. Each buffered command remains subject to <code>expires_at</code> and idempotency validation before execution.</p>
 <p>Oversight telemetry may use bounded reconnect where appropriate because the <code>source_timestamp</code>, when available, remains
 part of the event contract and allows downstream services to identify old observations.</p>
-<h3 id="nats-connection-failure">NATS Connection Failure<a class="headerlink" href="#nats-connection-failure" title="Permanent link"></a></h3>
-<p>The Oversight system treats NATS and JetStream as non-authoritative. </p>
+<h3 id="disconnected-publish-buffering">Disconnected Publish Buffering<a class="headerlink" href="#disconnected-publish-buffering" title="Permanent link"></a></h3>
+<p>NATS clients may buffer publications while disconnected and flush those buffered messages after connectivity is restored
+[54]. Because this introduces a behavior where older messages may be transmitted after reconnection, Oversight requires
+any control-affecting command cannot use or rely on the reconnect buffering as proof that the command is still valid.</p>
+<p>Oversight requirements for command-affecting publications are as follows:</p>
 <ul>
-<li>Failure or unavailability of NATS or JetStream <strong>MUST NOT</strong> cause Oversight to issue or authorize a new 
+<li>When a command is eventually published after reconnection it must contain the original <code>command_id</code>, <code>created_at</code> and 
+  <code>expires_at</code> payload fields.</li>
+<li>An expired command must not become valid just because NATS connectivity is restored.</li>
+<li>Buffered message delivery after reconnection must not bypass the command and idempotency checks.</li>
+</ul>
+<h3 id="nats-connection-failure-nats-circuit-breaker">NATS Connection Failure &amp; NATS Circuit Breaker<a class="headerlink" href="#nats-connection-failure-nats-circuit-breaker" title="Permanent link"></a></h3>
+<p>The Oversight system treats NATS and JetStream as non-authoritative messaging. When loss of NATS connectivity occurs, 
+   Oversight&rsquo;s ability to exchange messages and the system places itself in a <code>DEGRADED</code> state. </p>
+<p>NATS says, &ldquo;The connection is a state machine. It moves through a small set of states (DISCONNECTED, CONNECTING, 
+   CONNECTED, RECONNECTING, DRAINING, CLOSED), and every fault is just a transition between them.&rdquo; Rather than 
+   creating a new connection, NATS allows the client to reconnect. NATS clients support reconnect behavior including 
+   backoff and jitter, server-pool cycling, connection-state events, and buffering of publications while 
+   disconnected. [54]</p>
+<p>Oversight uses a circuit breaker pattern above the NATS client. The circuit breaker does not replace the NATS 
+   reconnect behavior. It prevents Oversight services from repeatedly performing NATS/JetStream operations when the 
+   dependency is known to be unavailable. The circuit breaker is a software design pattern that prevents repeated 
+   attempts to perform an operation that is likely to fail and prevents cascading failures. [55]</p>
+<p>NIST recommends defining thresholds where OT components continue operating with reduced or disrupted capability,
+   including communication loss. NIST states that OT systems commonly use &ldquo;fail-to-a-known-state design&rdquo; during 
+   unexpected failures and notes that events such as loss of network communications may trigger degraded or 
+   fail-safe behavior. NIST further recommends defining the thresholds at which OT components can continue operating 
+   with &ldquo;reduced or disrupted capabilities.&rdquo; [27]</p>
+<p>The following are requirements for Oversight&rsquo;s NATS connection failure handling:</p>
+<ul>
+<li>Oversight transitions to <code>DEGRADED</code> when the NATS connection is lost.</li>
+<li>Failure or unavailability of NATS or JetStream will not cause Oversight to issue or authorize a new 
      control-affecting command.</li>
-<li>Loss of NATS connectivity is required to be treated as a degraded state, and the system <strong>MUST</strong> enter degraded 
-     authority mode.</li>
+<li>NATS connection failure will cause Oversight to determine a new physical fail-safe state.</li>
 <li>The control assets and safety systems remain responsible for the local control and safety behavior.</li>
+<li>PLCs, controllers, SIS logic, and other local deterministic control mechanisms remain responsible for normal process
+     control and physical safe-state behavior. [27]</li>
+<li>Loss of NATS connectivity must be treated as proof that the physical process itself has failed.</li>
 </ul>
-<p><strong>Bounded Retries</strong></p>
+<p><strong>Reconnection &amp; Bounded Retry</strong></p>
+<p>Oversight requires that the NATS client use a configured reconnection policy. This prevents the uncontrolled
+   reconnection behavior when failures occur. [54]</p>
+<p>The NATS bounded retry policy is as follows:</p>
 <ul>
-<li>Connection attempts <strong>MUST</strong> be bounded to prevent retry storms. </li>
+<li>Connection attempts will be bounded to prevent retry storms. </li>
 <li>Repeated connection failures are required to contribute to the circuit breaker failure threshold.</li>
+<li>The application will not continuously destroy and recreate NATS connections in its own unbounded retry loop.</li>
+<li>NATS client connection recovery remains the responsibility of the NATS client library [54].</li>
+<li>Repeated NATS or JetStream application-operation failures are required to contribute to the Oversight 
+     circuit-breaker failure threshold.</li>
+<li>When the circuit breaker is <code>OPEN</code>, repeated operations against the unavailable dependency are required to fail<br />
+     fast rather than repeatedly waiting for connection or operation timeouts.</li>
+<li>The NATS client will continue its configured reconnection and backoff process while the circuit breaker remains 
+    <code>OPEN</code>.</li>
 </ul>
-<p><strong>Health Verification</strong></p>
+<p>This design follows the Circuit Breaker pattern where once repeated failures reach a configured threshold, all
+   other calls to the protected dependency fail immediately instead of continuing to consume resources while the 
+   dependency is likely to remain unavailable [21].</p>
+<p><strong>Message &amp; Health Verification</strong></p>
+<p>Successful reconnection to NATS by itself is not enough for Oversight to prove that normal messaging has recovered.</p>
+<p>NATS provides server monitoring endpoints that expose the current state of the NATS server. The endpoint <code>/healthz</code>
+   provides a health check and <code>JSz</code> provides JetStream information. [55], [56]</p>
+<p>Oversight is required to verify that the following before normal operations resume:</p>
 <ul>
-<li>Recovery <strong>MUST</strong> require successful health verification before normal message flow resumes.</li>
-<li>Recovery <strong>MUST NOT</strong> automatically restore normal message flow.</li>
-<li>After the reset timeout expires, the circuit breaker <strong>MUST</strong> transition from <code>OPEN</code> to <code>HALF_OPEN</code> and permit a 
-     limited recovery attempt.</li>
-<li>Normal message flow <strong>MUST</strong> resume only after successful health verification.</li>
-<li>A failed recovery attempt <strong>MUST</strong> transition the circuit back to OPEN.</li>
+<li>NATS client connection restored</li>
+<li>The NATS server is healthy</li>
+<li>JetStream is available</li>
+<li>Required streams and durable consumers are available</li>
+<li>Required subject authorization remains valid</li>
+<li>Normal message flow will resume only after successful health verification.</li>
+<li>Non-control affecting tests do not indicate an unresolved message failure.</li>
+<li>Consumer health check does not show any unresolved message failures.</li>
 </ul>
 <p><strong>Logging and Operator Alerting</strong></p>
+<p>The system will log the following:</p>
 <ul>
-<li>The system <strong>MUST</strong> log the NATS failures, circuit breaker transitions, recovery attempts, and recovery failures.</li>
-<li>The system <strong>MUST</strong> alert the operator when NATS availability affects normal operations or causes a transition 
-     to the degraded authority mode.</li>
+<li>NATS disconnection, reconnect attempts, recovery events, JetStream availability failures</li>
+<li>Circuit breaker transitions</li>
+<li>Transitions into and out of <code>DEGRADED</code> state</li>
+<li><code>HALF_OPEN</code> recovery</li>
+<li>Failed health verification</li>
+<li>Successful message recovery</li>
+<li>Failed physical-state recovery</li>
+<li>Restoration of control authority</li>
 </ul>
-<p><strong>NATS Circuit Breaker</strong></p>
-<p>The Oversight system uses a circuit breaker to prevent continuous attempts against a failing NATS dependency.</p>
-<ul>
-<li>Services that depend on NATS <strong>MUST</strong> implement the NATS circuit breaker to stop the circuit breaker from making 
-     repeated connection attempts after the configured failure threshold is reached.</li>
-</ul>
+<p>According to Fowler, circuit breaker transitions should be observable. [21]</p>
+<p>Operators are alerted when the circuit breaker transitions to <code>OPEN</code> or <code>HALF_OPEN</code> and when the system transitions
+   into or out of <code>DEGRADED</code> state.</p>
+<h3 id="nats-circuit-breaker">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker" title="Permanent link"></a></h3>
+<p>The Oversight system uses a circuit breaker pattern to prevent continuous attempts against a failing NATS dependency.
+   Services that depend on NATS will implement the NATS circuit breaker to stop the circuit breaker from making 
+   repeated connection attempts after the configured failure threshold is reached.</p>
 <p><strong>CLOSED</strong> </p>
 <ul>
 <li>Normal operation. </li>
@@ -844,28 +907,31 @@ part of the event contract and allows downstream services to identify old observ
 <p><strong>OPEN</strong> </p>
 <ul>
 <li>The failure threshold is reached. </li>
-<li>NATS operations <strong>MUST</strong> fail fast</li>
-<li>Repeated connection attempts are blocked.</li>
-<li>Dependent services <strong>MUST</strong> remain in Degraded Authority Mode.</li>
+<li>NATS operations are required to fail fast</li>
+<li>Repeated connection and retry attempts are blocked.</li>
+<li>Dependent services are required to remain in the <code>DEGRADED</code> authority state.</li>
+<li>The NATS client can continue its own configured reconnection behavior underneath the circuit breaker</li>
 </ul>
 <p><strong>HALF-OPEN</strong></p>
 <ul>
 <li>After the reset timeout expires, a limited recovery attempt is permitted. This is to determine if NATS
      has recovered.</li>
-<li>The limited recovery attempt will determine whether NATS has recovered enough to allow normal message flow.</li>
-<li>Successful health verification <strong>MUST</strong> transition the circuit breaker from <code>HALF-OPEN</code> to <code>CLOSED</code>.</li>
-<li>Failed health verifications <strong>MUST</strong> transition the circuit breaker back to <code>OPEN</code>.</li>
+<li>The limited recovery attempt will determine whether NATS has recovered enough to allow normal message flow</li>
+<li>Recovery attempts are required to be non-control-affecting</li>
+<li>Successful health verification is required to transition the circuit breaker from <code>HALF-OPEN</code> to <code>CLOSED</code>.</li>
+<li>Failed health verifications are required to transition the circuit breaker back to <code>OPEN</code>.</li>
+<li>When in a <code>HALF_OPEN</code> state the system is not allowed to execute, replay, or simulate a physical control command.</li>
 </ul>
-<p><strong>Degraded Authority Mode</strong></p>
+<h3 id="control-authority-recovery">Control Authority Recovery<a class="headerlink" href="#control-authority-recovery" title="Permanent link"></a></h3>
+<p>Before AI authority is restored, Oversight must verify the following:</p>
 <ul>
-<li>Dependent services <strong>MUST</strong> inhibit new control-affecting commands when NATS is unavailable or degraded.</li>
-<li>The appropriate degraded authority mode <strong>MUST</strong> be reached according to Oversight&rsquo;s control authority model.</li>
-<li>Physical fail-safe behavior (fail-closed, fail-open, fail-trip, hold-last-state, or other safe state behavior)
-     <strong>MUST NOT</strong> be determined by the NATS circuit breaker.</li>
-<li>Local control assets and safe-state behavior remain responsible for their defined normal control, local safe-state,
-     and safety trip conditions.</li>
+<li>Required telemetry publication has resumed</li>
+<li>Required telemetry is not stale</li>
+<li>The Northbound Ingest Service has established the required connection to the control assets and is receiving 
+  telemetry.</li>
+<li>Required authorization, validation, signing, and execution services are healthy.</li>
 </ul>
-<h2 id="nats-circuit-breaker">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker" title="Permanent link"></a></h2>
+<h2 id="nats-circuit-breaker_1">NATS Circuit Breaker<a class="headerlink" href="#nats-circuit-breaker_1" title="Permanent link"></a></h2>
 <p><img alt="NATS Circuit Breaker" src="../diagrams/NATS-circuit-breaker.png" /></p>
 <h2 id="nats-message-lifecycle">NATS Message Lifecycle<a class="headerlink" href="#nats-message-lifecycle" title="Permanent link"></a></h2>
 <p><img alt="NATS Message Lifecycle" src="../diagrams/NATS-message-lifecycle.png" /></p>
@@ -891,7 +957,7 @@ defines what the data means and NATS transports that data.</p>
 <td><code>oversight.telemetry.&gt;</code></td>
 <td>Telemetry events</td>
 <td style="text-align: left;">Northbound Ingest</td>
-<td style="text-align: left;">Bytewax, Historian, Redis</td>
+<td style="text-align: left;">Analytics, Historian, Redis</td>
 </tr>
 <tr>
 <td><code>oversight.commands.&gt;</code></td>
@@ -974,7 +1040,8 @@ defines what the data means and NATS transports that data.</p>
 <li><code>oversight.health.watchdog_pulse</code></li>
 </ol>
 <h3 id="dlq-subjects">DLQ Subjects<a class="headerlink" href="#dlq-subjects" title="Permanent link"></a></h3>
-<p><code>oversight.dlq.&gt;</code> is the namespace for all messages that are dropped by the broker.</p>
+<p><code>oversight.dlq.&gt;</code> is the namespace for application generated dead-letter queue messages that were not successfully 
+processed.</p>
 <p><strong>Examples</strong>:</p>
 <ol>
 <li><code>oversight.dlq.telemetry</code></li>
@@ -1099,7 +1166,7 @@ defines what the data means and NATS transports that data.</p>
 <li><code>test_duplicate_command_preserves_original_execution_result</code></li>
 <li><code>test_redelivered_command_not_executed_twice</code></li>
 </ol>
-<p><strong>test_nats_command_ttl.py</strong></p>
+<p><strong>test_nats_schema_validation.py</strong></p>
 <ol>
 <li><code>test_valid_schema_version_accepted</code></li>
 <li><code>test_unsupported_schema_version_rejected</code></li>
@@ -1109,7 +1176,17 @@ defines what the data means and NATS transports that data.</p>
 <li><code>test_message_id_required</code></li>
 <li><code>test_trace_id_required</code></li>
 <li><code>test_correlation_id_preserved</code></li>
+</ol>
+<p><strong>test_nats_command_ttl.py</strong></p>
+<ol>
 <li><code>test_created_at_required</code></li>
+<li><code>test_expires_at_required</code></li>
+<li><code>test_expires_at_after_created_at</code></li>
+<li><code>test_unexpired_command_can_proceed_to_validation</code></li>
+<li><code>test_expired_command_rejected_before_execution</code></li>
+<li><code>test_southbound_driver_rechecks_expiration_before_write</code></li>
+<li><code>test_expired_command_not_automatically_reissued</code></li>
+<li><code>test_expired_buffered_command_not_executed_after_reconnect</code></li>
 </ol>
 <p><strong>test_nats_tracing.py</strong></p>
 <ol>
@@ -1168,12 +1245,50 @@ defines what the data means and NATS transports that data.</p>
 <li><code>test_expired_commands_not_executed_after_recovery</code></li>
 <li><code>test_unexpired_commands_require_revalidation_after_recovery</code></li>
 </ol>
+<p><strong>test_telemetry_staleness.py</strong></p>
+<ol>
+<li><code>test_freshness_uses_source_timestamp</code></li>
+<li><code>test_consumer_lag_does_not_define_staleness</code></li>
+<li><code>test_stale_signal_transitions_to_stale_data</code></li>
+<li><code>test_periodic_refresh_prevents_false_staleness</code></li>
+<li><code>test_stale_control_telemetry_inhibits_ai_command</code></li>
+</ol>
+<p><strong>test_nats_replication.py</strong></p>
+<ol>
+<li><code>test_production_stream_replica_count</code></li>
+<li><code>test_single_replica_failure_preserves_r3_stream</code></li>
+<li><code>test_quorum_loss_blocks_stream_writes</code></li>
+<li><code>test_reduced_replication_generates_health_alert</code></li>
+</ol>
+<p><strong>test_nats_recovery.py</strong></p>
+<ol>
+<li><code>test_nats_recovery_does_not_immediately_restore_control_authority</code></li>
+<li><code>test_recovery_requires_fresh_telemetry</code></li>
+<li><code>test_recovery_requires_physical_state_reconciliation</code></li>
+<li><code>test_non_control_puback_health_probe</code></li>
+<li><code>test_failed_health_probe_reopens_circuit_breaker</code></li>
+</ol>
+<p><strong>test_pessimistic_confirmation.py</strong></p>
+<ol>
+<li><code>test_protocol_write_success_does_not_mark_command_success</code></li>
+<li><code>test_command_remains_pending_until_feedback</code></li>
+<li><code>test_matching_physical_feedback_marks_success</code></li>
+<li><code>test_verification_timeout_marks_command_failed_or_indeterminate</code></li>
+<li><code>test_verification_failure_does_not_reissue_physical_write</code></li>
+</ol>
+<p><strong>test_nats_backup_recovery.py</strong></p>
+<ol>
+<li><code>test_replication_not_treated_as_backup</code></li>
+<li><code>test_stream_snapshot_can_be_created</code></li>
+<li><code>test_stream_snapshot_restore</code></li>
+<li><code>test_restore_does_not_enable_control_before_state_sync</code></li>
+</ol>
 <h2 id="message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq">Message Broker Tradeoffs, Drawbacks, and Alternatives: NATS JetStream vs. Kafka vs. RabbitMQ<a class="headerlink" href="#message-broker-tradeoffs-drawbacks-and-alternatives-nats-jetstream-vs-kafka-vs-rabbitmq" title="Permanent link"></a></h2>
 <p>I chose NATS JetStream as the message broker for the telemetry stream and command queue, instead of RabbitMQ or Kafka.
 NATS JetStream provides a high-performance, lightweight messaging system that is appropriate for the high-velocity 
 telemetry data in an OT environment. NATS JetStream offers lightweight connectivity, low latency, and built-in support 
 for message persistence and replay. These are all critical for the real-time monitoring and control requirements of 
-the system. </p>
+the system. [9]</p>
 <h3 id="tradeoffs-alternatives">Tradeoffs &amp; Alternatives<a class="headerlink" href="#tradeoffs-alternatives" title="Permanent link"></a></h3>
 <p>I considered several messaging technologies, including RabbitMQ, Kafka, and NATS. All three platforms are capable 
 messaging systems, but each has its own strengths and weaknesses. I based my decision on how well the message broker 
@@ -1184,11 +1299,11 @@ the Oversight system. Core NATS provides lightweight subject-based publish/subsc
 persistence, durable consumers, message replay, acknowledgements, and consumer state. This allows me to use one 
 messaging platform for both communication and event delivery.</p>
 <p>The NATS subject model also fits well with the Oversight UNS, and JetStream provides the durability needed for telemetry,
-events, and command lifecycle messages.</p>
+events, and command lifecycle messages, and delivery to the streaming analytics service.</p>
 <p><strong>Advantages of NATS JetStream</strong></p>
 <ul>
 <li>small runtime and deployment footprint</li>
-<li>subject-based routing that maps naturally to the UNS</li>
+<li>subject-based routing that maps to the UNS easily</li>
 <li>Built-in persistent streams through JetStream</li>
 <li>Durable consumers and acknowledgements</li>
 <li>Message replay</li>
@@ -1204,17 +1319,17 @@ introduces additional complexity and operational overhead. Using RabbitMQ would 
 expressed through exchanges, bindings, queues, and RabbitMQ streams. </p>
 <p>I rejected RabbitMQ because NATS JetStream more closely aligns with the Oversight&rsquo;s architecture and requirements. For
 Oversight, RabbitMQ would introduce additional messaging concepts and operational configuration without providing 
-a clear advantage over NATS JetStream.</p>
+a clear advantage over NATS JetStream. [57]</p>
 <p><strong>Apache Kafka</strong>:</p>
 <p>I heavily considered Kafka as the message broker for Oversight. Kafka provides highly durable, distributed event 
 streaming and is well suited for huge event volumes, long retention periods, and large-scale event-processing
 systems. Kafka also provides consistent replay and consumer-group capabilities.  </p>
 <p>The primary tradeoff for Oversight is operational scale and complexity. The capabilities of Kafka are valuable to 
-Oversight, however, they are more than Oversight currently requires for its IDMZ.</p>
+Oversight, however, they are more than Oversight currently requires for its IDMZ. [58]</p>
 <p><strong>Decision</strong>:</p>
 <p>NATS JetStream provides me a simpler, more lightweight solution that still meets the performance and reliability 
-requirements of the Oversight system without introducing unnecessary complexity and cost. I therefore chose NAT Jetstream
-as the message broker for the Oversight system.</p>
+requirements of the Oversight system without introducing unnecessary complexity and cost. I therefore chose NATS 
+JetStream as the message broker for the Oversight system.</p>
 <h2 id="implementation-plan">Implementation Plan<a class="headerlink" href="#implementation-plan" title="Permanent link"></a></h2>
 <h3 id="phase-1-broker-nats-jetsream-configuration">Phase 1: Broker &amp; NATS JetSream Configuration<a class="headerlink" href="#phase-1-broker-nats-jetsream-configuration" title="Permanent link"></a></h3>
 <ol>
@@ -1451,6 +1566,10 @@ or subscribe to only the subjects it needs to.</p>
 <p>[52] <a href="https://docs.nats.io/learn/key-value/watching">NATS - Watching</a></p>
 <p>[53] <a href="https://docs.nats.io/learn/jetstream/message-ttl">JetStream - Per-message TTL</a></p>
 <p>[54] <a href="https://docs.nats.io/learn/resilient-clients">NATS - Resilient Clients</a></p>
+<p>[55] <a href="https://docs.nats.io/reference/system/monitor/">NATS - System Monitoring</a></p>
+<p>[56] <a href="https://docs.nats.io/learn/monitoring/monitoring-endpoints?_highlight=endpoints">NATS- Monitoring Endpoints</a></p>
+<p>[57] <a href="https://www.rabbitmq.com/docs">RabbitMQ</a></p>
+<p>[58] <a href="https://kafka.apache.org/">Apache Kafka</a></p>
               
             </div>
           </div><footer>
